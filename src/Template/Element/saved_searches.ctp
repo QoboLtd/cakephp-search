@@ -5,7 +5,7 @@
     <h4><?= __('Saved Searches') ?></h4>
     <hr />
     <div class="row">
-        <div class="col-xs-12 col-sm-6">
+        <div class="col-md-8 col-lg-6">
         <?php if (!empty($savedSearches)) : ?>
             <div class="row">
             <?php
@@ -18,7 +18,7 @@
             foreach ($groupedSavedSearches as $type => $searches) :
             $count = 12 / count($groupedSavedSearches);
             ?>
-                <div class="col-xs-<?= $count ?> saved-searches">
+                <div class="col-sm-<?= $count ?> saved-searches">
                     <strong><?= Inflector::pluralize(Inflector::humanize($type)) ?>:</strong>
                     <?php
                     $criterias = [];
