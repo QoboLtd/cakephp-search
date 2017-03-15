@@ -13,7 +13,6 @@ class AlterTrashedInSavedSearches extends AbstractMigration
     public function change()
     {
         $table = $this->table('saved_searches');
-        debug($table);die;
         $table->changeColumn('trashed', 'datetime', [
             'default' => null,
             'null' => true,
