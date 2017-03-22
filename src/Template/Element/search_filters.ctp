@@ -90,6 +90,14 @@ if (!empty($searchFields)) :
                 }
                 echo $this->Form->button(__('Search'), ['class' => 'btn btn-primary']);
                 echo $this->Form->end();
+                if (!empty($saveSearchResultsId)) {
+                    echo '&nbsp;';
+                    echo $this->Form->postLink(
+                        __('Export'),
+                        ['action' => 'export-search', $saveSearchResultsId],
+                        ['class' => 'btn btn-primary', 'escape' => false]
+                    );
+                }
                 ?>
             </div>
             <div class="col-md-4 col-lg-3">
