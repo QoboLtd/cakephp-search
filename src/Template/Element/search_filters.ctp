@@ -94,7 +94,7 @@ if (!empty($searchFields)) :
                     echo '&nbsp;';
                     echo $this->Form->postLink(
                         '<i class="fa fa-download"></i> ' . __('Export'),
-                        ['action' => 'export-search', $saveSearchResultsId],
+                        ['action' => 'export-search', $saveSearchResultsId, $savedSearch ? $savedSearch->name : null],
                         ['class' => 'btn btn-primary', 'escape' => false]
                     );
                 }
