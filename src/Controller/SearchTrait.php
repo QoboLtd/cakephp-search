@@ -223,11 +223,12 @@ trait SearchTrait
      * Method responsible for exporting search results
      * into a CSV file and forcing file download.
      *
-     * @param string $id Saved search id
+     * @param string $id Pre-saved search id
+     * @param string $name Saved search name
      * @return \Cake\Http\Response
      * @throws \Cake\Network\Exception\NotFoundException When record not found.
      */
-    public function exportSearch($id)
+    public function exportSearch($id, $name = null)
     {
         $this->autoRender = false;
         $this->request->allowMethod(['patch', 'post', 'put']);
@@ -259,7 +260,8 @@ trait SearchTrait
         $response = $response->withType('csv');
 
         // custom filename
-        $filename = 'search-export_' . date('Y-m-d_H-m-s') . '.csv';
+        $filename = $name ? $name : $this->name;
+        $filename .= ' ' . date('Y-m-d H-m-s') . '.csv';
 
         // force file download
         $response = $response->withDownload($filename);
