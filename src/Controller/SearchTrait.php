@@ -1,11 +1,13 @@
 <?php
 namespace Search\Controller;
 
+use Cake\Filesystem\File;
 use Cake\Network\Exception\BadRequestException;
 use Cake\ORM\Query;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Search\Controller\Traits\SearchableTrait;
+use Zend\Diactoros\Stream;
 
 trait SearchTrait
 {
@@ -213,5 +215,60 @@ trait SearchTrait
         }
 
         return $this->redirect(['action' => 'search']);
+    }
+
+    /**
+     * Export Search results
+     *
+     * Method responsible for exporting search results
+     * into a CSV file and forcing file download.
+     *
+     * @param string $id Pre-saved search id
+     * @param string $name Saved search name
+     * @return \Cake\Http\Response
+     * @throws \Cake\Network\Exception\NotFoundException When record not found.
+     */
+    public function exportSearch($id, $name = null)
+    {
+        $this->autoRender = false;
+        $this->request->allowMethod(['patch', 'post', 'put']);
+
+        $table = TableRegistry::get($this->_tableSearch);
+
+        $savedSearch = $table->get($id);
+
+        $content = json_decode($savedSearch->content, true);
+
+        // create temporary file
+        $path = TMP . uniqid($this->request->param('action') . '_') . '.csv';
+        $file = new File($path, true);
+
+        // write to temporary file
+        $handler = fopen($path, 'w');
+        fputcsv($handler, array_keys(current($content['result'])));
+        foreach ($content['result'] as $row) {
+            fputcsv($handler, $row);
+        }
+        fclose($handler);
+
+        // create a stream from file
+        $stream = new Stream($path, 'rb');
+
+        // prepare response body
+        $response = $this->response;
+        $response = $response->withBody($stream);
+        $response = $response->withType('csv');
+
+        // custom filename
+        $filename = $name ? $name : $this->name;
+        $filename .= ' ' . date('Y-m-d H-m-s') . '.csv';
+
+        // force file download
+        $response = $response->withDownload($filename);
+
+        // delete temporary file
+        unlink($path);
+
+        return $response;
     }
 }
