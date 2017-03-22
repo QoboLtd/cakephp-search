@@ -88,12 +88,12 @@ if (!empty($searchFields)) :
                 if (!empty($searchFields)) {
                     echo $this->element('Search.search_options');
                 }
-                echo $this->Form->button(__('Search'), ['class' => 'btn btn-primary']);
+                echo $this->Form->button('<i class="fa fa-search"></i> ' . __('Search'), ['class' => 'btn btn-primary']);
                 echo $this->Form->end();
                 if (!empty($saveSearchResultsId)) {
                     echo '&nbsp;';
                     echo $this->Form->postLink(
-                        __('Export'),
+                        '<i class="fa fa-download"></i> ' . __('Export'),
                         ['action' => 'export-search', $saveSearchResultsId],
                         ['class' => 'btn btn-primary', 'escape' => false]
                     );
