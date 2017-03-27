@@ -12,7 +12,7 @@ $event = new Event('Search.Dashboards.View.View.Menu.Top', $this, [
 $this->eventManager()->dispatch($event);
 ?>
 <section class="content-header">
-    <h1>
+    <h4>
         Dashboard
         <small><?= h($dashboard->name) ?></small>
         <div class="pull-right">
@@ -20,7 +20,7 @@ $this->eventManager()->dispatch($event);
                 <?= $event->result; ?>
             </div>
         </div>
-    </h1>
+    </h4>
 </section>
 <section class="content">
     <div class="row">

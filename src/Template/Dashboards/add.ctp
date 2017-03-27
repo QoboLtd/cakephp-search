@@ -4,7 +4,7 @@ echo $this->Html->script('AdminLTE./plugins/jQueryUI/jquery-ui.min', ['block' =>
 echo $this->Html->script('Search.dashboard', ['block' => 'scriptBotton']);
 ?>
 <section class="content-header">
-    <h1><?= __('Create {0}', ['Dashboard']) ?></h1>
+    <h4><?= __('Create {0}', ['Dashboard']) ?></h4>
 </section>
 <section class="content">
     <?= $this->Form->create($dashboard, ['id' => 'dashboardForm']) ?>
