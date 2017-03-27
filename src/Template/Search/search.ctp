@@ -1,5 +1,5 @@
 <section class="content-header">
-    <h1>Search</h1>
+    <h4>Search</h4>
 </section>
 <section class="content">
 <?php

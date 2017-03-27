@@ -12,15 +12,19 @@ $event = new Event('Search.Dashboards.View.View.Menu.Top', $this, [
 $this->eventManager()->dispatch($event);
 ?>
 <section class="content-header">
-    <h1>
-        Dashboard
-        <small><?= h($dashboard->name) ?></small>
-        <div class="pull-right">
-            <div class="btn-group btn-group-sm" role="group">
-                <?= $event->result; ?>
+    <div class="row">
+        <div class="col-xs-12 col-md-6">
+            <h4><?= __('Dashboard');?></h4>
+            <small><?= h($dashboard->name) ?></small>
+        </div>
+        <div class="col-xs-12 col-md-6">
+            <div class="pull-right">
+                <div class="btn-group btn-group-sm" role="group">
+                    <?= $event->result; ?>
+                </div>
             </div>
         </div>
-    </h1>
+    </div>
 </section>
 <section class="content">
     <div class="row">
