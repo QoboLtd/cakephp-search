@@ -239,6 +239,15 @@ trait SearchTrait
 
         $content = json_decode($savedSearch->content, true);
 
+        // @todo this is temporary fix to stripping out html tags from results columns
+        foreach ($content['result'] as &$row) {
+            foreach ($row as &$column) {
+                $column = trim(strip_tags($column));
+            }
+        }
+        reset($content['result']);
+        // end of temporary fix
+
         // create temporary file
         $path = TMP . uniqid($this->request->param('action') . '_') . '.csv';
         $file = new File($path, true);
