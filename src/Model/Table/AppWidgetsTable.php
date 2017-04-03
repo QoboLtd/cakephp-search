@@ -1,6 +1,7 @@
 <?php
 namespace Search\Model\Table;
 
+use Cake\Database\Schema\Table as Schema;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -84,5 +85,12 @@ class AppWidgetsTable extends Table
         $rules->add($rules->isUnique(['name']));
 
         return $rules;
+    }
+
+    protected function _initializeSchema(Schema $schema)
+    {
+        $schema->columnType('content', 'json');
+
+        return $schema;
     }
 }
