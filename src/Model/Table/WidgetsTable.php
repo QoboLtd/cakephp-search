@@ -175,26 +175,20 @@ class WidgetsTable extends Table
 
     protected function _getAppWidgets()
     {
-        $result = [];
-        $paths = App::path('Template');
-        $plugin = App::shortName(get_class($this), 'Model/Table', 'Table');
-        $plugin = str_replace('.', DIRECTORY_SEPARATOR, $plugin);
-        foreach ($paths as $path) {
-            $path .= 'Plugin' . DIRECTORY_SEPARATOR . $plugin . DIRECTORY_SEPARATOR;
-            $dir = new Folder($path);
-            $files = $dir->find('.*\.ctp');
-            if (empty($files)) {
-                continue;
-            }
+        $table = TableRegistry::get('Search.AppWidgets');
 
-            foreach ($files as $file) {
-                $result[] = [
-                    'id' => Text::uuid(),
-                    'model' => 'App',
-                    'name' => Inflector::humanize(str_replace('.ctp', '', $file)),
-                    'path' => $path . $file
-                ];
-            }
+        $query = $table->find('all');
+
+        $entities = $query->toArray();
+
+        $result = [];
+        foreach ($entities as $entity) {
+            $result[] = [
+                'id' => $entity->id,
+                'model' => $entity->content['model'],
+                'name' => $entity->name,
+                'path' => $entity->content['path']
+            ];
         }
 
         return $result;
