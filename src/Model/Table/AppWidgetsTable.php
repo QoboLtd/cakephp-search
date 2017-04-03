@@ -1,10 +1,13 @@
 <?php
 namespace Search\Model\Table;
 
+use Cake\Core\App;
 use Cake\Database\Schema\Table as Schema;
+use Cake\Filesystem\Folder;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\Utility\Inflector;
 use Cake\Validation\Validator;
 
 /**
@@ -39,6 +42,8 @@ class AppWidgetsTable extends Table
 
         $this->addBehavior('Timestamp');
         $this->addBehavior('Muffin/Trash.Trash');
+
+        $this->_saveAppWidgets();
     }
 
     /**
@@ -92,5 +97,67 @@ class AppWidgetsTable extends Table
         $schema->columnType('content', 'json');
 
         return $schema;
+    }
+
+    protected function _saveAppWidgets()
+    {
+        $widgets = $this->_getAppWidgets();
+
+        $found = [];
+        foreach ($widgets as $widget) {
+            $found[] = $widget['name'];
+
+            // skip adding existing app widgets
+            if ($this->exists(['AppWidgets.name' => $widget['name']])) {
+                continue;
+            }
+
+            $entity = $this->newEntity();
+            $entity = $this->patchEntity($entity, $widget);
+            $this->save($entity);
+        }
+
+        // soft delete non-existing app widgets
+        $this->trashAll(['AppWidgets.name NOT IN' => $found]);
+    }
+
+    /**
+     * Get widgets defined in the Application level (src/Template/Plugin/Search/AppWidgets).
+     *
+     * @return array
+     */
+    protected function _getAppWidgets()
+    {
+        $result = [];
+
+        $paths = App::path('Template');
+        $tree = ['Plugin', 'Search', 'Widgets'];
+        foreach ($paths as $path) {
+            $path .= 'Element' . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $tree) . DIRECTORY_SEPARATOR;
+
+            $dir = new Folder($path);
+            $files = $dir->find('.*\.ctp');
+            if (empty($files)) {
+                continue;
+            }
+
+            foreach ($files as $file) {
+                $element = implode('/', $tree) . '/' . str_replace('.ctp', '', $file);
+
+                $name = str_replace('.ctp', '', $file);
+                $name = Inflector::humanize($name);
+                $result[] = [
+                    'name' => $name,
+                    'type' => 'app_widget',
+                    'content' => [
+                        'model' => $this->alias(),
+                        'path' => $path . $file,
+                        'element' => $element
+                    ]
+                ];
+            }
+        }
+
+        return $result;
     }
 }
