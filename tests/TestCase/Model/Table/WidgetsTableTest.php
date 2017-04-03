@@ -68,8 +68,8 @@ class WidgetsTableTest extends TestCase
      */
     public function testGetWidgets()
     {
-        // $res = $this->Widgets->getWidgets();
-        // $this->assertNotEmpty($res);
-        // $this->assertInternalType('array', $res);
+        $res = $this->Widgets->getWidgets();
+        $this->assertNotEmpty($res);
+        $this->assertInternalType('array', $res);
     }
 }
