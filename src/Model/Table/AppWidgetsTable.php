@@ -37,6 +37,7 @@ class AppWidgetsTable extends Table
         $this->setPrimaryKey('id');
 
         $this->addBehavior('Timestamp');
+        $this->addBehavior('Muffin/Trash.Trash');
     }
 
     /**
