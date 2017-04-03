@@ -3,7 +3,23 @@ use Cake\Utility\Inflector;
 
 list($plugin, $model) = pluginSplit($widget['data']['model']);
 
-$divColor = in_array($widget['type'], ['saved_search']) ? 'bg-aqua' : 'bg-green';
+switch ($widget['type']) {
+    case 'report':
+        $divColor = 'bg-green';
+        break;
+
+    case 'app':
+        $divColor = 'bg-blue';
+        break;
+
+    case 'saved_search':
+        $divColor = 'bg-aqua';
+        break;
+
+    default:
+        $divColor = 'bg-red';
+        break;
+}
 ?>
 <li class="droppable col-lg-3 col-xs-6" data-id="<?= $widget['data']['id'] ?>" data-type="<?= $widget['type'] ?>">
     <div class="small-box <?= $divColor?>">
