@@ -33,7 +33,7 @@ class AppWidgetsTable extends Table
         parent::initialize($config);
 
         $this->setTable('app_widgets');
-        $this->setDisplayField('id');
+        $this->setDisplayField('name');
         $this->setPrimaryKey('id');
 
         $this->addBehavior('Timestamp');
