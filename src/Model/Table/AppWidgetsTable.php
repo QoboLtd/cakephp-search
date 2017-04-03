@@ -64,6 +64,10 @@ class AppWidgetsTable extends Table
             ->notEmpty('name')
             ->add('name', 'unique', ['rule' => 'validateUnique', 'provider' => 'table']);
 
+        $validator
+            ->dateTime('trashed')
+            ->allowEmpty('trashed');
+
         return $validator;
     }
 
