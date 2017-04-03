@@ -25,6 +25,7 @@ class AppWidgetsFixture extends TestFixture
         'name' => ['type' => 'string', 'length' => 255, 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         '_constraints' => [
             'primary' => ['type' => 'primary', 'columns' => ['id'], 'length' => []],
+            'UNIQUE_NAME' => ['type' => 'unique', 'columns' => ['name'], 'length' => []],
         ],
         '_options' => [
             'engine' => 'InnoDB',
@@ -40,11 +41,11 @@ class AppWidgetsFixture extends TestFixture
      */
     public $records = [
         [
-            'id' => 'e435efcc-c1a5-483d-98c3-f35dd6558997',
+            'id' => 'cf710af3-de23-4b54-b24d-e6f6ce38ca9d',
             'type' => 'Lorem ipsum dolor sit amet',
             'content' => 'Lorem ipsum dolor sit amet, aliquet feugiat. Convallis morbi fringilla gravida, phasellus feugiat dapibus velit nunc, pulvinar eget sollicitudin venenatis cum nullam, vivamus ut a sed, mollitia lectus. Nulla vestibulum massa neque ut et, id hendrerit sit, feugiat in taciti enim proin nibh, tempor dignissim, rhoncus duis vestibulum nunc mattis convallis.',
-            'created' => '2017-04-03 11:16:38',
-            'modified' => '2017-04-03 11:16:38',
+            'created' => '2017-04-03 11:46:03',
+            'modified' => '2017-04-03 11:46:03',
             'name' => 'Lorem ipsum dolor sit amet'
         ],
     ];
