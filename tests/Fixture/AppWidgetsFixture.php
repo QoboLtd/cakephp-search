@@ -22,6 +22,7 @@ class AppWidgetsFixture extends TestFixture
         'content' => ['type' => 'text', 'length' => 4294967295, 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null],
         'created' => ['type' => 'datetime', 'length' => null, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null],
         'modified' => ['type' => 'datetime', 'length' => null, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null],
+        'name' => ['type' => 'string', 'length' => 255, 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         '_constraints' => [
             'primary' => ['type' => 'primary', 'columns' => ['id'], 'length' => []],
         ],
@@ -39,11 +40,12 @@ class AppWidgetsFixture extends TestFixture
      */
     public $records = [
         [
-            'id' => '22f6b206-687d-4b7c-9a12-c44584e4fdab',
+            'id' => 'e435efcc-c1a5-483d-98c3-f35dd6558997',
             'type' => 'Lorem ipsum dolor sit amet',
             'content' => 'Lorem ipsum dolor sit amet, aliquet feugiat. Convallis morbi fringilla gravida, phasellus feugiat dapibus velit nunc, pulvinar eget sollicitudin venenatis cum nullam, vivamus ut a sed, mollitia lectus. Nulla vestibulum massa neque ut et, id hendrerit sit, feugiat in taciti enim proin nibh, tempor dignissim, rhoncus duis vestibulum nunc mattis convallis.',
-            'created' => '2017-04-03 11:11:56',
-            'modified' => '2017-04-03 11:11:56'
+            'created' => '2017-04-03 11:16:38',
+            'modified' => '2017-04-03 11:16:38',
+            'name' => 'Lorem ipsum dolor sit amet'
         ],
     ];
 }

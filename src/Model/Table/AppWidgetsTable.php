@@ -59,6 +59,10 @@ class AppWidgetsTable extends Table
             ->requirePresence('content', 'create')
             ->notEmpty('content');
 
+        $validator
+            ->requirePresence('name', 'create')
+            ->notEmpty('name');
+
         return $validator;
     }
 }
