@@ -51,9 +51,16 @@ $this->eventManager()->dispatch($event);
                             $scripts[] = $dataOptions['scripts'];
                         }
 
-                        echo $this->element('Search.Widgets/' . $widgetHandler->getRenderElement(), ['widget' => $widgetHandler]);
+                        echo $this->element(
+                            ('app' !== $dw->widget_type ? 'Search.Widgets/' : '') . $widgetHandler->getRenderElement(),
+                            ['widget' => $widgetHandler],
+                            ['plugin' => 'app' === $dw->widget_type ? false : true]
+                        );
                     } catch (\Exception $e) {
-                        echo $this->element('Search.missing_element', ['exception' => $e, 'messages' => $widgetHandler->getErrors()]);
+                        echo $this->element('Search.missing_element', [
+                            'exception' => $e,
+                            'messages' => $widgetHandler->getErrors()
+                        ]);
                     }
                 }
                 ?>
