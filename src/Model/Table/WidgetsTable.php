@@ -173,6 +173,11 @@ class WidgetsTable extends Table
         return $result;
     }
 
+    /**
+     * Returns list of widgets defined in the application scope.
+     *
+     * @return array
+     */
     protected function _getAppWidgets()
     {
         $table = TableRegistry::get('Search.AppWidgets');

@@ -2,7 +2,7 @@
 namespace Search\Model\Table;
 
 use Cake\Core\App;
-use Cake\Database\Schema\Table as Schema;
+use Cake\Database\Schema\TableSchema;
 use Cake\Filesystem\Folder;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
@@ -92,13 +92,24 @@ class AppWidgetsTable extends Table
         return $rules;
     }
 
-    protected function _initializeSchema(Schema $schema)
+    /**
+     * Map content column to json custom type.
+     *
+     * @param Cake\Database\Schema\TableSchema $schema Table schema object
+     * @return Cake\Database\Schema\TableSchema
+     */
+    protected function _initializeSchema(TableSchema $schema)
     {
         $schema->columnType('content', 'json');
 
         return $schema;
     }
 
+    /**
+     * Store application scope widgets into the database.
+     *
+     * @return void
+     */
     protected function _saveAppWidgets()
     {
         $widgets = $this->_getAppWidgets();
