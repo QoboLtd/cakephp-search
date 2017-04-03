@@ -1,12 +1,16 @@
 <?php
 namespace Search\Model\Table;
 
+use Cake\Core\App;
 use Cake\Core\Configure;
 use Cake\Event\Event;
+use Cake\Filesystem\Folder;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Inflector;
+use Cake\Utility\Text;
 use Cake\Validation\Validator;
 
 /**
@@ -110,9 +114,11 @@ class WidgetsTable extends Table
      */
     public function getWidgets()
     {
-        $result = [];
+        $result = $widgets = [];
 
-        $dashboardsTable = TableRegistry::get('Search.Dashboards');
+        $widgets[] = ['type' => 'app', 'data' => $this->_getAppWidgets()];
+
+        // $dashboardsTable = TableRegistry::get('Search.Dashboards');
         $savedSearchesTable = TableRegistry::get('Search.SavedSearches');
 
         $allSavedSearches = $savedSearchesTable->find('all')
@@ -161,6 +167,33 @@ class WidgetsTable extends Table
                         ]);
                     }
                 }
+            }
+        }
+
+        return $result;
+    }
+
+    protected function _getAppWidgets()
+    {
+        $result = [];
+        $paths = App::path('Template');
+        $plugin = App::shortName(get_class($this), 'Model/Table', 'Table');
+        $plugin = str_replace('.', DIRECTORY_SEPARATOR, $plugin);
+        foreach ($paths as $path) {
+            $path .= 'Plugin' . DIRECTORY_SEPARATOR . $plugin . DIRECTORY_SEPARATOR;
+            $dir = new Folder($path);
+            $files = $dir->find('.*\.ctp');
+            if (empty($files)) {
+                continue;
+            }
+
+            foreach ($files as $file) {
+                $result[] = [
+                    'id' => Text::uuid(),
+                    'model' => 'App',
+                    'name' => Inflector::humanize(str_replace('.ctp', '', $file)),
+                    'path' => $path . $file
+                ];
             }
         }
 

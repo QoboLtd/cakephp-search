@@ -1,0 +1,64 @@
+<?php
+namespace Search\Model\Table;
+
+use Cake\ORM\Query;
+use Cake\ORM\RulesChecker;
+use Cake\ORM\Table;
+use Cake\Validation\Validator;
+
+/**
+ * AppWidgets Model
+ *
+ * @method \Search\Model\Entity\AppWidget get($primaryKey, $options = [])
+ * @method \Search\Model\Entity\AppWidget newEntity($data = null, array $options = [])
+ * @method \Search\Model\Entity\AppWidget[] newEntities(array $data, array $options = [])
+ * @method \Search\Model\Entity\AppWidget|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \Search\Model\Entity\AppWidget patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
+ * @method \Search\Model\Entity\AppWidget[] patchEntities($entities, array $data, array $options = [])
+ * @method \Search\Model\Entity\AppWidget findOrCreate($search, callable $callback = null, $options = [])
+ *
+ * @mixin \Cake\ORM\Behavior\TimestampBehavior
+ */
+class AppWidgetsTable extends Table
+{
+
+    /**
+     * Initialize method
+     *
+     * @param array $config The configuration for the Table.
+     * @return void
+     */
+    public function initialize(array $config)
+    {
+        parent::initialize($config);
+
+        $this->setTable('app_widgets');
+        $this->setDisplayField('id');
+        $this->setPrimaryKey('id');
+
+        $this->addBehavior('Timestamp');
+    }
+
+    /**
+     * Default validation rules.
+     *
+     * @param \Cake\Validation\Validator $validator Validator instance.
+     * @return \Cake\Validation\Validator
+     */
+    public function validationDefault(Validator $validator)
+    {
+        $validator
+            ->uuid('id')
+            ->allowEmpty('id', 'create');
+
+        $validator
+            ->requirePresence('type', 'create')
+            ->notEmpty('type');
+
+        $validator
+            ->requirePresence('content', 'create')
+            ->notEmpty('content');
+
+        return $validator;
+    }
+}
