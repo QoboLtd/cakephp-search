@@ -61,7 +61,7 @@ class ReportsController extends AppController
             }
             $this->Flash->error(__('The report could not be saved. Please, try again.'));
         }
-        $users = $this->Reports->Users->find('list', ['limit' => 200]);
+        $users = $this->Reports->Users->find('list', ['limit' => 200, 'keyField' => 'id', 'valueField' => 'username']);
         $this->set(compact('report', 'users'));
         $this->set('_serialize', ['report']);
     }
