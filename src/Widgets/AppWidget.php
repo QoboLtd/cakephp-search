@@ -5,38 +5,42 @@ use Cake\ORM\TableRegistry;
 
 class AppWidget extends BaseWidget
 {
-    const TABLE_PREFIX = 'table-datatable-';
-
-    public $options = [];
-
+    /**
+     * Widget type.
+     *
+     * @var string
+     */
     public $type = 'app';
 
+    /**
+     * Widget options.
+     *
+     * @var array
+     */
+    public $options = [];
+
+    /**
+     * Widget loading error messages.
+     *
+     * @var array
+     */
     public $errors = [];
 
     /**
-     * construct method
+     * Constructor method.
      *
      * @param array $options containing widget entity.
-     * @return void.
+     * @return void
      */
     public function __construct($options = [])
     {
         $this->options = $options;
-
-        $table = TableRegistry::get('Search.AppWidgets');
-        $entity = $table->findById($options['entity']->widget_id)->first();
-
-        if (!$entity) {
-            return;
-        }
-
-        $this->renderElement = $entity->content['element'];
     }
 
     /**
-     * getOptions method.
+     * Widget options getter.
      *
-     * @return array $options of the widget.
+     * @return array
      */
     public function getOptions()
     {
@@ -44,18 +48,33 @@ class AppWidget extends BaseWidget
     }
 
     /**
-     * Retrieve SavedSearch results for the widget
-     *
-     * @param array $options containing entity and view params.
-     * @return array $results from $this->_data.
+     * {@inheritDoc}
      */
     public function getResults(array $options = [])
     {
-        $this->options = array_merge($this->options, $options);
+        $table = TableRegistry::get('Search.AppWidgets');
+        $entity = $table->findById($options['entity']->widget_id)->first();
+
+        if ($entity) {
+            $this->renderElement = $entity->content['element'];
+
+            return [];
+        }
+
+        // get trashed record to display appropriate error message
+        $entity = $table->find('withTrashed')
+            ->where([$table->aliasField($table->getPrimaryKey()) => $options['entity']->widget_id])
+            ->first();
+        $this->renderElement = $entity->content['element'];
+        $this->errors[] = 'Widget "' . $entity->name . '" has been deleted.';
+
+        return [];
     }
 
     /**
-     * @return array $errors in case of validation
+     * Widget loading errors.
+     *
+     * @return array $errors
      */
     public function getErrors()
     {
