@@ -72,5 +72,29 @@ class WidgetsFixture extends TestFixture
             'modified' => '2016-10-19 12:08:59',
             'trashed' => null
         ],
+        [
+            'id' => '00000000-0000-0000-0000-000000000003',
+            'dashboard_id' => '00000000-0000-0000-0000-000000000100',
+            'widget_id' => '00000000-0000-0000-0000-000000000001',
+            'widget_type' => 'app',
+            'widget_options' => 'Lorem Ipsum',
+            'column' => 0,
+            'row' => 2,
+            'created' => '2016-10-19 12:08:59',
+            'modified' => '2016-10-19 12:08:59',
+            'trashed' => null
+        ],
+        [
+            'id' => '00000000-0000-0000-0000-000000000004',
+            'dashboard_id' => '00000000-0000-0000-0000-000000000100',
+            'widget_id' => '00000000-0000-0000-0000-000000000002',
+            'widget_type' => 'app',
+            'widget_options' => 'Lorem Ipsum',
+            'column' => 1,
+            'row' => 2,
+            'created' => '2016-10-19 12:08:59',
+            'modified' => '2016-10-19 12:08:59',
+            'trashed' => null
+        ],
     ];
 }

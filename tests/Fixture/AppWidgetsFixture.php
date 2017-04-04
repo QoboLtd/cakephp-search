@@ -42,12 +42,21 @@ class AppWidgetsFixture extends TestFixture
      */
     public $records = [
         [
-            'id' => 'aeb7f492-dbfd-4b5e-9458-1b85f0c36350',
-            'type' => 'Lorem ipsum dolor sit amet',
-            'content' => 'Lorem ipsum dolor sit amet, aliquet feugiat. Convallis morbi fringilla gravida, phasellus feugiat dapibus velit nunc, pulvinar eget sollicitudin venenatis cum nullam, vivamus ut a sed, mollitia lectus. Nulla vestibulum massa neque ut et, id hendrerit sit, feugiat in taciti enim proin nibh, tempor dignissim, rhoncus duis vestibulum nunc mattis convallis.',
+            'id' => '00000000-0000-0000-0000-000000000001',
+            'type' => 'app_widget',
+            'content' => '{"model":"AppWidgets","path":"src\/Template\/Element\/Plugin\/Search\/Widgets\/hello_world.ctp","element":"Plugin\/Search\/Widgets\/hello_world"}',
             'created' => '2017-04-03 11:49:00',
             'modified' => '2017-04-03 11:49:00',
-            'name' => 'Lorem ipsum dolor sit amet',
+            'name' => 'Hello World',
+            'trashed' => null
+        ],
+        [
+            'id' => '00000000-0000-0000-0000-000000000002',
+            'type' => 'app_widget',
+            'content' => '{"model":"AppWidgets","path":"src\/Template\/Element\/Plugin\/Search\/Widgets\/foobar.ctp","element":"Plugin\/Search\/Widgets\/foobar"}',
+            'created' => '2017-04-03 11:49:00',
+            'modified' => '2017-04-03 11:49:00',
+            'name' => 'Foobar',
             'trashed' => '2017-04-03 11:49:00'
         ],
     ];
