@@ -1,53 +1,40 @@
-<?php
-/**
-  * @var \App\View\AppView $this
-  */
-?>
-<nav class="large-3 medium-4 columns" id="actions-sidebar">
-    <ul class="side-nav">
-        <li class="heading"><?= __('Actions') ?></li>
-        <li><?= $this->Html->link(__('Edit Report'), ['action' => 'edit', $report->id]) ?> </li>
-        <li><?= $this->Form->postLink(__('Delete Report'), ['action' => 'delete', $report->id], ['confirm' => __('Are you sure you want to delete # {0}?', $report->id)]) ?> </li>
-        <li><?= $this->Html->link(__('List Reports'), ['action' => 'index']) ?> </li>
-        <li><?= $this->Html->link(__('New Report'), ['action' => 'add']) ?> </li>
-        <li><?= $this->Html->link(__('List Users'), ['controller' => 'Users', 'action' => 'index']) ?> </li>
-        <li><?= $this->Html->link(__('New User'), ['controller' => 'Users', 'action' => 'add']) ?> </li>
-    </ul>
-</nav>
-<div class="reports view large-9 medium-8 columns content">
-    <h3><?= h($report->name) ?></h3>
-    <table class="vertical-table">
-        <tr>
-            <th scope="row"><?= __('Id') ?></th>
-            <td><?= h($report->id) ?></td>
-        </tr>
-        <tr>
-            <th scope="row"><?= __('Name') ?></th>
-            <td><?= h($report->name) ?></td>
-        </tr>
-        <tr>
-            <th scope="row"><?= __('Type') ?></th>
-            <td><?= h($report->type) ?></td>
-        </tr>
-        <tr>
-            <th scope="row"><?= __('User') ?></th>
-            <td><?= $report->has('user') ? $this->Html->link($report->user->id, ['controller' => 'Users', 'action' => 'view', $report->user->id]) : '' ?></td>
-        </tr>
-        <tr>
-            <th scope="row"><?= __('Model') ?></th>
-            <td><?= h($report->model) ?></td>
-        </tr>
-        <tr>
-            <th scope="row"><?= __('Created') ?></th>
-            <td><?= h($report->created) ?></td>
-        </tr>
-        <tr>
-            <th scope="row"><?= __('Modified') ?></th>
-            <td><?= h($report->modified) ?></td>
-        </tr>
-    </table>
+<section class="content-header">
+    <h1><?= $this->Html->link(
+        __('Reports'),
+        ['plugin' => 'Search', 'controller' => 'Reports', 'action' => 'index']
+    ) . ' &raquo; ' . h($report->name) ?></h1>
+</section>
+<section class="content">
     <div class="row">
-        <h4><?= __('Content') ?></h4>
-        <?= $this->Text->autoParagraph(h($report->content)); ?>
+        <div class="col-md-6">
+            <div class="box box-solid">
+                <div class="box-header with-border">
+                    <i class="fa fa-area-chart"></i>
+
+                    <h3 class="box-title">Details</h3>
+                </div>
+                <div class="box-body">
+                    <dl class="dl-horizontal">
+                        <dt><?= __('Name') ?></dt>
+                        <dd><?= h($report->name) ?></dd>
+                        <dt><?= __('Model') ?></dt>
+                        <dd><?= h($report->model) ?></dd>
+                        <dt><?= __('Content') ?></dt>
+                        <dd><?= h($report->content) ?></dd>
+                        <dt><?= __('Columns') ?></dt>
+                        <dd><?= h($report->columns) ?></dd>
+                        <dt><?= __('Type') ?></dt>
+                        <dd><?= h($report->type) ?></dd>
+                        <dt><?= __('X Axis') ?></dt>
+                        <dd><?= h($report->x_axis) ?></dd>
+                         <dt><?= __('Y Axis') ?></dt>
+                        <dd><?= h($report->y_axis) ?></dd>
+                        <dt><?= __('Status') ?></dt>
+                        <dd><?= h($report->is_active ? 'Active' : 'Disabled') ?></dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
+</section>
+
