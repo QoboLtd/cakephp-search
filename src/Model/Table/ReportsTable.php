@@ -4,6 +4,7 @@ namespace Search\Model\Table;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\Utility\Inflector;
 use Cake\Validation\Validator;
 
 /**
@@ -89,5 +90,25 @@ class ReportsTable extends Table
         $rules->add($rules->existsIn(['user_id'], 'Users'));
 
         return $rules;
+    }
+
+    public function getActiveReports()
+    {
+        $query = $this->find('all', ['conditions' => ['is_active' => true]]);
+        $result = [];
+        foreach ($query as $row) {
+            $result[$row->model][Inflector::tableize($row->name)] = [
+                'id' => $row->id,
+                'model' => $row->model,
+                'name' => $row->name,
+                'x_axis' => $row->x_axis,
+                'y_axis' => $row->y_axis,
+                'columns' => $row->columns,
+                'widget_type' => 'report',
+                'renderAs' => $row->type,
+                'query' => $row->content,
+            ];
+        }
+        return $result;
     }
 }

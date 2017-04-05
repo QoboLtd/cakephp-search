@@ -3,6 +3,7 @@ namespace Search\Widgets;
 
 use Cake\Datasource\ConnectionManager;
 use Cake\Event\Event;
+use Cake\ORM\TableRegistry;
 use Cake\Utility\Inflector;
 use Search\Widgets\BaseWidget;
 
@@ -66,6 +67,11 @@ class ReportWidget extends BaseWidget
     {
         return $this->_instance->setConfig($config);
     }
+    
+    public function getReportTable()
+    {
+        return TableRegistry::get('Search.Reports');
+    }
 
     /**
      * Method retrieves all reports from ini files
@@ -79,16 +85,15 @@ class ReportWidget extends BaseWidget
     public function getReports($options = [])
     {
         $result = [];
-
         if (empty($options['rootView'])) {
             return $result;
         }
+        
+        //$event = new Event('Search.Report.getReports', $options['rootView']->request);
+        //$options['rootView']->EventManager()->dispatch($event);
 
-        $event = new Event('Search.Report.getReports', $options['rootView']->request);
-        $options['rootView']->EventManager()->dispatch($event);
-
-        $result = $event->result;
-
+        //$result = $event->result;
+        $result = $this->getReportTable()->getActiveReports();
         return $result;
     }
 
@@ -101,11 +106,9 @@ class ReportWidget extends BaseWidget
     public function getReport($options = [])
     {
         $config = [];
-
         if (empty($options['entity'])) {
             return $config;
         }
-
         if (empty($options['reports'])) {
             $options['reports'] = $this->getReports($options);
         }

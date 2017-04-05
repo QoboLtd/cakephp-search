@@ -141,12 +141,10 @@ class WidgetsTable extends Table
         }
 
         $widgets[] = ['type' => 'saved_search', 'data' => $savedSearches];
-        $event = new Event('Search.Report.getReports', $this);
-        $this->eventManager()->dispatch($event);
-
-        if (!empty($event->result)) {
+        $reportsList = TableRegistry::get('Search.Reports')->getActiveReports();
+        if (!empty($reportsList)) {
             $data = [];
-            foreach ($event->result as $model => $reports) {
+            foreach ($reportsList as $model => $reports) {
                 foreach ($reports as $reportSlug => $reportInfo) {
                     $data[$reportInfo['id']] = $reportInfo;
                 }
@@ -169,7 +167,6 @@ class WidgetsTable extends Table
                 }
             }
         }
-
         return $result;
     }
 
