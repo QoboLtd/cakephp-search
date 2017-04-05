@@ -9,6 +9,7 @@ use Cake\TestSuite\Fixture\TestFixture;
  */
 class UsersFixture extends TestFixture
 {
+    public $table = 'search_users';
 
     /**
      * Fields
