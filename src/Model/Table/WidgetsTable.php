@@ -1,12 +1,16 @@
 <?php
 namespace Search\Model\Table;
 
+use Cake\Core\App;
 use Cake\Core\Configure;
 use Cake\Event\Event;
+use Cake\Filesystem\Folder;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Inflector;
+use Cake\Utility\Text;
 use Cake\Validation\Validator;
 
 /**
@@ -110,9 +114,11 @@ class WidgetsTable extends Table
      */
     public function getWidgets()
     {
-        $result = [];
+        $result = $widgets = [];
 
-        $dashboardsTable = TableRegistry::get('Search.Dashboards');
+        $widgets[] = ['type' => 'app', 'data' => $this->_getAppWidgets()];
+
+        // $dashboardsTable = TableRegistry::get('Search.Dashboards');
         $savedSearchesTable = TableRegistry::get('Search.SavedSearches');
 
         $allSavedSearches = $savedSearchesTable->find('all')
@@ -162,6 +168,32 @@ class WidgetsTable extends Table
                     }
                 }
             }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Returns list of widgets defined in the application scope.
+     *
+     * @return array
+     */
+    protected function _getAppWidgets()
+    {
+        $table = TableRegistry::get('Search.AppWidgets');
+
+        $query = $table->find('all');
+
+        $entities = $query->toArray();
+
+        $result = [];
+        foreach ($entities as $entity) {
+            $result[] = [
+                'id' => $entity->id,
+                'model' => $entity->content['model'],
+                'name' => $entity->name,
+                'path' => $entity->content['path']
+            ];
         }
 
         return $result;
