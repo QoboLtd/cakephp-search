@@ -211,7 +211,8 @@ class SavedSearchesTableTest extends TestCase
             ],
             'sort_by_field' => 'name',
             'sort_by_order' => 'asc',
-            'limit' => '20'
+            'limit' => '20',
+            'aggregator' => 'AND'
         ];
         $result = $this->SavedSearches->validateData('Dashboards', $data);
         $this->assertEquals($data, $result);
