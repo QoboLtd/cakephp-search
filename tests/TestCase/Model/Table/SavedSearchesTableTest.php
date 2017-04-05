@@ -337,9 +337,8 @@ class SavedSearchesTableTest extends TestCase
         $this->assertEmpty($result);
     }
 
-    public function testGetSearchCriteria()
+    public function testGetBasicSearchCriteria()
     {
-        // $this->markTestSkipped();
         // anonymous event listener that passes some dummy searchable fields
         $this->SavedSearches->eventManager()->on('Search.Model.Search.searchabeFields', function ($event, $table) {
             return [
@@ -374,13 +373,17 @@ class SavedSearchesTableTest extends TestCase
             ];
         });
 
-        $result = $this->SavedSearches->getSearchCriteria(['query' => ['foo']], 'Dashboards');
+        $result = $this->SavedSearches->getBasicSearchCriteria(
+            ['query' => ['foo']],
+            'Dashboards',
+            ['id' => '00000000-0000-0000-0000-000000000001']
+        );
         $this->assertNotEmpty($result);
         $this->assertInternalType('array', $result);
         $this->assertArrayHasKey('name', $result);
     }
 
-    public function testGetSearchCriteriaVirtualField()
+    public function testGetBasicSearchCriteriaVirtualField()
     {
         // anonymous event listener that passes some dummy searchable fields
         $this->SavedSearches->eventManager()->on('Search.Model.Search.searchabeFields', function ($event, $table) {
@@ -401,7 +404,11 @@ class SavedSearchesTableTest extends TestCase
         // set display field to a virtual one
         TableRegistry::get('Dashboards')->displayField('just_a_virtual_field');
 
-        $result = $this->SavedSearches->getSearchCriteria(['query' => ['foo']], 'Dashboards');
+        $result = $this->SavedSearches->getBasicSearchCriteria(
+            ['query' => ['foo']],
+            'Dashboards',
+            ['id' => '00000000-0000-0000-0000-000000000001']
+        );
         $this->assertNotEmpty($result);
         $this->assertInternalType('array', $result);
         $this->assertArrayHasKey('foo', $result);
