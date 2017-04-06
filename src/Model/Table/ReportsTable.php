@@ -1,6 +1,8 @@
 <?php
 namespace Search\Model\Table;
 
+use Cake\Datasource\EntityInterface;
+use Cake\Event\Event;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -94,6 +96,23 @@ class ReportsTable extends Table
     }
 
     /**
+     * beforeSave callback
+     *
+     * @param \Cake\Event\Event $event                      CakePHP event
+     * @param \Cake\Datasource\EntityInterface $entity      Entity data
+     * @param array $options                                array with options
+     * @return bool                                         true on success
+     */
+    public function beforeSave(Event $event, EntityInterface $entity, $options)
+    {
+        if (!$this->_validateContent($entity->content)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      *  getActiveReports() method
      *
      *  returns a list of active reports in the system
@@ -122,5 +141,20 @@ class ReportsTable extends Table
         }
 
         return $result;
+    }
+
+    /**
+     *  _validateContent() method
+     *
+     * @param string $content   query to check
+     * @return bool             true in case of correct select query and false in case of any non-select operator presented
+     */
+    private function _validateContent($content)
+    {
+        if (preg_match('/(insert|update|delete|truncate|drop|create)\s/', $content)) {
+            return false;
+        }
+
+        return true;
     }
 }

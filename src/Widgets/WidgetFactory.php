@@ -49,7 +49,7 @@ class WidgetFactory
         $dh = opendir(__DIR__ . '/Reports');
         if ($dh) {
             while (($file = readdir($dh)) !== false) {
-                if (preg_match('/(.*)ReportWidget/', $file, $match)) {
+                if (preg_match('/(\w*)ReportWidget/', $file, $match)) {
                     $chartType = lcfirst($match[1]);
                     $result[$chartType] = $chartType;
                 }
