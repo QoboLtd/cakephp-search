@@ -239,12 +239,11 @@ class ReportWidget extends BaseWidget
         $resultSet = ConnectionManager::get('default')
             ->execute($config['info']['query'])
             ->fetchAll('assoc');
-
         if (empty($resultSet)) {
             return $result;
         }
 
-        $columns = explode(',', $config['info']['columns']);
+        $columns = array_map('trim', explode(',', $config['info']['columns']));
 
         foreach ($resultSet as $item) {
             $row = [];
