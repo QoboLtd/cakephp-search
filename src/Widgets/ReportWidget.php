@@ -305,6 +305,6 @@ class ReportWidget extends BaseWidget
      */
     public function getErrors()
     {
-        return $this->_instance->getErrors();
+        return !empty($this->_instance) ? $this->_instance->getErrors() : [];
     }
 }

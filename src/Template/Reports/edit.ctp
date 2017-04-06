@@ -1,4 +1,6 @@
 <?php
+use Search\Widgets\WidgetFactory;
+
 echo $this->Html->css(
     [
         'AdminLTE./plugins/select2/select2.min',
@@ -18,6 +20,7 @@ echo $this->Html->scriptBlock(
     });',
     ['block' => 'scriptBotton']
 );
+$chartTypes = WidgetFactory::getChartReportTypes();
 ?>
 <section class="content-header">
     <h1><?= __('Edit {0}', ['Report']) ?></h1>
@@ -46,7 +49,7 @@ echo $this->Html->scriptBlock(
                             <?= $this->Form->input('columns'); ?>
                         </div>
                         <div class="col-md-6">
-                            <?= $this->Form->input('type'); ?>
+                            <?= $this->Form->input('type', ['type' => 'select', 'options' => $chartTypes]); ?>
                         </div>
                     </div>
                     <div class="row">
@@ -55,6 +58,19 @@ echo $this->Html->scriptBlock(
                         </div>
                         <div class="col-md-6">
                             <?= $this->Form->input('y_axis'); ?>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <?= $this->Form->input('chart_label'); ?>
+                        </div>
+                        <div class="col-md-6">
+                            <?= $this->Form->input('chart_value'); ?>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <?= $this->Form->input('chart_max'); ?>
                         </div>
                     </div>
                     <div class="row">

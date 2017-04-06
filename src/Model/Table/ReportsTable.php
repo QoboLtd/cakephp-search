@@ -6,6 +6,7 @@ use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Utility\Inflector;
 use Cake\Validation\Validator;
+use Search\Widgets\WidgetFactory;
 
 /**
  * Reports Model
@@ -108,12 +109,15 @@ class ReportsTable extends Table
                 'id' => $row->id,
                 'model' => $row->model,
                 'name' => $row->name,
+                'renderAs' => $row->type,
+                'widget_type' => 'report',
+                'query' => $row->content,
+                'columns' => $row->columns,
+                'label' => $row->chart_label,
+                'value' => $row->chart_value,
+                'max' => $row->chart_max,
                 'x_axis' => $row->x_axis,
                 'y_axis' => $row->y_axis,
-                'columns' => $row->columns,
-                'widget_type' => 'report',
-                'renderAs' => $row->type,
-                'query' => $row->content,
             ];
         }
 
