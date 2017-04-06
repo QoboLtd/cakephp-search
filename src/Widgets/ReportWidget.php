@@ -67,7 +67,14 @@ class ReportWidget extends BaseWidget
     {
         return $this->_instance->setConfig($config);
     }
-    
+
+    /**
+     *  getReportTable() method
+     *
+     *  Returns the instance of the Reports table
+     *
+     * @return Table object     table Reports instance
+     */
     public function getReportTable()
     {
         return TableRegistry::get('Search.Reports');
@@ -88,12 +95,13 @@ class ReportWidget extends BaseWidget
         if (empty($options['rootView'])) {
             return $result;
         }
-        
+
         //$event = new Event('Search.Report.getReports', $options['rootView']->request);
         //$options['rootView']->EventManager()->dispatch($event);
 
         //$result = $event->result;
         $result = $this->getReportTable()->getActiveReports();
+
         return $result;
     }
 

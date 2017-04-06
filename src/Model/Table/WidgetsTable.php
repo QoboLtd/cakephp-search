@@ -167,6 +167,7 @@ class WidgetsTable extends Table
                 }
             }
         }
+
         return $result;
     }
 

@@ -92,6 +92,13 @@ class ReportsTable extends Table
         return $rules;
     }
 
+    /**
+     *  getActiveReports() method
+     *
+     *  returns a list of active reports in the system
+     *
+     * @return array    list of active reports
+     */
     public function getActiveReports()
     {
         $query = $this->find('all', ['conditions' => ['is_active' => true]]);
@@ -109,6 +116,7 @@ class ReportsTable extends Table
                 'query' => $row->content,
             ];
         }
+
         return $result;
     }
 }

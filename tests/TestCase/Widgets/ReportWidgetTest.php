@@ -108,27 +108,6 @@ class ReportWidgetTest extends TestCase
         return $configs;
     }
 
-    /**
-     * @dataProvider getInstancesList
-     */
-    public function testGetReportConfigWithEvent($config, $expectedClass)
-    {
-        $entity = (object)[
-            'widget_id' => '123123',
-        ];
-
-        $instance = $this->widget->getReportInstance($config);
-        $this->assertInstanceOf($expectedClass, $instance);
-
-        $this->widget->_instance = $instance;
-
-        $result = $this->widget->getReport(['rootView' => $this->appView, 'entity' => $entity]);
-
-        $events = $this->appView->EventManager()->getEventList();
-        $events[0]->result = ['foo' => 'bar'];
-        $this->assertEventFired('Search.Report.getReports', $this->appView->EventManager());
-    }
-
     public function testValidatesWithoutRequiredFields()
     {
         $config = ['config' => ['slug' => 'barChartTest', 'info' => ['renderAs' => 'barChart']]];
