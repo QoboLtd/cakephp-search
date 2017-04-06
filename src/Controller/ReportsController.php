@@ -61,8 +61,9 @@ class ReportsController extends AppController
             }
             $this->Flash->error(__('The report could not be saved. Please, try again.'));
         }
-        $users = $this->Reports->Users->find('list', ['limit' => 200, 'keyField' => 'id', 'valueField' => 'username']);
-        $this->set(compact('report', 'users'));
+        //$users = $this->Reports->Users->find('list', ['limit' => 200, 'keyField' => 'id', 'valueField' => 'username']);
+        $user = $this->Auth->user();
+        $this->set(compact('report', 'user'));
         $this->set('_serialize', ['report']);
     }
 
@@ -87,8 +88,9 @@ class ReportsController extends AppController
             }
             $this->Flash->error(__('The report could not be saved. Please, try again.'));
         }
-        $users = $this->Reports->Users->find('list', ['limit' => 200]);
-        $this->set(compact('report', 'users'));
+        //$users = $this->Reports->Users->find('list', ['limit' => 200]);
+        $user = $this->Auth->user();
+        $this->set(compact('report', 'user'));
         $this->set('_serialize', ['report']);
     }
 

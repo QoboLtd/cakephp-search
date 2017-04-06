@@ -21,6 +21,7 @@ echo $this->Html->scriptBlock(
     ['block' => 'scriptBotton']
 );
 $chartTypes = WidgetFactory::getChartReportTypes();
+asort($chartTypes);
 ?>
 <section class="content-header">
     <h1><?= __('Edit {0}', ['Report']) ?></h1>
@@ -30,6 +31,7 @@ $chartTypes = WidgetFactory::getChartReportTypes();
         <div class="col-xs-12 col-md-6">
             <div class="box box-solid">
                 <?= $this->Form->create($report) ?>
+                <?= $this->Form->hidden('user_id', ['value' => $user['id']]); ?>
                 <div class="box-body">
                     <div class="row">
                         <div class="col-md-6">
@@ -69,13 +71,8 @@ $chartTypes = WidgetFactory::getChartReportTypes();
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-12">
-                            <?= $this->Form->input('chart_max'); ?>
-                        </div>
-                    </div>
-                    <div class="row">
                         <div class="col-md-6">
-                            <?= $this->Form->input('user_id'); ?>
+                            <?= $this->Form->input('chart_max'); ?>
                         </div>
                         <div class="col-md-6">
                             <?= $this->Form->input('is_active'); ?>

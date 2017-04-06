@@ -1,4 +1,6 @@
 <?php
+use Search\Widgets\WidgetFactory;
+
 echo $this->Html->css(
     [
         'AdminLTE./plugins/select2/select2.min',
@@ -18,6 +20,8 @@ echo $this->Html->scriptBlock(
     });',
     ['block' => 'scriptBotton']
 );
+$chartTypes = WidgetFactory::getChartReportTypes();
+asort($chartTypes);
 ?>
 <section class="content-header">
     <h1><?= __('Create {0}', ['Report']) ?></h1>
@@ -27,6 +31,7 @@ echo $this->Html->scriptBlock(
         <div class="col-xs-12 col-md-6">
             <div class="box box-solid">
                 <?= $this->Form->create($report); ?>
+                <?= $this->Form->hidden('user_id', ['value' => $user['id']]); ?>
                 <div class="box-body">
                     <div class="row">
                         <div class="col-md-6">
@@ -46,7 +51,7 @@ echo $this->Html->scriptBlock(
                             <?= $this->Form->input('columns'); ?>
                         </div>
                         <div class="col-md-6">
-                            <?= $this->Form->input('type'); ?>
+                            <?= $this->Form->input('type', ['type' => 'select', 'options' => $chartTypes]); ?>
                         </div>
                     </div>
                     <div class="row">
@@ -59,7 +64,15 @@ echo $this->Html->scriptBlock(
                     </div>
                     <div class="row">
                         <div class="col-md-6">
-                            <?= $this->Form->input('user_id'); ?>
+                            <?= $this->Form->input('chart_label'); ?>
+                        </div>
+                        <div class="col-md-6">
+                            <?= $this->Form->input('chart_value'); ?>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <?= $this->Form->input('chart_max'); ?>
                         </div>
                         <div class="col-md-6">
                             <?= $this->Form->input('is_active'); ?>
