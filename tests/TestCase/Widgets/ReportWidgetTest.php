@@ -288,6 +288,7 @@ class ReportWidgetTest extends TestCase
 
     public function testGetResults()
     {
+        $this->expectException(\RuntimeException::class);
         $result = $this->widget->getResults([]);
         $this->assertEquals($result, []);
     }
