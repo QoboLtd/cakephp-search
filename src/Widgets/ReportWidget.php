@@ -120,7 +120,6 @@ class ReportWidget extends BaseWidget
         if (empty($options['reports'])) {
             $options['reports'] = $this->getReports($options);
         }
-
         $widgetId = $options['entity']->widget_id;
 
         if (empty($options['reports'])) {
@@ -166,7 +165,7 @@ class ReportWidget extends BaseWidget
 
         if (!empty($renderAs)) {
             $handlerName = Inflector::camelize($renderAs);
-
+            ;
             $className = __NAMESPACE__ . '\\Reports\\' . $handlerName . self::WIDGET_REPORT_SUFFIX;
             $interface = __NAMESPACE__ . '\\Reports\\' . 'ReportGraphsInterface';
 
@@ -191,7 +190,11 @@ class ReportWidget extends BaseWidget
     {
         $result = [];
 
-        $this->_instance = $this->getReportInstance($options);
+        $widgetInstance = $this->getReportInstance($options);
+        if (!is_object($widgetInstance)) {
+            throw new \RuntimeException('Cannot create a widget instance!');
+        }
+        $this->_instance = $widgetInstance;
         $config = $this->getReport($options);
 
         if (empty($config)) {
@@ -239,6 +242,7 @@ class ReportWidget extends BaseWidget
         $resultSet = ConnectionManager::get('default')
             ->execute($config['info']['query'])
             ->fetchAll('assoc');
+
         if (empty($resultSet)) {
             return $result;
         }

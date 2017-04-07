@@ -36,13 +36,18 @@ $this->eventManager()->dispatch($event);
                     if ($dw->column !== $col) {
                         continue;
                     }
-
                     try {
                         $widgetHandler = WidgetFactory::create($dw->widget_type, ['entity' => $dw]);
 
                         $widgetHandler->getResults(['entity' => $dw, 'user' => $user, 'rootView' => $this]);
 
+                        if (is_null($widgetHandler)) {
+                            echo "Broken widget";
+                            continue;
+                        }
+
                         if ($widgetHandler->getRenderElement() == 'graph') {
+                            error_log(print_r($widgetHandler, true), 3, '/tmp/blah.log');
                             $chartData[] = $widgetHandler->getData();
                         }
 
