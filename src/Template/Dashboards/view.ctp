@@ -47,7 +47,6 @@ $this->eventManager()->dispatch($event);
                         }
 
                         if ($widgetHandler->getRenderElement() == 'graph') {
-                            error_log(print_r($widgetHandler, true), 3, '/tmp/blah.log');
                             $chartData[] = $widgetHandler->getData();
                         }
 
