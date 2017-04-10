@@ -26,7 +26,7 @@ class WidgetFactory
         $className = __NAMESPACE__ . '\\' . $handlerName . self::WIDGET_SUFFIX;
         $interface = __NAMESPACE__ . '\\' . self::WIDGET_INTERFACE;
         if (!class_exists($className)) {
-            throw new \RuntimeException("Class [$type] doesn't exist");
+            throw new \RuntimeException("Class [$type] - [$className] doesn't exist");
         }
 
         if (!in_array($interface, class_implements($className))) {
@@ -45,7 +45,7 @@ class WidgetFactory
      */
     public static function getChartReportTypes()
     {
-        $result = [];
+        $result = ['' => ''];
         $dh = opendir(__DIR__ . '/Reports');
         if ($dh) {
             while (($file = readdir($dh)) !== false) {
