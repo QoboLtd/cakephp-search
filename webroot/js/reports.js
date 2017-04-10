@@ -1,13 +1,10 @@
 $(document).ready(function () {
     $('#type').change(function () {
-        console.log('Get report options ...');
         if ($(this).val()) {
             var paramName = 'type';
             var paramValue = $(this).val();
             var url = window.location.href;
             var hash = location.hash;
-
-            console.log('Chart type is ' + paramValue + '; url=' + url + '; hash=' + hash);
 
             if (url.indexOf(paramName + "=") >= 0) {
                 var prefix = url.substring(0, url.indexOf(paramName));
