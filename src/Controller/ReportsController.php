@@ -61,9 +61,16 @@ class ReportsController extends AppController
             }
             $this->Flash->error(__('The report could not be saved. Please, try again.'));
         }
-        //$users = $this->Reports->Users->find('list', ['limit' => 200, 'keyField' => 'id', 'valueField' => 'username']);
+        $chartFields = [];
+        if (!empty($this->request->query('type'))) {
+            $chartType = $this->request->query('type');
+            $chartFields = $this->Reports->getChartFields($chartType);
+        }
+        $chartTypes = $this->Reports->getChartReportTypes();
+        
         $user = $this->Auth->user();
-        $this->set(compact('report', 'user'));
+        
+        $this->set(compact('report', 'user', 'chartTypes', 'chartFields'));
         $this->set('_serialize', ['report']);
     }
 
@@ -88,9 +95,22 @@ class ReportsController extends AppController
             }
             $this->Flash->error(__('The report could not be saved. Please, try again.'));
         }
-        //$users = $this->Reports->Users->find('list', ['limit' => 200]);
+        
+        $reportOptions = json_decode($report['Reports']['chart_options']);
+
+        if (!empty($this->request->query('type'))) {
+            $chartType = $this->request->query('type');
+            $chartFields = $this->Reports->getChartFields($chartType, true);
+            
+        } else {
+            $chartFields = $reportOptions;
+        }
+        
+        $chartTypes = $this->Reports->getChartReportTypes();
+        
         $user = $this->Auth->user();
-        $this->set(compact('report', 'user'));
+        
+        $this->set(compact('report', 'user', 'chartTypes', 'chartFields'));
         $this->set('_serialize', ['report']);
     }
 
