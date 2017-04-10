@@ -47,7 +47,7 @@ echo $this->Form->hidden('user_id', ['value' => $user['id']]);
                     <?= $this->Form->input('columns'); ?>
                 </div>
                 <div class="col-md-6">
-                    <?= $this->Form->input('model'); ?>
+                    <?= $this->Form->input('model', ['type' => 'select', 'options' => $models]); ?>
                 </div>
             </div>
             <div class="row">
@@ -69,7 +69,7 @@ echo $this->Form->hidden('user_id', ['value' => $user['id']]);
             <div class="row">
             <?php $count = 0; ?>
             <?php foreach ($chartFields as $field) : ?>
-                <?php if (++$count%2) : ?>
+                <?php if (++$count % 2) : ?>
                     </div>
                     <div class="row">
                 <?php endif; ?>

@@ -22,7 +22,6 @@ echo $this->Html->scriptBlock(
 );
 echo $this->Form->create($report);
 echo $this->Form->hidden('user_id', ['value' => $user['id']]);
-
 ?>
 <section class="content">
     <div class="box box-primary">
@@ -69,13 +68,13 @@ echo $this->Form->hidden('user_id', ['value' => $user['id']]);
         <div class="box-body">
             <div class="row">
             <?php $count = 0; ?>
-            <?php foreach ($chartFields as $field) : ?>
-                <?php if (++$count%2) : ?>
+            <?php foreach ($chartFields as $key => $val) : ?>
+                <?php if (++$count % 2) : ?>
                     </div>
                     <div class="row">
                 <?php endif; ?>
                 <div class="col-md-6">
-                    <?= $this->Form->input($field); ?>
+                    <?= $this->Form->input($key, ['value' => $val]); ?>
                 </div>
             <?php endforeach; ?>
             </div>
