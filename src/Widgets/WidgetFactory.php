@@ -45,7 +45,6 @@ class WidgetFactory
      */
     public static function getChartReportTypes()
     {
-        $result = ['' => ''];
         $dh = opendir(__DIR__ . '/Reports');
         if ($dh) {
             while (($file = readdir($dh)) !== false) {
