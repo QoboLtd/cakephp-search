@@ -1,6 +1,4 @@
 <?php
-use Search\Widgets\WidgetFactory;
-
 echo $this->Html->css(
     [
         'AdminLTE./plugins/select2/select2.min',
@@ -20,71 +18,74 @@ echo $this->Html->scriptBlock(
     });',
     ['block' => 'scriptBotton']
 );
-$chartTypes = WidgetFactory::getChartReportTypes();
-asort($chartTypes);
+
+echo $this->Form->create($report);
+echo $this->Form->hidden('user_id', ['value' => $user['id']]);
+
 ?>
-<section class="content-header">
-    <h1><?= __('Create {0}', ['Report']) ?></h1>
-</section>
 <section class="content">
-    <div class="row">
-        <div class="col-xs-12 col-md-6">
-            <div class="box box-solid">
-                <?= $this->Form->create($report); ?>
-                <?= $this->Form->hidden('user_id', ['value' => $user['id']]); ?>
-                <div class="box-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <?= $this->Form->input('name'); ?>
-                        </div>
-                        <div class="col-md-6">
-                            <?= $this->Form->input('model'); ?>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <?= $this->Form->input('content'); ?>    
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <?= $this->Form->input('columns'); ?>
-                        </div>
-                        <div class="col-md-6">
-                            <?= $this->Form->input('type', ['type' => 'select', 'options' => $chartTypes]); ?>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <?= $this->Form->input('x_axis'); ?>
-                        </div>
-                        <div class="col-md-6">
-                            <?= $this->Form->input('y_axis'); ?>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <?= $this->Form->input('chart_label'); ?>
-                        </div>
-                        <div class="col-md-6">
-                            <?= $this->Form->input('chart_value'); ?>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <?= $this->Form->input('chart_max'); ?>
-                        </div>
-                        <div class="col-md-6">
-                            <?= $this->Form->input('is_active'); ?>
-                        </div>
-                    </div>
+    <div class="box box-primary">
+        <div class="box-header with-border">
+            <h3 class="box-title"><?= __('Add new report');?></h3>
+        </div>
+        <div class="box-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <?= $this->Form->input('type', ['type' => 'select', 'options' => $chartTypes, 'value' => $this->request->query('type') ? $this->request->query('type') : '']); ?>
                 </div>
-                <div class="box-footer">
-                    <?= $this->Form->button(__('Submit'), ['class' => 'btn btn-primary']) ?>
+                <div class="col-md-6">
+                    <?= $this->Form->input('name'); ?>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <?= $this->Form->input('content'); ?>    
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <?= $this->Form->input('columns'); ?>
+                </div>
+                <div class="col-md-6">
+                    <?= $this->Form->input('model'); ?>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <?= $this->Form->input('is_active'); ?>
+                </div>
+                <div class="col-md-6">
                     &nbsp;
-                    <?= $this->Form->button(__('Cancel'), ['class' => 'btn remove-client-validation', 'name' => 'btn_operation', 'value' => 'cancel']); ?>
                 </div>
-                <?= $this->Form->end() ?>
+            </div>
         </div>
     </div>
+    <?php if (!empty($chartFields)) : ?>
+    <div class="box box-primary">
+        <div class="box-header with-border">
+            <h3 class="box-title"><?= __('Report options');?></h3>
+        </div>
+        <div class="box-body">
+            <div class="row">
+            <?php $count = 0; ?>
+            <?php foreach ($chartFields as $field) : ?>
+                <?php if (++$count%2) : ?>
+                    </div>
+                    <div class="row">
+                <?php endif; ?>
+                <div class="col-md-6">
+                    <?= $this->Form->input($field); ?>
+                </div>
+            <?php endforeach; ?>
+            </div>
+        </div>
+    </div>    
+    <?php endif; ?>
+    <div class="box-footer">
+        <?= $this->Form->button(__('Submit'), ['class' => 'btn btn-primary']) ?>
+        &nbsp;
+        <?= $this->Form->button(__('Cancel'), ['class' => 'btn remove-client-validation', 'name' => 'btn_operation', 'value' => 'cancel']); ?>
+    </div>
+    <?= $this->Form->end() ?>
 </section>
+<?= $this->Html->script('Search.reports', ['block' => 'scriptBotton']); ?>
