@@ -164,16 +164,29 @@ class ReportWidget extends BaseWidget
         $renderAs = $options['config']['info']['renderAs'];
 
         if (!empty($renderAs)) {
-            $handlerName = Inflector::camelize($renderAs);
-            ;
-            $className = __NAMESPACE__ . '\\Reports\\' . $handlerName . self::WIDGET_REPORT_SUFFIX;
-            $interface = __NAMESPACE__ . '\\Reports\\' . 'ReportGraphsInterface';
-
-            if (class_exists($className) && in_array($interface, class_implements($className))) {
-                $result = new $className($options);
-            }
+            $result = static::createReportWidget($renderAs);
         }
 
+        return $result;
+    }
+    
+    /**
+     *  createReportWidget() method
+     *
+     * @param string $handlerName   name of Chart report class
+     * @return object               instance of the specofoc ReportWidget or null
+     */
+    public static function createReportWidget($renderAs)
+    {
+        $result = null;
+        $handlerName = Inflector::camelize($renderAs);
+
+        $className = __NAMESPACE__ . '\\Reports\\' . $handlerName . self::WIDGET_REPORT_SUFFIX;
+        $interface = __NAMESPACE__ . '\\Reports\\' . 'ReportGraphsInterface';
+        if (class_exists($className) && in_array($interface, class_implements($className))) {
+            $result = new $className($options);
+        }
+        
         return $result;
     }
 
