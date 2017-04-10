@@ -67,10 +67,10 @@ class ReportsController extends AppController
             $chartFields = $this->Reports->getChartFields($chartType);
         }
         $chartTypes = $this->Reports->getChartReportTypes();
-        
+        $models = $this->Reports->getListModels();
         $user = $this->Auth->user();
-        
-        $this->set(compact('report', 'user', 'chartTypes', 'chartFields'));
+
+        $this->set(compact('report', 'user', 'chartTypes', 'chartFields', 'models'));
         $this->set('_serialize', ['report']);
     }
 
@@ -95,21 +95,18 @@ class ReportsController extends AppController
             }
             $this->Flash->error(__('The report could not be saved. Please, try again.'));
         }
-        
-        $reportOptions = json_decode($report['Reports']['chart_options']);
-
+        $reportOptions = json_decode($report->chart_options, true);
         if (!empty($this->request->query('type'))) {
             $chartType = $this->request->query('type');
             $chartFields = $this->Reports->getChartFields($chartType, true);
-            
         } else {
             $chartFields = $reportOptions;
         }
-        
+
         $chartTypes = $this->Reports->getChartReportTypes();
-        
+
         $user = $this->Auth->user();
-        
+
         $this->set(compact('report', 'user', 'chartTypes', 'chartFields'));
         $this->set('_serialize', ['report']);
     }
