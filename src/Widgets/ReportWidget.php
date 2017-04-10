@@ -169,11 +169,11 @@ class ReportWidget extends BaseWidget
 
         return $result;
     }
-    
+
     /**
      *  createReportWidget() method
      *
-     * @param string $handlerName   name of Chart report class
+     * @param string $renderAs   name of Chart report class
      * @return object               instance of the specofoc ReportWidget or null
      */
     public static function createReportWidget($renderAs)
@@ -186,7 +186,7 @@ class ReportWidget extends BaseWidget
         if (class_exists($className) && in_array($interface, class_implements($className))) {
             $result = new $className($options);
         }
-        
+
         return $result;
     }
 
