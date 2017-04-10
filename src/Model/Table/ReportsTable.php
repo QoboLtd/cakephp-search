@@ -9,6 +9,7 @@ use Cake\ORM\Table;
 use Cake\Utility\Inflector;
 use Cake\Validation\Validator;
 use Search\Widgets\WidgetFactory;
+use Search\Widgets\ReportWidget;
 
 /**
  * Reports Model
@@ -140,6 +141,45 @@ class ReportsTable extends Table
             ];
         }
 
+        return $result;
+    }
+    
+    /**
+     *  getChartReportTypes() method
+     *
+     * @return array    list - key and value - of available charts
+     */
+    public function getChartReportTypes()
+    {
+        $chartTypes = WidgetFactory::getChartReportTypes();        
+        asort($chartTypes);
+
+        return $chartTypes;
+    }
+
+    /**
+     *  getChartFields() method
+     *
+     * @param string $type      type of chart report
+     * @return array            list of required fields
+     */
+    public function getChartFields($type, $associative=false)
+    {
+        $result = [];
+        $report = new ReportWidget();
+        $widget = $report->createReportWidget($type);
+        if (is_object($widget)) {
+            $chartFields = $widget->requiredFields;
+            foreach ($chartFields as $field) {
+                if (!in_array($field, $widget->commonFields)) {
+                    if ($associative) {
+                        $result[$field] = '';
+                    } else {
+                        array_push($result, $field);
+                    }    
+                }
+            }
+        }
         return $result;
     }
 
