@@ -50,4 +50,9 @@ class DashboardsTableTest extends TestCase
 
         parent::tearDown();
     }
+
+    public function testGetUserDashboards()
+    {
+        $this->markTestIncomplete('Not implemented yet.');
+    }
 }

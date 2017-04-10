@@ -3,6 +3,7 @@ namespace Search\Widgets;
 
 use Cake\Datasource\ConnectionManager;
 use Cake\Event\Event;
+use Cake\ORM\TableRegistry;
 use Cake\Utility\Inflector;
 use Search\Widgets\BaseWidget;
 
@@ -68,6 +69,18 @@ class ReportWidget extends BaseWidget
     }
 
     /**
+     *  getReportTable() method
+     *
+     *  Returns the instance of the Reports table
+     *
+     * @return Table object     table Reports instance
+     */
+    public function getReportTable()
+    {
+        return TableRegistry::get('Search.Reports');
+    }
+
+    /**
      * Method retrieves all reports from ini files
      *
      * Basic reports getter that uses Events
@@ -79,15 +92,15 @@ class ReportWidget extends BaseWidget
     public function getReports($options = [])
     {
         $result = [];
-
         if (empty($options['rootView'])) {
             return $result;
         }
 
-        $event = new Event('Search.Report.getReports', $options['rootView']->request);
-        $options['rootView']->EventManager()->dispatch($event);
+        //$event = new Event('Search.Report.getReports', $options['rootView']->request);
+        //$options['rootView']->EventManager()->dispatch($event);
 
-        $result = $event->result;
+        //$result = $event->result;
+        $result = $this->getReportTable()->getActiveReports();
 
         return $result;
     }
@@ -101,15 +114,12 @@ class ReportWidget extends BaseWidget
     public function getReport($options = [])
     {
         $config = [];
-
         if (empty($options['entity'])) {
             return $config;
         }
-
         if (empty($options['reports'])) {
             $options['reports'] = $this->getReports($options);
         }
-
         $widgetId = $options['entity']->widget_id;
 
         if (empty($options['reports'])) {
@@ -154,14 +164,27 @@ class ReportWidget extends BaseWidget
         $renderAs = $options['config']['info']['renderAs'];
 
         if (!empty($renderAs)) {
-            $handlerName = Inflector::camelize($renderAs);
+            $result = static::createReportWidget($renderAs);
+        }
 
-            $className = __NAMESPACE__ . '\\Reports\\' . $handlerName . self::WIDGET_REPORT_SUFFIX;
-            $interface = __NAMESPACE__ . '\\Reports\\' . 'ReportGraphsInterface';
+        return $result;
+    }
 
-            if (class_exists($className) && in_array($interface, class_implements($className))) {
-                $result = new $className($options);
-            }
+    /**
+     *  createReportWidget() method
+     *
+     * @param string $renderAs   name of Chart report class
+     * @return object               instance of the specofoc ReportWidget or null
+     */
+    public static function createReportWidget($renderAs)
+    {
+        $result = null;
+        $handlerName = Inflector::camelize($renderAs);
+
+        $className = __NAMESPACE__ . '\\Reports\\' . $handlerName . self::WIDGET_REPORT_SUFFIX;
+        $interface = __NAMESPACE__ . '\\Reports\\' . 'ReportGraphsInterface';
+        if (class_exists($className) && in_array($interface, class_implements($className))) {
+            $result = new $className($options);
         }
 
         return $result;
@@ -180,7 +203,11 @@ class ReportWidget extends BaseWidget
     {
         $result = [];
 
-        $this->_instance = $this->getReportInstance($options);
+        $widgetInstance = $this->getReportInstance($options);
+        if (!is_object($widgetInstance)) {
+            throw new \RuntimeException('Cannot create a widget instance!');
+        }
+        $this->_instance = $widgetInstance;
         $config = $this->getReport($options);
 
         if (empty($config)) {
@@ -233,7 +260,7 @@ class ReportWidget extends BaseWidget
             return $result;
         }
 
-        $columns = explode(',', $config['info']['columns']);
+        $columns = array_map('trim', explode(',', $config['info']['columns']));
 
         foreach ($resultSet as $item) {
             $row = [];
@@ -295,6 +322,6 @@ class ReportWidget extends BaseWidget
      */
     public function getErrors()
     {
-        return $this->_instance->getErrors();
+        return !empty($this->_instance) ? $this->_instance->getErrors() : [];
     }
 }

@@ -25,9 +25,8 @@ class WidgetFactory
 
         $className = __NAMESPACE__ . '\\' . $handlerName . self::WIDGET_SUFFIX;
         $interface = __NAMESPACE__ . '\\' . self::WIDGET_INTERFACE;
-
         if (!class_exists($className)) {
-            throw new \RuntimeException("Class [$type] doesn't exist");
+            throw new \RuntimeException("Class [$type] - [$className] doesn't exist");
         }
 
         if (!in_array($interface, class_implements($className))) {
@@ -37,5 +36,25 @@ class WidgetFactory
         $widget = new $className($options);
 
         return $widget;
+    }
+
+    /**
+     *  getChartReportTypes() method
+     *
+     * @return array    list of available chart reports
+     */
+    public static function getChartReportTypes()
+    {
+        $dh = opendir(__DIR__ . '/Reports');
+        if ($dh) {
+            while (($file = readdir($dh)) !== false) {
+                if (preg_match('/(\w*)ReportWidget/', $file, $match)) {
+                    $chartType = lcfirst($match[1]);
+                    $result[$chartType] = $chartType;
+                }
+            }
+        }
+
+        return $result;
     }
 }
