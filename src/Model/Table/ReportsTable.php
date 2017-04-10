@@ -1,6 +1,7 @@
 <?php
 namespace Search\Model\Table;
 
+use Cake\Datasource\ConnectionManager;
 use Cake\Datasource\EntityInterface;
 use Cake\Event\Event;
 use Cake\ORM\Query;
@@ -8,8 +9,8 @@ use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Utility\Inflector;
 use Cake\Validation\Validator;
-use Search\Widgets\WidgetFactory;
 use Search\Widgets\ReportWidget;
+use Search\Widgets\WidgetFactory;
 
 /**
  * Reports Model
@@ -28,6 +29,7 @@ use Search\Widgets\ReportWidget;
  */
 class ReportsTable extends Table
 {
+    const EMPTY_OPTION_LABEL = ' -- Please choose -- ';
 
     /**
      * Initialize method
@@ -65,7 +67,8 @@ class ReportsTable extends Table
             ->allowEmpty('id', 'create');
 
         $validator
-            ->allowEmpty('name');
+            ->requirePresence('name', 'create')
+            ->notEmpty('name');
 
         $validator
             ->requirePresence('type', 'create')
@@ -78,6 +81,10 @@ class ReportsTable extends Table
         $validator
             ->requirePresence('content', 'create')
             ->notEmpty('content');
+
+        $validator
+            ->requirePresence('columns', 'create')
+            ->notEmpty('columns');
 
         return $validator;
     }
@@ -109,6 +116,14 @@ class ReportsTable extends Table
         if (!$this->_validateContent($entity->content)) {
             return false;
         }
+
+        $toSerialize = [];
+        $fields = $this->getChartFields($entity->type);
+        foreach ($fields as $field) {
+            $toSerialize[$field] = $entity->$field;
+        }
+
+        $entity->chart_options = json_encode($toSerialize);
 
         return true;
     }
@@ -143,7 +158,7 @@ class ReportsTable extends Table
 
         return $result;
     }
-    
+
     /**
      *  getChartReportTypes() method
      *
@@ -151,7 +166,9 @@ class ReportsTable extends Table
      */
     public function getChartReportTypes()
     {
-        $chartTypes = WidgetFactory::getChartReportTypes();        
+        $chartTypes = WidgetFactory::getChartReportTypes();
+        $chartTypes[''] = static::EMPTY_OPTION_LABEL;
+
         asort($chartTypes);
 
         return $chartTypes;
@@ -163,7 +180,7 @@ class ReportsTable extends Table
      * @param string $type      type of chart report
      * @return array            list of required fields
      */
-    public function getChartFields($type, $associative=false)
+    public function getChartFields($type, $associative = false)
     {
         $result = [];
         $report = new ReportWidget();
@@ -176,10 +193,34 @@ class ReportsTable extends Table
                         $result[$field] = '';
                     } else {
                         array_push($result, $field);
-                    }    
+                    }
                 }
             }
         }
+
+        return $result;
+    }
+
+    /**
+     *  getListModels() method
+     *
+     * @return array    list of all avaialable models in the the system
+     */
+    public function getListModels()
+    {
+        $result = ['' => static::EMPTY_OPTION_LABEL];
+
+        $tables = ConnectionManager::get('default')->schemaCollection()->listTables();
+        if (!empty($tables)) {
+            foreach ($tables as $table) {
+                if (preg_match('/phinxlog/', $table)) {
+                    continue;
+                }
+                $model = Inflector::humanize($table);
+                $result[$model] = $model;
+            }
+        }
+
         return $result;
     }
 
