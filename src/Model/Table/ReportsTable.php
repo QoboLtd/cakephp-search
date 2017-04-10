@@ -140,7 +140,8 @@ class ReportsTable extends Table
         $query = $this->find('all', ['conditions' => ['is_active' => true]]);
         $result = [];
         foreach ($query as $row) {
-            $result[$row->model][Inflector::tableize($row->name)] = [
+            $chartFields = json_decode($row->chart_options, true);
+            $report = [
                 'id' => $row->id,
                 'model' => $row->model,
                 'name' => $row->name,
@@ -148,12 +149,13 @@ class ReportsTable extends Table
                 'widget_type' => 'report',
                 'query' => $row->content,
                 'columns' => $row->columns,
-                'label' => $row->chart_label,
-                'value' => $row->chart_value,
-                'max' => $row->chart_max,
-                'x_axis' => $row->x_axis,
-                'y_axis' => $row->y_axis,
             ];
+
+            foreach ($chartFields as $key => $val) {
+                $report[$key] = $val;
+            }
+
+            $result[$row->model][Inflector::tableize($row->name)] = $report;
         }
 
         return $result;
