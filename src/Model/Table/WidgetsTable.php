@@ -109,99 +109,35 @@ class WidgetsTable extends Table
     }
 
     /**
-     * getWidgets method
+     * getWidgets method.
+     *
      * @return array $result containing all widgets
      */
     public function getWidgets()
     {
-        $result = $widgets = [];
-
-        $widgets[] = ['type' => 'app', 'data' => $this->_getAppWidgets()];
-
         // get widgets through Event broadcast
         $event = new Event('Search.Dashboards.getWidgets', $this);
         $this->eventManager()->dispatch($event);
 
-        if ($event->result) {
-            $widgets[] = $event->result;
-        }
+        $widgets = !empty($event->result) ? $event->result : [];
 
-        // $dashboardsTable = TableRegistry::get('Search.Dashboards');
-        $savedSearchesTable = TableRegistry::get('Search.SavedSearches');
-
-        $allSavedSearches = $savedSearchesTable->find('all')
-            ->where(['SavedSearches.name IS NOT' => null])
-            ->order(['SavedSearches.model', 'SavedSearches.name']);
-
-        $savedSearches = $savedSearchesTable
-                        ->find()
-                        ->select()
-                        ->where(['SavedSearches.name IS NOT' => null])
-                        ->hydrate(false)
-                        ->indexBy('id')
-                        ->toArray();
-
-        foreach ($savedSearches as $id => $savedSearch) {
-            $table = TableRegistry::get($savedSearch['model']);
-            if (method_exists($table, 'moduleAlias')) {
-                $savedSearches[$id]['model'] = $table->moduleAlias();
-            }
-        }
-
-        $widgets[] = ['type' => 'saved_search', 'data' => $savedSearches];
-        $event = new Event('Search.Report.getReports', $this);
-        $this->eventManager()->dispatch($event);
-
-        if (!empty($event->result)) {
-            $data = [];
-            foreach ($event->result as $model => $reports) {
-                foreach ($reports as $reportSlug => $reportInfo) {
-                    $data[$reportInfo['id']] = $reportInfo;
-                }
-            }
-            if (!empty($data)) {
-                $widgets[] = [ 'type' => 'report', 'data' => $data ];
-            }
+        if (empty($widgets)) {
+            return [];
         }
 
         //assembling all widgets in one
-        if (!empty($widgets)) {
-            foreach ($widgets as $k => $widgetsGroup) {
-                if (!empty($widgetsGroup['data'])) {
-                    foreach ($widgetsGroup['data'] as $widget) {
-                        array_push($result, [
-                            'type' => $widgetsGroup['type'],
-                            'data' => $widget
-                        ]);
-                    }
-                }
-            }
-        }
-
-        return $result;
-    }
-
-    /**
-     * Returns list of widgets defined in the application scope.
-     *
-     * @return array
-     */
-    protected function _getAppWidgets()
-    {
-        $table = TableRegistry::get('Search.AppWidgets');
-
-        $query = $table->find('all');
-
-        $entities = $query->toArray();
-
         $result = [];
-        foreach ($entities as $entity) {
-            $result[] = [
-                'id' => $entity->id,
-                'model' => $entity->content['model'],
-                'name' => $entity->name,
-                'path' => $entity->content['path']
-            ];
+        foreach ($widgets as $k => $widgetsGroup) {
+            if (empty($widgetsGroup['data'])) {
+                continue;
+            }
+
+            foreach ($widgetsGroup['data'] as $widget) {
+                array_push($result, [
+                    'type' => $widgetsGroup['type'],
+                    'data' => $widget
+                ]);
+            }
         }
 
         return $result;
