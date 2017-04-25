@@ -52,9 +52,9 @@ $this->eventManager()->dispatch($event);
                         }
 
                         echo $this->element(
-                            ('app' !== $dw->widget_type ? 'Search.Widgets/' : '') . $widgetHandler->getRenderElement(),
+                            $widgetHandler->getRenderElement(),
                             ['widget' => $widgetHandler],
-                            ['plugin' => 'app' === $dw->widget_type ? false : true]
+                            ['plugin' => false]
                         );
                     } catch (\Exception $e) {
                         echo $this->element('Search.missing_element', [

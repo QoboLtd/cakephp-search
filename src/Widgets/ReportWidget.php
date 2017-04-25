@@ -8,7 +8,7 @@ use Search\Widgets\BaseWidget;
 
 class ReportWidget extends BaseWidget
 {
-    public $renderElement = 'graph';
+    public $renderElement = 'Search.Widgets/graph';
     public $options = [];
 
     /** @const WIDGET_REPORT_SUFFIX file naming suffix of widget files */
