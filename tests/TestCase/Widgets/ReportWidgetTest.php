@@ -54,7 +54,7 @@ class ReportWidgetTest extends TestCase
     public function testGetRenderElement()
     {
         $result = $this->widget->getRenderElement();
-        $this->assertEquals($result, 'graph');
+        $this->assertEquals($result, 'Search.Widgets/graph');
     }
 
     public function testGetReportConfigWithoutRootView()

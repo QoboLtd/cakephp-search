@@ -16,7 +16,7 @@ class SavedSearchWidget extends BaseWidget
 
     protected $_data = [];
 
-    public $renderElement = 'table';
+    public $renderElement = 'Search.Widgets/table';
 
     public $options = [];
 

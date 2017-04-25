@@ -25,6 +25,10 @@ use Cake\Validation\Validator;
  */
 class AppWidgetsTable extends Table
 {
+    /**
+     * Widget type identifier.
+     */
+    const WIDGET_TYPE = 'app_widget';
 
     /**
      * Initialize method
@@ -163,7 +167,7 @@ class AppWidgetsTable extends Table
                 $name = Inflector::humanize($name);
                 $result[] = [
                     'name' => $name,
-                    'type' => 'app_widget',
+                    'type' => static::WIDGET_TYPE,
                     'content' => [
                         'model' => $this->alias(),
                         'path' => $path . $file,
