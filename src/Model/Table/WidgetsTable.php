@@ -118,6 +118,14 @@ class WidgetsTable extends Table
 
         $widgets[] = ['type' => 'app', 'data' => $this->_getAppWidgets()];
 
+        // get widgets through Event broadcast
+        $event = new Event('Search.Dashboards.getWidgets', $this);
+        $this->eventManager()->dispatch($event);
+
+        if ($event->result) {
+            $widgets[] = $event->result;
+        }
+
         // $dashboardsTable = TableRegistry::get('Search.Dashboards');
         $savedSearchesTable = TableRegistry::get('Search.SavedSearches');
 
