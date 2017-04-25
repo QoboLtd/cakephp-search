@@ -7,6 +7,7 @@ class WidgetFactory
 {
     const WIDGET_SUFFIX = 'Widget';
     const WIDGET_INTERFACE = 'WidgetInterface';
+    const APP_NAMESPACE = 'App\\Widget';
 
     /**
      * create method
@@ -23,10 +24,20 @@ class WidgetFactory
         $widget = null;
         $handlerName = Inflector::camelize($type);
 
-        $className = __NAMESPACE__ . '\\' . $handlerName . self::WIDGET_SUFFIX;
         $interface = __NAMESPACE__ . '\\' . self::WIDGET_INTERFACE;
 
-        if (!class_exists($className)) {
+        $namespaces = [static::APP_NAMESPACE, __NAMESPACE__];
+        foreach ($namespaces as $namespace) {
+            $className = $namespace . '\\' . $handlerName . self::WIDGET_SUFFIX;
+            if (!class_exists($className)) {
+                $className = null;
+                continue;
+            }
+
+            break;
+        }
+
+        if (!$className) {
             throw new \RuntimeException("Class [$type] doesn't exist");
         }
 
