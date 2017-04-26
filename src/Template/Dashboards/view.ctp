@@ -14,8 +14,7 @@ $this->eventManager()->dispatch($event);
 <section class="content-header">
     <div class="row">
         <div class="col-xs-12 col-md-6">
-            <h4><?= __('Dashboard');?></h4>
-            <small><?= h($dashboard->name) ?></small>
+            <h4><?= h($dashboard->name) ?></h4>
         </div>
         <div class="col-xs-12 col-md-6">
             <div class="pull-right">
