@@ -40,9 +40,6 @@
 
     <!-- Add any additional test suites you want to run here -->
     <testsuites>
-        <testsuite name="Utils Plugin Test Suite">
-            <directory>./vendor/qobo/cakephp-utils/tests/TestCase</directory>
-        </testsuite>
         <testsuite name="Search Test Suite">
             <directory>./tests/TestCase</directory>
         </testsuite>
