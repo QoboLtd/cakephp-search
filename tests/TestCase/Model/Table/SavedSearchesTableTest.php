@@ -72,7 +72,7 @@ class SavedSearchesTableTest extends TestCase
 
     public function testGetDefaultLimit()
     {
-        $this->assertEquals($this->SavedSearches->getDefaultLimit(), 10);
+        $this->assertEquals($this->SavedSearches->getDefaultLimit(), 100);
     }
 
     public function testGetPrivateSharedStatus()

@@ -44,7 +44,7 @@ class SavedSearchesTable extends Table
     /**
      * Default sql limit
      */
-    const DEFAULT_LIMIT = 10;
+    const DEFAULT_LIMIT = 100;
 
     /**
      * Default sql order by direction
