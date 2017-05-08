@@ -63,7 +63,7 @@ $this->eventManager()->dispatch($event);
                     }
                 }
                 ?>
-                <?php endif; ?>
+            <?php endif; ?>
             </div>
         <?php endfor; ?>
     </div>
