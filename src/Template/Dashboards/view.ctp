@@ -41,7 +41,7 @@ $this->eventManager()->dispatch($event);
 
                         $widgetHandler->getResults(['entity' => $dw, 'user' => $user, 'rootView' => $this]);
 
-                        if ($widgetHandler->getRenderElement() == 'graph') {
+                        if ($widgetHandler->getRenderElement() == 'Search.Widgets/graph') {
                             $chartData[] = $widgetHandler->getData();
                         }
 
