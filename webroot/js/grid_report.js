@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(document).ready(function () {
     $('#report').DataTable({
         "dom": 'Bfrtip',
         "buttons": [
