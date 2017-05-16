@@ -38,7 +38,23 @@ class WidgetsListener implements EventListenerInterface
 
         $reports = $this->_getReports();
         if (!empty($reports)) {
-            array_push($result, ['type' => 'report', 'data' => $reports]);
+            $graphs = [];
+            $tables = [];
+            foreach ($reports as $id => $info) {
+                if ($info['widget_type'] == 'table') {
+                    $tables[$id] = $info;
+                } else {
+                    $graphs[$id] = $info;
+                }
+            }
+
+            if (!empty($tables)) {
+                array_push($result, ['type' => 'grid', 'data' => $tables]);
+            }
+
+            if (!empty($graphs)) {
+                array_push($result, ['type' => 'report', 'data' => $graphs]);
+            }
         }
 
         $appWidgets = $this->_getAppWidgets();
