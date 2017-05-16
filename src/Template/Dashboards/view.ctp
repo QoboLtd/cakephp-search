@@ -1,5 +1,7 @@
 <?php
+
 use Cake\Event\Event;
+use Cake\Log\LogTrait;
 use Search\Widgets\WidgetFactory;
 
 $scripts = [];
@@ -46,6 +48,7 @@ $this->eventManager()->dispatch($event);
                         }
 
                         $dataOptions = $widgetHandler->getOptions();
+
                         if (!empty($dataOptions['scripts'])) {
                             $scripts[] = $dataOptions['scripts'];
                         }
@@ -56,9 +59,10 @@ $this->eventManager()->dispatch($event);
                             ['plugin' => false]
                         );
                     } catch (\Exception $e) {
+                        $this->log("Cannot process widget: " . $e->getMessage(), 'error');
                         echo $this->element('Search.missing_element', [
                             'exception' => $e,
-                            'messages' => $widgetHandler->getErrors()
+                            'messages' => !empty($widgetHandler) ? $widgetHandler->getErrors() : ['Unknown error']
                         ]);
                     }
                 }
