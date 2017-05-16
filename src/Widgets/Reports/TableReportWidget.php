@@ -63,7 +63,7 @@ class TableReportWidget extends BaseReportGraphs
                     'type' => 'css',
                     'content' => [
                         'AdminLTE./plugins/datatables/dataTables.bootstrap',
-                        'https://cdn.datatables.net/buttons/1.3.1/css/buttons.dataTables.min.css'
+                        'Qobo/Utils.buttons.dataTables.min'
                     ],
                     'block' => 'css',
                 ],
@@ -71,14 +71,14 @@ class TableReportWidget extends BaseReportGraphs
                     'type' => 'script',
                     'content' => [
                         'AdminLTE./plugins/datatables/jquery.dataTables.min',
-                        'AdminLTE./plugins/datatables/dataTables.bootstrap.min',
-                        'https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js',
-                        'https://cdn.datatables.net/buttons/1.3.1/js/buttons.flash.min.js',
-                        'https://cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js',
-                        'https://cdn.rawgit.com/bpampuch/pdfmake/0.1.27/build/pdfmake.min.js',
-                        'https://cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js',
-                        'https://cdn.rawgit.com/bpampuch/pdfmake/0.1.27/build/vfs_fonts.js',
-                        'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js',
+                        'Qobo/Utils.dataTables.bootstrap.min',
+                        'Qobo/Utils.dataTables.buttons.min.js',
+                        'Qobo/Utils.buttons.flash.min.js',
+                        'Qobo/Utils.buttons.print.min.js',
+                        'Qobo/Utils.pdfmake.min.js',
+                        'Qobo/Utils.buttons.html5.min.js',
+                        'Qobo/Utils.vfs_fonts.js',
+                        'Qobo/Utils.jszip.min.js',
                     ],
                     'block' => 'scriptBotton',
                 ],
