@@ -21,7 +21,7 @@ echo $this->Html->script('Search.grid_report', ['block' => 'scriptBotton']);
         </div>
         <div class="box-body">
             <div id="<?= $widget->getContainerId()?>">
-                <table  id="report" class="table table-hover table-condensed table-vertical-align" cellspacing="0" width="100%">
+                <table  class="table table-hover table-condensed table-vertical-align report-grid" cellspacing="0" width="100%">
                 <thead>
                     <tr>
                     <?php foreach ($columns as $col) : ?>
