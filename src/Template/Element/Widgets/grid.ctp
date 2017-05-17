@@ -1,9 +1,14 @@
 <?php
-    $config = $widget->getConfig();
-    $data = $widget->getData();
-    $type = $widget->getType();
 
-    echo $this->Html->script('Search.grid_report', ['block' => 'scriptBotton']);
+use Cake\Utility\Inflector;
+
+$config = $widget->getConfig();
+$data = $widget->getData();
+$type = $widget->getType();
+
+$columns = explode(',', $config['info']['columns']);
+
+echo $this->Html->script('Search.grid_report', ['block' => 'scriptBotton']);
 ?>
 <div class='dashboard-widget-display_config'>
     <div class="box box-default">
@@ -20,15 +25,17 @@
                 <table  id="report" class="display" cellspacing="0" width="100%">
                 <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>Status</th>
+                    <?php foreach ($columns as $col) : ?>
+                        <th><?= Inflector::humanize($col) ?></th>
+                    <?php endforeach; ?>
                     </tr>
                 </thead>
                 <tbody>
                 <?php foreach ($data['options']['data'] as $k => $item) : ?>
                     <tr>
-                        <td><?= $item['name'] ?></td>
-                        <td><?= $item['status'] ?></td>
+                    <?php foreach ($columns as $col) : ?>
+                        <td><?= $item[$col] ?></td>
+                    <?php endforeach; ?>
                     </tr>
                 <?php endforeach; ?>
                 </tbody>
