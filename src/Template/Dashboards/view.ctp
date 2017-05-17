@@ -41,11 +41,6 @@ $this->eventManager()->dispatch($event);
 
                         $widgetHandler->getResults(['entity' => $dw, 'user' => $user, 'rootView' => $this]);
 
-                        if (is_null($widgetHandler)) {
-                            echo "Broken widget";
-                            continue;
-                        }
-
                         if ($widgetHandler->getRenderElement() == 'graph') {
                             $chartData[] = $widgetHandler->getData();
                         }
@@ -63,12 +58,12 @@ $this->eventManager()->dispatch($event);
                     } catch (\Exception $e) {
                         echo $this->element('Search.missing_element', [
                             'exception' => $e,
-                            'messages' => $widgetHandler->getErrors()
+                            'messages' => !empty($widgetHandler) ? $widgetHandler->getErrors() : ['Fauled initialize widget!']
                         ]);
                     }
                 }
                 ?>
-                <?php endif; ?>
+            <?php endif; ?>
             </div>
         <?php endfor; ?>
     </div>

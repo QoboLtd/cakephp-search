@@ -92,14 +92,7 @@ class ReportWidget extends BaseWidget
     public function getReports($options = [])
     {
         $result = [];
-        if (empty($options['rootView'])) {
-            return $result;
-        }
 
-        //$event = new Event('Search.Report.getReports', $options['rootView']->request);
-        //$options['rootView']->EventManager()->dispatch($event);
-
-        //$result = $event->result;
         $result = $this->getReportTable()->getActiveReports();
 
         return $result;
