@@ -10,6 +10,7 @@ $type = $widget->getType();
 $this->log('widget config: ' . print_r($config, true), 'info');
 
 $columns = explode(',', $config['info']['columns']);
+$options = [];
 
 echo $this->Html->script('Search.grid_report', ['block' => 'scriptBotton']);
 ?>
@@ -41,7 +42,8 @@ echo $this->Html->script('Search.grid_report', ['block' => 'scriptBotton']);
                             $event = new Event('Search.Dashboard.Widget.GridElement', $this, [
                                 'model' => $config['modelName'],
                                 'field' => $col,
-                                'value' => $item[$col]
+                                'value' => $item[$col],
+                                $options
                             ]);
                             $this->eventManager()->dispatch($event);
                         ?>
