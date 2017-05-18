@@ -41,9 +41,9 @@ echo $this->Html->script('Search.grid_report', ['block' => 'scriptBotton']);
                             $event = new Event('Search.Dashboard.Widget.GridElement', $this, [
                                 'model' => $config['modelName'],
                                 'field' => $col,
-                                'value' => $item[$col]                               
+                                'value' => $item[$col]
                             ]);
-                            $this->eventManager()->dispatch($event);                            
+                            $this->eventManager()->dispatch($event);
                         ?>
                         <td><?= !empty($event->result) ? $event->result : $item[$col] ?></td>
                     <?php endforeach; ?>                    
