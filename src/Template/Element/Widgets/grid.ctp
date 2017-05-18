@@ -1,11 +1,16 @@
 <?php
+use Cake\Event\Event;
+use Cake\Log\LogTrait;
 use Cake\Utility\Inflector;
 
 $config = $widget->getConfig();
 $data = $widget->getData();
 $type = $widget->getType();
 
+$this->log('widget config: ' . print_r($config, true), 'info');
+
 $columns = explode(',', $config['info']['columns']);
+$options = [];
 
 echo $this->Html->script('Search.grid_report', ['block' => 'scriptBotton']);
 ?>
@@ -33,7 +38,16 @@ echo $this->Html->script('Search.grid_report', ['block' => 'scriptBotton']);
                 <?php foreach ($data['options']['data'] as $k => $item) : ?>
                     <tr>
                     <?php foreach ($columns as $col) : ?>
-                        <td><?= $item[$col] ?></td>
+                        <?php
+                            $event = new Event('Search.Dashboard.Widget.GridElement', $this, [
+                                'model' => $config['modelName'],
+                                'field' => $col,
+                                'value' => $item[$col],
+                                $options
+                            ]);
+                            $this->eventManager()->dispatch($event);
+                        ?>
+                        <td><?= !empty($event->result) ? $event->result : $item[$col] ?></td>
                     <?php endforeach; ?>                    
                     </tr>
                 <?php endforeach; ?>
