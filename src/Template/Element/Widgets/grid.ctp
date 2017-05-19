@@ -1,13 +1,14 @@
 <?php
 use Cake\Event\Event;
-use Cake\Log\LogTrait;
 use Cake\Utility\Inflector;
 
 $config = $widget->getConfig();
 $data = $widget->getData();
 $type = $widget->getType();
 
-$this->log('widget config: ' . print_r($config, true), 'info');
+$dataRecords = !empty($data['options']['data']) ? $data['options']['data'] : [];
+
+$data = [];
 
 $columns = explode(',', $config['info']['columns']);
 $options = [];
@@ -35,7 +36,7 @@ echo $this->Html->script('Search.grid_report', ['block' => 'scriptBotton']);
                     </tr>
                 </thead>
                 <tbody>
-                <?php foreach ($data['options']['data'] as $k => $item) : ?>
+                <?php foreach ($dataRecords as $k => $item) : ?>
                     <tr>
                     <?php foreach ($columns as $col) : ?>
                         <?php
