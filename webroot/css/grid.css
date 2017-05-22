@@ -1,0 +1,13 @@
+a.dt-button {
+    color: #FFFFFF;
+    background: #337ab7 !important;
+    background-color: #337ab7 !important;
+    border-color: #337ab7;
+    border-radius: 0;
+    padding: 0.1em 0.4em;
+}
+
+a.dt-button:hover {
+    background: #204E74 !important;
+    background-color: #204E74 !important;
+}
