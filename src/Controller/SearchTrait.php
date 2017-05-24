@@ -71,7 +71,9 @@ trait SearchTrait
 
         $savedSearches = $table->getSavedSearches([$this->Auth->user('id')], [$model]);
 
-        $this->set(compact('searchFields', 'savedSearches', 'model'));
+        $this->set('searchFields', $searchFields);
+        $this->set('savedSearches', $savedSearches);
+        $this->set('model', $model);
         $this->set('searchData', $data);
         $this->set('savedSearch', $savedSearch);
         $this->set('preSaveId', $search['preSaveId']);
