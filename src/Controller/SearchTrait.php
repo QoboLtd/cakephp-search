@@ -52,35 +52,33 @@ trait SearchTrait
         // saved search instance, null by default
         $savedSearch = null;
 
-        if ($this->request->is(['post', 'get'])) {
-            // id of saved search has been provided
-            if (!is_null($id)) {
-                $savedSearch = $table->get($id);
-                // fetch search conditions from saved search if request data are empty
-                // INFO: this is valid on initial saved search load
-                if (empty($data)) {
-                    $data = json_decode($savedSearch->content, true);
-                } else { // INFO: this is valid when a saved search was modified and the form was re-submitted
-                    $isEditable = true;
-                }
+        // id of saved search has been provided
+        if (!is_null($id)) {
+            $savedSearch = $table->get($id);
+            // fetch search conditions from saved search if request data are empty
+            // INFO: this is valid on initial saved search load
+            if (empty($data)) {
+                $data = json_decode($savedSearch->content, true);
+            } else { // INFO: this is valid when a saved search was modified and the form was re-submitted
+                $isEditable = true;
             }
+        }
 
-            $data = $table->validateData($model, $data);
+        $data = $table->validateData($model, $data);
 
-            $search = $table->search($model, $this->Auth->user(), $data);
+        $search = $table->search($model, $this->Auth->user(), $data);
 
-            if (isset($search['preSaveId'])) {
-                $this->set('preSaveId', $search['preSaveId']);
-            }
+        if (isset($search['preSaveId'])) {
+            $this->set('preSaveId', $search['preSaveId']);
+        }
 
-            // @todo find out how to do pagination without affecting limit
-            if ($search['entities']['result'] instanceof Query) {
-                // fetched from new search result
-                $data['result'] = $search['entities']['result']->all();
-            } else {
-                // as taken from a saved search result
-                $data['result'] = $search['entities']['result'];
-            }
+        // @todo find out how to do pagination without affecting limit
+        if ($search['entities']['result'] instanceof Query) {
+            // fetched from new search result
+            $data['result'] = $search['entities']['result']->all();
+        } else {
+            // as taken from a saved search result
+            $data['result'] = $search['entities']['result'];
         }
 
         $savedSearches = $table->getSavedSearches([$this->Auth->user('id')], [$model]);
