@@ -69,12 +69,8 @@ trait SearchTrait
 
             $search = $table->search($model, $this->Auth->user(), $data);
 
-            if (isset($search['saveSearchCriteriaId'])) {
-                $this->set('saveSearchCriteriaId', $search['saveSearchCriteriaId']);
-            }
-
-            if (isset($search['saveSearchResultsId'])) {
-                $this->set('saveSearchResultsId', $search['saveSearchResultsId']);
+            if (isset($search['preSaveId'])) {
+                $this->set('preSaveId', $search['preSaveId']);
             }
 
             // @todo find out how to do pagination without affecting limit

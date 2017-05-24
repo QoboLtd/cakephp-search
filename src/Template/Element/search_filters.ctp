@@ -90,11 +90,11 @@ if (!empty($searchFields)) :
                 }
                 echo $this->Form->button('<i class="fa fa-search"></i> ' . __('Search'), ['class' => 'btn btn-primary']);
                 echo $this->Form->end();
-                if (!empty($saveSearchResultsId)) {
+                if (!empty($preSaveId)) {
                     echo '&nbsp;';
                     echo $this->Form->postLink(
                         '<i class="fa fa-download"></i> ' . __('Export'),
-                        ['action' => 'export-search', $saveSearchResultsId, $savedSearch ? $savedSearch->name : null],
+                        ['action' => 'export-search', $preSaveId, $savedSearch ? $savedSearch->name : null],
                         ['class' => 'btn btn-primary', 'escape' => false]
                     );
                 }
@@ -107,16 +107,15 @@ if (!empty($searchFields)) :
                     </div>
                     <div class="col-sm-6 col-md-12">
                     <?php
-                    if (isset($saveSearchCriteriaId)) {
+                    if (isset($preSaveId)) {
                         echo $this->element('Search.SaveSearch/save_search_criterias', [
-                        'saveSearchCriteriaId' => $saveSearchCriteriaId,
+                        'preSaveId' => $preSaveId,
                         'savedSearch' => $savedSearch,
                         'isEditable' => $isEditable && 'criteria' === $savedSearch->type
                         ]);
-                    }
-                    if (isset($saveSearchResultsId)) {
+
                         echo $this->element('Search.SaveSearch/save_search_results', [
-                        'saveSearchCriteriaId' => $saveSearchResultsId,
+                        'preSaveId' => $preSaveId,
                         'savedSearch' => $savedSearch,
                         'isEditable' => $isEditable && 'result' === $savedSearch->type
                         ]);

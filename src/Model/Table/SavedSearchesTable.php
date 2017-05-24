@@ -173,7 +173,8 @@ class SavedSearchesTable extends Table
 
         $validator
             ->requirePresence('type', 'create')
-            ->notEmpty('type');
+            ->notEmpty('type', 'update')
+            ->allowEmpty('name', 'create');
 
         $validator
             ->requirePresence('model', 'create')
@@ -324,17 +325,15 @@ class SavedSearchesTable extends Table
             $data['result'] = $this->_getResults($data, $tableName);
         }
 
-        // pre-save search criteria and results
-        $preSaveIds = $this->_preSaveSearchCriteriaAndResults(
+        // pre-save search
+        $preSaveIds = $this->_preSave(
             $tableName,
             $data,
-            $requestData,
             $user['id']
         );
 
         return [
-            'saveSearchCriteriaId' => $preSaveIds['saveSearchCriteriaId'],
-            'saveSearchResultsId' => $preSaveIds['saveSearchResultsId'],
+            'preSaveId' => $preSaveIds,
             'entities' => $data
         ];
     }
@@ -949,32 +948,27 @@ class SavedSearchesTable extends Table
     }
 
     /**
-     * Method that pre-saves search criteria and results and returns saved records ids.
+     * Method that pre-saves search and returns saved record id.
      *
-     * @param  string $model  model name
-     * @param  array  $results search results
-     * @param  array  $data   request data
-     * @param  string $userId user id
+     * @param string $model model name
+     * @param array $search search
+     * @param string $userId user id
      * @return array
      */
-    protected function _preSaveSearchCriteriaAndResults($model, array $results, $data, $userId)
+    protected function _preSave($model, array $search, $userId)
     {
-        $result = [];
-        /*
-        delete old pre-saved searches
-         */
-        $this->_deleteOldPreSavedSearches();
+        // delete old pre-saved searches
+        $this->_deletePreSaved();
 
-        /*
-        pre-save search criteria
-         */
-        $result['saveSearchCriteriaId'] = $this->_preSaveSearchCriteria($model, $data, $userId);
-        /*
-        pre-save search results
-         */
-        $result['saveSearchResultsId'] = $this->_preSaveSearchResults($model, $results, $userId);
+        $entity = $this->newEntity();
+        $entity->user_id = $userId;
+        $entity->model = $model;
+        $entity->shared = $this->getPrivateSharedStatus();
+        $entity->content = json_encode($search);
 
-        return $result;
+        $this->save($entity);
+
+        return $entity->id;
     }
 
     /**
@@ -982,57 +976,11 @@ class SavedSearchesTable extends Table
      *
      * @return void
      */
-    protected function _deleteOldPreSavedSearches()
+    protected function _deletePreSaved()
     {
         $this->deleteAll([
             'modified <' => new \DateTime(static::DELETE_OLDER_THAN),
             'name IS' => null
         ]);
-    }
-
-    /**
-     * Pre-save search criteria and return record id.
-     *
-     * @param  string $model  model name
-     * @param  array  $data   request data
-     * @param  string $userId user id
-     * @return string
-     */
-    protected function _preSaveSearchCriteria($model, $data, $userId)
-    {
-        $search = $this->newEntity();
-        $search->type = $this->getCriteriaType();
-        $search->user_id = $userId;
-        $search->model = $model;
-        $search->shared = $this->getPrivateSharedStatus();
-        $search->content = json_encode($data);
-
-        // save search criteria
-        $this->save($search);
-
-        return $search->id;
-    }
-
-    /**
-     * Pre-save search results and return record id.
-     *
-     * @param  string $model  model name
-     * @param  array  $results search results
-     * @param  string $userId user id
-     * @return string
-     */
-    protected function _preSaveSearchResults($model, array $results, $userId)
-    {
-        $search = $this->newEntity();
-        $search->type = $this->getResultType();
-        $search->user_id = $userId;
-        $search->model = $model;
-        $search->shared = $this->getPrivateSharedStatus();
-        $search->content = json_encode($results);
-
-        // save search results
-        $this->save($search);
-
-        return $search->id;
     }
 }
