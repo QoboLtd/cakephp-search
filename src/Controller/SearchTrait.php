@@ -46,23 +46,15 @@ trait SearchTrait
 
         $data = $table->prepareSearchData($this->request, $model, $this->Auth->user());
 
-        // is editable flag, false by default
-        $isEditable = false;
+        // INFO: this is valid when a saved search was modified and the form was re-submitted
+        $isEditable = !empty($data) && !is_null($id);
 
         // saved search instance, null by default
-        $savedSearch = null;
+        $savedSearch = !is_null($id) ? $table->get($id) : null;
 
-        // id of saved search has been provided
-        if (!is_null($id)) {
-            $savedSearch = $table->get($id);
-            // fetch search conditions from saved search if request data are empty
-            // INFO: this is valid on initial saved search load
-            if (empty($data)) {
-                $data = json_decode($savedSearch->content, true);
-            } else { // INFO: this is valid when a saved search was modified and the form was re-submitted
-                $isEditable = true;
-            }
-        }
+        // fetch search conditions from saved search if request data are empty
+        // INFO: this is valid on initial saved search load
+        $data = !is_null($savedSearch) && empty($data) ? json_decode($savedSearch->content, true) : $data;
 
         $data = $table->validateData($model, $data);
 

@@ -320,21 +320,13 @@ class SavedSearchesTable extends Table
 
         $data = $this->validateData($tableName, $data);
 
-        if (empty($data['result'])) {
-            // get search results
-            $data['result'] = $this->_getResults($data, $tableName);
-        }
-
-        // pre-save search
-        $preSaveIds = $this->_preSave(
-            $tableName,
-            $data,
-            $user['id']
-        );
+        // get search results
+        $data['result'] = empty($data['result']) ? $this->_getResults($data, $tableName) : $data['result'];
 
         return [
-            'preSaveId' => $preSaveIds,
-            'entities' => $data
+            'entities' => $data,
+            // pre-save search
+            'preSaveId' => $this->_preSave($tableName, $data, $user['id'])
         ];
     }
 
