@@ -60,10 +60,6 @@ trait SearchTrait
 
         $search = $table->search($model, $this->Auth->user(), $data);
 
-        if (isset($search['preSaveId'])) {
-            $this->set('preSaveId', $search['preSaveId']);
-        }
-
         // @todo find out how to do pagination without affecting limit
         if ($search['entities']['result'] instanceof Query) {
             // fetched from new search result
@@ -78,6 +74,7 @@ trait SearchTrait
         $this->set(compact('searchFields', 'savedSearches', 'model'));
         $this->set('searchData', $data);
         $this->set('savedSearch', $savedSearch);
+        $this->set('preSaveId', $search['preSaveId']);
         $this->set('isEditable', $isEditable);
         $this->set('limitOptions', $table->getLimitOptions());
         $this->set('sortByOrderOptions', $table->getSortByOrderOptions());

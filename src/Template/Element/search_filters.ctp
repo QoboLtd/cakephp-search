@@ -90,14 +90,12 @@ if (!empty($searchFields)) :
                 }
                 echo $this->Form->button('<i class="fa fa-search"></i> ' . __('Search'), ['class' => 'btn btn-primary']);
                 echo $this->Form->end();
-                if (!empty($preSaveId)) {
-                    echo '&nbsp;';
-                    echo $this->Form->postLink(
-                        '<i class="fa fa-download"></i> ' . __('Export'),
-                        ['action' => 'export-search', $preSaveId, $savedSearch ? $savedSearch->name : null],
-                        ['class' => 'btn btn-primary', 'escape' => false]
-                    );
-                }
+                echo '&nbsp;';
+                echo $this->Form->postLink(
+                    '<i class="fa fa-download"></i> ' . __('Export'),
+                    ['action' => 'export-search', $preSaveId, $savedSearch ? $savedSearch->name : null],
+                    ['class' => 'btn btn-primary', 'escape' => false]
+                );
                 ?>
             </div>
             <div class="col-md-4 col-lg-3">
@@ -106,21 +104,16 @@ if (!empty($searchFields)) :
                         <?= $this->Form->label(__('Save search')) ?>
                     </div>
                     <div class="col-sm-6 col-md-12">
-                    <?php
-                    if (isset($preSaveId)) {
-                        echo $this->element('Search.SaveSearch/save_search_criterias', [
+                    <?= $this->element('Search.SaveSearch/save_search_criterias', [
                         'preSaveId' => $preSaveId,
                         'savedSearch' => $savedSearch,
                         'isEditable' => $isEditable && 'criteria' === $savedSearch->type
-                        ]);
-
-                        echo $this->element('Search.SaveSearch/save_search_results', [
+                    ]) ?>
+                    <?= $this->element('Search.SaveSearch/save_search_results', [
                         'preSaveId' => $preSaveId,
                         'savedSearch' => $savedSearch,
                         'isEditable' => $isEditable && 'result' === $savedSearch->type
-                        ]);
-                    }
-                    ?>
+                    ]) ?>
                     </div>
                 </div>
             </div>
