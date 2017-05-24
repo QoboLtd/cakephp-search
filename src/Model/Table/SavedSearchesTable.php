@@ -3,11 +3,13 @@ namespace Search\Model\Table;
 
 use Cake\Datasource\ConnectionManager;
 use Cake\Event\Event;
+use Cake\Http\ServerRequest;
 use Cake\ORM\Query;
 use Cake\ORM\ResultSet;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
 use Cake\Validation\Validator;
 use InvalidArgumentException;
@@ -451,6 +453,34 @@ class SavedSearchesTable extends Table
     }
 
     /**
+     * Prepare search data from request data.
+     *
+     * @param \Cake\Http\ServerRequest $request Request object
+     * @param string $model Model name
+     * @param array $user User info
+     * @return array
+     */
+    public function prepareSearchData(ServerRequest $request, $model, array $user)
+    {
+        $result = $request->getData();
+
+        // non-basic search
+        if (!Hash::get($result, 'criteria.query')) {
+            return $result;
+        }
+
+        // basic search query, converted to search criteria
+        $result['aggregator'] = 'OR';
+        $result['criteria'] = $this->_getBasicSearchCriteria(
+            Hash::get($result, 'criteria'),
+            $model,
+            $user
+        );
+
+        return $result;
+    }
+
+    /**
      * Prepare basic search query's where statement
      *
      * @param array $data search fields
@@ -458,7 +488,7 @@ class SavedSearchesTable extends Table
      * @param array $user User info
      * @return array
      */
-    public function getBasicSearchCriteria(array $data, $table, $user)
+    protected function _getBasicSearchCriteria(array $data, $table, $user)
     {
         $result = [];
         if (empty($data['query'])) {
@@ -531,7 +561,7 @@ class SavedSearchesTable extends Table
 
         $data = [
             'aggregator' => 'OR',
-            'criteria' => $this->getBasicSearchCriteria($data, $module, $user)
+            'criteria' => $this->_getBasicSearchCriteria($data, $module, $user)
         ];
 
         $search = $this->search(

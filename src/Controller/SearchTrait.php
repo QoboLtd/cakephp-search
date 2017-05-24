@@ -5,7 +5,6 @@ use Cake\Filesystem\File;
 use Cake\Network\Exception\BadRequestException;
 use Cake\ORM\Query;
 use Cake\ORM\TableRegistry;
-use Cake\Utility\Hash;
 use Search\Controller\Traits\SearchableTrait;
 use Zend\Diactoros\Stream;
 
@@ -45,7 +44,7 @@ trait SearchTrait
         // get searchable fields
         $searchFields = $table->getSearchableFields($model);
 
-        $data = $this->request->data();
+        $data = $table->prepareSearchData($this->request, $model, $this->Auth->user());
 
         // is editable flag, false by default
         $isEditable = false;
@@ -53,19 +52,7 @@ trait SearchTrait
         // saved search instance, null by default
         $savedSearch = null;
 
-        $isBasicSearch = Hash::get($data, 'criteria.query') ? true : false;
-
         if ($this->request->is(['post', 'get'])) {
-            // basic search query, converted to search criteria
-            if ($isBasicSearch) {
-                $data['criteria'] = $table->getBasicSearchCriteria(
-                    Hash::get($data, 'criteria'),
-                    $model,
-                    $this->Auth->user()
-                );
-                $data['aggregator'] = 'OR';
-            }
-
             // id of saved search has been provided
             if (!is_null($id)) {
                 $savedSearch = $table->get($id);
