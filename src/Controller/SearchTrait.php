@@ -28,30 +28,6 @@ trait SearchTrait
     protected $_elementSearch = 'Search.Search/search';
 
     /**
-     * Save action
-     *
-     * @param string|null $id Search id.
-     * @return \Cake\Network\Response|null
-     * @throws \Cake\Network\Exception\NotFoundException When record not found.
-     */
-    public function saveSearch($id = null)
-    {
-        $this->request->allowMethod(['patch', 'post', 'put']);
-
-        $table = TableRegistry::get($this->_tableSearch);
-
-        $search = $table->get($id);
-        $search = $table->patchEntity($search, $this->request->data);
-        if ($table->save($search)) {
-            $this->Flash->success(__('The search has been saved.'));
-        } else {
-            $this->Flash->error(__('The search could not be saved. Please, try again.'));
-        }
-
-        return $this->redirect(['action' => 'search', $id]);
-    }
-
-    /**
      * Search action
      *
      * @param  string $id Saved search id
@@ -135,6 +111,30 @@ trait SearchTrait
         $this->set('aggregatorOptions', $table->getAggregatorOptions());
 
         $this->render($this->_elementSearch);
+    }
+
+    /**
+     * Save action
+     *
+     * @param string|null $id Search id.
+     * @return \Cake\Network\Response|null
+     * @throws \Cake\Network\Exception\NotFoundException When record not found.
+     */
+    public function saveSearch($id = null)
+    {
+        $this->request->allowMethod(['patch', 'post', 'put']);
+
+        $table = TableRegistry::get($this->_tableSearch);
+
+        $search = $table->get($id);
+        $search = $table->patchEntity($search, $this->request->data);
+        if ($table->save($search)) {
+            $this->Flash->success(__('The search has been saved.'));
+        } else {
+            $this->Flash->error(__('The search could not be saved. Please, try again.'));
+        }
+
+        return $this->redirect(['action' => 'search', $id]);
     }
 
     /**
