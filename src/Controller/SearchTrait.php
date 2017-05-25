@@ -43,7 +43,7 @@ trait SearchTrait
         $table = TableRegistry::get($this->_tableSearch);
 
 
-        $data = $table->prepareSearchData($this->request, $model, $this->Auth->user());
+        $data = $table->prepareData($this->request, $model, $this->Auth->user());
 
 
         // saved search instance, null by default

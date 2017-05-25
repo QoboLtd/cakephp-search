@@ -473,7 +473,7 @@ class SavedSearchesTable extends Table
      * @param array $user User info
      * @return array
      */
-    public function prepareSearchData(ServerRequest $request, $model, array $user)
+    public function prepareData(ServerRequest $request, $model, array $user)
     {
         $result = $request->getData();
 
