@@ -4,7 +4,7 @@ use Cake\Utility\Inflector;
 if (!empty($savedSearches)) :
     echo $this->Html->script('Search.saved_searches', ['block' => 'scriptBotton']);
 ?>
-<div class="box box-default collapsed-box">
+<div class="box box-solid collapsed-box">
     <div class="box-header with-border">
         <h3 class="box-title"><?= __('Saved Searches') ?></h3>
         <div class="box-tools pull-right">

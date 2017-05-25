@@ -14,7 +14,7 @@ if (!empty($searchFields)) :
         );
     }
 ?>
-<div class="box box-default collapsed-box">
+<div class="box box-solid collapsed-box">
     <div class="box-header with-border">
         <h3 class="box-title"><?= __('Advanced Search') ?></h3>
         <div class="box-tools pull-right">
