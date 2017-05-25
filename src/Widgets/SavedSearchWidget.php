@@ -89,6 +89,9 @@ class SavedSearchWidget extends BaseWidget
             return $results;
         }
 
+        // keeps backward compatibility
+        $results = $this->_tableInstance->resetSearch($results, $results->model, $options['user']);
+
         $content = json_decode($results->content, true);
 
         switch ($results->type) {
