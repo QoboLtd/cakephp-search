@@ -94,8 +94,7 @@ class SavedSearchWidget extends BaseWidget
                 $search = $this->_tableInstance->search(
                     $results->model,
                     $options['user'],
-                    json_decode($results->content, true),
-                    true
+                    json_decode($results->content, true)
                 );
                 $results->entities = $search['entities'];
                 break;

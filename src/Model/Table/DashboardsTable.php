@@ -95,8 +95,7 @@ class DashboardsTable extends Table
                     $search = $this->SavedSearches->search(
                         $savedSearch->model,
                         $user,
-                        json_decode($savedSearch->content, true),
-                        true
+                        json_decode($savedSearch->content, true)
                     );
                     $savedSearch->entities = $search['entities'];
                     break;
