@@ -65,9 +65,11 @@ if (!empty($searchFields)) :
                 <?php
                     echo $this->Form->select(
                         'aggregator',
-                        $aggregatorOptions,
+                        $searchOptions['aggregators'],
                         [
-                            'default' => isset($searchData['aggregator']) ? $searchData['aggregator'] : key($aggregatorOptions),
+                            'default' => isset($searchData['aggregator']) ?
+                                $searchData['aggregator'] :
+                                key($searchOptions['aggregators']),
                             'class' => 'form-control input-sm'
                          ]
                     );

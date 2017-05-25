@@ -35,8 +35,9 @@ trait SearchTrait
     public function search($id = null)
     {
         $model = $this->modelClass;
+
         if (!$this->_isSearchable($model)) {
-            throw new BadRequestException('You cannot search in ' . implode(' ', pluginSplit($model)) . '.');
+            throw new BadRequestException('You cannot search in ' . implode(' - ', pluginSplit($model)) . '.');
         }
 
         $table = TableRegistry::get($this->_tableSearch);
@@ -78,9 +79,8 @@ trait SearchTrait
         $this->set('savedSearch', $savedSearch);
         $this->set('preSaveId', $search['preSaveId']);
         $this->set('isEditable', $isEditable);
-        $this->set('limitOptions', $table->getLimitOptions());
-        $this->set('sortByOrderOptions', $table->getSortByOrderOptions());
-        $this->set('aggregatorOptions', $table->getAggregatorOptions());
+        // INFO: this is valid when a saved search was modified and the form was re-submitted
+        $this->set('searchOptions', $table->getSearchOptions());
 
         $this->render($this->_elementSearch);
     }

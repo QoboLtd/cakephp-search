@@ -348,6 +348,22 @@ class SavedSearchesTable extends Table
     }
 
     /**
+     * Search options getter.
+     *
+     * @return array
+     */
+    public function getSearchOptions()
+    {
+        $result = [
+            'limit' => $this->getLimitOptions(),
+            'sortByOrder' => $this->getSortByOrderOptions(),
+            'aggregators' => $this->getAggregatorOptions()
+        ];
+
+        return $result;
+    }
+
+    /**
      * Returns saved searches filtered by users and models.
      *
      * @param  array  $users  users ids
