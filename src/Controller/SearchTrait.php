@@ -30,7 +30,7 @@ trait SearchTrait
      * Search action
      *
      * @param  string $id Saved search id
-     * @return void
+     * @return \Cake\Network\Response|void
      */
     public function search($id = null)
     {

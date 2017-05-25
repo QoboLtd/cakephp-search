@@ -399,7 +399,8 @@ class SavedSearchesTable extends Table
     {
         $content = json_decode($entity->content, true);
 
-        $entity = $this->_normalizeSearch($entity, $model, $user, $content['saved'], $content['saved']);
+        $saved = isset($content['saved']) ? $content['saved'] : $content;
+        $entity = $this->_normalizeSearch($entity, $model, $user, $saved, $saved);
 
         return $this->save($entity);
     }
