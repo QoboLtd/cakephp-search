@@ -47,8 +47,6 @@ trait SearchTrait
 
         $data = $table->prepareSearchData($this->request, $model, $this->Auth->user());
 
-        // INFO: this is valid when a saved search was modified and the form was re-submitted
-        $isEditable = !empty($data) && !is_null($id);
 
         // saved search instance, null by default
         $savedSearch = !is_null($id) ? $table->get($id) : null;
@@ -78,8 +76,8 @@ trait SearchTrait
         $this->set('searchData', $data);
         $this->set('savedSearch', $savedSearch);
         $this->set('preSaveId', $search['preSaveId']);
-        $this->set('isEditable', $isEditable);
         // INFO: this is valid when a saved search was modified and the form was re-submitted
+        $this->set('isEditable', $table->isEditable($savedSearch));
         $this->set('searchOptions', $table->getSearchOptions());
 
         $this->render($this->_elementSearch);

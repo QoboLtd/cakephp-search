@@ -2,6 +2,7 @@
 namespace Search\Model\Table;
 
 use Cake\Datasource\ConnectionManager;
+use Cake\Datasource\EntityInterface;
 use Cake\Event\Event;
 use Cake\Http\ServerRequest;
 use Cake\ORM\Query;
@@ -485,6 +486,17 @@ class SavedSearchesTable extends Table
         );
 
         return $result;
+    }
+
+    /**
+     * Validate if search is editable.
+     *
+     * @param EntityInterface $entity Search entity
+     * @return bool
+     */
+    public function isEditable(EntityInterface $entity)
+    {
+        return (bool)$entity->get('name');
     }
 
     /**
