@@ -308,17 +308,15 @@ class SavedSearchesTable extends Table
     }
 
     /**
-     * Search method
+     * Search method.
      *
-     * @param  string $tableName table name
-     * @param  array  $user user
-     * @param  array  $requestData request data
+     * @param string $tableName Table name
+     * @param array $user User info
+     * @param array $data Request data
      * @return array
      */
-    public function search($tableName, $user, $requestData)
+    public function search($tableName, array $user, array $data)
     {
-        $data = $requestData;
-
         $data = $this->validateData($tableName, $data);
 
         // get search results
@@ -975,25 +973,46 @@ class SavedSearchesTable extends Table
     /**
      * Method that pre-saves search and returns saved record id.
      *
-     * @param string $model model name
-     * @param array $search search
-     * @param string $userId user id
-     * @return array
+     * @param string $model Model name
+     * @param array $user User info
+     * @param array $data Search data
+     * @return string
      */
-    protected function _preSave($model, array $search, $userId)
+    protected function _preSave($model, array $user, array $data)
     {
         // delete old pre-saved searches
         $this->_deletePreSaved();
 
         $entity = $this->newEntity();
-        $entity->user_id = $userId;
-        $entity->model = $model;
-        $entity->shared = $this->getPrivateSharedStatus();
-        $entity->content = json_encode($search);
 
+        $entity = $this->_normalizeSearch($entity, $model, $user, $data, $data);
         $this->save($entity);
 
         return $entity->id;
+    }
+
+    /**
+     * Normalize search.
+     *
+     * @param \Cake\Datasource\EntityInterface $entity Search entity
+     * @param string $model Model name
+     * @param array $user User info
+     * @param array $saved Saved search data
+     * @param array $latest Latest search data
+     * @return \Cake\ORM\Entity
+     */
+    protected function _normalizeSearch(EntityInterface $entity, $model, array $user, array $saved, array $latest)
+    {
+        // keeps backward compatibility
+        $saved = isset($saved['saved']) ? $saved['saved'] : $saved;
+        $latest = isset($latest['latest']) ? $latest['latest'] : $latest;
+
+        $entity->user_id = $user['id'];
+        $entity->model = $model;
+        $entity->shared = $this->getPrivateSharedStatus();
+        $entity->content = json_encode(['saved' => $saved, 'latest' => $latest]);
+
+        return $entity;
     }
 
     /**
