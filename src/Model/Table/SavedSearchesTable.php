@@ -335,6 +335,76 @@ class SavedSearchesTable extends Table
     }
 
     /**
+     * New search.
+     *
+     * @param string $model Model name
+     * @param array $user User info
+     * @param array $searchData Request data
+     * @return string
+     */
+    public function newSearch($model, array $user, array $searchData)
+    {
+        $search = $this->search($model, $user, $searchData);
+
+        return $search['preSaveId'];
+    }
+
+    /**
+     * Existing search.
+     *
+     * @param string $model Model name
+     * @param array $user User info
+     * @param array $searchData Request data
+     * @param string $id Existing search id
+     * @return bool
+     */
+    public function existingSearch($model, array $user, array $searchData, $id)
+    {
+        $savedSearch = $this->get($id);
+        $existingData = json_decode($savedSearch->content, true);
+
+        $savedSearch = $this->_normalizeSearch($savedSearch, $model, $user, $existingData, $searchData);
+
+        return $this->save($savedSearch);
+    }
+
+    /**
+     * Get search.
+     *
+     * @param string $model Model name
+     * @param array $user User info
+     * @param string $id Existing search id
+     * @return \Cake\ORM\Entity|null
+     */
+    public function getSearch($model, $user, $id)
+    {
+        $entity = $this->get($id);
+
+        $content = json_decode($entity->content, true);
+
+        $entity = $this->_normalizeSearch($entity, $model, $user, $content, $content);
+
+        return $entity;
+    }
+
+    /**
+     * Reset search.
+     *
+     * @param \Cake\Datasource\EntityInterface $entity Search entity
+     * @param string $model Model name
+     * @param array $user User info
+     * @return bool
+     */
+    public function resetSearch(EntityInterface $entity, $model, $user)
+    {
+        $content = json_decode($entity->content, true);
+
+        $entity = $this->_normalizeSearch($entity, $model, $user, $content['saved'], $content['saved']);
+
+        return $this->save($entity);
+    }
+
+    /**
      * Default search options.
      *
      * @param string $tableName Table name

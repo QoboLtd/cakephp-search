@@ -42,30 +42,42 @@ trait SearchTrait
 
         $table = TableRegistry::get($this->_tableSearch);
 
+        // redirect on POST requests (PRG pattern)
+        if ($this->request->is('post')) {
+            $searchData = $table->prepareData($this->request, $model, $this->Auth->user());
 
-        $data = $table->prepareData($this->request, $model, $this->Auth->user());
+            if ($id) {
+                $table->existingSearch($model, $this->Auth->user(), $searchData, $id);
+            } else {
+                $id = $table->newSearch($model, $this->Auth->user(), $searchData);
+            }
 
+            list($plugin, $controller) = pluginSplit($model);
 
-        // saved search instance, null by default
-        $savedSearch = !is_null($id) ? $table->get($id) : null;
+            return $this->redirect([
+                'plugin' => $plugin,
+                'controller' => $controller,
+                'action' => __FUNCTION__,
+                $id
+            ]);
+        }
 
-        // fetch search conditions from saved search if request data are empty
-        // INFO: this is valid on initial saved search load
-        $data = !is_null($savedSearch) && empty($data) ? json_decode($savedSearch->content, true) : $data;
+        $savedSearch = $table->getSearch($model, $this->Auth->user(), $id);
 
-        $data = $table->validateData($model, $data);
+        $searchData = json_decode($savedSearch->content, true);
 
-        $search = $table->search($model, $this->Auth->user(), $data);
+        $search = $table->search($model, $this->Auth->user(), $searchData['latest']);
 
+        $table->resetSearch($savedSearch, $model, $this->Auth->user());
+
+        $searchData = $table->validateData($model, $searchData['latest']);
         // @todo find out how to do pagination without affecting limit
-        $data['result'] = $search['entities']['result'];
-
-        $savedSearches = $table->getSavedSearches([$this->Auth->user('id')], [$model]);
+        $searchData['result'] = $search['entities']['result'];
 
         $this->set('searchFields', $table->getSearchableFields($model));
-        $this->set('savedSearches', $savedSearches);
+        $this->set('savedSearches', $table->getSavedSearches([$this->Auth->user('id')], [$model]));
         $this->set('model', $model);
-        $this->set('searchData', $data);
+        $this->set('searchData', $searchData);
         $this->set('savedSearch', $savedSearch);
         $this->set('preSaveId', $search['preSaveId']);
         // INFO: this is valid when a saved search was modified and the form was re-submitted
