@@ -324,10 +324,15 @@ class SavedSearchesTable extends Table
         // get search results
         $data['result'] = empty($data['result']) ? $this->_getResults($data, $tableName) : $data['result'];
 
+        // normalize result, for new search result
+        if ($data['result'] instanceof Query) {
+            $data['result'] = $data['result']->all();
+        }
+
         return [
             'entities' => $data,
             // pre-save search
-            'preSaveId' => $this->_preSave($tableName, $data, $user['id'])
+            'preSaveId' => $this->_preSave($tableName, $user, $data)
         ];
     }
 

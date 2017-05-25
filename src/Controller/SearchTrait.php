@@ -42,8 +42,6 @@ trait SearchTrait
 
         $table = TableRegistry::get($this->_tableSearch);
 
-        // get searchable fields
-        $searchFields = $table->getSearchableFields($model);
 
         $data = $table->prepareSearchData($this->request, $model, $this->Auth->user());
 
@@ -60,17 +58,11 @@ trait SearchTrait
         $search = $table->search($model, $this->Auth->user(), $data);
 
         // @todo find out how to do pagination without affecting limit
-        if ($search['entities']['result'] instanceof Query) {
-            // fetched from new search result
-            $data['result'] = $search['entities']['result']->all();
-        } else {
-            // as taken from a saved search result
-            $data['result'] = $search['entities']['result'];
-        }
+        $data['result'] = $search['entities']['result'];
 
         $savedSearches = $table->getSavedSearches([$this->Auth->user('id')], [$model]);
 
-        $this->set('searchFields', $searchFields);
+        $this->set('searchFields', $table->getSearchableFields($model));
         $this->set('savedSearches', $savedSearches);
         $this->set('model', $model);
         $this->set('searchData', $data);
