@@ -1,6 +1,7 @@
 <?php
 namespace Search\Test\TestCase\Model\Table;
 
+use Cake\Http\ServerRequest;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use Search\Model\Table\SavedSearchesTable;
@@ -88,6 +89,16 @@ class SavedSearchesTableTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
+    public function testGetSearchOptions()
+    {
+        $result = $this->SavedSearches->getSearchOptions();
+        $this->assertNotEmpty($result);
+        $this->assertInternalType('array', $result);
+        $this->assertArrayHasKey('limit', $result);
+        $this->assertArrayHasKey('sortByOrder', $result);
+        $this->assertArrayHasKey('aggregators', $result);
+    }
+
     /**
      * @expectedException \RuntimeException
      */
@@ -104,17 +115,63 @@ class SavedSearchesTableTest extends TestCase
         $this->assertEquals($result, ['name']);
     }
 
-    /**
-     * @expectedException \RuntimeException
-     * @dataProvider dataProviderGetBasicSearchCriteria
-     */
-    public function testGetBasicSearchCriteriaException($config)
+    public function testIsEditable()
     {
-        $result = $this->SavedSearches->getBasicSearchCriteria(
-            ['query' => $config['query']],
-            $config['table'],
-            ['id' => '00000000-0000-0000-0000-000000000001']
-        );
+        $entity = $this->SavedSearches->get('00000000-0000-0000-0000-000000000001');
+        $result = $this->SavedSearches->isEditable($entity);
+
+        $this->assertTrue($result);
+    }
+
+    public function testPrepareData()
+    {
+        $request = new ServerRequest([
+            'post' => [
+                'criteria' => ['name' => 'foo']
+            ]
+        ]);
+        $model = 'Dashboards';
+        $user = ['id' => '00000000-0000-0000-0000-000000000001'];
+
+        $result = $this->SavedSearches->prepareData($request, $model, $user);
+
+        $this->assertNotEmpty($result);
+        $this->assertInternalType('array', $result);
+        $this->assertArrayHasKey('criteria', $result);
+    }
+
+    public function testPrepareDataBasicSearch()
+    {
+        // anonymous event listener that passes some dummy searchable fields
+        $this->SavedSearches->eventManager()->on('Search.Model.Search.searchabeFields', function ($event, $table) {
+            return [
+                'name' => [
+                    'type' => 'string',
+                    'operators' => [
+                        'contains' => [
+                            'label' => 'contains',
+                            'operator' => 'LIKE',
+                            'pattern' => '%{{value}}%'
+                        ],
+                    ]
+                ]
+            ];
+        });
+
+        $request = new ServerRequest([
+            'post' => [
+                'criteria' => ['query' => 'foo']
+            ]
+        ]);
+        $model = 'Dashboards';
+        $user = ['id' => '00000000-0000-0000-0000-000000000001'];
+
+        $result = $this->SavedSearches->prepareData($request, $model, $user);
+
+        $this->assertNotEmpty($result);
+        $this->assertInternalType('array', $result);
+        $this->assertArrayHasKey('criteria', $result);
+        $this->assertArrayHasKey('aggregator', $result);
     }
 
     public function dataProviderGetBasicSearchCriteria()
@@ -311,8 +368,7 @@ class SavedSearchesTableTest extends TestCase
         $this->assertNotEmpty($result);
         $this->assertInternalType('array', $result);
 
-        $this->assertArrayHasKey('saveSearchCriteriaId', $result);
-        $this->assertArrayHasKey('saveSearchResultsId', $result);
+        $this->assertArrayHasKey('preSaveId', $result);
 
         $this->assertNotEmpty($result['entities']);
         $this->assertEquals($data['criteria'], $result['entities']['criteria']);
@@ -326,18 +382,7 @@ class SavedSearchesTableTest extends TestCase
         $this->assertGreaterThan(0, $result['entities']['result']->count());
     }
 
-    public function testGetBasicSearchCriteriaEmptyQuery()
-    {
-        $result = $this->SavedSearches->getBasicSearchCriteria(
-            ['query' => []],
-            'Dashboards',
-            ['id' => '00000000-0000-0000-0000-000000000001']
-        );
-
-        $this->assertEmpty($result);
-    }
-
-    public function testGetBasicSearchCriteria()
+    public function testNewSearch()
     {
         // anonymous event listener that passes some dummy searchable fields
         $this->SavedSearches->eventManager()->on('Search.Model.Search.searchabeFields', function ($event, $table) {
@@ -349,68 +394,126 @@ class SavedSearchesTableTest extends TestCase
                             'label' => 'contains',
                             'operator' => 'LIKE',
                             'pattern' => '%{{value}}%'
-                        ],
-                    ]
-                ],
-                'modified' => [
-                    'type' => 'datetime',
-                    'operators' => [
-                        'is' => [
-                            'label' => 'is',
-                            'operator' => 'IN'
-                        ]
-                    ]
-                ],
-                'created' => [
-                    'type' => 'datetime',
-                    'operators' => [
-                        'is' => [
-                            'label' => 'is',
-                            'operator' => 'IN'
                         ]
                     ]
                 ]
             ];
         });
 
-        $result = $this->SavedSearches->getBasicSearchCriteria(
-            ['query' => ['foo']],
-            'Dashboards',
-            ['id' => '00000000-0000-0000-0000-000000000001']
-        );
+        $user = [
+            'id' => '00000000-0000-0000-0000-000000000001'
+        ];
+
+        $data = [
+            'criteria' => [
+                'name' => [
+                    10 => [
+                        'type' => 'string',
+                        'operator' => 'contains',
+                        'value' => 'ipsum'
+                    ]
+                ]
+            ],
+            'display_columns' => [
+                'name',
+                'created',
+                'modified'
+            ],
+            'sort_by_field' => 'name',
+            'sort_by_order' => 'desc',
+            'limit' => '10'
+        ];
+
+        $result = $this->SavedSearches->newSearch('Dashboards', $user, $data);
+
         $this->assertNotEmpty($result);
-        $this->assertInternalType('array', $result);
-        $this->assertArrayHasKey('name', $result);
+        $this->assertInternalType('string', $result);
+        $this->assertEquals(36, strlen($result));
     }
 
-    public function testGetBasicSearchCriteriaVirtualField()
+    public function testExistingSearch()
     {
         // anonymous event listener that passes some dummy searchable fields
         $this->SavedSearches->eventManager()->on('Search.Model.Search.searchabeFields', function ($event, $table) {
             return [
-                'foo' => [
+                'name' => [
                     'type' => 'string',
                     'operators' => [
                         'contains' => [
                             'label' => 'contains',
                             'operator' => 'LIKE',
                             'pattern' => '%{{value}}%'
-                        ],
+                        ]
                     ]
                 ]
             ];
         });
 
-        // set display field to a virtual one
-        TableRegistry::get('Dashboards')->displayField('just_a_virtual_field');
+        $id = '00000000-0000-0000-0000-000000000001';
 
-        $result = $this->SavedSearches->getBasicSearchCriteria(
-            ['query' => ['foo']],
-            'Dashboards',
-            ['id' => '00000000-0000-0000-0000-000000000001']
-        );
-        $this->assertNotEmpty($result);
-        $this->assertInternalType('array', $result);
-        $this->assertArrayHasKey('foo', $result);
+        $user = [
+            'id' => '00000000-0000-0000-0000-000000000001'
+        ];
+
+        $data = [
+            'criteria' => [
+                'name' => [
+                    10 => [
+                        'type' => 'string',
+                        'operator' => 'contains',
+                        'value' => 'ipsum'
+                    ]
+                ]
+            ],
+            'display_columns' => [
+                'name',
+                'created',
+                'modified'
+            ],
+            'sort_by_field' => 'name',
+            'sort_by_order' => 'desc',
+            'limit' => '10'
+        ];
+
+        $result = $this->SavedSearches->existingSearch('Dashboards', $user, $data, $id);
+        $this->assertInstanceOf(\Search\Model\Entity\SavedSearch::class, $result);
+        $this->assertNotEmpty($result->content);
+
+        $content = json_decode($result->content, true);
+        $this->assertArrayHasKey('latest', $content);
+        $this->assertEquals($data, $content['latest']);
+    }
+
+    public function testGetSearch()
+    {
+        // anonymous event listener that passes some dummy searchable fields
+        $this->SavedSearches->eventManager()->on('Search.Model.Search.searchabeFields', function ($event, $table) {
+            return [
+                'name' => [
+                    'type' => 'string',
+                    'operators' => [
+                        'contains' => [
+                            'label' => 'contains',
+                            'operator' => 'LIKE',
+                            'pattern' => '%{{value}}%'
+                        ]
+                    ]
+                ]
+            ];
+        });
+
+        $id = '00000000-0000-0000-0000-000000000001';
+
+        $user = [
+            'id' => '00000000-0000-0000-0000-000000000001'
+        ];
+
+        $result = $this->SavedSearches->getSearch('Dashboards', $user, $id);
+        $this->assertInstanceOf(\Search\Model\Entity\SavedSearch::class, $result);
+        $this->assertNotEmpty($result->content);
+
+        $content = json_decode($result->content, true);
+        $this->assertArrayHasKey('saved', $content);
+        $this->assertArrayHasKey('latest', $content);
     }
 }
