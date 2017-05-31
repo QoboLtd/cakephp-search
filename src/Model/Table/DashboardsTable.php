@@ -1,12 +1,10 @@
 <?php
 namespace Search\Model\Table;
 
-use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
-use Search\Model\Entity\Dashboard;
 
 /**
  * Dashboards Model
@@ -76,66 +74,6 @@ class DashboardsTable extends Table
         $rules->add($rules->existsIn(['role_id'], 'Roles'));
 
         return $rules;
-    }
-
-    /**
-     * Prepare saved searches to be passed to the View.
-     *
-     * @param  array  $savedSearches Dashboard's saved searches
-     * @param  array  $user          User
-     * @return array
-     */
-    public function prepareSavedSearches(array $savedSearches, array $user)
-    {
-        $result = [];
-
-        foreach ($savedSearches as $savedSearch) {
-            switch ($savedSearch->type) {
-                case $this->SavedSearches->getCriteriaType():
-                    $search = $this->SavedSearches->search(
-                        $savedSearch->model,
-                        $user,
-                        json_decode($savedSearch->content, true)
-                    );
-                    $savedSearch->entities = $search['entities'];
-                    break;
-
-                case $this->SavedSearches->getResultType():
-                    $search = $this->SavedSearches->get($savedSearch->id);
-                    $savedSearch->entities = json_decode($search->content, true);
-                    break;
-            }
-            // filter out skipped display fields
-            $savedSearch->entities['display_columns'] = array_diff(
-                $savedSearch->entities['display_columns'],
-                $this->SavedSearches->getSkippedDisplayFields()
-            );
-
-            $result[] = $savedSearch;
-        }
-
-        return $result;
-    }
-
-    /**
-     * Prepare associated saved searches data to be stored in the joined DB table.
-     *
-     * @param  array $savedSearches post request saved searches related data
-     * @return array
-     */
-    public function prepareToSaveSavedSearches($savedSearches)
-    {
-        $result = [];
-        foreach ($savedSearches['_ids'] as $k => $id) {
-            $result[] = ['id' => $id,
-                '_joinData' => [
-                    'row' => $savedSearches['_rows'][$k],
-                    'column' => $savedSearches['_columns'][$k]
-                ]
-            ];
-        }
-
-        return $result;
     }
 
     /**
