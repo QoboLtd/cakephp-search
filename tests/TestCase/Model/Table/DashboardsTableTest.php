@@ -61,7 +61,7 @@ class DashboardsTableTest extends TestCase
 
     public function testGetUserDashboardsSuperuser()
     {
-        $user = ['superuser' => true];
+        $user = ['is_superuser' => true];
 
         $query = $this->Dashboards->getUserDashboards($user);
         $this->assertInstanceOf('\Cake\ORM\Query', $query);
