@@ -2,15 +2,15 @@
 namespace Search\Test\TestCase\Widgets;
 
 use Cake\TestSuite\TestCase;
-use Search\Widgets\Reports\KnobChartReportWidget;
+use Search\Widgets\Reports\TableReportWidget;
 
-class KnobChartReportWidgetTest extends TestCase
+class TableReportWidgetTest extends TestCase
 {
     public $widget;
 
     public function setUp()
     {
-        $this->widget = new KnobChartReportWidget();
+        $this->widget = new TableReportWidget();
     }
 
     public function tearDown()
@@ -22,7 +22,7 @@ class KnobChartReportWidgetTest extends TestCase
 
     public function testGetType()
     {
-        $this->assertEquals('knobChart', $this->widget->getType());
+        $this->assertEquals('table', $this->widget->getType());
     }
 
     public function testGetScripts()
@@ -37,23 +37,6 @@ class KnobChartReportWidgetTest extends TestCase
 
     public function testGetChartData()
     {
-        $data = [
-            [
-                'name' => 'foo',
-                'place' => 'bar',
-                'amount' => 100
-            ]
-        ];
-
-        $expected = [
-            'chart' => 'knobChart',
-            'options' => [
-                'element' => 'graph_bar_assigned_by_year',
-                'resize' => true,
-                'data' => [['value' => 'foo', 'label' => 'bar', 'max' => 100]]
-            ]
-        ];
-
         $config = [
             'modelName' => 'Reports',
             'slug' => 'bar_assigned_by_year',
@@ -64,21 +47,26 @@ class KnobChartReportWidgetTest extends TestCase
                 'name' => 'Report Bar',
                 'query' => '',
                 'columns' => '',
-                'renderAs' => 'knobChart',
+                'renderAs' => 'table',
                 'y_axis' => '',
-                'x_axis' => '',
-                'max' => 'amount',
-                'value' => 'name',
-                'label' => 'place'
+                'x_axis' => ''
             ]
         ];
 
         $this->widget->setConfig($config);
         $this->widget->setContainerId($config);
 
-        $result = $this->widget->getChartData($data);
+        $result = $this->widget->getChartData(['foo']);
         $this->assertNotEmpty($result['options']['element']);
 
+        $expected = [
+            'chart' => 'table',
+            'options' => [
+                'element' => 'graph_bar_assigned_by_year',
+                'resize' => true,
+                'data' => ['foo']
+            ]
+        ];
         $this->assertEquals($expected, $this->widget->getData());
     }
 }

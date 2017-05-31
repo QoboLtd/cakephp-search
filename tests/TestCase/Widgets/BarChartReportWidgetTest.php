@@ -13,6 +13,13 @@ class BarChartReportWidgetTest extends TestCase
         $this->widget = new BarChartReportWidget();
     }
 
+    public function tearDown()
+    {
+        unset($this->widget);
+
+        parent::tearDown();
+    }
+
     public function testGetType()
     {
         $this->assertEquals('barChart', $this->widget->getType());
@@ -21,8 +28,11 @@ class BarChartReportWidgetTest extends TestCase
     public function testGetScripts()
     {
         $content = $this->widget->getScripts([]);
-        $this->assertContains('post', array_keys($content));
+        $this->assertInternalType('array', $content);
         $this->assertNotEmpty($content);
+        $this->assertArrayHasKey('post', $content);
+        $this->assertArrayHasKey('css', $content['post']);
+        $this->assertArrayHasKey('javascript', $content['post']);
     }
 
     public function testGetContainerId()
