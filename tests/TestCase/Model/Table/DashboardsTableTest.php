@@ -50,4 +50,20 @@ class DashboardsTableTest extends TestCase
 
         parent::tearDown();
     }
+
+    public function testGetUserDashboards()
+    {
+        $user = ['id' => '00000000-0000-0000-0000-000000000001'];
+
+        $query = $this->Dashboards->getUserDashboards($user);
+        $this->assertInstanceOf('\Cake\ORM\Query', $query);
+    }
+
+    public function testGetUserDashboardsSuperuser()
+    {
+        $user = ['superuser' => true];
+
+        $query = $this->Dashboards->getUserDashboards($user);
+        $this->assertInstanceOf('\Cake\ORM\Query', $query);
+    }
 }
