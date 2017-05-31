@@ -51,6 +51,22 @@ class DashboardsTableTest extends TestCase
         parent::tearDown();
     }
 
+    public function testValidationDefault()
+    {
+        $validator = new \Cake\Validation\Validator();
+        $result = $this->Dashboards->validationDefault($validator);
+
+        $this->assertInstanceOf('\Cake\Validation\Validator', $result);
+    }
+
+    public function testBuildRules()
+    {
+        $rules = new \Cake\ORM\RulesChecker();
+        $result = $this->Dashboards->buildRules($rules);
+
+        $this->assertInstanceOf('\Cake\ORM\RulesChecker', $result);
+    }
+
     public function testGetUserDashboards()
     {
         $user = ['id' => '00000000-0000-0000-0000-000000000001'];

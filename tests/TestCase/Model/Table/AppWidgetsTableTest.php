@@ -51,33 +51,19 @@ class AppWidgetsTableTest extends TestCase
         parent::tearDown();
     }
 
-    /**
-     * Test initialize method
-     *
-     * @return void
-     */
-    public function testInitialize()
-    {
-        $this->markTestIncomplete('Not implemented yet.');
-    }
-
-    /**
-     * Test validationDefault method
-     *
-     * @return void
-     */
     public function testValidationDefault()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $validator = new \Cake\Validation\Validator();
+        $result = $this->AppWidgets->validationDefault($validator);
+
+        $this->assertInstanceOf('\Cake\Validation\Validator', $result);
     }
 
-    /**
-     * Test buildRules method
-     *
-     * @return void
-     */
     public function testBuildRules()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $rules = new \Cake\ORM\RulesChecker();
+        $result = $this->AppWidgets->buildRules($rules);
+
+        $this->assertInstanceOf('\Cake\ORM\RulesChecker', $result);
     }
 }

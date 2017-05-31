@@ -54,14 +54,20 @@ class WidgetsTableTest extends TestCase
         parent::tearDown();
     }
 
-    /**
-     * Test initialize method
-     *
-     * @return void
-     */
-    public function testInitialize()
+    public function testValidationDefault()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $validator = new \Cake\Validation\Validator();
+        $result = $this->Widgets->validationDefault($validator);
+
+        $this->assertInstanceOf('\Cake\Validation\Validator', $result);
+    }
+
+    public function testBuildRules()
+    {
+        $rules = new \Cake\ORM\RulesChecker();
+        $result = $this->Widgets->buildRules($rules);
+
+        $this->assertInstanceOf('\Cake\ORM\RulesChecker', $result);
     }
 
     /**

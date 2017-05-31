@@ -53,6 +53,22 @@ class SavedSearchesTableTest extends TestCase
         parent::tearDown();
     }
 
+    public function testValidationDefault()
+    {
+        $validator = new \Cake\Validation\Validator();
+        $result = $this->SavedSearches->validationDefault($validator);
+
+        $this->assertInstanceOf('\Cake\Validation\Validator', $result);
+    }
+
+    public function testBuildRules()
+    {
+        $rules = new \Cake\ORM\RulesChecker();
+        $result = $this->SavedSearches->buildRules($rules);
+
+        $this->assertInstanceOf('\Cake\ORM\RulesChecker', $result);
+    }
+
     public function testGetCriteriaType()
     {
         $result = $this->SavedSearches->getCriteriaType();
