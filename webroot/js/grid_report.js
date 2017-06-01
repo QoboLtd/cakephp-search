@@ -14,10 +14,6 @@ $(document).ready(function () {
 
             var nCells = nRow.getElementsByTagName('th');
             $.each($(nRow).children(), function (index, elem) {
-
-                console.log(index);
-                console.log($(elem).attr('class'));
-
                 if ($(elem).attr('class').indexOf('sum') >= 0) {
                     var iTotalMarket = 0;
                     var aaDataEnd = aaData.length;
