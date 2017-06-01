@@ -5,6 +5,7 @@ use Cake\Utility\Inflector;
 $config = $widget->getConfig();
 $data = $widget->getData();
 $type = $widget->getType();
+$totals = !empty($config['info']['totals']) ? explode(',', $config['info']['totals']) : [];
 
 $dataRecords = !empty($data['options']['data']) ? $data['options']['data'] : [];
 
@@ -31,7 +32,7 @@ echo $this->Html->script('Search.grid_report', ['block' => 'scriptBotton']);
                 <thead>
                     <tr>
                     <?php foreach ($columns as $col) : ?>
-                        <th><?= Inflector::humanize($col) ?></th>
+                        <th class="<?= in_array($col, $totals) ? 'sum' : 'normal'; ?>"><?= Inflector::humanize($col) ?></th>
                     <?php endforeach; ?>
                     </tr>
                 </thead>
@@ -53,6 +54,13 @@ echo $this->Html->script('Search.grid_report', ['block' => 'scriptBotton']);
                     </tr>
                 <?php endforeach; ?>
                 </tbody>
+                <tfoot>
+                    <tr>                        
+                        <?php foreach ($columns as $col) : ?>
+                            <th class="<?= in_array($col, $totals) ? 'sum' : 'normal'; ?>"></th>
+                        <?php endforeach; ?>
+                    </tr>
+                </tfoot>
                 </table>
             </div> 
         </div>
