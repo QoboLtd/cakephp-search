@@ -7,8 +7,6 @@ $data = $widget->getData();
 $type = $widget->getType();
 $totals = !empty($config['info']['totals']) ? explode(',', $config['info']['totals']) : [];
 
-debug($config);
-
 $dataRecords = !empty($data['options']['data']) ? $data['options']['data'] : [];
 
 $data = [];
