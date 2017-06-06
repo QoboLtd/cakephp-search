@@ -1,6 +1,7 @@
 <?php
 namespace Search\Test\TestCase\Model\Table;
 
+use Cake\Core\Configure;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use Search\Model\Table\AppWidgetsTable;
@@ -49,6 +50,14 @@ class AppWidgetsTableTest extends TestCase
         unset($this->AppWidgets);
 
         parent::tearDown();
+    }
+
+    public function testInitialize()
+    {
+        $result = $this->AppWidgets->find('list')->toArray();
+
+        $this->assertContains('Another Test Widget', $result);
+        $this->assertContains('Hello World', $result);
     }
 
     public function testValidationDefault()
