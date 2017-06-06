@@ -43,8 +43,8 @@ class DashboardsFixture extends TestFixture
             'id' => '00000000-0000-0000-0000-000000000001',
             'name' => 'Lorem ipsum dolor sit amet',
             'role_id' => '34cc7d4c-0b7e-4ff2-9e5d-4d48bcdb3d2e',
-            'created' => '2016-04-27 08:21:54',
-            'modified' => '2016-04-27 08:21:54',
+            'created' => '2016-04-27 08:21:53',
+            'modified' => '2016-04-27 08:21:53',
             'trashed' => null,
         ],
         [

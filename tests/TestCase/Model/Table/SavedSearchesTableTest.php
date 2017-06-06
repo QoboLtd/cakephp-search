@@ -4,6 +4,7 @@ namespace Search\Test\TestCase\Model\Table;
 use Cake\Http\ServerRequest;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
+use RuntimeException;
 use Search\Model\Table\SavedSearchesTable;
 
 /**
@@ -26,6 +27,7 @@ class SavedSearchesTableTest extends TestCase
      */
     public $fixtures = [
         'plugin.search.dashboards',
+        'plugin.search.app_widgets',
         'plugin.search.saved_searches',
     ];
 
@@ -124,11 +126,44 @@ class SavedSearchesTableTest extends TestCase
         $this->assertEventFired('Search.Model.Search.searchabeFields', $this->EventManager());
     }
 
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testGetSearchableFieldsWrongVarType()
+    {
+        $result = $this->SavedSearches->getSearchableFields(['Widgets']);
+    }
+
     public function testGetListingFields()
     {
         $result = $this->SavedSearches->getListingFields('Dashboards');
         $this->assertNotEmpty($result);
         $this->assertEquals($result, ['name']);
+    }
+
+    public function testGetListingFieldsDatabaseColumns()
+    {
+        // anonymous event listener that passes some dummy searchable fields
+        $this->SavedSearches->eventManager()->on('Search.Model.Search.searchabeFields', function ($event, $table) {
+            return [
+                'name' => [
+                    'type' => 'blob',
+                    'operators' => [
+                        'contains' => [
+                            'label' => 'contains',
+                            'operator' => 'LIKE',
+                            'pattern' => '%{{value}}%'
+                        ],
+                    ]
+                ]
+            ];
+        });
+
+        $table = TableRegistry::get('Dashboards');
+        $table->setDisplayField('virtual_field');
+        $result = $this->SavedSearches->getListingFields($table);
+        $this->assertNotEmpty($result);
+        $this->assertEquals($result, ['modified', 'created']);
     }
 
     public function testIsEditable()
@@ -188,6 +223,63 @@ class SavedSearchesTableTest extends TestCase
         $this->assertInternalType('array', $result);
         $this->assertArrayHasKey('criteria', $result);
         $this->assertArrayHasKey('aggregator', $result);
+    }
+
+    public function testPrepareDataBasicSearchWithRelatedField()
+    {
+        // anonymous event listener that passes some dummy searchable fields
+        $this->SavedSearches->eventManager()->on('Search.Model.Search.searchabeFields', function ($event, $table) {
+            if ('AppWidgets' === $table->getRegistryAlias()) {
+                return [
+                    'name' => [
+                        'type' => 'string',
+                        'operators' => [
+                            'contains' => [
+                                'label' => 'contains',
+                                'operator' => 'LIKE',
+                                'pattern' => '%{{value}}%'
+                            ],
+                        ]
+                    ]
+                ];
+            }
+
+            return [
+                'name' => [
+                    'type' => 'related',
+                    'source' => 'AppWidgets',
+                    'operators' => [
+                        'contains' => [
+                            'label' => 'contains',
+                            'operator' => 'LIKE',
+                            'pattern' => '%{{value}}%'
+                        ],
+                    ]
+                ]
+            ];
+        });
+
+        $request = new ServerRequest([
+            'post' => [
+                'criteria' => ['query' => 'Hello']
+            ]
+        ]);
+        $model = 'Dashboards';
+        $user = ['id' => '00000000-0000-0000-0000-000000000001'];
+
+        $result = $this->SavedSearches->prepareData($request, $model, $user);
+
+        $this->assertNotEmpty($result);
+        $this->assertInternalType('array', $result);
+        $this->assertArrayHasKey('criteria', $result);
+        $this->assertArrayHasKey('aggregator', $result);
+
+        $expected = [
+            'type' => 'related',
+            'operator' => 'contains',
+            'value' => '00000000-0000-0000-0000-000000000001'
+        ];
+        $this->assertContains($expected, $result['criteria']['name']);
     }
 
     public function dataProviderGetBasicSearchCriteria()
@@ -320,7 +412,8 @@ class SavedSearchesTableTest extends TestCase
             ],
             'sort_by_field' => 'foo',
             'sort_by_order' => 'foo',
-            'limit' => '999'
+            'limit' => '999',
+            'aggregator' => 'foo'
         ];
         $result = $this->SavedSearches->validateData('Dashboards', $data);
 
@@ -335,6 +428,9 @@ class SavedSearchesTableTest extends TestCase
 
         $expected = $this->SavedSearches->getDefaultLimit();
         $this->assertEquals($expected, $result['limit']);
+
+        $expected = $this->SavedSearches->getDefaultAggregator();
+        $this->assertEquals($expected, $result['aggregator']);
     }
 
     public function testSearch()
@@ -396,6 +492,104 @@ class SavedSearchesTableTest extends TestCase
         $this->assertNotEmpty($result['entities']['result']);
         $this->assertInstanceOf(\Cake\ORM\ResultSet::class, $result['entities']['result']);
         $this->assertGreaterThan(0, $result['entities']['result']->count());
+    }
+
+    public function testSearchWithDatetimeIs()
+    {
+        // anonymous event listener that passes some dummy searchable fields
+        $this->SavedSearches->eventManager()->on('Search.Model.Search.searchabeFields', function ($event, $table) {
+            return [
+                'modified' => [
+                    'type' => 'datetime',
+                    'operators' => [
+                        'is' => [
+                            'label' => 'is',
+                            'operator' => 'IN'
+                        ]
+                    ]
+                ]
+            ];
+        });
+
+        $user = [
+            'id' => '00000000-0000-0000-0000-000000000001'
+        ];
+
+        $data = [
+            'criteria' => [
+                'modified' => [
+                    10 => [
+                        'type' => 'datetime',
+                        'operator' => 'is',
+                        'value' => '2016-04-27 08:21:53'
+                    ],
+                    20 => [
+                        'type' => 'datetime',
+                        'operator' => 'is',
+                        'value' => '2016-04-27 08:21:54'
+                    ],
+                    30 => [
+                        'type' => 'datetime',
+                        'operator' => 'is',
+                        'value' => '2016-04-27 08:21:55'
+                    ]
+                ]
+            ]
+        ];
+
+        $result = $this->SavedSearches->search('Dashboards', $user, $data);
+
+        $this->assertNotEmpty($result['entities']['result']);
+        $this->assertEquals(2, $result['entities']['result']->count());
+    }
+
+    public function testSearchWithRelatedIsNot()
+    {
+        // anonymous event listener that passes some dummy searchable fields
+        $this->SavedSearches->eventManager()->on('Search.Model.Search.searchabeFields', function ($event, $table) {
+            return [
+                'role_id' => [
+                    'type' => 'related',
+                    'operators' => [
+                        'is_not' => [
+                            'label' => 'is not',
+                            'operator' => 'NOT IN'
+                        ]
+                    ]
+                ]
+            ];
+        });
+
+        $user = [
+            'id' => '00000000-0000-0000-0000-000000000001'
+        ];
+
+        $data = [
+            'criteria' => [
+                'role_id' => [
+                    10 => [
+                        'type' => 'related',
+                        'operator' => 'is_not',
+                        'value' => '00000000-0000-0000-0000-000000000001'
+                    ],
+                    20 => [
+                        'type' => 'related',
+                        'operator' => 'is_not',
+                        'value' => '00000000-0000-0000-0000-000000000002'
+                    ],
+                    30 => [
+                        'type' => 'related',
+                        'operator' => 'is_not',
+                        'value' => '00000000-0000-0000-0000-000000000003'
+                    ]
+                ]
+            ]
+        ];
+
+        $result = $this->SavedSearches->search('Dashboards', $user, $data);
+
+        $this->assertNotEmpty($result['entities']['result']);
+        $this->assertEquals(1, $result['entities']['result']->count());
     }
 
     public function testNewSearch()
