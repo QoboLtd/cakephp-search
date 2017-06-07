@@ -41,9 +41,10 @@ echo $this->Html->script('Search.grid_report', ['block' => 'scriptBotton']);
                     <tr>
                     <?php foreach ($columns as $col) : ?>
                         <?php
+                            $_col = preg_replace('/_/', '', $col);
                             $event = new Event('Search.Dashboard.Widget.GridElement', $this, [
                                 'model' => $config['modelName'],
-                                'field' => $col,
+                                'field' => $_col,
                                 'value' => $item[$col],
                                 $options
                             ]);
