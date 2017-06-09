@@ -84,7 +84,7 @@ trait SearchTrait
         $this->set('model', $model);
         $this->set('searchData', $searchData);
         $this->set('savedSearch', $entity);
-        $this->set('preSaveId', $table->newSearch($model, $this->Auth->user(), $searchData));
+        $this->set('preSaveId', $table->createSearch($model, $this->Auth->user(), $searchData));
         // INFO: this is valid when a saved search was modified and the form was re-submitted
         $this->set('isEditable', $table->isEditable($entity));
         $this->set('searchOptions', $table->getSearchOptions());

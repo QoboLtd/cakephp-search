@@ -343,7 +343,7 @@ class SavedSearchesTable extends Table
      */
     public function getSearch($model, $user, $id)
     {
-        $id = !empty($id) ? $id : $this->newSearch($model, $user, []);
+        $id = !empty($id) ? $id : $this->createSearch($model, $user, []);
         $entity = $this->get($id);
         $content = json_decode($entity->content, true);
         $entity = $this->_normalizeSearch($entity, $model, $user, $content, $content);
