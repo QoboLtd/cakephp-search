@@ -901,7 +901,9 @@ class SavedSearchesTable extends Table
             return $result;
         }
 
-        $this->getSearchableFields($model);
+        $table = $this->_getTableInstance($model);
+
+        $this->getSearchableFields($table);
 
         foreach ($data['criteria'] as $fieldName => $criterias) {
             if (empty($criterias)) {
@@ -923,8 +925,7 @@ class SavedSearchesTable extends Table
                     );
                 }
                 $sqlOperator = $this->_searchableFields[$fieldName]['operators'][$operator]['operator'];
-                list(, $prefix) = pluginSplit($model);
-                $key = $prefix . '.' . $fieldName . ' ' . $sqlOperator;
+                $key = $table->aliasField($fieldName) . ' ' . $sqlOperator;
 
                 if (!array_key_exists($key, $result)) {
                     $result[$key] = $value;
