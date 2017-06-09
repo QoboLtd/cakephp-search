@@ -16,10 +16,6 @@
     border: 0;
 }
 
-.saved-searches samp + samp {
-    margin-left: 5px;
-}
-
 .search-form .form-group {
     margin-bottom: 10px;
 }

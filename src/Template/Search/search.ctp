@@ -15,7 +15,6 @@ echo $this->Html->script(
     ]
 );
 
-echo $this->element('Search.saved_searches');
 echo $this->element('Search.search_filters');
 echo $this->element('Search.search_results');
 ?>

@@ -101,22 +101,21 @@ if (!empty($searchFields)) :
                 ?>
             </div>
             <div class="col-md-4 col-lg-3">
-                <div class="row">
-                    <div class="col-sm-6 col-md-12">
-                        <?= $this->Form->label(__('Save search')) ?>
-                    </div>
-                    <div class="col-sm-6 col-md-12">
-                    <?= $this->element('Search.SaveSearch/save_search_criterias', [
-                        'preSaveId' => $preSaveId,
-                        'savedSearch' => $savedSearch,
-                        'isEditable' => $isEditable && 'criteria' === $savedSearch->type
-                    ]) ?>
-                    <?= $this->element('Search.SaveSearch/save_search_results', [
-                        'preSaveId' => $preSaveId,
-                        'savedSearch' => $savedSearch,
-                        'isEditable' => $isEditable && 'result' === $savedSearch->type
-                    ]) ?>
-                    </div>
+            <?php if (!empty($savedSearches)) : ?>
+                <div class="form-group">
+                <?php
+                echo $this->Form->label(__('Saved Searches'));
+                echo $this->element('Search.saved_searches');
+                ?>
+                </div>
+            <?php endif; ?>
+                <div class="form-group">
+                <?= $this->Form->label(__('Save search')) ?>
+                <?= $this->element('Search.SaveSearch/save_search_criterias', [
+                    'preSaveId' => $preSaveId,
+                    'savedSearch' => $savedSearch,
+                    'isEditable' => $isEditable && 'criteria' === $savedSearch->type
+                ]) ?>
                 </div>
             </div>
         </div>
