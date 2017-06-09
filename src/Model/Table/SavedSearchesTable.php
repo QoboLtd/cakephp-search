@@ -621,13 +621,13 @@ class SavedSearchesTable extends Table
             'criteria' => $this->_getBasicSearchCriteria($data, $module, $user)
         ];
 
-        $search = $this->search(
+        $query = $this->search(
             $module,
             $user,
             $data
         );
 
-        foreach ($search['entities']['result'] as $entity) {
+        foreach ($query->all() as $entity) {
             $result[] = $entity->id;
         }
 
