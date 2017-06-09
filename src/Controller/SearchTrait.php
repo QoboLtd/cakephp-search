@@ -47,9 +47,9 @@ trait SearchTrait
             $searchData = $table->prepareData($this->request, $model, $this->Auth->user());
 
             if ($id) {
-                $table->existingSearch($model, $this->Auth->user(), $searchData, $id);
+                $table->updateSearch($model, $this->Auth->user(), $searchData, $id);
             } else {
-                $id = $table->newSearch($model, $this->Auth->user(), $searchData);
+                $id = $table->createSearch($model, $this->Auth->user(), $searchData);
             }
 
             list($plugin, $controller) = pluginSplit($model);
