@@ -300,14 +300,14 @@ class SavedSearchesTable extends Table
     }
 
     /**
-     * New search.
+     * Create search.
      *
      * @param string $model Model name
      * @param array $user User info
      * @param array $searchData Request data
      * @return string
      */
-    public function newSearch($model, array $user, array $searchData)
+    public function createSearch($model, array $user, array $searchData)
     {
         $searchData = $this->validateData($model, $searchData);
 
@@ -316,7 +316,7 @@ class SavedSearchesTable extends Table
     }
 
     /**
-     * Existing search.
+     * Update search.
      *
      * @param string $model Model name
      * @param array $user User info
@@ -324,7 +324,7 @@ class SavedSearchesTable extends Table
      * @param string $id Existing search id
      * @return bool
      */
-    public function existingSearch($model, array $user, array $searchData, $id)
+    public function updateSearch($model, array $user, array $searchData, $id)
     {
         $entity = $this->get($id);
         $content = json_decode($entity->content, true);

@@ -592,7 +592,7 @@ class SavedSearchesTableTest extends TestCase
         $this->assertEquals(1, $result['entities']['result']->count());
     }
 
-    public function testNewSearch()
+    public function testCreateSearch()
     {
         // anonymous event listener that passes some dummy searchable fields
         $this->SavedSearches->eventManager()->on('Search.Model.Search.searchabeFields', function ($event, $table) {
@@ -634,14 +634,14 @@ class SavedSearchesTableTest extends TestCase
             'limit' => '10'
         ];
 
-        $result = $this->SavedSearches->newSearch('Dashboards', $user, $data);
+        $result = $this->SavedSearches->createSearch('Dashboards', $user, $data);
 
         $this->assertNotEmpty($result);
         $this->assertInternalType('string', $result);
         $this->assertEquals(36, strlen($result));
     }
 
-    public function testExistingSearch()
+    public function testUpdateSearch()
     {
         // anonymous event listener that passes some dummy searchable fields
         $this->SavedSearches->eventManager()->on('Search.Model.Search.searchabeFields', function ($event, $table) {
@@ -685,7 +685,7 @@ class SavedSearchesTableTest extends TestCase
             'limit' => '10'
         ];
 
-        $result = $this->SavedSearches->existingSearch('Dashboards', $user, $data, $id);
+        $result = $this->SavedSearches->updateSearch('Dashboards', $user, $data, $id);
         $this->assertInstanceOf(\Search\Model\Entity\SavedSearch::class, $result);
         $this->assertNotEmpty($result->content);
 
