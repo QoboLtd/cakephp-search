@@ -363,6 +363,7 @@ class SavedSearchesTable extends Table
     {
         $content = json_decode($entity->content, true);
 
+        // for backward compatibility
         $saved = isset($content['saved']) ? $content['saved'] : $content;
         $entity = $this->_normalizeSearch($entity, $model, $user, $saved, $saved);
 
@@ -1039,9 +1040,11 @@ class SavedSearchesTable extends Table
      */
     protected function _normalizeSearch(SavedSearch $entity, $model, array $user, array $saved, array $latest)
     {
-        // keeps backward compatibility
+        // for backward compatibility
         $saved = isset($saved['saved']) ? $saved['saved'] : $saved;
-        $latest = isset($latest['latest']) ? $latest['latest'] : $latest;
+        $latest = isset($latest['latest']) ?
+            $latest['latest'] :
+            (isset($latest['saved']) ? $latest['saved'] : $latest);
 
         $entity->user_id = $user['id'];
         $entity->model = $model;
