@@ -1,18 +1,17 @@
 <?php
-if (!empty($searchFields)) :
-    echo $this->Html->css('Search.search', ['block' => 'css']);
-    echo $this->Html->script('Search.search', ['block' => 'scriptBotton']);
+echo $this->Html->css('Search.search', ['block' => 'css']);
+echo $this->Html->script('Search.search', ['block' => 'scriptBotton']);
 
+echo $this->Html->scriptBlock(
+    'search.setFieldProperties(' . json_encode($searchFields) . ');',
+    ['block' => 'scriptBotton']
+);
+if (!empty($searchData['criteria'])) {
     echo $this->Html->scriptBlock(
-        'search.setFieldProperties(' . json_encode($searchFields) . ');',
+        'search.generateCriteriaFields(' . json_encode($searchData['criteria']) . ');',
         ['block' => 'scriptBotton']
     );
-    if (isset($searchData['criteria'])) {
-        echo $this->Html->scriptBlock(
-            'search.generateCriteriaFields(' . json_encode($searchData['criteria']) . ');',
-            ['block' => 'scriptBotton']
-        );
-    }
+}
 ?>
 <div class="box box-solid collapsed-box">
     <div class="box-header with-border">
@@ -87,9 +86,7 @@ if (!empty($searchFields)) :
             </div>
             <div class="col-md-8 col-lg-9">
                 <?php
-                if (!empty($searchFields)) {
-                    echo $this->element('Search.Search/options');
-                }
+                echo $this->element('Search.Search/options');
                 echo $this->Form->button('<i class="fa fa-search"></i> ' . __('Search'), ['class' => 'btn btn-primary']);
                 echo $this->Form->end();
                 echo '&nbsp;';
@@ -123,7 +120,6 @@ if (!empty($searchFields)) :
 </div>
 <?php
 $scripts = [];
-
 foreach ($searchFields as $searchField) {
     if (empty($searchField['input']['post'])) {
         continue;
@@ -132,5 +128,3 @@ foreach ($searchFields as $searchField) {
 }
 
 echo $this->element('Search.widget_libraries', ['scripts' => $scripts]);
-?>
-<?php endif;
