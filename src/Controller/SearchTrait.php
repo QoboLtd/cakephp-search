@@ -1,13 +1,10 @@
 <?php
 namespace Search\Controller;
 
-use Cake\Event\Event;
 use Cake\Filesystem\File;
 use Cake\Network\Exception\BadRequestException;
 use Cake\ORM\Query;
-use Cake\ORM\ResultSet;
 use Cake\ORM\TableRegistry;
-use Cake\View\View;
 use Search\Controller\Traits\SearchableTrait;
 use Search\Model\Entity\SavedSearch;
 use Search\Model\Table\SavedSearchesTable;
@@ -121,7 +118,7 @@ trait SearchTrait
 
         $query = $table->search($model, $this->Auth->user(), $searchData);
 
-        $data = $this->_datatablesStructure($this->paginate($query), $displayColumns, $model);
+        $data = $table->toDatatables($this->paginate($query), $displayColumns, $model);
 
         $pagination = [
             'count' => $query->count()
@@ -135,39 +132,6 @@ trait SearchTrait
             'pagination' => $pagination,
             '_serialize' => ['success', 'preSaveId', 'data', 'pagination']
         ]);
-    }
-
-    /**
-     * Method that re-formats entities to Datatables supported format.
-     *
-     * @param \Cake\ORM\ResultSet $entities Entities
-     * @param array $fields Display fields
-     * @param string $model Model name
-     * @return array
-     */
-    protected function _datatablesStructure(ResultSet $entities, array $fields, $model)
-    {
-        $result = [];
-
-        if (empty($entities)) {
-            return $result;
-        }
-
-        foreach ($entities as $key => $entity) {
-            foreach ($fields as $field) {
-                $result[$key][] = $entity->get($field);
-            }
-
-            $event = new Event('Search.View.View.Menu.Actions', new View(), [
-                'entity' => $entity,
-                'model' => $model
-            ]);
-            $this->eventManager()->dispatch($event);
-
-            $result[$key][] = '<div class="btn-group btn-group-xs" role="group">' . $event->result . '</div>';
-        }
-
-        return $result;
     }
 
     /**

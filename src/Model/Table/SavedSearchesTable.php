@@ -12,6 +12,7 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
 use Cake\Validation\Validator;
+use Cake\View\View;
 use InvalidArgumentException;
 use RuntimeException;
 use Search\Model\Entity\SavedSearch;
@@ -1065,5 +1066,38 @@ class SavedSearchesTable extends Table
             'modified <' => new \DateTime(static::DELETE_OLDER_THAN),
             'name IS' => null
         ]);
+    }
+
+    /**
+     * Method that re-formats entities to Datatables supported format.
+     *
+     * @param \Cake\ORM\ResultSet $resultSet ResultSet
+     * @param array $fields Display fields
+     * @param string $model Model name
+     * @return array
+     */
+    public function toDatatables(ResultSet $resultSet, array $fields, $model)
+    {
+        $result = [];
+
+        if ($resultSet->isEmpty()) {
+            return $result;
+        }
+
+        foreach ($resultSet as $key => $entity) {
+            foreach ($fields as $field) {
+                $result[$key][] = $entity->get($field);
+            }
+
+            $event = new Event('Search.View.View.Menu.Actions', new View(), [
+                'entity' => $entity,
+                'model' => $model
+            ]);
+            $this->eventManager()->dispatch($event);
+
+            $result[$key][] = '<div class="btn-group btn-group-xs" role="group">' . $event->result . '</div>';
+        }
+
+        return $result;
     }
 }
