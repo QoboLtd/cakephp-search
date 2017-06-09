@@ -16,6 +16,6 @@ echo $this->Html->script(
 );
 
 echo $this->element('Search.Search/filters');
-echo $this->element('Search.search_results');
+echo $this->element('Search.Search/results');
 ?>
 </section>
