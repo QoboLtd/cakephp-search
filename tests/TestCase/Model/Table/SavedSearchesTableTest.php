@@ -71,18 +71,6 @@ class SavedSearchesTableTest extends TestCase
         $this->assertInstanceOf('\Cake\ORM\RulesChecker', $result);
     }
 
-    public function testGetCriteriaType()
-    {
-        $result = $this->SavedSearches->getCriteriaType();
-        $this->assertEquals('criteria', $result);
-    }
-
-    public function testGetResultType()
-    {
-        $result = $this->SavedSearches->getResultType();
-        $this->assertEquals('result', $result);
-    }
-
     public function testGetDefaultSortByOrder()
     {
         $result = $this->SavedSearches->getDefaultSortByOrder();
