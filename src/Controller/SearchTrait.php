@@ -1,11 +1,16 @@
 <?php
 namespace Search\Controller;
 
+use Cake\Event\Event;
 use Cake\Filesystem\File;
 use Cake\Network\Exception\BadRequestException;
 use Cake\ORM\Query;
+use Cake\ORM\ResultSet;
 use Cake\ORM\TableRegistry;
+use Cake\View\View;
 use Search\Controller\Traits\SearchableTrait;
+use Search\Model\Entity\SavedSearch;
+use Search\Model\Table\SavedSearchesTable;
 use Zend\Diactoros\Stream;
 
 trait SearchTrait
@@ -62,29 +67,107 @@ trait SearchTrait
             ]);
         }
 
-        $savedSearch = $table->getSearch($model, $this->Auth->user(), $id);
+        $entity = $table->getSearch($model, $this->Auth->user(), $id);
 
-        $searchData = json_decode($savedSearch->content, true);
+        $searchData = json_decode($entity->content, true);
 
-        $search = $table->search($model, $this->Auth->user(), $searchData['latest']);
+        if ($this->request->is('ajax')) {
+            $this->_ajaxResponse($entity, $searchData, $table, $model);
 
-        $table->resetSearch($savedSearch, $model, $this->Auth->user());
+            return;
+        }
 
         $searchData = $table->validateData($model, $searchData['latest']);
-        // @todo find out how to do pagination without affecting limit
-        $searchData['result'] = $search['entities']['result'];
 
         $this->set('searchFields', $table->getSearchableFields($model));
         $this->set('savedSearches', $table->getSavedSearches([$this->Auth->user('id')], [$model]));
         $this->set('model', $model);
         $this->set('searchData', $searchData);
-        $this->set('savedSearch', $savedSearch);
-        $this->set('preSaveId', $search['preSaveId']);
+        $this->set('savedSearch', $entity);
+        $this->set('preSaveId', $table->newSearch($model, $this->Auth->user(), $searchData));
         // INFO: this is valid when a saved search was modified and the form was re-submitted
-        $this->set('isEditable', $table->isEditable($savedSearch));
+        $this->set('isEditable', $table->isEditable($entity));
         $this->set('searchOptions', $table->getSearchOptions());
 
         $this->render($this->_elementSearch);
+    }
+
+    /**
+     * Ajax response.
+     *
+     * @param \Cake\ORM\EntitySavedSearch $entity Search entity
+     * @param array $data Search data
+     * @param \Search\Model\Table\SavedSearchesTable $table Search table instance
+     * @param string $model Model name
+     * @return void
+     */
+    protected function _ajaxResponse(SavedSearch $entity, array $data, SavedSearchesTable $table, $model)
+    {
+        if (!$this->request->is('ajax')) {
+            return;
+        }
+
+        $searchData = $data['latest'];
+
+        $displayColumns = $searchData['display_columns'];
+
+        $sortField = $this->request->query('order.0.column') ?: 0;
+        $sortField = array_key_exists($sortField, $displayColumns) ?
+            $displayColumns[$sortField] :
+            current($displayColumns);
+        $searchData['sort_by_field'] = $sortField;
+
+        $searchData['sort_by_order'] = $this->request->query('order.0.dir') ?: $table->getDefaultSortByOrder();
+
+        $query = $table->search($model, $this->Auth->user(), $searchData);
+
+        $data = $this->_datatablesStructure($this->paginate($query), $displayColumns, $model);
+
+        $pagination = [
+            'count' => $query->count()
+        ];
+
+        $table->resetSearch($entity, $model, $this->Auth->user());
+
+        $this->set([
+            'success' => true,
+            'data' => $data,
+            'pagination' => $pagination,
+            '_serialize' => ['success', 'preSaveId', 'data', 'pagination']
+        ]);
+    }
+
+    /**
+     * Method that re-formats entities to Datatables supported format.
+     *
+     * @param \Cake\ORM\ResultSet $entities Entities
+     * @param array $fields Display fields
+     * @param string $model Model name
+     * @return array
+     */
+    protected function _datatablesStructure(ResultSet $entities, array $fields, $model)
+    {
+        $result = [];
+
+        if (empty($entities)) {
+            return $result;
+        }
+
+        foreach ($entities as $key => $entity) {
+            foreach ($fields as $field) {
+                $result[$key][] = $entity->get($field);
+            }
+
+            $event = new Event('Search.View.View.Menu.Actions', new View(), [
+                'entity' => $entity,
+                'model' => $model
+            ]);
+            $this->eventManager()->dispatch($event);
+
+            $result[$key][] = '<div class="btn-group btn-group-xs" role="group">' . $event->result . '</div>';
+        }
+
+        return $result;
     }
 
     /**
