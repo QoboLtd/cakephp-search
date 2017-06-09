@@ -88,7 +88,7 @@ if (!empty($searchFields)) :
             <div class="col-md-8 col-lg-9">
                 <?php
                 if (!empty($searchFields)) {
-                    echo $this->element('Search.search_options');
+                    echo $this->element('Search.Search/options');
                 }
                 echo $this->Form->button('<i class="fa fa-search"></i> ' . __('Search'), ['class' => 'btn btn-primary']);
                 echo $this->Form->end();
@@ -105,13 +105,13 @@ if (!empty($searchFields)) :
                 <div class="form-group">
                 <?php
                 echo $this->Form->label(__('Saved Searches'));
-                echo $this->element('Search.saved_searches');
+                echo $this->element('Search.Search/Forms/saved_searches', ['savedSearches' => $savedSearches]);
                 ?>
                 </div>
             <?php endif; ?>
                 <div class="form-group">
                 <?= $this->Form->label(__('Save search')) ?>
-                <?= $this->element('Search.SaveSearch/save_search_criterias', [
+                <?= $this->element('Search.Search/Forms/save_search', [
                     'preSaveId' => $preSaveId,
                     'savedSearch' => $savedSearch,
                     'isEditable' => $isEditable && 'criteria' === $savedSearch->type
