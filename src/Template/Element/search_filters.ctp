@@ -14,7 +14,7 @@ if (!empty($searchFields)) :
         );
     }
 ?>
-<div class="box box-default collapsed-box">
+<div class="box box-solid collapsed-box">
     <div class="box-header with-border">
         <h3 class="box-title"><?= __('Advanced Search') ?></h3>
         <div class="box-tools pull-right">
@@ -65,9 +65,11 @@ if (!empty($searchFields)) :
                 <?php
                     echo $this->Form->select(
                         'aggregator',
-                        $aggregatorOptions,
+                        $searchOptions['aggregators'],
                         [
-                            'default' => isset($searchData['aggregator']) ? $searchData['aggregator'] : key($aggregatorOptions),
+                            'default' => isset($searchData['aggregator']) ?
+                                $searchData['aggregator'] :
+                                key($searchOptions['aggregators']),
                             'class' => 'form-control input-sm'
                          ]
                     );
@@ -90,14 +92,12 @@ if (!empty($searchFields)) :
                 }
                 echo $this->Form->button('<i class="fa fa-search"></i> ' . __('Search'), ['class' => 'btn btn-primary']);
                 echo $this->Form->end();
-                if (!empty($saveSearchResultsId)) {
-                    echo '&nbsp;';
-                    echo $this->Form->postLink(
-                        '<i class="fa fa-download"></i> ' . __('Export'),
-                        ['action' => 'export-search', $saveSearchResultsId, $savedSearch ? $savedSearch->name : null],
-                        ['class' => 'btn btn-primary', 'escape' => false]
-                    );
-                }
+                echo '&nbsp;';
+                echo $this->Form->postLink(
+                    '<i class="fa fa-download"></i> ' . __('Export'),
+                    ['action' => 'export-search', $preSaveId, $savedSearch ? $savedSearch->name : null],
+                    ['class' => 'btn btn-primary', 'escape' => false]
+                );
                 ?>
             </div>
             <div class="col-md-4 col-lg-3">
@@ -106,22 +106,16 @@ if (!empty($searchFields)) :
                         <?= $this->Form->label(__('Save search')) ?>
                     </div>
                     <div class="col-sm-6 col-md-12">
-                    <?php
-                    if (isset($saveSearchCriteriaId)) {
-                        echo $this->element('Search.SaveSearch/save_search_criterias', [
-                        'saveSearchCriteriaId' => $saveSearchCriteriaId,
+                    <?= $this->element('Search.SaveSearch/save_search_criterias', [
+                        'preSaveId' => $preSaveId,
                         'savedSearch' => $savedSearch,
                         'isEditable' => $isEditable && 'criteria' === $savedSearch->type
-                        ]);
-                    }
-                    if (isset($saveSearchResultsId)) {
-                        echo $this->element('Search.SaveSearch/save_search_results', [
-                        'saveSearchCriteriaId' => $saveSearchResultsId,
+                    ]) ?>
+                    <?= $this->element('Search.SaveSearch/save_search_results', [
+                        'preSaveId' => $preSaveId,
                         'savedSearch' => $savedSearch,
                         'isEditable' => $isEditable && 'result' === $savedSearch->type
-                        ]);
-                    }
-                    ?>
+                    ]) ?>
                     </div>
                 </div>
             </div>

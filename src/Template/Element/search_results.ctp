@@ -36,7 +36,7 @@ if (!empty($url)) {
 $uid = uniqid();
 ?>
 <?php if (!empty($searchData['result'])) : ?>
-<div class="box box-default">
+<div class="box box-solid">
     <div class="box-header">
         <h3 class="box-title"><?= $title; ?></h3>
         <div class="box-tools pull-right">

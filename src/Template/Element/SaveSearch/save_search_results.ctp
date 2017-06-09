@@ -4,11 +4,15 @@
         'plugin' => $this->request->plugin,
         'controller' => $this->request->controller,
         'action' => ($isEditable ? 'edit': 'save') . '-search',
-        $saveSearchResultsId,
+        $preSaveId,
         $isEditable ? $savedSearch->id : null
     ]
 ]); ?>
 <div class="input-group">
+    <?= $this->Form->hidden('type', [
+        'required' => true,
+        'value' => 'result'
+    ]); ?>
     <?= $this->Form->input('name', [
         'label' => false,
         'class' => 'form-control input-sm',

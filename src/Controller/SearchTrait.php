@@ -5,7 +5,6 @@ use Cake\Filesystem\File;
 use Cake\Network\Exception\BadRequestException;
 use Cake\ORM\Query;
 use Cake\ORM\TableRegistry;
-use Cake\Utility\Hash;
 use Search\Controller\Traits\SearchableTrait;
 use Zend\Diactoros\Stream;
 
@@ -26,6 +25,67 @@ trait SearchTrait
      * @var string
      */
     protected $_elementSearch = 'Search.Search/search';
+
+    /**
+     * Search action
+     *
+     * @param  string $id Saved search id
+     * @return \Cake\Network\Response|void
+     */
+    public function search($id = null)
+    {
+        $model = $this->modelClass;
+
+        if (!$this->_isSearchable($model)) {
+            throw new BadRequestException('You cannot search in ' . implode(' - ', pluginSplit($model)) . '.');
+        }
+
+        $table = TableRegistry::get($this->_tableSearch);
+
+        // redirect on POST requests (PRG pattern)
+        if ($this->request->is('post')) {
+            $searchData = $table->prepareData($this->request, $model, $this->Auth->user());
+
+            if ($id) {
+                $table->updateSearch($model, $this->Auth->user(), $searchData, $id);
+            } else {
+                $id = $table->createSearch($model, $this->Auth->user(), $searchData);
+            }
+
+            list($plugin, $controller) = pluginSplit($model);
+
+            return $this->redirect([
+                'plugin' => $plugin,
+                'controller' => $controller,
+                'action' => __FUNCTION__,
+                $id
+            ]);
+        }
+
+        $savedSearch = $table->getSearch($model, $this->Auth->user(), $id);
+
+        $searchData = json_decode($savedSearch->content, true);
+
+        $search = $table->search($model, $this->Auth->user(), $searchData['latest']);
+
+        $table->resetSearch($savedSearch, $model, $this->Auth->user());
+
+        $searchData = $table->validateData($model, $searchData['latest']);
+        // @todo find out how to do pagination without affecting limit
+        $searchData['result'] = $search['entities']['result'];
+
+        $this->set('searchFields', $table->getSearchableFields($model));
+        $this->set('savedSearches', $table->getSavedSearches([$this->Auth->user('id')], [$model]));
+        $this->set('model', $model);
+        $this->set('searchData', $searchData);
+        $this->set('savedSearch', $savedSearch);
+        $this->set('preSaveId', $search['preSaveId']);
+        // INFO: this is valid when a saved search was modified and the form was re-submitted
+        $this->set('isEditable', $table->isEditable($savedSearch));
+        $this->set('searchOptions', $table->getSearchOptions());
+
+        $this->render($this->_elementSearch);
+    }
 
     /**
      * Save action
@@ -49,92 +109,6 @@ trait SearchTrait
         }
 
         return $this->redirect(['action' => 'search', $id]);
-    }
-
-    /**
-     * Search action
-     *
-     * @param  string $id Saved search id
-     * @return void
-     */
-    public function search($id = null)
-    {
-        $model = $this->modelClass;
-        if (!$this->_isSearchable($model)) {
-            throw new BadRequestException('You cannot search in ' . implode(' ', pluginSplit($model)) . '.');
-        }
-
-        $table = TableRegistry::get($this->_tableSearch);
-
-        // get searchable fields
-        $searchFields = $table->getSearchableFields($model);
-
-        $data = $this->request->data();
-
-        // is editable flag, false by default
-        $isEditable = false;
-
-        // saved search instance, null by default
-        $savedSearch = null;
-
-        $isBasicSearch = Hash::get($data, 'criteria.query') ? true : false;
-
-        if ($this->request->is(['post', 'get'])) {
-            // basic search query, converted to search criteria
-            if ($isBasicSearch) {
-                $data['criteria'] = $table->getBasicSearchCriteria(
-                    Hash::get($data, 'criteria'),
-                    $model,
-                    $this->Auth->user()
-                );
-                $data['aggregator'] = 'OR';
-            }
-
-            // id of saved search has been provided
-            if (!is_null($id)) {
-                $savedSearch = $table->get($id);
-                // fetch search conditions from saved search if request data are empty
-                // INFO: this is valid on initial saved search load
-                if (empty($data)) {
-                    $data = json_decode($savedSearch->content, true);
-                } else { // INFO: this is valid when a saved search was modified and the form was re-submitted
-                    $isEditable = true;
-                }
-            }
-
-            $data = $table->validateData($model, $data);
-
-            $search = $table->search($model, $this->Auth->user(), $data);
-
-            if (isset($search['saveSearchCriteriaId'])) {
-                $this->set('saveSearchCriteriaId', $search['saveSearchCriteriaId']);
-            }
-
-            if (isset($search['saveSearchResultsId'])) {
-                $this->set('saveSearchResultsId', $search['saveSearchResultsId']);
-            }
-
-            // @todo find out how to do pagination without affecting limit
-            if ($search['entities']['result'] instanceof Query) {
-                // fetched from new search result
-                $data['result'] = $search['entities']['result']->all();
-            } else {
-                // as taken from a saved search result
-                $data['result'] = $search['entities']['result'];
-            }
-        }
-
-        $savedSearches = $table->getSavedSearches([$this->Auth->user('id')], [$model]);
-
-        $this->set(compact('searchFields', 'savedSearches', 'model'));
-        $this->set('searchData', $data);
-        $this->set('savedSearch', $savedSearch);
-        $this->set('isEditable', $isEditable);
-        $this->set('limitOptions', $table->getLimitOptions());
-        $this->set('sortByOrderOptions', $table->getSortByOrderOptions());
-        $this->set('aggregatorOptions', $table->getAggregatorOptions());
-
-        $this->render($this->_elementSearch);
     }
 
     /**

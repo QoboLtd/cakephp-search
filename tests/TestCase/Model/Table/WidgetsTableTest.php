@@ -27,6 +27,7 @@ class WidgetsTableTest extends TestCase
      */
     public $fixtures = [
         'plugin.search.widgets',
+        'plugin.search.app_widgets',
         'plugin.search.saved_searches'
     ];
 
@@ -54,14 +55,20 @@ class WidgetsTableTest extends TestCase
         parent::tearDown();
     }
 
-    /**
-     * Test initialize method
-     *
-     * @return void
-     */
-    public function testInitialize()
+    public function testValidationDefault()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $validator = new \Cake\Validation\Validator();
+        $result = $this->Widgets->validationDefault($validator);
+
+        $this->assertInstanceOf('\Cake\Validation\Validator', $result);
+    }
+
+    public function testBuildRules()
+    {
+        $rules = new \Cake\ORM\RulesChecker();
+        $result = $this->Widgets->buildRules($rules);
+
+        $this->assertInstanceOf('\Cake\ORM\RulesChecker', $result);
     }
 
     /**
@@ -75,5 +82,73 @@ class WidgetsTableTest extends TestCase
         $res = $this->Widgets->getWidgets();
         $this->assertNotEmpty($res);
         $this->assertInternalType('array', $res);
+    }
+
+    public function testGetWidgetsWithReports()
+    {
+        EventManager::instance()->on(new WidgetsListener());
+        // anonymous event listener that passes some dummy reports
+        EventManager::instance()->on('Search.Report.getReports', function ($event) {
+            return [
+                'Foo' => [
+                    'bar_assigned_by_year' => [
+                        'id' => '00000000-0000-0000-0000-000000000002',
+                        'model' => 'Bar',
+                        'widget_type' => 'report',
+                        'name' => 'Report Bar',
+                        'query' => '',
+                        'colors' => '',
+                        'columns' => '',
+                        'renderAs' => 'barChart',
+                        'y_axis' => '',
+                        'x_axis' => ''
+                    ]
+                ]
+            ];
+        });
+
+        $result = $this->Widgets->getWidgets();
+
+        $this->assertNotEmpty($result);
+        $this->assertInternalType('array', $result);
+
+        $data = [
+            'type' => 'report',
+            'data' => [
+                'id' => '00000000-0000-0000-0000-000000000002',
+                'model' => 'Bar',
+                'widget_type' => 'report',
+                'name' => 'Report Bar',
+                'query' => '',
+                'colors' => '',
+                'columns' => '',
+                'renderAs' => 'barChart',
+                'y_axis' => '',
+                'x_axis' => ''
+            ]
+        ];
+
+        $this->assertContains($data, $result);
+    }
+
+    public function testGetWidgetsWithAppWidgets()
+    {
+        EventManager::instance()->on(new WidgetsListener());
+        $result = $this->Widgets->getWidgets();
+
+        $this->assertNotEmpty($result);
+        $this->assertInternalType('array', $result);
+
+        $data = [
+            'type' => 'app',
+            'data' => [
+                'id' => '00000000-0000-0000-0000-000000000001',
+                'model' => 'AppWidgets',
+                'name' => 'Hello World',
+                'path' => 'src/Template/Element/Plugin/Search/Widgets/hello_world.ctp'
+            ]
+        ];
+
+        $this->assertContains($data, $result);
     }
 }

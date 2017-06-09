@@ -89,18 +89,22 @@ class SavedSearchWidget extends BaseWidget
             return $results;
         }
 
+        // keeps backward compatibility
+        $results = $this->_tableInstance->resetSearch($results, $results->model, $options['user']);
+
+        $content = json_decode($results->content, true);
+
         switch ($results->type) {
             case $this->_tableInstance->getCriteriaType():
                 $search = $this->_tableInstance->search(
                     $results->model,
                     $options['user'],
-                    json_decode($results->content, true),
-                    true
+                    $content['saved']
                 );
                 $results->entities = $search['entities'];
                 break;
             case $this->_tableInstance->getResultType():
-                $results->entities = json_decode($results->content, true);
+                $results->entities = $content['saved'];
                 break;
         }
         $results->entities['display_columns'] = array_diff(
