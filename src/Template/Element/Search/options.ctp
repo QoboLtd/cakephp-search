@@ -72,18 +72,5 @@ asort($sortByOptions);
         );
         ?>
         </div>
-        <div class="form-group">
-        <?php
-        echo $this->Form->label(__('Limit results'));
-        echo $this->Form->select(
-            'limit',
-            $searchOptions['limit'],
-            [
-                'default' => isset($searchData['limit']) ? $searchData['limit'] : 10,
-                'class' => 'form-control input-sm'
-             ]
-        );
-        ?>
-        </div>
     </div>
 </div>
