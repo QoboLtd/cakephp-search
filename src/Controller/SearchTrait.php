@@ -69,7 +69,8 @@ trait SearchTrait
 
         $searchData = json_decode($entity->content, true);
 
-        if ($this->request->is('ajax')) {
+        $acceptHeaders = implode('', $this->request->getHeader('Accept'));
+        if (false !== strpos($acceptHeaders, 'application/json')) {
             $this->_ajaxResponse($entity, $searchData, $model);
 
             return;
@@ -100,10 +101,6 @@ trait SearchTrait
      */
     protected function _ajaxResponse(SavedSearch $entity, array $data, $model)
     {
-        if (!$this->request->is('ajax')) {
-            return;
-        }
-
         $table = TableRegistry::get($this->_tableSearch);
 
         $searchData = $data['latest'];
