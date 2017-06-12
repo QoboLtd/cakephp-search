@@ -49,7 +49,7 @@ var view_search_result = view_search_result || {};
             serverSide: true,
             order: [[that.sort_by_field, that.sort_by_order]],
             ajax: {
-                url: that.url + '.' + that.extension,
+                url: that.url,
                 headers: {
                     'Authorization': 'Bearer ' + that.token
                 },
