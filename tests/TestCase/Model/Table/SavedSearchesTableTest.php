@@ -71,18 +71,6 @@ class SavedSearchesTableTest extends TestCase
         $this->assertInstanceOf('\Cake\ORM\RulesChecker', $result);
     }
 
-    public function testGetCriteriaType()
-    {
-        $result = $this->SavedSearches->getCriteriaType();
-        $this->assertEquals('criteria', $result);
-    }
-
-    public function testGetResultType()
-    {
-        $result = $this->SavedSearches->getResultType();
-        $this->assertEquals('result', $result);
-    }
-
     public function testGetDefaultSortByOrder()
     {
         $result = $this->SavedSearches->getDefaultSortByOrder();
@@ -477,21 +465,8 @@ class SavedSearchesTableTest extends TestCase
 
         $result = $this->SavedSearches->search('Dashboards', $user, $data);
 
-        $this->assertNotEmpty($result);
-        $this->assertInternalType('array', $result);
-
-        $this->assertArrayHasKey('preSaveId', $result);
-
-        $this->assertNotEmpty($result['entities']);
-        $this->assertEquals($data['criteria'], $result['entities']['criteria']);
-        $this->assertEquals($data['sort_by_field'], $result['entities']['sort_by_field']);
-        $this->assertEquals($data['sort_by_order'], $result['entities']['sort_by_order']);
-        $this->assertEquals($data['limit'], $result['entities']['limit']);
-        $this->assertNotEquals($data['display_columns'], $result['entities']['display_columns']);
-
-        $this->assertNotEmpty($result['entities']['result']);
-        $this->assertInstanceOf(\Cake\ORM\ResultSet::class, $result['entities']['result']);
-        $this->assertGreaterThan(0, $result['entities']['result']->count());
+        $this->assertInstanceOf(\Cake\ORM\Query::class, $result);
+        $this->assertGreaterThan(0, $result->count());
     }
 
     public function testSearchWithDatetimeIs()
@@ -539,8 +514,7 @@ class SavedSearchesTableTest extends TestCase
 
         $result = $this->SavedSearches->search('Dashboards', $user, $data);
 
-        $this->assertNotEmpty($result['entities']['result']);
-        $this->assertEquals(2, $result['entities']['result']->count());
+        $this->assertEquals(2, $result->count());
     }
 
     public function testSearchWithRelatedIsNot()
@@ -588,8 +562,7 @@ class SavedSearchesTableTest extends TestCase
 
         $result = $this->SavedSearches->search('Dashboards', $user, $data);
 
-        $this->assertNotEmpty($result['entities']['result']);
-        $this->assertEquals(1, $result['entities']['result']->count());
+        $this->assertEquals(1, $result->count());
     }
 
     public function testCreateSearch()
@@ -722,8 +695,20 @@ class SavedSearchesTableTest extends TestCase
         $this->assertInstanceOf(\Search\Model\Entity\SavedSearch::class, $result);
         $this->assertNotEmpty($result->content);
 
-        $content = json_decode($result->content, true);
-        $this->assertArrayHasKey('saved', $content);
-        $this->assertArrayHasKey('latest', $content);
+        $result = json_decode($result->content, true);
+
+        $this->assertArrayHasKey('saved', $result);
+        $this->assertArrayHasKey('display_columns', $result['saved']);
+        $this->assertArrayHasKey('criteria', $result['saved']);
+        $this->assertArrayHasKey('sort_by_field', $result['saved']);
+        $this->assertArrayHasKey('sort_by_order', $result['saved']);
+        $this->assertArrayHasKey('limit', $result['saved']);
+
+        $this->assertArrayHasKey('latest', $result);
+        $this->assertArrayHasKey('display_columns', $result['latest']);
+        $this->assertArrayHasKey('criteria', $result['latest']);
+        $this->assertArrayHasKey('sort_by_field', $result['latest']);
+        $this->assertArrayHasKey('sort_by_order', $result['latest']);
+        $this->assertArrayHasKey('limit', $result['latest']);
     }
 }

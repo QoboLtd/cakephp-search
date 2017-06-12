@@ -2,7 +2,6 @@
 namespace Search\Model\Table;
 
 use Cake\Datasource\ConnectionManager;
-use Cake\Datasource\EntityInterface;
 use Cake\Event\Event;
 use Cake\Http\ServerRequest;
 use Cake\ORM\Query;
@@ -13,6 +12,7 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
 use Cake\Validation\Validator;
+use Cake\View\View;
 use InvalidArgumentException;
 use RuntimeException;
 use Search\Model\Entity\SavedSearch;
@@ -24,16 +24,6 @@ use Search\Model\Entity\SavedSearch;
  */
 class SavedSearchesTable extends Table
 {
-    /**
-     * Criteria type value
-     */
-    const TYPE_CRITERIA = 'criteria';
-
-    /**
-     * Result type value
-     */
-    const TYPE_RESULT = 'result';
-
     /**
      * Private shared status value
      */
@@ -208,26 +198,6 @@ class SavedSearchesTable extends Table
     }
 
     /**
-     * Returns criteria type.
-     *
-     * @return string
-     */
-    public function getCriteriaType()
-    {
-        return static::TYPE_CRITERIA;
-    }
-
-    /**
-     * Returns result type.
-     *
-     * @return string
-     */
-    public function getResultType()
-    {
-        return static::TYPE_RESULT;
-    }
-
-    /**
      * Returns private shared status.
      *
      * @return string
@@ -319,19 +289,15 @@ class SavedSearchesTable extends Table
     {
         $data = $this->validateData($tableName, $data);
 
-        // get search results
-        $data['result'] = empty($data['result']) ? $this->_getResults($data, $tableName) : $data['result'];
+        $table = $this->_getTableInstance($tableName);
 
-        // normalize result, for new search result
-        if ($data['result'] instanceof Query) {
-            $data['result'] = $data['result']->all();
-        }
+        $query = $table
+            ->find('all')
+            ->select($this->_getQueryFields($data, $table))
+            ->where([$data['aggregator'] => $this->_prepareWhereStatement($data, $tableName)])
+            ->order([$table->aliasField($data['sort_by_field']) => $data['sort_by_order']]);
 
-        return [
-            'entities' => $data,
-            // pre-save search
-            'preSaveId' => $this->_preSave($tableName, $user, $data)
-        ];
+        return $query;
     }
 
     /**
@@ -344,9 +310,10 @@ class SavedSearchesTable extends Table
      */
     public function createSearch($model, array $user, array $searchData)
     {
-        $search = $this->search($model, $user, $searchData);
+        $searchData = $this->validateData($model, $searchData);
 
-        return $search['preSaveId'];
+        // pre-save search
+        return $this->_preSave($model, $user, $searchData);
     }
 
     /**
@@ -360,12 +327,11 @@ class SavedSearchesTable extends Table
      */
     public function updateSearch($model, array $user, array $searchData, $id)
     {
-        $savedSearch = $this->get($id);
-        $existingData = json_decode($savedSearch->content, true);
+        $entity = $this->get($id);
+        $content = json_decode($entity->content, true);
+        $entity = $this->_normalizeSearch($entity, $model, $user, $content, $searchData);
 
-        $savedSearch = $this->_normalizeSearch($savedSearch, $model, $user, $existingData, $searchData);
-
-        return $this->save($savedSearch);
+        return $this->save($entity);
     }
 
     /**
@@ -374,14 +340,13 @@ class SavedSearchesTable extends Table
      * @param string $model Model name
      * @param array $user User info
      * @param string $id Existing search id
-     * @return \Cake\ORM\Entity|null
+     * @return \Search\Model\Entity\SavedSearch
      */
     public function getSearch($model, $user, $id)
     {
+        $id = !empty($id) ? $id : $this->createSearch($model, $user, []);
         $entity = $this->get($id);
-
         $content = json_decode($entity->content, true);
-
         $entity = $this->_normalizeSearch($entity, $model, $user, $content, $content);
 
         return $entity;
@@ -390,15 +355,16 @@ class SavedSearchesTable extends Table
     /**
      * Reset search.
      *
-     * @param \Cake\Datasource\EntityInterface $entity Search entity
+     * @param \Search\Model\Entity\SavedSearch $entity Search entity
      * @param string $model Model name
      * @param array $user User info
      * @return bool
      */
-    public function resetSearch(EntityInterface $entity, $model, $user)
+    public function resetSearch(SavedSearch $entity, $model, $user)
     {
         $content = json_decode($entity->content, true);
 
+        // for backward compatibility
         $saved = isset($content['saved']) ? $content['saved'] : $content;
         $entity = $this->_normalizeSearch($entity, $model, $user, $saved, $saved);
 
@@ -565,10 +531,10 @@ class SavedSearchesTable extends Table
     /**
      * Validate if search is editable.
      *
-     * @param EntityInterface $entity Search entity
+     * @param \Search\Model\Entity\SavedSearch $entity Search entity
      * @return bool
      */
-    public function isEditable(EntityInterface $entity)
+    public function isEditable(SavedSearch $entity)
     {
         return (bool)$entity->get('name');
     }
@@ -657,13 +623,13 @@ class SavedSearchesTable extends Table
             'criteria' => $this->_getBasicSearchCriteria($data, $module, $user)
         ];
 
-        $search = $this->search(
+        $query = $this->search(
             $module,
             $user,
             $data
         );
 
-        foreach ($search['entities']['result'] as $entity) {
+        foreach ($query->all() as $entity) {
             $result[] = $entity->id;
         }
 
@@ -884,39 +850,6 @@ class SavedSearchesTable extends Table
     }
 
     /**
-     * Method that fetches the search results.
-     *
-     * @param  array $data search data
-     * @param  string $tableName table name
-     * @return \Cake\ORM\ResultSet
-     */
-    protected function _getResults(array $data, $tableName)
-    {
-        $table = $this->_getTableInstance($tableName);
-
-        $query = $table
-            ->find('all')
-            ->select($this->_getQueryFields($data, $table))
-            ->where([$data['aggregator'] => $this->_prepareWhereStatement($data, $tableName)])
-            ->order([$data['sort_by_field'] => $data['sort_by_order']]);
-
-        // set limit if not 0
-        if (0 < (int)$data['limit']) {
-            $query->limit($data['limit']);
-        }
-
-        $result = $query->all();
-
-        $event = new Event('Search.Model.Search.afterFind', $this, [
-            'entities' => $result,
-            'table' => $table
-        ]);
-        $this->eventManager()->dispatch($event);
-
-        return $result;
-    }
-
-    /**
      * Prepare search query's where statement
      *
      * @param  array  $data  request data
@@ -931,7 +864,9 @@ class SavedSearchesTable extends Table
             return $result;
         }
 
-        $this->getSearchableFields($model);
+        $table = $this->_getTableInstance($model);
+
+        $this->getSearchableFields($table);
 
         foreach ($data['criteria'] as $fieldName => $criterias) {
             if (empty($criterias)) {
@@ -953,8 +888,7 @@ class SavedSearchesTable extends Table
                     );
                 }
                 $sqlOperator = $this->_searchableFields[$fieldName]['operators'][$operator]['operator'];
-                list(, $prefix) = pluginSplit($model);
-                $key = $prefix . '.' . $fieldName . ' ' . $sqlOperator;
+                $key = $table->aliasField($fieldName) . ' ' . $sqlOperator;
 
                 if (!array_key_exists($key, $result)) {
                     $result[$key] = $value;
@@ -1065,18 +999,20 @@ class SavedSearchesTable extends Table
     /**
      * Normalize search.
      *
-     * @param \Cake\Datasource\EntityInterface $entity Search entity
+     * @param \Search\Model\Entity\SavedSearch $entity Search entity
      * @param string $model Model name
      * @param array $user User info
      * @param array $saved Saved search data
      * @param array $latest Latest search data
-     * @return \Cake\ORM\Entity
+     * @return \Search\Model\Entity\SavedSearch
      */
-    protected function _normalizeSearch(EntityInterface $entity, $model, array $user, array $saved, array $latest)
+    protected function _normalizeSearch(SavedSearch $entity, $model, array $user, array $saved, array $latest)
     {
-        // keeps backward compatibility
+        // for backward compatibility
         $saved = isset($saved['saved']) ? $saved['saved'] : $saved;
-        $latest = isset($latest['latest']) ? $latest['latest'] : $latest;
+        $latest = isset($latest['latest']) ?
+            $latest['latest'] :
+            (isset($latest['saved']) ? $latest['saved'] : $latest);
 
         $entity->user_id = $user['id'];
         $entity->model = $model;
@@ -1097,5 +1033,38 @@ class SavedSearchesTable extends Table
             'modified <' => new \DateTime(static::DELETE_OLDER_THAN),
             'name IS' => null
         ]);
+    }
+
+    /**
+     * Method that re-formats entities to Datatables supported format.
+     *
+     * @param \Cake\ORM\ResultSet $resultSet ResultSet
+     * @param array $fields Display fields
+     * @param string $model Model name
+     * @return array
+     */
+    public function toDatatables(ResultSet $resultSet, array $fields, $model)
+    {
+        $result = [];
+
+        if ($resultSet->isEmpty()) {
+            return $result;
+        }
+
+        foreach ($resultSet as $key => $entity) {
+            foreach ($fields as $field) {
+                $result[$key][] = $entity->get($field);
+            }
+
+            $event = new Event('Search.View.View.Menu.Actions', new View(), [
+                'entity' => $entity,
+                'model' => $model
+            ]);
+            $this->eventManager()->dispatch($event);
+
+            $result[$key][] = '<div class="btn-group btn-group-xs" role="group">' . $event->result . '</div>';
+        }
+
+        return $result;
     }
 }

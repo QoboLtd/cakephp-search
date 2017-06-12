@@ -9,11 +9,6 @@ var saved_searches = saved_searches || {};
      */
     function SavedSearches(options)
     {
-        this.resultsSelectId = options.hasOwnProperty('resultsSelectId') ? options.resultsSelectId : '#savedResultsSelect';
-        this.resultsViewId = options.hasOwnProperty('resultsViewId') ? options.resultsViewId : '#savedResultsView';
-        this.resultsDeleteId = options.hasOwnProperty('resultsDeleteId') ? options.resultsDeleteId : '#savedResultsDelete';
-        this.resultsCopyId = options.hasOwnProperty('resultsCopyId') ? options.resultsCopyId : '#savedResultsCopy';
-
         this.criteriasSelectId = options.hasOwnProperty('criteriasSelectId') ? options.criteriasSelectId : '#savedCriteriasSelect';
         this.criteriasViewId = options.hasOwnProperty('criteriasViewId') ? options.criteriasViewId : '#savedCriteriasView';
         this.criteriasDeleteId = options.hasOwnProperty('criteriasDeleteId') ? options.criteriasDeleteId : '#savedCriteriasDelete';
@@ -30,32 +25,7 @@ var saved_searches = saved_searches || {};
      * @return {undefined}
      */
     SavedSearches.prototype.init = function () {
-        this._onResultsSelect();
         this._onCriteriasSelect();
-    };
-
-    /**
-     * Enable saves search results view and delete functionality on click.
-     *
-     * @return {undefined}
-     */
-    SavedSearches.prototype._onResultsSelect = function () {
-        var that = this;
-
-        $(this.resultsViewId).on('click', function () {
-            selElement = $(that.resultsSelectId).val();
-            window.location.href = $(that.viewPrefixId + selElement).attr('href');
-        });
-
-        $(this.resultsDeleteId).on('click', function () {
-            selElement = $(that.resultsSelectId).val();
-            $(that.deletePrefixId + selElement).click();
-        });
-
-        $(this.resultsCopyId).on('click', function () {
-            selElement = $(that.resultsSelectId).val();
-            $(that.copyPrefixId + selElement).click();
-        });
     };
 
     /**
@@ -83,10 +53,6 @@ var saved_searches = saved_searches || {};
     };
 
     saved_searches = new SavedSearches({
-        resultsSelectId: '#savedResultsSelect',
-        resultsViewId: '#savedResultsView',
-        resultsDeleteId: '#savedResultsDelete',
-        resultsCopyId: '#savedResultsCopy',
         criteriasSelectId: '#savedCriteriasSelect',
         criteriasViewId: '#savedCriteriasView',
         criteriasDeleteId: '#savedCriteriasDelete',

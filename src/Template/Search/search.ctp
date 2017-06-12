@@ -14,9 +14,15 @@ echo $this->Html->script(
         'block' => 'scriptBotton'
     ]
 );
+echo $this->element('Search.Search/filters', [
+    'searchOptions' => $searchOptions,
+    'searchFields' => $searchFields,
+    'savedSearch' => $savedSearch,
+    'searchData' => $searchData,
+    'isEditable' => $isEditable,
+    'preSaveId' => $preSaveId,
 
-echo $this->element('Search.saved_searches');
-echo $this->element('Search.search_filters');
-echo $this->element('Search.search_results');
+]);
+echo $this->element('Search.Search/results');
 ?>
 </section>

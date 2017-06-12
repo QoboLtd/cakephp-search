@@ -1,18 +1,17 @@
 <?php
-if (!empty($searchFields)) :
-    echo $this->Html->css('Search.search', ['block' => 'css']);
-    echo $this->Html->script('Search.search', ['block' => 'scriptBotton']);
+echo $this->Html->css('Search.search', ['block' => 'css']);
+echo $this->Html->script('Search.search', ['block' => 'scriptBotton']);
 
+echo $this->Html->scriptBlock(
+    'search.setFieldProperties(' . json_encode($searchFields) . ');',
+    ['block' => 'scriptBotton']
+);
+if (!empty($searchData['criteria'])) {
     echo $this->Html->scriptBlock(
-        'search.setFieldProperties(' . json_encode($searchFields) . ');',
+        'search.generateCriteriaFields(' . json_encode($searchData['criteria']) . ');',
         ['block' => 'scriptBotton']
     );
-    if (isset($searchData['criteria'])) {
-        echo $this->Html->scriptBlock(
-            'search.generateCriteriaFields(' . json_encode($searchData['criteria']) . ');',
-            ['block' => 'scriptBotton']
-        );
-    }
+}
 ?>
 <div class="box box-solid collapsed-box">
     <div class="box-header with-border">
@@ -87,9 +86,7 @@ if (!empty($searchFields)) :
             </div>
             <div class="col-md-8 col-lg-9">
                 <?php
-                if (!empty($searchFields)) {
-                    echo $this->element('Search.search_options');
-                }
+                echo $this->element('Search.Search/options');
                 echo $this->Form->button('<i class="fa fa-search"></i> ' . __('Search'), ['class' => 'btn btn-primary']);
                 echo $this->Form->end();
                 echo '&nbsp;';
@@ -101,22 +98,21 @@ if (!empty($searchFields)) :
                 ?>
             </div>
             <div class="col-md-4 col-lg-3">
-                <div class="row">
-                    <div class="col-sm-6 col-md-12">
-                        <?= $this->Form->label(__('Save search')) ?>
-                    </div>
-                    <div class="col-sm-6 col-md-12">
-                    <?= $this->element('Search.SaveSearch/save_search_criterias', [
-                        'preSaveId' => $preSaveId,
-                        'savedSearch' => $savedSearch,
-                        'isEditable' => $isEditable && 'criteria' === $savedSearch->type
-                    ]) ?>
-                    <?= $this->element('Search.SaveSearch/save_search_results', [
-                        'preSaveId' => $preSaveId,
-                        'savedSearch' => $savedSearch,
-                        'isEditable' => $isEditable && 'result' === $savedSearch->type
-                    ]) ?>
-                    </div>
+            <?php if (!empty($savedSearches)) : ?>
+                <div class="form-group">
+                <?php
+                echo $this->Form->label(__('Saved Searches'));
+                echo $this->element('Search.Search/Forms/saved_searches', ['savedSearches' => $savedSearches]);
+                ?>
+                </div>
+            <?php endif; ?>
+                <div class="form-group">
+                <?= $this->Form->label(__('Save search')) ?>
+                <?= $this->element('Search.Search/Forms/save_search', [
+                    'preSaveId' => $preSaveId,
+                    'savedSearch' => $savedSearch,
+                    'isEditable' => $isEditable && 'criteria' === $savedSearch->type
+                ]) ?>
                 </div>
             </div>
         </div>
@@ -124,7 +120,6 @@ if (!empty($searchFields)) :
 </div>
 <?php
 $scripts = [];
-
 foreach ($searchFields as $searchField) {
     if (empty($searchField['input']['post'])) {
         continue;
@@ -133,5 +128,3 @@ foreach ($searchFields as $searchField) {
 }
 
 echo $this->element('Search.widget_libraries', ['scripts' => $scripts]);
-?>
-<?php endif;
