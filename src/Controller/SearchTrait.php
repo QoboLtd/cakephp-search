@@ -69,7 +69,7 @@ trait SearchTrait
 
         $searchData = json_decode($entity->content, true);
 
-        if ($this->request->is('ajax')) {
+        if ($this->request->accepts('application/json')) {
             $this->_ajaxResponse($entity, $searchData, $model);
 
             return;
@@ -100,7 +100,7 @@ trait SearchTrait
      */
     protected function _ajaxResponse(SavedSearch $entity, array $data, $model)
     {
-        if (!$this->request->is('ajax')) {
+        if (!$this->request->accepts('application/json')) {
             return;
         }
 
