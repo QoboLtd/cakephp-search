@@ -35,11 +35,6 @@ class SavedSearchesTable extends Table
     const DELETE_OLDER_THAN = '-3 hours';
 
     /**
-     * Default sql limit
-     */
-    const DEFAULT_LIMIT = 100;
-
-    /**
      * Default sql order by direction
      */
     const DEFAULT_SORT_BY_ORDER = 'desc';
@@ -48,22 +43,6 @@ class SavedSearchesTable extends Table
      * Default sql aggregator
      */
     const DEFAULT_AGGREGATOR = 'AND';
-
-    /**
-     * Search limit options.
-     *
-     * @var array
-     */
-    protected $_limitOptions = [
-        0 => 'Unlimited',
-        1 => 1,
-        3 => 3,
-        5 => 5,
-        10 => 10,
-        20 => 20,
-        50 => 50,
-        100 => 100
-    ];
 
     /**
      * Search sort by order options.
@@ -218,26 +197,6 @@ class SavedSearchesTable extends Table
     }
 
     /**
-     * Getter method for default sql limit.
-     *
-     * @return string
-     */
-    public function getDefaultLimit()
-    {
-        return static::DEFAULT_LIMIT;
-    }
-
-    /**
-     * Getter method for sql limit options.
-     *
-     * @return string
-     */
-    public function getLimitOptions()
-    {
-        return $this->_limitOptions;
-    }
-
-    /**
      * Getter method for default sql sort by order.
      *
      * @return string
@@ -382,7 +341,6 @@ class SavedSearchesTable extends Table
         $result['display_columns'] = $this->getListingFields($tableName);
         $result['sort_by_field'] = current($result['display_columns']);
         $result['sort_by_order'] = $this->getDefaultSortByOrder();
-        $result['limit'] = $this->getDefaultLimit();
         $result['aggregator'] = $this->getDefaultAggregator();
 
         return $result;
@@ -396,7 +354,6 @@ class SavedSearchesTable extends Table
     public function getSearchOptions()
     {
         $result = [
-            'limit' => $this->getLimitOptions(),
             'sortByOrder' => $this->getSortByOrderOptions(),
             'aggregators' => $this->getAggregatorOptions()
         ];
@@ -715,8 +672,8 @@ class SavedSearchesTable extends Table
      * Base search data validation method.
      *
      * Retrieves current searchable table columns, validates and filters criteria, display columns
-     * and sort by field against them. Then validates sort by order and limit againt available options
-     * and sets them to the default options if they fail validation.
+     * and sort by field against them. Then validates sort by order againt available options
+     * and sets it to the default option if they fail validation.
      *
      * @param \Cake\ORM\Table|string $table Table name or Instace
      * @param array $data Search data
@@ -739,7 +696,6 @@ class SavedSearchesTable extends Table
         $data['display_columns'] = $this->_validateDisplayColumns($data['display_columns'], $fields);
         $data['sort_by_field'] = $this->_validateSortByField($data['sort_by_field'], $fields, $table);
         $data['sort_by_order'] = $this->_validateSortByOrder($data['sort_by_order'], $table);
-        $data['limit'] = $this->_validateLimit($data['limit']);
         $data['aggregator'] = $this->_validateAggregator($data['aggregator']);
 
         return $data;
@@ -812,22 +768,6 @@ class SavedSearchesTable extends Table
         $options = array_keys($this->getSortByOrderOptions());
         if (!in_array($data, $options)) {
             $data = $this->getDefaultSortByOrder();
-        }
-
-        return $data;
-    }
-
-    /**
-     * Validate search limit.
-     *
-     * @param string $data Limit value
-     * @return string
-     */
-    protected function _validateLimit($data)
-    {
-        $options = array_keys($this->getLimitOptions());
-        if (!in_array($data, $options)) {
-            $data = $this->getDefaultLimit();
         }
 
         return $data;
