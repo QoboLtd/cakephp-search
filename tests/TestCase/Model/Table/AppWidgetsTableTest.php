@@ -1,6 +1,7 @@
 <?php
 namespace Search\Test\TestCase\Model\Table;
 
+use Cake\Core\Configure;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use Search\Model\Table\AppWidgetsTable;
@@ -51,33 +52,27 @@ class AppWidgetsTableTest extends TestCase
         parent::tearDown();
     }
 
-    /**
-     * Test initialize method
-     *
-     * @return void
-     */
     public function testInitialize()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $result = $this->AppWidgets->find('list')->toArray();
+
+        $this->assertContains('Another Test Widget', $result);
+        $this->assertContains('Hello World', $result);
     }
 
-    /**
-     * Test validationDefault method
-     *
-     * @return void
-     */
     public function testValidationDefault()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $validator = new \Cake\Validation\Validator();
+        $result = $this->AppWidgets->validationDefault($validator);
+
+        $this->assertInstanceOf('\Cake\Validation\Validator', $result);
     }
 
-    /**
-     * Test buildRules method
-     *
-     * @return void
-     */
     public function testBuildRules()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $rules = new \Cake\ORM\RulesChecker();
+        $result = $this->AppWidgets->buildRules($rules);
+
+        $this->assertInstanceOf('\Cake\ORM\RulesChecker', $result);
     }
 }

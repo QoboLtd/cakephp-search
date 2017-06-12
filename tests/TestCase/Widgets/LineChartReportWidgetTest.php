@@ -13,6 +13,13 @@ class LineChartReportWidgetTest extends TestCase
         $this->widget = new LineChartReportWidget();
     }
 
+    public function tearDown()
+    {
+        unset($this->widget);
+
+        parent::tearDown();
+    }
+
     public function getType()
     {
         $this->assertEquals($this->widget->getType(), 'lineChart');
@@ -21,7 +28,11 @@ class LineChartReportWidgetTest extends TestCase
     public function testGetScripts()
     {
         $content = $this->widget->getScripts([]);
+        $this->assertInternalType('array', $content);
         $this->assertNotEmpty($content);
+        $this->assertArrayHasKey('post', $content);
+        $this->assertArrayHasKey('css', $content['post']);
+        $this->assertArrayHasKey('javascript', $content['post']);
     }
 
     public function testGetContainerId()
@@ -120,6 +131,21 @@ class LineChartReportWidgetTest extends TestCase
 
     public function testGetChartData()
     {
+        $data = ['name' => 'foo'];
+
+        $expected = [
+            'chart' => 'lineChart',
+            'options' => [
+                'lineColors' => ['#0874c7', '#04645e', '#5661f8', '#8298c1', '#c6ba08', '#07ada3'],
+                'element' => 'graph_bar_assigned_by_year',
+                'resize' => true,
+                'labels' => ['City', 'Country', 'Post Code'],
+                'xkey' => ['name'],
+                'ykeys' => ['id', 'title'],
+                'data' => $data
+            ]
+        ];
+
         $config = [
             'modelName' => 'Reports',
             'slug' => 'bar_assigned_by_year',
@@ -129,21 +155,21 @@ class LineChartReportWidgetTest extends TestCase
                 'widget_type' => 'report',
                 'name' => 'Report Bar',
                 'query' => '',
-                'columns' => '',
-                'renderAs' => 'barChart',
-                'y_axis' => '',
-                'x_axis' => ''
+                'columns' => 'city,country,post_code',
+                'renderAs' => 'lineChart',
+                'y_axis' => 'id,title',
+                'x_axis' => 'name'
             ]
         ];
 
         $this->widget->setConfig($config);
         $this->widget->setContainerId($config);
 
-        $result = $this->widget->getChartData([]);
+        $result = $this->widget->getChartData($data);
         $this->assertNotEmpty($result['options']['element']);
         $this->assertNotEmpty($result['options']['lineColors']);
         $this->assertNotEmpty($this->widget->getChartColors());
-        //as the data passed in the method is empty
-        $this->assertEquals([], $this->widget->getData());
+
+        $this->assertEquals($expected, $this->widget->getData());
     }
 }

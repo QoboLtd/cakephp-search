@@ -3,43 +3,23 @@ use Cake\Event\Event;
 use Cake\Utility\Inflector;
 
 $savedSearch = $widget->getData();
-$searchData = $savedSearch->entities;
-$savedSearchType = $widget->getSavedSearchType();
+$searchData = $savedSearch->content['saved'];
 $widgetOptions = $widget->getOptions();
-
-// get search information from the saved search (if is set) to construct search results title
-if (!empty($savedSearch)) {
-    $searchId = $savedSearch->id;
-    $searchName = $savedSearch->name;
-    $model = $savedSearch->model;
-}
-
-// search title
-$title = $this->name;
-if (!empty($searchName)) {
-    $title = $searchName;
-}
+$fields = $widgetOptions['fields'];
 
 //search url if is a saved one
-$url = null;
-if (!empty($model) && !empty($searchId)) {
-    list($plugin, $controller) = pluginSplit($model);
-    $url = [
-        'plugin' => $plugin,
-        'controller' => $controller,
-        'action' => 'search',
-        $searchId
-    ];
-} elseif (!empty($searchId)) {
-    $url = $this->request->here;
-}
+list($plugin, $controller) = pluginSplit($savedSearch->model);
+$url = [
+    'plugin' => $plugin,
+    'controller' => $controller,
+    'action' => 'search',
+    $savedSearch->id
+];
 
-if (!empty($url)) {
-    $title = '<a href="' . $this->Url->build($url) . '">' . $title . '</a>';
-}
-
+// search title
+$title = '<a href="' . $this->Url->build($url) . '">' . $savedSearch->name . '</a>';
 ?>
-<?php if (!empty($searchData['result'])) : ?>
+<?php if (!empty($searchData['display_columns'])) : ?>
 <div class="dashboard-widget-saved_search">
     <div class="box box-default">
         <div class="box-header">
@@ -51,37 +31,20 @@ if (!empty($url)) {
             </div>
         </div>
         <div class="box-body">
-            <table id="<?= $widget->getContainerId()?>" class="table table-hover table-condensed table-vertical-align">
-                <thead>
-                    <tr>
-                    <?php foreach ($searchData['display_columns'] as $field) : ?>
-                        <th><?php echo ((!empty($widgetOptions['fields'][$field])) ? $widgetOptions['fields'][$field]['label'] : Inflector::humanize($field)); ?></th>
-                    <?php endforeach; ?>
-                        <th class="actions"><?= __('Actions') ?></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($searchData['result'] as $entity) : ?>
-                    <tr>
+            <div class="table-responsive">
+                <table id="<?= $widget->getContainerId() ?>" class="table table-hover table-condensed table-vertical-align" width="100%">
+                    <thead>
+                        <tr>
                         <?php foreach ($searchData['display_columns'] as $field) : ?>
-                            <td><?= isset($entity[$field]) ? $entity[$field] : null; ?></td>
+                            <?php $field = Inflector::humanize($field);
+                            $field = array_key_exists($field, $fields) ? $fields[$field]['label'] : $field ?>
+                            <th><?= $field ?></th>
                         <?php endforeach; ?>
-                        <td class="actions">
-                            <?php
-                            $event = new Event('Search.View.View.Menu.Actions', $this, [
-                                'entity' => $entity,
-                                'model' => $model
-                            ]);
-                            $this->eventManager()->dispatch($event);
-                            ?>
-                            <div class="btn-group btn-group-xs" role="group">
-                            <?= $event->result; ?>
-                            </div>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+                            <th class="actions"><?= __('Actions') ?></th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
         </div>
     </div>
 </div>

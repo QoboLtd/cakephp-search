@@ -1,7 +1,9 @@
 <?php
 namespace Search\Widgets;
 
+use Cake\Core\Configure;
 use Cake\ORM\TableRegistry;
+use Cake\Routing\Router;
 use Search\Widgets\BaseWidget;
 
 class SavedSearchWidget extends BaseWidget
@@ -71,53 +73,29 @@ class SavedSearchWidget extends BaseWidget
      */
     public function getResults(array $options = [])
     {
-        $results = $fields = [];
-
         $this->setContainerId($options['entity']);
 
+        $savedSearch = [];
         try {
             $query = $this->_tableInstance->findById($this->_entity->widget_id);
-            $resultSet = $query->first();
-            if (!empty($resultSet)) {
-                $results = $resultSet;
+            if ($query->isEmpty()) {
+                return $savedSearch;
             }
+            $savedSearch = $query->first();
         } catch (\Exception $e) {
             echo $e->getMessage();
         }
 
-        if (empty($this->_entity)) {
-            return $results;
-        }
+        // keeps backward compatibility
+        $search = $this->_tableInstance->resetSearch($savedSearch, $savedSearch->model, $options['user']);
+        $search->content = json_decode($search->content, true);
 
-        switch ($results->type) {
-            case $this->_tableInstance->getCriteriaType():
-                $search = $this->_tableInstance->search(
-                    $results->model,
-                    $options['user'],
-                    json_decode($results->content, true),
-                    true
-                );
-                $results->entities = $search['entities'];
-                break;
-            case $this->_tableInstance->getResultType():
-                $results->entities = json_decode($results->content, true);
-                break;
-        }
-        $results->entities['display_columns'] = array_diff(
-            $results->entities['display_columns'],
-            $this->_tableInstance->getSkippedDisplayFields()
-        );
+        $this->options['scripts'] = $this->getScripts(['data' => $search]);
+        $this->options['fields'] = $this->_tableInstance->getSearchableFields($search->model);
 
-        $this->_data = $results;
-        $this->options['scripts'] = $this->getScripts(['data' => $this->_data]);
+        $this->_data = $search;
 
-        if (method_exists($this->_tableInstance, 'getSearchableFields') && is_callable([$this->_tableInstance, 'getSearchableFields'])) {
-            $fields = $this->_tableInstance->getSearchableFields($results->model);
-        }
-
-        $this->options['fields'] = $fields;
-
-        return $results;
+        return $this->getData();
     }
 
     /**
@@ -143,9 +121,28 @@ class SavedSearchWidget extends BaseWidget
      */
     public function getScripts(array $options = [])
     {
-        $entities = $options['data']->entities;
+        $searchData = $options['data']->content['saved'];
 
-        $uid = $this->getContainerId();
+        list($plugin, $controller) = pluginSplit($options['data']->model);
+
+        // DataTables options
+        $config = [
+            'table_id' => '#' . $this->getContainerId(),
+            'url' => Router::url([
+                'plugin' => $plugin,
+                'controller' => $controller,
+                'action' => 'search',
+                $options['data']->id,
+            ]),
+            'extension' => 'json',
+            'token' => Configure::read('CsvMigrations.api.token'),
+            'sort_by_field' => (int)array_search($searchData['sort_by_field'], $searchData['display_columns']),
+            'sort_by_order' => $searchData['sort_by_order']
+        ];
+        foreach ($searchData['display_columns'] as $field) {
+            $config['columns'][] = ['name' => $field];
+        }
+        $config['columns'][] = ['name' => 'actions'];
 
         $content = [
             'post' => [
@@ -153,6 +150,7 @@ class SavedSearchWidget extends BaseWidget
                     'type' => 'css',
                     'content' => [
                         'AdminLTE./plugins/datatables/dataTables.bootstrap',
+                        'Search.search-datatables',
                     ],
                     'block' => 'css',
                 ],
@@ -167,11 +165,7 @@ class SavedSearchWidget extends BaseWidget
                 ],
                 'scriptBlock' => [
                     'type' => 'scriptBlock',
-                    'content' => 'view_search_result.init({
-                        table_id: \'#' . $uid . '\',
-                        sort_by_field: \'' . (int)array_search($entities['sort_by_field'], $entities['display_columns']) . '\',
-                        sort_by_order: \'' . $entities['sort_by_order'] . '\'
-                        });',
+                    'content' => 'view_search_result.init(' . json_encode($config) . ');',
                     'block' => 'scriptBotton',
                 ],
             ]

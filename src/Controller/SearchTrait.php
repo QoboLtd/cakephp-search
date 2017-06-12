@@ -1,12 +1,14 @@
 <?php
 namespace Search\Controller;
 
+use Cake\Event\Event;
 use Cake\Filesystem\File;
 use Cake\Network\Exception\BadRequestException;
 use Cake\ORM\Query;
 use Cake\ORM\TableRegistry;
-use Cake\Utility\Hash;
 use Search\Controller\Traits\SearchableTrait;
+use Search\Model\Entity\SavedSearch;
+use Search\Model\Table\SavedSearchesTable;
 use Zend\Diactoros\Stream;
 
 trait SearchTrait
@@ -26,6 +28,119 @@ trait SearchTrait
      * @var string
      */
     protected $_elementSearch = 'Search.Search/search';
+
+    /**
+     * Search action
+     *
+     * @param  string $id Saved search id
+     * @return \Cake\Network\Response|void
+     */
+    public function search($id = null)
+    {
+        $model = $this->modelClass;
+
+        if (!$this->_isSearchable($model)) {
+            throw new BadRequestException('You cannot search in ' . implode(' - ', pluginSplit($model)) . '.');
+        }
+
+        $table = TableRegistry::get($this->_tableSearch);
+
+        // redirect on POST requests (PRG pattern)
+        if ($this->request->is('post')) {
+            $searchData = $table->prepareData($this->request, $model, $this->Auth->user());
+
+            if ($id) {
+                $table->updateSearch($model, $this->Auth->user(), $searchData, $id);
+            } else {
+                $id = $table->createSearch($model, $this->Auth->user(), $searchData);
+            }
+
+            list($plugin, $controller) = pluginSplit($model);
+
+            return $this->redirect([
+                'plugin' => $plugin,
+                'controller' => $controller,
+                'action' => __FUNCTION__,
+                $id
+            ]);
+        }
+
+        $entity = $table->getSearch($model, $this->Auth->user(), $id);
+
+        $searchData = json_decode($entity->content, true);
+
+        if ($this->request->is('ajax')) {
+            $this->_ajaxResponse($entity, $searchData, $model);
+
+            return;
+        }
+
+        $searchData = $table->validateData($model, $searchData['latest']);
+
+        $this->set('searchFields', $table->getSearchableFields($model));
+        $this->set('savedSearches', $table->getSavedSearches([$this->Auth->user('id')], [$model]));
+        $this->set('model', $model);
+        $this->set('searchData', $searchData);
+        $this->set('savedSearch', $entity);
+        $this->set('preSaveId', $table->createSearch($model, $this->Auth->user(), $searchData));
+        // INFO: this is valid when a saved search was modified and the form was re-submitted
+        $this->set('isEditable', $table->isEditable($entity));
+        $this->set('searchOptions', $table->getSearchOptions());
+
+        $this->render($this->_elementSearch);
+    }
+
+    /**
+     * Ajax response.
+     *
+     * @param \Cake\ORM\EntitySavedSearch $entity Search entity
+     * @param array $data Search data
+     * @param string $model Model name
+     * @return void
+     */
+    protected function _ajaxResponse(SavedSearch $entity, array $data, $model)
+    {
+        if (!$this->request->is('ajax')) {
+            return;
+        }
+
+        $table = TableRegistry::get($this->_tableSearch);
+
+        $searchData = $data['latest'];
+
+        $displayColumns = $searchData['display_columns'];
+
+        $sortField = $this->request->query('order.0.column') ?: 0;
+        $sortField = array_key_exists($sortField, $displayColumns) ?
+            $displayColumns[$sortField] :
+            current($displayColumns);
+        $searchData['sort_by_field'] = $sortField;
+
+        $searchData['sort_by_order'] = $this->request->query('order.0.dir') ?: $table->getDefaultSortByOrder();
+
+        $query = $table->search($model, $this->Auth->user(), $searchData);
+
+        $event = new Event('Search.Model.Search.afterFind', $this, [
+            'entities' => $this->paginate($query),
+            'table' => TableRegistry::get($model)
+        ]);
+        $this->eventManager()->dispatch($event);
+
+        $data = $table->toDatatables($event->result, $displayColumns, $model);
+
+        $pagination = [
+            'count' => $query->count()
+        ];
+
+        $table->resetSearch($entity, $model, $this->Auth->user());
+
+        $this->set([
+            'success' => true,
+            'data' => $data,
+            'pagination' => $pagination,
+            '_serialize' => ['success', 'preSaveId', 'data', 'pagination']
+        ]);
+    }
 
     /**
      * Save action
@@ -49,92 +164,6 @@ trait SearchTrait
         }
 
         return $this->redirect(['action' => 'search', $id]);
-    }
-
-    /**
-     * Search action
-     *
-     * @param  string $id Saved search id
-     * @return void
-     */
-    public function search($id = null)
-    {
-        $model = $this->modelClass;
-        if (!$this->_isSearchable($model)) {
-            throw new BadRequestException('You cannot search in ' . implode(' ', pluginSplit($model)) . '.');
-        }
-
-        $table = TableRegistry::get($this->_tableSearch);
-
-        // get searchable fields
-        $searchFields = $table->getSearchableFields($model);
-
-        $data = $this->request->data();
-
-        // is editable flag, false by default
-        $isEditable = false;
-
-        // saved search instance, null by default
-        $savedSearch = null;
-
-        $isBasicSearch = Hash::get($data, 'criteria.query') ? true : false;
-
-        if ($this->request->is(['post', 'get'])) {
-            // basic search query, converted to search criteria
-            if ($isBasicSearch) {
-                $data['criteria'] = $table->getBasicSearchCriteria(
-                    Hash::get($data, 'criteria'),
-                    $model,
-                    $this->Auth->user()
-                );
-                $data['aggregator'] = 'OR';
-            }
-
-            // id of saved search has been provided
-            if (!is_null($id)) {
-                $savedSearch = $table->get($id);
-                // fetch search conditions from saved search if request data are empty
-                // INFO: this is valid on initial saved search load
-                if (empty($data)) {
-                    $data = json_decode($savedSearch->content, true);
-                } else { // INFO: this is valid when a saved search was modified and the form was re-submitted
-                    $isEditable = true;
-                }
-            }
-
-            $data = $table->validateData($model, $data);
-
-            $search = $table->search($model, $this->Auth->user(), $data);
-
-            if (isset($search['saveSearchCriteriaId'])) {
-                $this->set('saveSearchCriteriaId', $search['saveSearchCriteriaId']);
-            }
-
-            if (isset($search['saveSearchResultsId'])) {
-                $this->set('saveSearchResultsId', $search['saveSearchResultsId']);
-            }
-
-            // @todo find out how to do pagination without affecting limit
-            if ($search['entities']['result'] instanceof Query) {
-                // fetched from new search result
-                $data['result'] = $search['entities']['result']->all();
-            } else {
-                // as taken from a saved search result
-                $data['result'] = $search['entities']['result'];
-            }
-        }
-
-        $savedSearches = $table->getSavedSearches([$this->Auth->user('id')], [$model]);
-
-        $this->set(compact('searchFields', 'savedSearches', 'model'));
-        $this->set('searchData', $data);
-        $this->set('savedSearch', $savedSearch);
-        $this->set('isEditable', $isEditable);
-        $this->set('limitOptions', $table->getLimitOptions());
-        $this->set('sortByOrderOptions', $table->getSortByOrderOptions());
-        $this->set('aggregatorOptions', $table->getAggregatorOptions());
-
-        $this->render($this->_elementSearch);
     }
 
     /**

@@ -64,22 +64,9 @@ asort($sortByOptions);
         echo $this->Form->label(__('Sort Order'));
         echo $this->Form->select(
             'sort_by_order',
-            $sortByOrderOptions,
+            $searchOptions['sortByOrder'],
             [
                 'default' => isset($searchData['sort_by_order']) ? $searchData['sort_by_order'] : 'asc',
-                'class' => 'form-control input-sm'
-             ]
-        );
-        ?>
-        </div>
-        <div class="form-group">
-        <?php
-        echo $this->Form->label(__('Limit results'));
-        echo $this->Form->select(
-            'limit',
-            $limitOptions,
-            [
-                'default' => isset($searchData['limit']) ? $searchData['limit'] : 10,
                 'class' => 'form-control input-sm'
              ]
         );

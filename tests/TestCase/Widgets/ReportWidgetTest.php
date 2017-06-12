@@ -15,7 +15,6 @@ class ReportWidgetTest extends TestCase
     public $Widgets;
 
     public $fixtureManager;
-    public $eventManager;
     public $appView;
 
     public $autoFixtures = true;
@@ -48,7 +47,10 @@ class ReportWidgetTest extends TestCase
     public function tearDown()
     {
         parent::tearDown();
-        unset($this->eventManager, $this->fixtureManager);
+        unset($this->fixtureManager);
+        unset($this->widget);
+        unset($this->Widgets);
+        unset($this->appView);
     }
 
     public function testGetRenderElement()

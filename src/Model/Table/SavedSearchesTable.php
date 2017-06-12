@@ -3,13 +3,16 @@ namespace Search\Model\Table;
 
 use Cake\Datasource\ConnectionManager;
 use Cake\Event\Event;
+use Cake\Http\ServerRequest;
 use Cake\ORM\Query;
 use Cake\ORM\ResultSet;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
 use Cake\Validation\Validator;
+use Cake\View\View;
 use InvalidArgumentException;
 use RuntimeException;
 use Search\Model\Entity\SavedSearch;
@@ -22,16 +25,6 @@ use Search\Model\Entity\SavedSearch;
 class SavedSearchesTable extends Table
 {
     /**
-     * Criteria type value
-     */
-    const TYPE_CRITERIA = 'criteria';
-
-    /**
-     * Result type value
-     */
-    const TYPE_RESULT = 'result';
-
-    /**
      * Private shared status value
      */
     const SHARED_STATUS_PRIVATE = 'private';
@@ -42,11 +35,6 @@ class SavedSearchesTable extends Table
     const DELETE_OLDER_THAN = '-3 hours';
 
     /**
-     * Default sql limit
-     */
-    const DEFAULT_LIMIT = 100;
-
-    /**
      * Default sql order by direction
      */
     const DEFAULT_SORT_BY_ORDER = 'desc';
@@ -55,22 +43,6 @@ class SavedSearchesTable extends Table
      * Default sql aggregator
      */
     const DEFAULT_AGGREGATOR = 'AND';
-
-    /**
-     * Search limit options.
-     *
-     * @var array
-     */
-    protected $_limitOptions = [
-        0 => 'Unlimited',
-        1 => 1,
-        3 => 3,
-        5 => 5,
-        10 => 10,
-        20 => 20,
-        50 => 50,
-        100 => 100
-    ];
 
     /**
      * Search sort by order options.
@@ -171,7 +143,8 @@ class SavedSearchesTable extends Table
 
         $validator
             ->requirePresence('type', 'create')
-            ->notEmpty('type');
+            ->notEmpty('type', 'update')
+            ->allowEmpty('name', 'create');
 
         $validator
             ->requirePresence('model', 'create')
@@ -204,26 +177,6 @@ class SavedSearchesTable extends Table
     }
 
     /**
-     * Returns criteria type.
-     *
-     * @return string
-     */
-    public function getCriteriaType()
-    {
-        return static::TYPE_CRITERIA;
-    }
-
-    /**
-     * Returns result type.
-     *
-     * @return string
-     */
-    public function getResultType()
-    {
-        return static::TYPE_RESULT;
-    }
-
-    /**
      * Returns private shared status.
      *
      * @return string
@@ -241,26 +194,6 @@ class SavedSearchesTable extends Table
     public function getSkippedDisplayFields()
     {
         return $this->_skipDisplayFields;
-    }
-
-    /**
-     * Getter method for default sql limit.
-     *
-     * @return string
-     */
-    public function getDefaultLimit()
-    {
-        return static::DEFAULT_LIMIT;
-    }
-
-    /**
-     * Getter method for sql limit options.
-     *
-     * @return string
-     */
-    public function getLimitOptions()
-    {
-        return $this->_limitOptions;
     }
 
     /**
@@ -304,37 +237,97 @@ class SavedSearchesTable extends Table
     }
 
     /**
-     * Search method
+     * Search method.
      *
-     * @param  string $tableName table name
-     * @param  array  $user user
-     * @param  array  $requestData request data
+     * @param string $tableName Table name
+     * @param array $user User info
+     * @param array $data Request data
      * @return array
      */
-    public function search($tableName, $user, $requestData)
+    public function search($tableName, array $user, array $data)
     {
-        $data = $requestData;
-
         $data = $this->validateData($tableName, $data);
 
-        if (empty($data['result'])) {
-            // get search results
-            $data['result'] = $this->_getResults($data, $tableName);
-        }
+        $table = $this->_getTableInstance($tableName);
 
-        // pre-save search criteria and results
-        $preSaveIds = $this->_preSaveSearchCriteriaAndResults(
-            $tableName,
-            $data,
-            $requestData,
-            $user['id']
-        );
+        $query = $table
+            ->find('all')
+            ->select($this->_getQueryFields($data, $table))
+            ->where([$data['aggregator'] => $this->_prepareWhereStatement($data, $tableName)])
+            ->order([$table->aliasField($data['sort_by_field']) => $data['sort_by_order']]);
 
-        return [
-            'saveSearchCriteriaId' => $preSaveIds['saveSearchCriteriaId'],
-            'saveSearchResultsId' => $preSaveIds['saveSearchResultsId'],
-            'entities' => $data
-        ];
+        return $query;
+    }
+
+    /**
+     * Create search.
+     *
+     * @param string $model Model name
+     * @param array $user User info
+     * @param array $searchData Request data
+     * @return string
+     */
+    public function createSearch($model, array $user, array $searchData)
+    {
+        $searchData = $this->validateData($model, $searchData);
+
+        // pre-save search
+        return $this->_preSave($model, $user, $searchData);
+    }
+
+    /**
+     * Update search.
+     *
+     * @param string $model Model name
+     * @param array $user User info
+     * @param array $searchData Request data
+     * @param string $id Existing search id
+     * @return bool
+     */
+    public function updateSearch($model, array $user, array $searchData, $id)
+    {
+        $entity = $this->get($id);
+        $content = json_decode($entity->content, true);
+        $entity = $this->_normalizeSearch($entity, $model, $user, $content, $searchData);
+
+        return $this->save($entity);
+    }
+
+    /**
+     * Get search.
+     *
+     * @param string $model Model name
+     * @param array $user User info
+     * @param string $id Existing search id
+     * @return \Search\Model\Entity\SavedSearch
+     */
+    public function getSearch($model, $user, $id)
+    {
+        $id = !empty($id) ? $id : $this->createSearch($model, $user, []);
+        $entity = $this->get($id);
+        $content = json_decode($entity->content, true);
+        $entity = $this->_normalizeSearch($entity, $model, $user, $content, $content);
+
+        return $entity;
+    }
+
+    /**
+     * Reset search.
+     *
+     * @param \Search\Model\Entity\SavedSearch $entity Search entity
+     * @param string $model Model name
+     * @param array $user User info
+     * @return bool
+     */
+    public function resetSearch(SavedSearch $entity, $model, $user)
+    {
+        $content = json_decode($entity->content, true);
+
+        // for backward compatibility
+        $saved = isset($content['saved']) ? $content['saved'] : $content;
+        $entity = $this->_normalizeSearch($entity, $model, $user, $saved, $saved);
+
+        return $this->save($entity);
     }
 
     /**
@@ -348,8 +341,22 @@ class SavedSearchesTable extends Table
         $result['display_columns'] = $this->getListingFields($tableName);
         $result['sort_by_field'] = current($result['display_columns']);
         $result['sort_by_order'] = $this->getDefaultSortByOrder();
-        $result['limit'] = $this->getDefaultLimit();
         $result['aggregator'] = $this->getDefaultAggregator();
+
+        return $result;
+    }
+
+    /**
+     * Search options getter.
+     *
+     * @return array
+     */
+    public function getSearchOptions()
+    {
+        $result = [
+            'sortByOrder' => $this->getSortByOrderOptions(),
+            'aggregators' => $this->getAggregatorOptions()
+        ];
 
         return $result;
     }
@@ -451,6 +458,45 @@ class SavedSearchesTable extends Table
     }
 
     /**
+     * Prepare search data from request data.
+     *
+     * @param \Cake\Http\ServerRequest $request Request object
+     * @param string $model Model name
+     * @param array $user User info
+     * @return array
+     */
+    public function prepareData(ServerRequest $request, $model, array $user)
+    {
+        $result = $request->getData();
+
+        // non-basic search
+        if (!Hash::get($result, 'criteria.query')) {
+            return $result;
+        }
+
+        // basic search query, converted to search criteria
+        $result['aggregator'] = 'OR';
+        $result['criteria'] = $this->_getBasicSearchCriteria(
+            Hash::get($result, 'criteria'),
+            $model,
+            $user
+        );
+
+        return $result;
+    }
+
+    /**
+     * Validate if search is editable.
+     *
+     * @param \Search\Model\Entity\SavedSearch $entity Search entity
+     * @return bool
+     */
+    public function isEditable(SavedSearch $entity)
+    {
+        return (bool)$entity->get('name');
+    }
+
+    /**
      * Prepare basic search query's where statement
      *
      * @param array $data search fields
@@ -458,7 +504,7 @@ class SavedSearchesTable extends Table
      * @param array $user User info
      * @return array
      */
-    public function getBasicSearchCriteria(array $data, $table, $user)
+    protected function _getBasicSearchCriteria(array $data, $table, $user)
     {
         $result = [];
         if (empty($data['query'])) {
@@ -531,16 +577,16 @@ class SavedSearchesTable extends Table
 
         $data = [
             'aggregator' => 'OR',
-            'criteria' => $this->getBasicSearchCriteria($data, $module, $user)
+            'criteria' => $this->_getBasicSearchCriteria($data, $module, $user)
         ];
 
-        $search = $this->search(
+        $query = $this->search(
             $module,
             $user,
             $data
         );
 
-        foreach ($search['entities']['result'] as $entity) {
+        foreach ($query->all() as $entity) {
             $result[] = $entity->id;
         }
 
@@ -626,8 +672,8 @@ class SavedSearchesTable extends Table
      * Base search data validation method.
      *
      * Retrieves current searchable table columns, validates and filters criteria, display columns
-     * and sort by field against them. Then validates sort by order and limit againt available options
-     * and sets them to the default options if they fail validation.
+     * and sort by field against them. Then validates sort by order againt available options
+     * and sets it to the default option if they fail validation.
      *
      * @param \Cake\ORM\Table|string $table Table name or Instace
      * @param array $data Search data
@@ -650,7 +696,6 @@ class SavedSearchesTable extends Table
         $data['display_columns'] = $this->_validateDisplayColumns($data['display_columns'], $fields);
         $data['sort_by_field'] = $this->_validateSortByField($data['sort_by_field'], $fields, $table);
         $data['sort_by_order'] = $this->_validateSortByOrder($data['sort_by_order'], $table);
-        $data['limit'] = $this->_validateLimit($data['limit']);
         $data['aggregator'] = $this->_validateAggregator($data['aggregator']);
 
         return $data;
@@ -729,22 +774,6 @@ class SavedSearchesTable extends Table
     }
 
     /**
-     * Validate search limit.
-     *
-     * @param string $data Limit value
-     * @return string
-     */
-    protected function _validateLimit($data)
-    {
-        $options = array_keys($this->getLimitOptions());
-        if (!in_array($data, $options)) {
-            $data = $this->getDefaultLimit();
-        }
-
-        return $data;
-    }
-
-    /**
      * Validate search aggregator.
      *
      * @param string $data Aggregator value
@@ -758,39 +787,6 @@ class SavedSearchesTable extends Table
         }
 
         return $data;
-    }
-
-    /**
-     * Method that fetches the search results.
-     *
-     * @param  array $data search data
-     * @param  string $tableName table name
-     * @return \Cake\ORM\ResultSet
-     */
-    protected function _getResults(array $data, $tableName)
-    {
-        $table = $this->_getTableInstance($tableName);
-
-        $query = $table
-            ->find('all')
-            ->select($this->_getQueryFields($data, $table))
-            ->where([$data['aggregator'] => $this->_prepareWhereStatement($data, $tableName)])
-            ->order([$data['sort_by_field'] => $data['sort_by_order']]);
-
-        // set limit if not 0
-        if (0 < (int)$data['limit']) {
-            $query->limit($data['limit']);
-        }
-
-        $result = $query->all();
-
-        $event = new Event('Search.Model.Search.afterFind', $this, [
-            'entities' => $result,
-            'table' => $table
-        ]);
-        $this->eventManager()->dispatch($event);
-
-        return $result;
     }
 
     /**
@@ -808,7 +804,9 @@ class SavedSearchesTable extends Table
             return $result;
         }
 
-        $this->getSearchableFields($model);
+        $table = $this->_getTableInstance($model);
+
+        $this->getSearchableFields($table);
 
         foreach ($data['criteria'] as $fieldName => $criterias) {
             if (empty($criterias)) {
@@ -830,8 +828,7 @@ class SavedSearchesTable extends Table
                     );
                 }
                 $sqlOperator = $this->_searchableFields[$fieldName]['operators'][$operator]['operator'];
-                list(, $prefix) = pluginSplit($model);
-                $key = $prefix . '.' . $fieldName . ' ' . $sqlOperator;
+                $key = $table->aliasField($fieldName) . ' ' . $sqlOperator;
 
                 if (!array_key_exists($key, $result)) {
                     $result[$key] = $value;
@@ -919,32 +916,50 @@ class SavedSearchesTable extends Table
     }
 
     /**
-     * Method that pre-saves search criteria and results and returns saved records ids.
+     * Method that pre-saves search and returns saved record id.
      *
-     * @param  string $model  model name
-     * @param  array  $results search results
-     * @param  array  $data   request data
-     * @param  string $userId user id
-     * @return array
+     * @param string $model Model name
+     * @param array $user User info
+     * @param array $data Search data
+     * @return string
      */
-    protected function _preSaveSearchCriteriaAndResults($model, array $results, $data, $userId)
+    protected function _preSave($model, array $user, array $data)
     {
-        $result = [];
-        /*
-        delete old pre-saved searches
-         */
-        $this->_deleteOldPreSavedSearches();
+        // delete old pre-saved searches
+        $this->_deletePreSaved();
 
-        /*
-        pre-save search criteria
-         */
-        $result['saveSearchCriteriaId'] = $this->_preSaveSearchCriteria($model, $data, $userId);
-        /*
-        pre-save search results
-         */
-        $result['saveSearchResultsId'] = $this->_preSaveSearchResults($model, $results, $userId);
+        $entity = $this->newEntity();
 
-        return $result;
+        $entity = $this->_normalizeSearch($entity, $model, $user, $data, $data);
+        $this->save($entity);
+
+        return $entity->id;
+    }
+
+    /**
+     * Normalize search.
+     *
+     * @param \Search\Model\Entity\SavedSearch $entity Search entity
+     * @param string $model Model name
+     * @param array $user User info
+     * @param array $saved Saved search data
+     * @param array $latest Latest search data
+     * @return \Search\Model\Entity\SavedSearch
+     */
+    protected function _normalizeSearch(SavedSearch $entity, $model, array $user, array $saved, array $latest)
+    {
+        // for backward compatibility
+        $saved = isset($saved['saved']) ? $saved['saved'] : $saved;
+        $latest = isset($latest['latest']) ?
+            $latest['latest'] :
+            (isset($latest['saved']) ? $latest['saved'] : $latest);
+
+        $entity->user_id = $user['id'];
+        $entity->model = $model;
+        $entity->shared = $this->getPrivateSharedStatus();
+        $entity->content = json_encode(['saved' => $saved, 'latest' => $latest]);
+
+        return $entity;
     }
 
     /**
@@ -952,7 +967,7 @@ class SavedSearchesTable extends Table
      *
      * @return void
      */
-    protected function _deleteOldPreSavedSearches()
+    protected function _deletePreSaved()
     {
         $this->deleteAll([
             'modified <' => new \DateTime(static::DELETE_OLDER_THAN),
@@ -961,48 +976,35 @@ class SavedSearchesTable extends Table
     }
 
     /**
-     * Pre-save search criteria and return record id.
+     * Method that re-formats entities to Datatables supported format.
      *
-     * @param  string $model  model name
-     * @param  array  $data   request data
-     * @param  string $userId user id
-     * @return string
+     * @param \Cake\ORM\ResultSet $resultSet ResultSet
+     * @param array $fields Display fields
+     * @param string $model Model name
+     * @return array
      */
-    protected function _preSaveSearchCriteria($model, $data, $userId)
+    public function toDatatables(ResultSet $resultSet, array $fields, $model)
     {
-        $search = $this->newEntity();
-        $search->type = $this->getCriteriaType();
-        $search->user_id = $userId;
-        $search->model = $model;
-        $search->shared = $this->getPrivateSharedStatus();
-        $search->content = json_encode($data);
+        $result = [];
 
-        // save search criteria
-        $this->save($search);
+        if ($resultSet->isEmpty()) {
+            return $result;
+        }
 
-        return $search->id;
-    }
+        foreach ($resultSet as $key => $entity) {
+            foreach ($fields as $field) {
+                $result[$key][] = $entity->get($field);
+            }
 
-    /**
-     * Pre-save search results and return record id.
-     *
-     * @param  string $model  model name
-     * @param  array  $results search results
-     * @param  string $userId user id
-     * @return string
-     */
-    protected function _preSaveSearchResults($model, array $results, $userId)
-    {
-        $search = $this->newEntity();
-        $search->type = $this->getResultType();
-        $search->user_id = $userId;
-        $search->model = $model;
-        $search->shared = $this->getPrivateSharedStatus();
-        $search->content = json_encode($results);
+            $event = new Event('Search.View.View.Menu.Actions', new View(), [
+                'entity' => $entity,
+                'model' => $model
+            ]);
+            $this->eventManager()->dispatch($event);
 
-        // save search results
-        $this->save($search);
+            $result[$key][] = '<div class="btn-group btn-group-xs" role="group">' . $event->result . '</div>';
+        }
 
-        return $search->id;
+        return $result;
     }
 }
