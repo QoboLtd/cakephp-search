@@ -1,6 +1,7 @@
 <?php
 namespace Search\Controller;
 
+use Cake\Event\Event;
 use Cake\Filesystem\File;
 use Cake\Network\Exception\BadRequestException;
 use Cake\ORM\Query;
@@ -69,7 +70,7 @@ trait SearchTrait
         $searchData = json_decode($entity->content, true);
 
         if ($this->request->is('ajax')) {
-            $this->_ajaxResponse($entity, $searchData, $table, $model);
+            $this->_ajaxResponse($entity, $searchData, $model);
 
             return;
         }
@@ -94,15 +95,16 @@ trait SearchTrait
      *
      * @param \Cake\ORM\EntitySavedSearch $entity Search entity
      * @param array $data Search data
-     * @param \Search\Model\Table\SavedSearchesTable $table Search table instance
      * @param string $model Model name
      * @return void
      */
-    protected function _ajaxResponse(SavedSearch $entity, array $data, SavedSearchesTable $table, $model)
+    protected function _ajaxResponse(SavedSearch $entity, array $data, $model)
     {
         if (!$this->request->is('ajax')) {
             return;
         }
+
+        $table = TableRegistry::get($this->_tableSearch);
 
         $searchData = $data['latest'];
 
@@ -118,7 +120,13 @@ trait SearchTrait
 
         $query = $table->search($model, $this->Auth->user(), $searchData);
 
-        $data = $table->toDatatables($this->paginate($query), $displayColumns, $model);
+        $event = new Event('Search.Model.Search.afterFind', $this, [
+            'entities' => $this->paginate($query),
+            'table' => TableRegistry::get($model)
+        ]);
+        $this->eventManager()->dispatch($event);
+
+        $data = $table->toDatatables($event->result, $displayColumns, $model);
 
         $pagination = [
             'count' => $query->count()

@@ -850,39 +850,6 @@ class SavedSearchesTable extends Table
     }
 
     /**
-     * Method that fetches the search results.
-     *
-     * @param  array $data search data
-     * @param  string $tableName table name
-     * @return \Cake\ORM\ResultSet
-     */
-    protected function _getResults(array $data, $tableName)
-    {
-        $table = $this->_getTableInstance($tableName);
-
-        $query = $table
-            ->find('all')
-            ->select($this->_getQueryFields($data, $table))
-            ->where([$data['aggregator'] => $this->_prepareWhereStatement($data, $tableName)])
-            ->order([$data['sort_by_field'] => $data['sort_by_order']]);
-
-        // set limit if not 0
-        if (0 < (int)$data['limit']) {
-            $query->limit($data['limit']);
-        }
-
-        $result = $query->all();
-
-        $event = new Event('Search.Model.Search.afterFind', $this, [
-            'entities' => $result,
-            'table' => $table
-        ]);
-        $this->eventManager()->dispatch($event);
-
-        return $result;
-    }
-
-    /**
      * Prepare search query's where statement
      *
      * @param  array  $data  request data
