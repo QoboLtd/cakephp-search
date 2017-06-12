@@ -77,11 +77,6 @@ class SavedSearchesTableTest extends TestCase
         $this->assertEquals($result, 'desc');
     }
 
-    public function testGetDefaultLimit()
-    {
-        $this->assertEquals($this->SavedSearches->getDefaultLimit(), 100);
-    }
-
     public function testGetPrivateSharedStatus()
     {
         $result = $this->SavedSearches->getPrivateSharedStatus();
@@ -100,7 +95,6 @@ class SavedSearchesTableTest extends TestCase
         $result = $this->SavedSearches->getSearchOptions();
         $this->assertNotEmpty($result);
         $this->assertInternalType('array', $result);
-        $this->assertArrayHasKey('limit', $result);
         $this->assertArrayHasKey('sortByOrder', $result);
         $this->assertArrayHasKey('aggregators', $result);
     }
@@ -324,13 +318,6 @@ class SavedSearchesTableTest extends TestCase
         }
     }
 
-    public function testGetLimitOptions()
-    {
-        $result = $this->SavedSearches->getLimitOptions();
-        $this->assertNotEmpty($result);
-        $this->assertInternalType('array', $result);
-    }
-
     public function testGetSortByOrderOptions()
     {
         $result = $this->SavedSearches->getSortByOrderOptions();
@@ -413,9 +400,6 @@ class SavedSearchesTableTest extends TestCase
 
         $expected = $this->SavedSearches->getDefaultSortByOrder();
         $this->assertEquals($expected, $result['sort_by_order']);
-
-        $expected = $this->SavedSearches->getDefaultLimit();
-        $this->assertEquals($expected, $result['limit']);
 
         $expected = $this->SavedSearches->getDefaultAggregator();
         $this->assertEquals($expected, $result['aggregator']);
