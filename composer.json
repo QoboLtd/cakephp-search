@@ -4,6 +4,7 @@
     "type": "cakephp-plugin",
     "license": "GPL-2.0",
     "require": {
+        "qobo/cakephp-groups": "^7.0",
         "qobo/cakephp-utils": "^4.0"
     },
     "require-dev": {
