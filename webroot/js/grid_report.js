@@ -15,13 +15,7 @@ $(document).ready(function () {
                         iTotalMarket += aaData[i][index] * 1;
                     }
 
-                    /* Calculate the market share for browsers on this page */
-                    var iPageMarket = 0;
-                    for (var i = iStart; i < iEnd; i++) {
-                        iPageMarket += aaData[ aiDisplay[i] ][index] * 1;
-                    }
-
-                    elem.innerHTML = iPageMarket + '(' + iTotalMarket + ' total)';
+                    elem.innerHTML = iTotalMarket;
                 }
             });
         }
