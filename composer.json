@@ -14,12 +14,16 @@
     "autoload": {
         "psr-4": {
             "Search\\": "src",
-            "Search\\Test\\Fixture\\": "tests\\Fixture"
+            "Search\\Test\\Fixture\\": "tests\\Fixture",
+            "Groups\\Test\\Fixture\\": "tests\\Fixture",
+            "CakeDC\\Users\\Test\\Fixture\\": "tests"
         }
     },
     "autoload-dev": {
         "psr-4": {
             "Search\\Test\\": "tests",
+            "Groups\\Test\\": "./vendor/qobo/cakephp-groups/tests",
+            "CakeDC\\Users\\Test\\": "./vendor/cakedc/users/tests",
             "Cake\\Test\\": "./vendor/cakephp/cakephp/tests"
         }
     }
