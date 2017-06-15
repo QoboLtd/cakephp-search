@@ -25,6 +25,9 @@ class DashboardsTableTest extends TestCase
      */
     public $fixtures = [
         'plugin.search.dashboards',
+        'plugin.CakeDC/Users.users',
+        'plugin.groups.groups',
+        'plugin.groups.groups_users',
     ];
 
     /**

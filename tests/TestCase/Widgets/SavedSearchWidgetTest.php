@@ -15,7 +15,7 @@ class SavedSearchWidgetTest extends TestCase
     public $fixtures = [
         'plugin.search.widgets',
         'plugin.search.saved_searches',
-        'plugin.search.users',
+        'plugin.CakeDC/Users.users',
     ];
 
     public function setUp()
