@@ -514,13 +514,10 @@ class SavedSearchesTable extends Table
         // get Table instance
         $table = $this->_getTableInstance($table);
 
-        $fields = $this->_getBasicSearchFields($table);
-        if (empty($fields)) {
-            return $result;
-        }
-
         $searchableFields = $this->getSearchableFields($table);
-        if (empty($searchableFields)) {
+
+        $fields = $this->_getBasicSearchFields($table, $searchableFields);
+        if (empty($fields)) {
             return $result;
         }
 
@@ -600,9 +597,10 @@ class SavedSearchesTable extends Table
      * using the ones that their type matches the _basicSearchFieldTypes list.
      *
      * @param \Cake\ORM\Table $table Table instance
+     * @param array $searchableFields Searchable fields
      * @return array
      */
-    protected function _getBasicSearchFields(Table $table)
+    protected function _getBasicSearchFields(Table $table, array $searchableFields = [])
     {
         $event = new Event('Search.Model.Search.basicSearchFields', $this, [
             'table' => $table
@@ -630,9 +628,8 @@ class SavedSearchesTable extends Table
             return $result;
         }
 
-        $searchableFields = $this->getSearchableFields($table);
         if (empty($searchableFields)) {
-            return $result;
+            $searchableFields = $this->getSearchableFields($table);
         }
 
         foreach ($searchableFields as $field => $properties) {
