@@ -399,6 +399,11 @@ class SavedSearchesTable extends Table
     {
         // get Table instance
         $table = $this->_getTableInstance($table);
+        $tableAlias = $table->alias();
+
+        if (!empty($this->_searchableFields[$tableAlias])) {
+            return $this->_searchableFields[$tableAlias];
+        }
 
         $event = new Event('Search.Model.Search.searchabeFields', $this, [
             'table' => $table
@@ -409,9 +414,9 @@ class SavedSearchesTable extends Table
             throw new RuntimeException('Table [' . $table->registryAlias() . '] has no searchable fields defined.');
         }
 
-        $this->_searchableFields = $event->result;
+        $this->_searchableFields[$tableAlias] = $event->result;
 
-        return $this->_searchableFields;
+        return $this->_searchableFields[$tableAlias];
     }
 
     /**
@@ -807,7 +812,7 @@ class SavedSearchesTable extends Table
 
         $table = $this->_getTableInstance($model);
 
-        $this->getSearchableFields($table);
+        $searchableFields = $this->getSearchableFields($table);
 
         foreach ($data['criteria'] as $fieldName => $criterias) {
             if (empty($criterias)) {
@@ -821,14 +826,14 @@ class SavedSearchesTable extends Table
                     continue;
                 }
                 $operator = $criteria['operator'];
-                if (isset($this->_searchableFields[$fieldName]['operators'][$operator]['pattern'])) {
+                if (isset($searchableFields[$fieldName]['operators'][$operator]['pattern'])) {
                     $value = str_replace(
                         '{{value}}',
                         $value,
-                        $this->_searchableFields[$fieldName]['operators'][$operator]['pattern']
+                        $searchableFields[$fieldName]['operators'][$operator]['pattern']
                     );
                 }
-                $sqlOperator = $this->_searchableFields[$fieldName]['operators'][$operator]['operator'];
+                $sqlOperator = $searchableFields[$fieldName]['operators'][$operator]['operator'];
                 $key = $table->aliasField($fieldName) . ' ' . $sqlOperator;
 
                 if (!array_key_exists($key, $result)) {
