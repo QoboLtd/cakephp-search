@@ -90,7 +90,7 @@ class SavedSearchesTable extends Table
      *
      * @var array
      */
-    protected $_basicSearchFieldTypes = ['string', 'text', 'textarea', 'related'];
+    protected $_basicSearchFieldTypes = ['string', 'text', 'textarea', 'related', 'email', 'url', 'phone'];
 
     /**
      * Basic search default fields
