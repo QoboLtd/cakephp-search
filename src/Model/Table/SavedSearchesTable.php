@@ -526,6 +526,10 @@ class SavedSearchesTable extends Table
                 continue;
             }
 
+            if (!in_array($searchableFields[$field]['type'], $this->_basicSearchFieldTypes)) {
+                continue;
+            }
+
             $type = $searchableFields[$field]['type'];
             $operator = key($searchableFields[$field]['operators']);
             $value = $data['query'];
