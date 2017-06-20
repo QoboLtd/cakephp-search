@@ -619,7 +619,7 @@ class SavedSearchesTable extends Table
         $result = $event->result;
 
         if (empty($result)) {
-            $result = $table->displayField();
+            $result = $table->aliasField($table->displayField());
         }
 
         $result = (array)$result;
