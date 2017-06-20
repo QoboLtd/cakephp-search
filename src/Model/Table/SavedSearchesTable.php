@@ -619,12 +619,16 @@ class SavedSearchesTable extends Table
         $result = $event->result;
 
         if (empty($result)) {
-            $result = $table->displayField();
+            $result = $table->aliasField($table->displayField());
         }
 
         $result = (array)$result;
 
         $columns = $table->schema()->columns();
+        foreach ($columns as &$column) {
+            $column = $table->aliasField($column);
+        }
+
         // remove non-existing database fields (virtual field for example)
         foreach ($result as $key => $field) {
             if (in_array($field, $columns)) {
@@ -818,6 +822,7 @@ class SavedSearchesTable extends Table
             if (empty($criterias)) {
                 continue;
             }
+            $fieldName = $table->aliasField($fieldName);
 
             foreach ($criterias as $criteria) {
                 $type = $criteria['type'];
@@ -834,7 +839,7 @@ class SavedSearchesTable extends Table
                     );
                 }
                 $sqlOperator = $searchableFields[$fieldName]['operators'][$operator]['operator'];
-                $key = $table->aliasField($fieldName) . ' ' . $sqlOperator;
+                $key = $fieldName . ' ' . $sqlOperator;
 
                 if (!array_key_exists($key, $result)) {
                     $result[$key] = $value;
@@ -954,11 +959,39 @@ class SavedSearchesTable extends Table
      */
     protected function _normalizeSearch(SavedSearch $entity, $model, array $user, array $saved, array $latest)
     {
-        // for backward compatibility
+        $table = $this->_getTableInstance($model);
+
+        // Backward compatibility: search content must always contain 'saved' and 'latest' keys.
         $saved = isset($saved['saved']) ? $saved['saved'] : $saved;
         $latest = isset($latest['latest']) ?
             $latest['latest'] :
             (isset($latest['saved']) ? $latest['saved'] : $latest);
+
+        // Backward compatibility: always prefix search criteria, display columns and sort by fields with table name.
+        $filterFunc = function ($data) use ($table) {
+            if (array_key_exists('criteria', $data)) {
+                foreach ($data['criteria'] as $field => $option) {
+                    unset($data['criteria'][$field]);
+                    $data['criteria'][$table->aliasField($field)] = $option;
+                }
+            }
+
+            if (array_key_exists('display_columns', $data)) {
+                $data['display_columns'] = array_values($data['display_columns']);
+                foreach ($data['display_columns'] as &$field) {
+                    $field = $table->aliasField($field);
+                }
+            }
+
+            if (array_key_exists('sort_by_field', $data)) {
+                $data['sort_by_field'] = $table->aliasField($data['sort_by_field']);
+            }
+
+            return $data;
+        };
+
+        $saved = $filterFunc($saved);
+        $latest = $filterFunc($latest);
 
         $entity->user_id = $user['id'];
         $entity->model = $model;
@@ -997,9 +1030,14 @@ class SavedSearchesTable extends Table
             return $result;
         }
 
+        $columns = [];
+        foreach ($fields as $field) {
+            $columns[] = str_replace($model . '.', '', $field);
+        }
+
         foreach ($resultSet as $key => $entity) {
-            foreach ($fields as $field) {
-                $result[$key][] = $entity->get($field);
+            foreach ($columns as $column) {
+                $result[$key][] = $entity->get($column);
             }
 
             $event = new Event('Search.View.View.Menu.Actions', new View(), [
