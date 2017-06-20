@@ -1030,13 +1030,14 @@ class SavedSearchesTable extends Table
             return $result;
         }
 
-        foreach ($fields as &$field) {
-            $field = str_replace($model . '.', '', $field);
+        $columns = [];
+        foreach ($fields as $field) {
+            $columns[] = str_replace($model . '.', '', $field);
         }
 
         foreach ($resultSet as $key => $entity) {
-            foreach ($fields as $field) {
-                $result[$key][] = $entity->get($field);
+            foreach ($columns as $column) {
+                $result[$key][] = $entity->get($column);
             }
 
             $event = new Event('Search.View.View.Menu.Actions', new View(), [
