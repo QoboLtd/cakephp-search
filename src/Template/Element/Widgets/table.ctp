@@ -36,9 +36,7 @@ $title = '<a href="' . $this->Url->build($url) . '">' . $savedSearch->name . '</
                     <thead>
                         <tr>
                         <?php foreach ($searchData['display_columns'] as $field) : ?>
-                            <?php $field = Inflector::humanize($field);
-                            $field = array_key_exists($field, $fields) ? $fields[$field]['label'] : $field ?>
-                            <th><?= $field ?></th>
+                            <th><?= $fields[$field]['label'] ?></th>
                         <?php endforeach; ?>
                             <th class="actions"><?= __('Actions') ?></th>
                         </tr>
