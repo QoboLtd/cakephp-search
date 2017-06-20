@@ -13,7 +13,7 @@ var search = search || {};
         this.fieldProperties = {};
         this.fieldTypeOperators = {};
         this.deleteBtnHtml = '<div class="input-sm">' +
-            '<a href="#" data-element-id="{{id}}">' +
+            '<a href="#" class="search-field-remover">' +
                 '<span class="glyphicon glyphicon-minus"></span>' +
             '</a>' +
         '</div>';
@@ -29,7 +29,7 @@ var search = search || {};
             ' value="{{type}}"' +
         '>';
         this.fieldLabelHtml = '<label>{{label}}</label>';
-        this.fieldInputHtml = '<div class="form-group" id="{{id}}">{{fieldType}}' +
+        this.fieldInputHtml = '<div class="form-group search-field-wrapper">{{fieldType}}' +
             '<div class="row">' +
                 '<div class="col-xs-12 col-md-3 col-lg-2">{{fieldLabel}}</div>' +
                 '<div class="col-xs-4 col-md-2 col-lg-3">{{fieldOperator}}</div>' +
@@ -98,9 +98,9 @@ var search = search || {};
      * @return {undefined}
      */
     Search.prototype._onRemoveBtnClick = function (id) {
-        $('#' + id).on('click', 'a', function (event) {
+        $(this.formId).on('click', 'a.search-field-remover', function (event) {
             event.preventDefault();
-            $('#' + $(this).data('element-id')).remove();
+            $(this).parents('.search-field-wrapper').remove();
         });
     };
 
@@ -118,7 +118,6 @@ var search = search || {};
         var id = field + '_' + timestamp;
 
         var inputHtml = this.fieldInputHtml;
-        inputHtml = inputHtml.replace('{{id}}', id);
         inputHtml = inputHtml.replace('{{fieldType}}', this._generateFieldType(field, properties.type, timestamp));
         inputHtml = inputHtml.replace('{{fieldLabel}}', this._generateFieldLabel(properties.label));
         inputHtml = inputHtml.replace(
@@ -131,7 +130,7 @@ var search = search || {};
             timestamp,
             value
         ));
-        inputHtml = inputHtml.replace('{{deleteButton}}', this._generateDeleteButton(id));
+        inputHtml = inputHtml.replace('{{deleteButton}}', this._generateDeleteButton());
 
         $(this.formId + ' fieldset').append(inputHtml);
 
@@ -272,13 +271,12 @@ var search = search || {};
     /**
      * Generates and returns field delete button html.
      *
-     * @param  {string} id field id
      * @return {string}
      */
-    Search.prototype._generateDeleteButton = function (id) {
+    Search.prototype._generateDeleteButton = function () {
         var button = this.deleteBtnHtml;
 
-        return button.replace('{{id}}', id);
+        return button;
     };
 
     search = new Search({
