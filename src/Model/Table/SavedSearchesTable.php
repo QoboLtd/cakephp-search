@@ -1030,6 +1030,10 @@ class SavedSearchesTable extends Table
             return $result;
         }
 
+        foreach ($fields as &$field) {
+            $field = str_replace($model . '.', '', $field);
+        }
+
         foreach ($resultSet as $key => $entity) {
             foreach ($fields as $field) {
                 $result[$key][] = $entity->get($field);
