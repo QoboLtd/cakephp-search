@@ -269,16 +269,34 @@ trait SearchTrait
 
         $savedSearch = $table->get($id);
 
-        $content = json_decode($savedSearch->content, true);
+        $model = $savedSearch->model;
+        $searchData = json_decode($savedSearch->content, true);
+        $searchData = $searchData['latest'];
+        $columns = $searchData['display_columns'];
 
-        // @todo this is temporary fix to stripping out html tags from results columns
-        foreach ($content['result'] as &$row) {
-            foreach ($row as &$column) {
-                $column = trim(strip_tags($column));
+        foreach ($columns as &$column) {
+            $column = str_replace($model . '.', '', $column);
+        }
+
+        $query = $table->search($model, $this->Auth->user(), $searchData);
+        $entities = $query->all();
+
+        $event = new Event('Search.Model.Search.afterFind', $this, [
+            'entities' => $entities,
+            'table' => TableRegistry::get($model)
+        ]);
+        $this->eventManager()->dispatch($event);
+
+        $content = [];
+        foreach ($event->result as $k => $entity) {
+            $content[$k] = [];
+            foreach ($columns as $column) {
+                // @todo this is temporary fix to stripping out html tags from results columns
+                $value = trim(strip_tags($entity->get($column)));
+                // end of temporary fix
+                $content[$k][] = $value;
             }
         }
-        reset($content['result']);
-        // end of temporary fix
 
         // create temporary file
         $path = TMP . uniqid($this->request->param('action') . '_') . '.csv';
@@ -286,8 +304,8 @@ trait SearchTrait
 
         // write to temporary file
         $handler = fopen($path, 'w');
-        fputcsv($handler, array_keys(current($content['result'])));
-        foreach ($content['result'] as $row) {
+        fputcsv($handler, $columns);
+        foreach ($content as $row) {
             fputcsv($handler, $row);
         }
         fclose($handler);
