@@ -323,6 +323,11 @@ class SavedSearchesTable extends Table
     {
         $content = json_decode($entity->content, true);
 
+        // skip reset on non-saved searches as it is unnecessary and for performance reasons.
+        if (!$entity->get('name')) {
+            return false;
+        }
+
         // for backward compatibility
         $saved = isset($content['saved']) ? $content['saved'] : $content;
         $entity = $this->_normalizeSearch($entity, $model, $user, $saved, $saved);

@@ -67,7 +67,7 @@ $options = [
         'plugin' => $this->request->plugin,
         'controller' => $this->request->controller,
         'action' => $this->request->action,
-        $this->request->param('pass.0'),
+        $preSaveId
     ]),
     'extension' => 'json',
     'token' => Configure::read('CsvMigrations.api.token'),

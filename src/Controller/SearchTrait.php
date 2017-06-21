@@ -69,13 +69,19 @@ trait SearchTrait
 
         $searchData = json_decode($entity->content, true);
 
+        // return json response and skip any further processing.
         if ($this->request->accepts('application/json')) {
-            $this->_ajaxResponse($entity, $searchData, $model);
+            $this->_ajaxResponse($searchData, $model);
 
             return;
         }
 
         $searchData = $table->validateData($model, $searchData['latest']);
+
+        // reset should only be applied to current search id (url parameter)
+        // and NOT on newly pre-saved searches and that's we do the ajax
+        // request check above, to prevent resetting the pre-saved search.
+        $table->resetSearch($entity, $model, $this->Auth->user());
 
         $this->set('searchFields', $table->getSearchableFields($model));
         $this->set('savedSearches', $table->getSavedSearches([$this->Auth->user('id')], [$model]));
@@ -93,12 +99,11 @@ trait SearchTrait
     /**
      * Ajax response.
      *
-     * @param \Cake\ORM\EntitySavedSearch $entity Search entity
      * @param array $data Search data
      * @param string $model Model name
      * @return void
      */
-    protected function _ajaxResponse(SavedSearch $entity, array $data, $model)
+    protected function _ajaxResponse(array $data, $model)
     {
         if (!$this->request->accepts('application/json')) {
             return;
@@ -131,8 +136,6 @@ trait SearchTrait
         $pagination = [
             'count' => $query->count()
         ];
-
-        $table->resetSearch($entity, $model, $this->Auth->user());
 
         $this->set([
             'success' => true,
