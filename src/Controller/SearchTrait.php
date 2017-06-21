@@ -274,8 +274,8 @@ trait SearchTrait
         $searchData = $searchData['latest'];
         $columns = $searchData['display_columns'];
 
-        foreach ($columns as &$column) {
-            $column = str_replace($model . '.', '', $column);
+        foreach ($columns as $k => $column) {
+            $columns[$k] = str_replace($model . '.', '', $column);
         }
 
         $query = $table->search($model, $this->Auth->user(), $searchData);
