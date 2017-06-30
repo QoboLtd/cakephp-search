@@ -440,12 +440,14 @@ class SavedSearchesTable extends Table
             $result = $table->getListingFields();
         }
 
-        $event = new Event('Search.Model.Search.displayFields', $this, [
-            'table' => $table
-        ]);
-        $this->eventManager()->dispatch($event);
+        if (empty($result)) {
+            $event = new Event('Search.Model.Search.displayFields', $this, [
+                'table' => $table
+            ]);
+            $this->eventManager()->dispatch($event);
 
-        $result = $event->result;
+            $result = $event->result;
+        }
 
         if (empty($result)) {
             $result[] = $table->primaryKey();
