@@ -440,9 +440,12 @@ class SavedSearchesTable extends Table
             $result = $table->getListingFields();
         }
 
-        if (empty($result)) {
-            $result = $this->_getBasicSearchFields($table);
-        }
+        $event = new Event('Search.Model.Search.displayFields', $this, [
+            'table' => $table
+        ]);
+        $this->eventManager()->dispatch($event);
+
+        $result = $event->result;
 
         if (empty($result)) {
             $result[] = $table->primaryKey();
@@ -459,7 +462,7 @@ class SavedSearchesTable extends Table
         }
 
         // skip display fields
-        $result = array_diff((array)$result, $this->_skipDisplayFields);
+        $result = array_diff((array)$result, $this->getSkippedDisplayFields());
 
         // reset numeric indexes
         $result = array_values($result);
