@@ -203,7 +203,6 @@ class SavedSearchesTable extends Table
         return $this->_defaultDisplayFields;
     }
 
-
     /**
      * Getter method for default sql sort by order.
      *
