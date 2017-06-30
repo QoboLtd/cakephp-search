@@ -90,6 +90,13 @@ class SavedSearchesTableTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
+    public function testGetDefaultDisplayFields()
+    {
+        $expected = ['modified', 'created'];
+        $result = $this->SavedSearches->getDefaultDisplayFields();
+        $this->assertEquals($expected, $result);
+    }
+
     public function testGetSearchOptions()
     {
         $result = $this->SavedSearches->getSearchOptions();
@@ -119,13 +126,16 @@ class SavedSearchesTableTest extends TestCase
     public function testGetListingFields()
     {
         $model = 'Dashboards';
+        $expected = [$model . '.name', $model . '.modified', $model . '.created'];
         $result = $this->SavedSearches->getListingFields($model);
+
         $this->assertNotEmpty($result);
-        $this->assertEquals($result, [$model . '.name']);
+        $this->assertEquals($result, $expected);
     }
 
     public function testGetListingFieldsDatabaseColumns()
     {
+        $model = 'Dashboards';
         // anonymous event listener that passes some dummy searchable fields
         $this->SavedSearches->eventManager()->on('Search.Model.Search.searchabeFields', function ($event, $table) {
             return [
@@ -142,11 +152,11 @@ class SavedSearchesTableTest extends TestCase
             ];
         });
 
-        $table = TableRegistry::get('Dashboards');
+        $table = TableRegistry::get($model);
         $table->setDisplayField('virtual_field');
         $result = $this->SavedSearches->getListingFields($table);
         $this->assertNotEmpty($result);
-        $this->assertEquals($result, ['modified', 'created']);
+        $this->assertEquals($result, [$model . '.modified', $model . '.created']);
     }
 
     public function testIsEditable()
