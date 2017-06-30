@@ -458,21 +458,29 @@ class SavedSearchesTable extends Table
         }
 
         if (empty($result)) {
-            $result[] = $table->primaryKey();
-            $displayField = $table->displayField();
-            // add display field to the result only if not a virtual field
-            if (in_array($displayField, $table->schema()->columns())) {
-                $result[] = $displayField;
+            $result[] = $table->getPrimaryKey();
+            $result[] = $table->getDisplayField();
+            foreach ($this->getDefaultDisplayFields() as $field) {
+                $result[] = $field;
             }
-            foreach ($this->_basicSearchDefaultFields as $field) {
+
+            foreach ($result as $k => $field) {
                 if ($table->hasField($field)) {
-                    $result[] = $field;
+                    $result[$k] = $table->aliasField($field);
+                    continue;
                 }
+
+                unset($result[$k]);
             }
         }
 
+        $skippedDisplayFields = [];
+        foreach ($this->getSkippedDisplayFields() as $field) {
+            $skippedDisplayFields[] = $table->aliasField($field);
+        }
+
         // skip display fields
-        $result = array_diff((array)$result, $this->getSkippedDisplayFields());
+        $result = array_diff((array)$result, $skippedDisplayFields);
 
         // reset numeric indexes
         $result = array_values($result);
