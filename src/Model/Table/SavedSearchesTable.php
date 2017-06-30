@@ -97,10 +97,7 @@ class SavedSearchesTable extends Table
      *
      * @var array
      */
-    protected $_basicSearchDefaultFields = [
-        'modified',
-        'created'
-    ];
+    protected $_defaultDisplayFields = ['modified', 'created'];
 
     /**
      * Initialize method
@@ -194,6 +191,16 @@ class SavedSearchesTable extends Table
     public function getSkippedDisplayFields()
     {
         return $this->_skipDisplayFields;
+    }
+
+    /**
+     * Returns a list of default display fields.
+     *
+     * @return array
+     */
+    public function getDefaultDisplayFields()
+    {
+        return $this->_defaultDisplayFields;
     }
 
     /**
@@ -441,25 +448,38 @@ class SavedSearchesTable extends Table
         }
 
         if (empty($result)) {
-            $result = $this->_getBasicSearchFields($table);
+            $event = new Event('Search.Model.Search.displayFields', $this, [
+                'table' => $table
+            ]);
+            $this->eventManager()->dispatch($event);
+
+            $result = $event->result;
         }
 
         if (empty($result)) {
-            $result[] = $table->primaryKey();
-            $displayField = $table->displayField();
-            // add display field to the result only if not a virtual field
-            if (in_array($displayField, $table->schema()->columns())) {
-                $result[] = $displayField;
+            $result[] = $table->getPrimaryKey();
+            $result[] = $table->getDisplayField();
+            foreach ($this->getDefaultDisplayFields() as $field) {
+                $result[] = $field;
             }
-            foreach ($this->_basicSearchDefaultFields as $field) {
+
+            foreach ($result as $k => $field) {
                 if ($table->hasField($field)) {
-                    $result[] = $field;
+                    $result[$k] = $table->aliasField($field);
+                    continue;
                 }
+
+                unset($result[$k]);
             }
         }
 
+        $skippedDisplayFields = [];
+        foreach ($this->getSkippedDisplayFields() as $field) {
+            $skippedDisplayFields[] = $table->aliasField($field);
+        }
+
         // skip display fields
-        $result = array_diff((array)$result, $this->_skipDisplayFields);
+        $result = array_diff((array)$result, $skippedDisplayFields);
 
         // reset numeric indexes
         $result = array_values($result);
