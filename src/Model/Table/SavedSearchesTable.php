@@ -97,10 +97,7 @@ class SavedSearchesTable extends Table
      *
      * @var array
      */
-    protected $_basicSearchDefaultFields = [
-        'modified',
-        'created'
-    ];
+    protected $_defaultDisplayFields = ['modified', 'created'];
 
     /**
      * Initialize method
@@ -195,6 +192,17 @@ class SavedSearchesTable extends Table
     {
         return $this->_skipDisplayFields;
     }
+
+    /**
+     * Returns a list of default display fields.
+     *
+     * @return array
+     */
+    public function getDefaultDisplayFields()
+    {
+        return $this->_defaultDisplayFields;
+    }
+
 
     /**
      * Getter method for default sql sort by order.
