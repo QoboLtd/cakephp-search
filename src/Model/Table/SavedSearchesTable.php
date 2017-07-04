@@ -1055,9 +1055,10 @@ class SavedSearchesTable extends Table
             return $result;
         }
 
+        list(, $module) = pluginSplit($model);
         $columns = [];
         foreach ($fields as $field) {
-            $columns[] = str_replace($model . '.', '', $field);
+            $columns[] = str_replace($module . '.', '', $field);
         }
 
         foreach ($resultSet as $key => $entity) {
