@@ -3,7 +3,7 @@ echo $this->Html->css('Search.search', ['block' => 'css']);
 echo $this->Html->script('Search.search', ['block' => 'scriptBotton']);
 
 echo $this->Html->scriptBlock(
-    'search.setFieldProperties(' . json_encode($searchFields) . ');',
+    'search.setFieldProperties(' . json_encode($searchableFields) . ');',
     ['block' => 'scriptBotton']
 );
 if (!empty($searchData['criteria'])) {
@@ -42,10 +42,10 @@ if (!empty($searchData['criteria'])) {
                 <div class="form-group">
                 <?php
                 $selectOptions = array_combine(
-                    array_keys($searchFields),
+                    array_keys($searchableFields),
                     array_map(function ($v) {
                         return $v['label'];
-                    }, $searchFields)
+                    }, $searchableFields)
                 );
                 //sort the list alphabetically for dropdown
                 asort($selectOptions);
@@ -86,7 +86,7 @@ if (!empty($searchData['criteria'])) {
             </div>
             <div class="col-md-8 col-lg-9">
                 <?php
-                echo $this->element('Search.Search/options');
+                echo $this->element('Search.Search/options', ['searchableFields' => $searchableFields]);
                 echo $this->Form->button('<i class="fa fa-search"></i> ' . __('Search'), ['class' => 'btn btn-primary']);
                 echo $this->Form->end();
                 echo '&nbsp;';
@@ -120,7 +120,7 @@ if (!empty($searchData['criteria'])) {
 </div>
 <?php
 $scripts = [];
-foreach ($searchFields as $searchField) {
+foreach ($searchableFields as $searchField) {
     if (empty($searchField['input']['post'])) {
         continue;
     }

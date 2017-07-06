@@ -83,7 +83,7 @@ trait SearchTrait
         // request check above, to prevent resetting the pre-saved search.
         $table->resetSearch($entity, $model, $this->Auth->user());
 
-        $this->set('searchFields', $table->getSearchableFields($model));
+        $this->set('searchableFields', $table->getSearchableFields($model));
         $this->set('savedSearches', $table->getSavedSearches([$this->Auth->user('id')], [$model]));
         $this->set('model', $model);
         $this->set('searchData', $searchData);

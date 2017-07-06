@@ -6,7 +6,7 @@ echo $this->Html->script('Search.search_options', ['block' => 'scriptBotton']);
 $availableColumns = [];
 $displayColumns = [];
 // get display and available columns
-foreach ($searchFields as $k => $v) {
+foreach ($searchableFields as $k => $v) {
     if (in_array($k, $searchData['display_columns'])) {
         $displayColumns[$k] = $v['label'];
     } else {

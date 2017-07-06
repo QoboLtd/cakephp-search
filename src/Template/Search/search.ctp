@@ -16,13 +16,13 @@ echo $this->Html->script(
 );
 echo $this->element('Search.Search/filters', [
     'searchOptions' => $searchOptions,
-    'searchFields' => $searchFields,
+    'searchableFields' => $searchableFields,
     'savedSearch' => $savedSearch,
     'searchData' => $searchData,
     'isEditable' => $isEditable,
     'preSaveId' => $preSaveId,
 
 ]);
-echo $this->element('Search.Search/results');
+echo $this->element('Search.Search/results', ['searchableFields' => $searchableFields]);
 ?>
 </section>
