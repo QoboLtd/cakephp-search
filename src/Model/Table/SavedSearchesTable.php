@@ -1062,11 +1062,12 @@ class SavedSearchesTable extends Table
             $result = (array)$result;
         }
 
-        $primaryKey = $table->primaryKey();
-
+        $primaryKey = $table->aliasField($table->getPrimaryKey());
         if (!in_array($primaryKey, $result)) {
             array_unshift($result, $primaryKey);
         }
+
+        $result = $this->_filterModuleFields($table, $result);
 
         return $result;
     }
