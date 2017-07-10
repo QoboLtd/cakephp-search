@@ -22,10 +22,6 @@ asort($availableColumns);
 
 // sort display columns based on saved search display_columns order
 $displayColumns = array_merge(array_flip($searchData['display_columns']), $displayColumns);
-
-$sortByOptions = array_merge($availableColumns, $displayColumns);
-// alphabetically sort sortByOptions
-asort($sortByOptions);
 ?>
 <div class="row">
     <div class="col-md-4">
@@ -54,9 +50,11 @@ asort($sortByOptions);
         echo $this->Form->label(__('Sort Field'));
         echo $this->Form->select(
             'sort_by_field',
-            $sortByOptions,
+            $selectOptions,
             [
-                'default' => isset($searchData['sort_by_field']) ? $searchData['sort_by_field'] : key($sortByOptions),
+                'default' => isset($searchData['sort_by_field'])
+                    ? $searchData['sort_by_field']
+                    : key(current($selectOptions)),
                 'class' => 'form-control input-sm'
              ]
         );
