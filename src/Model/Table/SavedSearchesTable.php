@@ -965,6 +965,10 @@ class SavedSearchesTable extends Table
             }
             $fieldName = $table->aliasField($fieldName);
 
+            if (!isset($searchableFields[$fieldName])) {
+                continue;
+            }
+
             foreach ($criterias as $criteria) {
                 $type = $criteria['type'];
                 $value = $criteria['value'];
