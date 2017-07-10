@@ -171,10 +171,10 @@ var search = search || {};
 
         var suffix = '';
         if (this.model !== tableName) {
-            label = this.associationLabels.hasOwnProperty(tableName) ?
+            suffix = this.associationLabels.hasOwnProperty(tableName) ?
                 this.associationLabels[tableName] :
                 tableName;
-            suffix = ' (' + label + ')';
+            suffix = ' (' + suffix + ')';
         }
 
         return input.replace('{{label}}', label + suffix);
