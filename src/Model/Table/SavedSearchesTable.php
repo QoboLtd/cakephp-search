@@ -270,7 +270,7 @@ class SavedSearchesTable extends Table
         $query = $table
             ->find('all')
             ->select($this->_getQueryFields($data, $table))
-            ->where([$data['aggregator'] => $this->_prepareWhereStatement($data, $tableName)])
+            ->where([$data['aggregator'] => $this->_prepareWhereStatement($data, $table)])
             ->order([$table->aliasField($data['sort_by_field']) => $data['sort_by_order']]);
 
         return $query;
@@ -870,11 +870,11 @@ class SavedSearchesTable extends Table
     /**
      * Prepare search query's where statement
      *
-     * @param  array  $data  request data
-     * @param  string $model model name
+     * @param array $data request data
+     * @param \Cake\ORM\Table $table Table instance
      * @return array
      */
-    protected function _prepareWhereStatement(array $data, $model)
+    protected function _prepareWhereStatement(array $data, Table $table)
     {
         $result = [];
 
