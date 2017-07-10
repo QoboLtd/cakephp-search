@@ -131,7 +131,10 @@ trait SearchTrait
         ]);
         $this->eventManager()->dispatch($event);
 
-        $data = $table->toDatatables($event->result, $displayColumns, $model);
+        $data = [];
+        if ($event->result) {
+            $data = $table->toDatatables($event->result, $displayColumns, $model);
+        }
 
         $pagination = [
             'count' => $query->count()
@@ -141,7 +144,7 @@ trait SearchTrait
             'success' => true,
             'data' => $data,
             'pagination' => $pagination,
-            '_serialize' => ['success', 'preSaveId', 'data', 'pagination']
+            '_serialize' => ['success', 'data', 'pagination']
         ]);
     }
 
