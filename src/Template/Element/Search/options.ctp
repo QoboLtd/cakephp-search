@@ -8,12 +8,15 @@ $displayColumns = [];
 // get display and available columns
 foreach ($searchableFields as $k => $v) {
     $tableName = substr($k, 0, strpos($k, '.'));
-    $suffix = $tableName !== $savedSearch->model ? ' (' . $tableName . ')' : '';
-    $label = $v['label'] . $suffix;
+    $tableName = array_key_exists($tableName, $associationLabels) ?
+        $associationLabels[$tableName] :
+        $tableName;
+    $suffix = $savedSearch->model === $tableName ? '' : ' (' . $tableName . ')';
+
     if (in_array($k, $searchData['display_columns'])) {
-        $displayColumns[$k] = $label;
+        $displayColumns[$k] = $v['label'] . $suffix;
     } else {
-        $availableColumns[$k] = $label;
+        $availableColumns[$k] = $v['label'] . $suffix;
     }
 }
 

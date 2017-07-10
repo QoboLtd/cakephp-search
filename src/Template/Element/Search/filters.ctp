@@ -55,6 +55,9 @@ if (!empty($searchData['criteria'])) {
 
                 foreach ($selectOptions as $k => $v) {
                     $optGroup = substr($k, 0, strpos($k, '.'));
+                    $optGroup = array_key_exists($optGroup, $associationLabels) ?
+                        $associationLabels[$optGroup] :
+                        $optGroup;
 
                     if (!array_key_exists($optGroup, $selectOptions)) {
                         $selectOptions[$optGroup] = [];
@@ -108,7 +111,8 @@ if (!empty($searchData['criteria'])) {
                 echo $this->element('Search.Search/options', [
                     'searchableFields' => $searchableFields,
                     'savedSearch' => $savedSearch,
-                    'selectOptions' => $selectOptions
+                    'selectOptions' => $selectOptions,
+                    'associationLabels' => $associationLabels
                 ]);
                 echo $this->Form->button('<i class="fa fa-search"></i> ' . __('Search'), ['class' => 'btn btn-primary']);
                 echo $this->Form->end();

@@ -21,8 +21,12 @@ echo $this->element('Search.Search/filters', [
     'searchData' => $searchData,
     'isEditable' => $isEditable,
     'preSaveId' => $preSaveId,
+    'associationLabels' => $associationLabels
 
 ]);
-echo $this->element('Search.Search/results', ['searchableFields' => $searchableFields]);
+echo $this->element('Search.Search/results', [
+    'searchableFields' => $searchableFields,
+    'associationLabels' => $associationLabels
+]);
 ?>
 </section>

@@ -6,6 +6,7 @@ $savedSearch = $widget->getData();
 $searchData = $savedSearch->content['saved'];
 $widgetOptions = $widget->getOptions();
 $fields = $widgetOptions['fields'];
+$associationLabels = $widgetOptions['associationLabels'];
 
 //search url if is a saved one
 list($plugin, $controller) = pluginSplit($savedSearch->model);
@@ -36,8 +37,13 @@ $title = '<a href="' . $this->Url->build($url) . '">' . $savedSearch->name . '</
                     <thead>
                         <tr>
                         <?php foreach ($searchData['display_columns'] as $field) : ?>
-                            <?php $tableName = substr($field, 0, strpos($field, '.')) ?>
-                            <?php $suffix = $savedSearch->model === $tableName ? '' : ' (' . $tableName . ')' ?>
+                            <?php
+                            $tableName = substr($field, 0, strpos($field, '.'));
+                            $label = array_key_exists($tableName, $associationLabels) ?
+                                $associationLabels[$tableName] :
+                                $tableName;
+                            $suffix = $savedSearch->model === $label ? '' : ' (' . $label . ')';
+                            ?>
                             <th><?= $fields[$field]['label'] . $suffix ?></th>
                         <?php endforeach; ?>
                             <th class="actions"><?= __('Actions') ?></th>

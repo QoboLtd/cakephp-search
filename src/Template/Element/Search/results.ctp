@@ -50,8 +50,13 @@ $uid = uniqid();
                 <thead>
                     <tr>
                     <?php foreach ($searchData['display_columns'] as $field) : ?>
-                        <?php $tableName = substr($field, 0, strpos($field, '.')) ?>
-                        <?php $suffix = $model === $tableName ? '' : ' (' . $tableName . ')' ?>
+                        <?php
+                        $tableName = substr($field, 0, strpos($field, '.'));
+                        $label = array_key_exists($tableName, $associationLabels) ?
+                            $associationLabels[$tableName] :
+                            $tableName;
+                        $suffix = $savedSearch->model === $label ? '' : ' (' . $label . ')';
+                        ?>
                        <th><?= $searchableFields[$field]['label'] . $suffix ?></th>
                     <?php endforeach; ?>
                         <th class="actions"><?= __('Actions') ?></th>
