@@ -111,7 +111,7 @@ if (!empty($searchData['criteria'])) {
                 echo '&nbsp;';
                 echo $this->Form->postLink(
                     '<i class="fa fa-download"></i> ' . __('Export'),
-                    ['action' => 'export-search', $preSaveId, $savedSearch ? $savedSearch->name : null],
+                    ['action' => 'export-search', $preSaveId, $savedSearch->has('name') ? $savedSearch->name : null],
                     ['class' => 'btn btn-primary', 'escape' => false]
                 );
                 ?>
