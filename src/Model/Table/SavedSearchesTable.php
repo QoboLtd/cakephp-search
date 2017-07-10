@@ -483,13 +483,17 @@ class SavedSearchesTable extends Table
             }
         }
 
+        if (!is_array($result)) {
+            $result = (array)$result;
+        }
+
         $skippedDisplayFields = [];
         foreach ($this->getSkippedDisplayFields() as $field) {
             $skippedDisplayFields[] = $table->aliasField($field);
         }
 
         // skip display fields
-        $result = array_diff((array)$result, $skippedDisplayFields);
+        $result = array_diff($result, $skippedDisplayFields);
 
         // reset numeric indexes
         $result = array_values($result);
@@ -578,7 +582,9 @@ class SavedSearchesTable extends Table
                 $value = $this->_getRelatedModuleValues($searchableFields[$field]['source'], $data, $user);
             }
 
-            $value = (array)$value;
+            if (!is_array($value)) {
+                $value = (array)$value;
+            }
 
             if (empty($value)) {
                 continue;
@@ -657,7 +663,9 @@ class SavedSearchesTable extends Table
             $result = $table->aliasField($table->displayField());
         }
 
-        $result = (array)$result;
+        if (!is_array($result)) {
+            $result = (array)$result;
+        }
 
         $columns = $table->schema()->columns();
         foreach ($columns as &$column) {
