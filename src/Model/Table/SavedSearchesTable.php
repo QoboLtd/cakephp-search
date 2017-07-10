@@ -1176,15 +1176,24 @@ class SavedSearchesTable extends Table
             return $result;
         }
 
-        list(, $module) = pluginSplit($model);
-        $columns = [];
-        foreach ($fields as $field) {
-            $columns[] = str_replace($module . '.', '', $field);
-        }
-
         foreach ($resultSet as $key => $entity) {
-            foreach ($columns as $column) {
-                $result[$key][] = $entity->get($column);
+            foreach ($fields as $field) {
+                list($tableName, $field) = explode('.', $field);
+                // current table field
+                if ($model === $tableName) {
+                    $result[$key][] = $entity->get($field);
+                    continue;
+                }
+
+                if (!$entity->get('_matchingData')) {
+                    continue;
+                }
+
+                if (!isset($entity->_matchingData[$tableName])) {
+                    continue;
+                }
+                // associated table field
+                $result[$key][] = $entity->_matchingData[$tableName]->get($field);
             }
 
             $event = new Event('Search.View.View.Menu.Actions', new View(), [
