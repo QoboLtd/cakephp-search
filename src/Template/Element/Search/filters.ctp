@@ -100,7 +100,11 @@ if (!empty($searchData['criteria'])) {
             </div>
             <div class="col-md-8 col-lg-9">
                 <?php
-                echo $this->element('Search.Search/options', ['searchableFields' => $searchableFields]);
+                echo $this->element('Search.Search/options', [
+                    'searchableFields' => $searchableFields,
+                    'savedSearch' => $savedSearch,
+                    'selectOptions' => $selectOptions
+                ]);
                 echo $this->Form->button('<i class="fa fa-search"></i> ' . __('Search'), ['class' => 'btn btn-primary']);
                 echo $this->Form->end();
                 echo '&nbsp;';
