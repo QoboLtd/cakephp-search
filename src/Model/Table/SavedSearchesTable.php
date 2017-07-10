@@ -100,6 +100,13 @@ class SavedSearchesTable extends Table
     protected $_defaultDisplayFields = ['modified', 'created'];
 
     /**
+     * Searchable associations list
+     *
+     * @var array
+     */
+    protected $_searchableAssociations = ['manyToOne'];
+
+    /**
      * Initialize method
      *
      * @param array $config The configuration for the Table.
@@ -244,6 +251,48 @@ class SavedSearchesTable extends Table
     }
 
     /**
+     * Basic search allowed field types getter.
+     *
+     * @return array
+     */
+    public function getBasicSearchFieldTypes()
+    {
+        return $this->_basicSearchFieldTypes;
+    }
+
+    /**
+     * Searchable associations getter.
+     *
+     * @return array
+     */
+    public function getSearchableAssociations()
+    {
+        return $this->_searchableAssociations;
+    }
+
+    /**
+     * Associations labels getter.
+     *
+     * @param string $tableName Table name
+     * @return array
+     */
+    public function getAssociationLabels($tableName)
+    {
+        $table = $this->_getTableInstance($tableName);
+
+        $result = [];
+        foreach ($table->associations() as $association) {
+            if (!in_array($association->type(), $this->getSearchableAssociations())) {
+                continue;
+            }
+
+            $result[$association->getName()] = Inflector::humanize($association->getForeignKey());
+        }
+
+        return $result;
+    }
+
+    /**
      * Search method.
      *
      * @param string $tableName Table name
@@ -260,10 +309,58 @@ class SavedSearchesTable extends Table
         $query = $table
             ->find('all')
             ->select($this->_getQueryFields($data, $table))
-            ->where([$data['aggregator'] => $this->_prepareWhereStatement($data, $tableName)])
+            ->where([$data['aggregator'] => $this->_prepareWhereStatement($data, $table)])
             ->order([$table->aliasField($data['sort_by_field']) => $data['sort_by_order']]);
 
+        $this->_searchByAssociations($table, $query, $data);
+
         return $query;
+    }
+
+    /**
+     * Search by current Table associations.
+     *
+     * @param \Cake\ORM\Table $table Table instance
+     * @param \Cake\ORM\Query $query Query object
+     * @param array $data Search data
+     * @return void
+     */
+    protected function _searchByAssociations(Table $table, Query $query, array $data)
+    {
+        foreach ($table->associations() as $association) {
+            // skip non-supported associations
+            if (!in_array($association->type(), $this->getSearchableAssociations())) {
+                continue;
+            }
+
+            $targetTable = $association->getTarget();
+
+            // skip associations with itself
+            if ($targetTable->getTable() === $table->getTable()) {
+                continue;
+            }
+
+            $primaryKey = $targetTable->aliasField($targetTable->getPrimaryKey());
+            $select = array_diff($this->_getQueryFields($data, $targetTable), [$primaryKey]);
+            $where = $this->_prepareWhereStatement($data, $targetTable);
+
+            // skip matching functionality if not related select fields or where clause are available.
+            if (empty($select) && empty($where)) {
+                continue;
+            }
+
+            $query->matching($association->getName(), function ($q) use ($data, $select, $where) {
+                if (!empty($select)) {
+                    $q->select($select);
+                }
+
+                if (!empty($where)) {
+                    $q->where([$data['aggregator'] => $where]);
+                }
+
+                return $q;
+            });
+        }
     }
 
     /**
@@ -417,6 +514,22 @@ class SavedSearchesTable extends Table
             return $this->_searchableFields[$tableAlias];
         }
 
+        $this->_searchableFields[$tableAlias] = array_merge(
+            $this->_getSearchableFields($table),
+            $this->_getAssociatedSearchableFields($table)
+        );
+
+        return $this->_searchableFields[$tableAlias];
+    }
+
+    /**
+     * Get and return searchable fields using Event.
+     *
+     * @param \Cake\ORM\Table $table Table instance
+     * @return array
+     */
+    protected function _getSearchableFields(Table $table)
+    {
         $event = new Event('Search.Model.Search.searchabeFields', $this, [
             'table' => $table
         ]);
@@ -426,9 +539,41 @@ class SavedSearchesTable extends Table
             throw new RuntimeException('Table [' . $table->registryAlias() . '] has no searchable fields defined.');
         }
 
-        $this->_searchableFields[$tableAlias] = $event->result;
+        return $event->result ? $event->result : [];
+    }
 
-        return $this->_searchableFields[$tableAlias];
+    /**
+     * Get associated tables searchable fields.
+     *
+     * @param \Cake\ORM\Table $table Table instance
+     * @return array
+     */
+    protected function _getAssociatedSearchableFields(Table $table)
+    {
+        $result = [];
+        foreach ($table->associations() as $association) {
+            // skip non-supported associations
+            if (!in_array($association->type(), $this->getSearchableAssociations())) {
+                continue;
+            }
+
+            $targetTable = $association->getTarget();
+
+            // skip associations with itself
+            if ($targetTable->getTable() === $table->getTable()) {
+                continue;
+            }
+
+            // fetch associated model searchable fields
+            $searchableFields = $this->_getSearchableFields($targetTable, false);
+            if (empty($searchableFields)) {
+                continue;
+            }
+
+            $result = array_merge($result, $searchableFields);
+        }
+
+        return $result;
     }
 
     /**
@@ -473,13 +618,17 @@ class SavedSearchesTable extends Table
             }
         }
 
+        if (!is_array($result)) {
+            $result = (array)$result;
+        }
+
         $skippedDisplayFields = [];
         foreach ($this->getSkippedDisplayFields() as $field) {
             $skippedDisplayFields[] = $table->aliasField($field);
         }
 
         // skip display fields
-        $result = array_diff((array)$result, $skippedDisplayFields);
+        $result = array_diff($result, $skippedDisplayFields);
 
         // reset numeric indexes
         $result = array_values($result);
@@ -556,7 +705,7 @@ class SavedSearchesTable extends Table
                 continue;
             }
 
-            if (!in_array($searchableFields[$field]['type'], $this->_basicSearchFieldTypes)) {
+            if (!in_array($searchableFields[$field]['type'], $this->getBasicSearchFieldTypes())) {
                 continue;
             }
 
@@ -568,7 +717,9 @@ class SavedSearchesTable extends Table
                 $value = $this->_getRelatedModuleValues($searchableFields[$field]['source'], $data, $user);
             }
 
-            $value = (array)$value;
+            if (!is_array($value)) {
+                $value = (array)$value;
+            }
 
             if (empty($value)) {
                 continue;
@@ -634,8 +785,13 @@ class SavedSearchesTable extends Table
      * @param array $searchableFields Searchable fields
      * @return array
      */
-    protected function _getBasicSearchFields(Table $table, array $searchableFields = [])
+    protected function _getBasicSearchFields(Table $table, array $searchableFields)
     {
+        if (empty($searchableFields)) {
+            $msg = 'Searchable fields for table [' . $table->getAlias() . '] cannot be empty.';
+            throw new InvalidArgumentException($msg);
+        }
+
         $event = new Event('Search.Model.Search.basicSearchFields', $this, [
             'table' => $table
         ]);
@@ -647,7 +803,9 @@ class SavedSearchesTable extends Table
             $result = $table->aliasField($table->displayField());
         }
 
-        $result = (array)$result;
+        if (!is_array($result)) {
+            $result = (array)$result;
+        }
 
         $columns = $table->schema()->columns();
         foreach ($columns as &$column) {
@@ -666,12 +824,8 @@ class SavedSearchesTable extends Table
             return $result;
         }
 
-        if (empty($searchableFields)) {
-            $searchableFields = $this->getSearchableFields($table);
-        }
-
         foreach ($searchableFields as $field => $properties) {
-            if (!in_array($properties['type'], $this->_basicSearchFieldTypes)) {
+            if (!in_array($properties['type'], $this->getBasicSearchFieldTypes())) {
                 continue;
             }
 
@@ -825,13 +979,37 @@ class SavedSearchesTable extends Table
     }
 
     /**
-     * Prepare search query's where statement
+     * Filter only current module fields.
      *
-     * @param  array  $data  request data
-     * @param  string $model model name
+     * @param \Cake\ORM\Table $table Table instance
+     * @param array $fields Search fields
      * @return array
      */
-    protected function _prepareWhereStatement(array $data, $model)
+    protected function _filterModuleFields(Table $table, array $fields)
+    {
+        if (empty($fields)) {
+            return [];
+        }
+
+        foreach ($fields as $k => $v) {
+            if (false !== strpos($v, $table->getAlias() . '.')) {
+                continue;
+            }
+
+            unset($fields[$k]);
+        }
+
+        return $fields;
+    }
+
+    /**
+     * Prepare search query's where statement
+     *
+     * @param array $data request data
+     * @param \Cake\ORM\Table $table Table instance
+     * @return array
+     */
+    protected function _prepareWhereStatement(array $data, Table $table)
     {
         $result = [];
 
@@ -839,15 +1017,27 @@ class SavedSearchesTable extends Table
             return $result;
         }
 
-        $table = $this->_getTableInstance($model);
-
+        // get searchable fields and filter out the ones
+        // which do not belong to the current module.
         $searchableFields = $this->getSearchableFields($table);
+        $moduleFields = $this->_filterModuleFields($table, array_keys($searchableFields));
+
+        foreach (array_keys($searchableFields) as $field) {
+            if (in_array($field, $moduleFields)) {
+                continue;
+            }
+            unset($searchableFields[$field]);
+        }
 
         foreach ($data['criteria'] as $fieldName => $criterias) {
             if (empty($criterias)) {
                 continue;
             }
             $fieldName = $table->aliasField($fieldName);
+
+            if (!isset($searchableFields[$fieldName])) {
+                continue;
+            }
 
             foreach ($criterias as $criteria) {
                 $type = $criteria['type'];
@@ -942,11 +1132,12 @@ class SavedSearchesTable extends Table
             $result = (array)$result;
         }
 
-        $primaryKey = $table->primaryKey();
-
+        $primaryKey = $table->aliasField($table->getPrimaryKey());
         if (!in_array($primaryKey, $result)) {
             array_unshift($result, $primaryKey);
         }
+
+        $result = $this->_filterModuleFields($table, $result);
 
         return $result;
     }
@@ -1055,15 +1246,24 @@ class SavedSearchesTable extends Table
             return $result;
         }
 
-        list(, $module) = pluginSplit($model);
-        $columns = [];
-        foreach ($fields as $field) {
-            $columns[] = str_replace($module . '.', '', $field);
-        }
-
         foreach ($resultSet as $key => $entity) {
-            foreach ($columns as $column) {
-                $result[$key][] = $entity->get($column);
+            foreach ($fields as $field) {
+                list($tableName, $field) = explode('.', $field);
+                // current table field
+                if ($model === $tableName) {
+                    $result[$key][] = $entity->get($field);
+                    continue;
+                }
+
+                if (!$entity->get('_matchingData')) {
+                    continue;
+                }
+
+                if (!isset($entity->_matchingData[$tableName])) {
+                    continue;
+                }
+                // associated table field
+                $result[$key][] = $entity->_matchingData[$tableName]->get($field);
             }
 
             $event = new Event('Search.View.View.Menu.Actions', new View(), [

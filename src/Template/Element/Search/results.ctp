@@ -1,36 +1,17 @@
 <?php
 use Cake\Core\Configure;
 
-// get search information from the saved search (if is set) to construct search results title
-if (!empty($savedSearch)) {
-    $searchId = $savedSearch->id;
-    $searchName = $savedSearch->name;
-    $model = $savedSearch->model;
-}
-
-// search title
-$title = $this->name;
-if (!empty($searchName)) {
-    $title = $searchName;
-}
-
 //search url if is a saved one
-$url = null;
-if (!empty($model) && !empty($searchId)) {
-    list($plugin, $controller) = pluginSplit($model);
-    $url = [
-        'plugin' => $plugin,
-        'controller' => $controller,
-        'action' => 'search',
-        $searchId
-    ];
-} elseif (!empty($searchId)) {
-    $url = $this->request->here;
-}
+list($plugin, $controller) = pluginSplit($savedSearch->model);
+$url = [
+    'plugin' => $plugin,
+    'controller' => $controller,
+    'action' => 'search',
+    $savedSearch->id
+];
 
-if (!empty($url)) {
-    $title = '<a href="' . $this->Url->build($url) . '">' . $title . '</a>';
-}
+$searchName = $savedSearch->has('name') ? $savedSearch->name : $this->name;
+$title = '<a href="' . $this->Url->build($url) . '">' . $searchName . '</a>';
 
 $uid = uniqid();
 ?>
@@ -50,7 +31,14 @@ $uid = uniqid();
                 <thead>
                     <tr>
                     <?php foreach ($searchData['display_columns'] as $field) : ?>
-                       <th><?= $searchFields[$field]['label'] ?></th>
+                        <?php
+                        $tableName = substr($field, 0, strpos($field, '.'));
+                        $label = array_key_exists($tableName, $associationLabels) ?
+                            $associationLabels[$tableName] :
+                            $tableName;
+                        $suffix = $savedSearch->model === $label ? '' : ' (' . $label . ')';
+                        ?>
+                       <th><?= $searchableFields[$field]['label'] . $suffix ?></th>
                     <?php endforeach; ?>
                         <th class="actions"><?= __('Actions') ?></th>
                     </tr>

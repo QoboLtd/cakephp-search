@@ -299,7 +299,7 @@ class SavedSearchesTableTest extends TestCase
 
         $result = $method->invokeArgs($this->SavedSearches, [
             [],
-            'Dashboards'
+            TableRegistry::get('Dashboards')
         ]);
 
         $this->assertEquals($result, []);
@@ -741,5 +741,16 @@ class SavedSearchesTableTest extends TestCase
         $this->assertArrayHasKey('sort_by_field', $result['latest']);
         $this->assertArrayHasKey('sort_by_order', $result['latest']);
         $this->assertArrayHasKey('limit', $result['latest']);
+    }
+
+    public function testToDatatables()
+    {
+        $table = TableRegistry::get('Dashboards');
+        $query = $table->find();
+
+        $result = $this->SavedSearches->toDatatables($query->all(), ['Dashboards.name'], 'Dashboards');
+
+        $this->assertInternalType('array', $result);
+        $this->assertNotEmpty($result);
     }
 }

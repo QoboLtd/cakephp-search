@@ -3,7 +3,12 @@ echo $this->Html->css('Search.search', ['block' => 'css']);
 echo $this->Html->script('Search.search', ['block' => 'scriptBotton']);
 
 echo $this->Html->scriptBlock(
-    'search.setFieldProperties(' . json_encode($searchFields) . ');',
+    'search.setAssociationLabels(' . json_encode($associationLabels) . ');',
+    ['block' => 'scriptBotton']
+);
+echo $this->Html->scriptBlock('search.setModel("' . $savedSearch->model . '");', ['block' => 'scriptBotton']);
+echo $this->Html->scriptBlock(
+    'search.setFieldProperties(' . json_encode($searchableFields) . ');',
     ['block' => 'scriptBotton']
 );
 if (!empty($searchData['criteria'])) {
@@ -42,13 +47,30 @@ if (!empty($searchData['criteria'])) {
                 <div class="form-group">
                 <?php
                 $selectOptions = array_combine(
-                    array_keys($searchFields),
+                    array_keys($searchableFields),
                     array_map(function ($v) {
                         return $v['label'];
-                    }, $searchFields)
+                    }, $searchableFields)
                 );
-                //sort the list alphabetically for dropdown
-                asort($selectOptions);
+
+                foreach ($selectOptions as $k => $v) {
+                    $optGroup = substr($k, 0, strpos($k, '.'));
+                    $optGroup = array_key_exists($optGroup, $associationLabels) ?
+                        $associationLabels[$optGroup] :
+                        $optGroup;
+
+                    if (!array_key_exists($optGroup, $selectOptions)) {
+                        $selectOptions[$optGroup] = [];
+                    }
+
+                    $selectOptions[$optGroup][$k] = $v;
+                    unset($selectOptions[$k]);
+                }
+
+                foreach ($selectOptions as $k => &$v) {
+                    asort($v);
+                }
+                ksort($selectOptions);
 
                 echo $this->Form->select(
                     'fields',
@@ -86,13 +108,18 @@ if (!empty($searchData['criteria'])) {
             </div>
             <div class="col-md-8 col-lg-9">
                 <?php
-                echo $this->element('Search.Search/options');
+                echo $this->element('Search.Search/options', [
+                    'searchableFields' => $searchableFields,
+                    'savedSearch' => $savedSearch,
+                    'selectOptions' => $selectOptions,
+                    'associationLabels' => $associationLabels
+                ]);
                 echo $this->Form->button('<i class="fa fa-search"></i> ' . __('Search'), ['class' => 'btn btn-primary']);
                 echo $this->Form->end();
                 echo '&nbsp;';
                 echo $this->Form->postLink(
                     '<i class="fa fa-download"></i> ' . __('Export'),
-                    ['action' => 'export-search', $preSaveId, $savedSearch ? $savedSearch->name : null],
+                    ['action' => 'export-search', $preSaveId, $savedSearch->has('name') ? $savedSearch->name : null],
                     ['class' => 'btn btn-primary', 'escape' => false]
                 );
                 ?>
@@ -120,7 +147,7 @@ if (!empty($searchData['criteria'])) {
 </div>
 <?php
 $scripts = [];
-foreach ($searchFields as $searchField) {
+foreach ($searchableFields as $searchField) {
     if (empty($searchField['input']['post'])) {
         continue;
     }

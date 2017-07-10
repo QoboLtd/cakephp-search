@@ -83,7 +83,7 @@ trait SearchTrait
         // request check above, to prevent resetting the pre-saved search.
         $table->resetSearch($entity, $model, $this->Auth->user());
 
-        $this->set('searchFields', $table->getSearchableFields($model));
+        $this->set('searchableFields', $table->getSearchableFields($model));
         $this->set('savedSearches', $table->getSavedSearches([$this->Auth->user('id')], [$model]));
         $this->set('model', $model);
         $this->set('searchData', $searchData);
@@ -92,6 +92,7 @@ trait SearchTrait
         // INFO: this is valid when a saved search was modified and the form was re-submitted
         $this->set('isEditable', $table->isEditable($entity));
         $this->set('searchOptions', $table->getSearchOptions());
+        $this->set('associationLabels', $table->getAssociationLabels($model));
 
         $this->render($this->_elementSearch);
     }
@@ -131,7 +132,10 @@ trait SearchTrait
         ]);
         $this->eventManager()->dispatch($event);
 
-        $data = $table->toDatatables($event->result, $displayColumns, $model);
+        $data = [];
+        if ($event->result) {
+            $data = $table->toDatatables($event->result, $displayColumns, $model);
+        }
 
         $pagination = [
             'count' => $query->count()
@@ -141,7 +145,7 @@ trait SearchTrait
             'success' => true,
             'data' => $data,
             'pagination' => $pagination,
-            '_serialize' => ['success', 'preSaveId', 'data', 'pagination']
+            '_serialize' => ['success', 'data', 'pagination']
         ]);
     }
 

@@ -6,11 +6,17 @@ echo $this->Html->script('Search.search_options', ['block' => 'scriptBotton']);
 $availableColumns = [];
 $displayColumns = [];
 // get display and available columns
-foreach ($searchFields as $k => $v) {
+foreach ($searchableFields as $k => $v) {
+    $tableName = substr($k, 0, strpos($k, '.'));
+    $tableName = array_key_exists($tableName, $associationLabels) ?
+        $associationLabels[$tableName] :
+        $tableName;
+    $suffix = $savedSearch->model === $tableName ? '' : ' (' . $tableName . ')';
+
     if (in_array($k, $searchData['display_columns'])) {
-        $displayColumns[$k] = $v['label'];
+        $displayColumns[$k] = $v['label'] . $suffix;
     } else {
-        $availableColumns[$k] = $v['label'];
+        $availableColumns[$k] = $v['label'] . $suffix;
     }
 }
 
@@ -19,10 +25,6 @@ asort($availableColumns);
 
 // sort display columns based on saved search display_columns order
 $displayColumns = array_merge(array_flip($searchData['display_columns']), $displayColumns);
-
-$sortByOptions = array_merge($availableColumns, $displayColumns);
-// alphabetically sort sortByOptions
-asort($sortByOptions);
 ?>
 <div class="row">
     <div class="col-md-4">
@@ -51,9 +53,11 @@ asort($sortByOptions);
         echo $this->Form->label(__('Sort Field'));
         echo $this->Form->select(
             'sort_by_field',
-            $sortByOptions,
+            $selectOptions,
             [
-                'default' => isset($searchData['sort_by_field']) ? $searchData['sort_by_field'] : key($sortByOptions),
+                'default' => isset($searchData['sort_by_field'])
+                    ? $searchData['sort_by_field']
+                    : key(current($selectOptions)),
                 'class' => 'form-control input-sm'
              ]
         );

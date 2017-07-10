@@ -92,6 +92,7 @@ class SavedSearchWidget extends BaseWidget
 
         $this->options['scripts'] = $this->getScripts(['data' => $search]);
         $this->options['fields'] = $this->_tableInstance->getSearchableFields($search->model);
+        $this->options['associationLabels'] = $this->_tableInstance->getAssociationLabels($search->model);
 
         $this->_data = $search;
 
