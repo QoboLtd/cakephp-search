@@ -290,7 +290,55 @@ class SavedSearchesTable extends Table
             ->where([$data['aggregator'] => $this->_prepareWhereStatement($data, $table)])
             ->order([$table->aliasField($data['sort_by_field']) => $data['sort_by_order']]);
 
+        $this->_searchByAssociations($table, $query, $data);
+
         return $query;
+    }
+
+    /**
+     * Search by current Table associations.
+     *
+     * @param \Cake\ORM\Table $table Table instance
+     * @param \Cake\ORM\Query $query Query object
+     * @param array $data Search data
+     * @return void
+     */
+    protected function _searchByAssociations(Table $table, Query $query, array $data)
+    {
+        foreach ($table->associations() as $association) {
+            // skip non-supported associations
+            if (!in_array($association->type(), $this->getSearchableAssociations())) {
+                continue;
+            }
+
+            $targetTable = $association->getTarget();
+
+            // skip associations with itself
+            if ($targetTable->getTable() === $table->getTable()) {
+                continue;
+            }
+
+            $primaryKey = $targetTable->aliasField($targetTable->getPrimaryKey());
+            $select = array_diff($this->_getQueryFields($data, $targetTable), [$primaryKey]);
+            $where = $this->_prepareWhereStatement($data, $targetTable);
+
+            // skip matching functionality if not related select fields or where clause are available.
+            if (empty($select) && empty($where)) {
+                continue;
+            }
+
+            $query->matching($association->getName(), function ($q) use ($data, $select, $where) {
+                if (!empty($select)) {
+                    $q->select($select);
+                }
+
+                if (!empty($where)) {
+                    $q->where([$data['aggregator'] => $where]);
+                }
+
+                return $q;
+            });
+        }
     }
 
     /**
