@@ -844,6 +844,30 @@ class SavedSearchesTable extends Table
     }
 
     /**
+     * Filter only current module fields.
+     *
+     * @param \Cake\ORM\Table $table Table instance
+     * @param array $fields Search fields
+     * @return array
+     */
+    protected function _filterModuleFields(Table $table, array $fields)
+    {
+        if (empty($fields)) {
+            return [];
+        }
+
+        foreach ($fields as $k => $v) {
+            if (false !== strpos($v, $table->getAlias() . '.')) {
+                continue;
+            }
+
+            unset($fields[$k]);
+        }
+
+        return $fields;
+    }
+
+    /**
      * Prepare search query's where statement
      *
      * @param  array  $data  request data
