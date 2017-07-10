@@ -50,7 +50,9 @@ $uid = uniqid();
                 <thead>
                     <tr>
                     <?php foreach ($searchData['display_columns'] as $field) : ?>
-                       <th><?= $searchableFields[$field]['label'] ?></th>
+                        <?php $tableName = substr($field, 0, strpos($field, '.')) ?>
+                        <?php $suffix = $model === $tableName ? '' : ' (' . $tableName . ')' ?>
+                       <th><?= $searchableFields[$field]['label'] . $suffix ?></th>
                     <?php endforeach; ?>
                         <th class="actions"><?= __('Actions') ?></th>
                     </tr>

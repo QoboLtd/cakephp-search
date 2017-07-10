@@ -36,7 +36,9 @@ $title = '<a href="' . $this->Url->build($url) . '">' . $savedSearch->name . '</
                     <thead>
                         <tr>
                         <?php foreach ($searchData['display_columns'] as $field) : ?>
-                            <th><?= $fields[$field]['label'] ?></th>
+                            <?php $tableName = substr($field, 0, strpos($field, '.')) ?>
+                            <?php $suffix = $savedSearch->model === $tableName ? '' : ' (' . $tableName . ')' ?>
+                            <th><?= $fields[$field]['label'] . $suffix ?></th>
                         <?php endforeach; ?>
                             <th class="actions"><?= __('Actions') ?></th>
                         </tr>
