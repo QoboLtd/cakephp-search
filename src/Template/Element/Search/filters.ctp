@@ -47,8 +47,22 @@ if (!empty($searchData['criteria'])) {
                         return $v['label'];
                     }, $searchableFields)
                 );
-                //sort the list alphabetically for dropdown
-                asort($selectOptions);
+
+                foreach ($selectOptions as $k => $v) {
+                    $optGroup = substr($k, 0, strpos($k, '.'));
+
+                    if (!array_key_exists($optGroup, $selectOptions)) {
+                        $selectOptions[$optGroup] = [];
+                    }
+
+                    $selectOptions[$optGroup][$k] = $v;
+                    unset($selectOptions[$k]);
+                }
+
+                foreach ($selectOptions as $k => &$v) {
+                    asort($v);
+                }
+                ksort($selectOptions);
 
                 echo $this->Form->select(
                     'fields',
