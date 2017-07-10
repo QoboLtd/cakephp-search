@@ -100,6 +100,13 @@ class SavedSearchesTable extends Table
     protected $_defaultDisplayFields = ['modified', 'created'];
 
     /**
+     * Searchable associations list
+     *
+     * @var array
+     */
+    protected $_searchableAssociations = ['manyToOne'];
+
+    /**
      * Initialize method
      *
      * @param array $config The configuration for the Table.
@@ -251,6 +258,16 @@ class SavedSearchesTable extends Table
     public function getBasicSearchFieldTypes()
     {
         return $this->_basicSearchFieldTypes;
+    }
+
+    /**
+     * Searchable associations getter.
+     *
+     * @return array
+     */
+    public function getSearchableAssociations()
+    {
+        return $this->_searchableAssociations;
     }
 
     /**
