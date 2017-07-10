@@ -10,6 +10,7 @@ var search = search || {};
     {
         this.formId = options.hasOwnProperty('formId') ? options.formId : '#SearchFilterForm';
         this.addFieldId = options.hasOwnProperty('addFieldId') ? options.addFieldId : '#addFilter';
+        this.model = '';
         this.fieldProperties = {};
         this.fieldTypeOperators = {};
         this.deleteBtnHtml = '<div class="input-sm">' +
@@ -69,6 +70,15 @@ var search = search || {};
     };
 
     /**
+     * Search model setter.
+     *
+     * @param {string} model Model name
+     */
+    Search.prototype.setModel = function (model) {
+        this.model = model;
+    };
+
+    /**
      * Field properties setter.
      *
      * @param {object} fieldProperties field properties
@@ -119,7 +129,7 @@ var search = search || {};
 
         var inputHtml = this.fieldInputHtml;
         inputHtml = inputHtml.replace('{{fieldType}}', this._generateFieldType(field, properties.type, timestamp));
-        inputHtml = inputHtml.replace('{{fieldLabel}}', this._generateFieldLabel(properties.label));
+        inputHtml = inputHtml.replace('{{fieldLabel}}', this._generateFieldLabel(field, properties.label));
         inputHtml = inputHtml.replace(
             '{{fieldOperator}}',
             this._generateSearchOperator(field, properties.operators, timestamp, setOperator)
@@ -140,13 +150,21 @@ var search = search || {};
     /**
      * Generates and returns field label html.
      *
-     * @param  {object} label field label
+     * @param  {string} field field name
+     * @param  {string} label field label
      * @return {string}
      */
-    Search.prototype._generateFieldLabel = function (label) {
+    Search.prototype._generateFieldLabel = function (field, label) {
         var input = this.fieldLabelHtml;
 
-        return input.replace('{{label}}', label);
+        var tableName = field.substr(0, field.indexOf('.'));
+
+        var suffix = '';
+        if (this.model !== tableName) {
+            suffix = ' (' + tableName + ')';
+        }
+
+        return input.replace('{{label}}', label + suffix);
     };
 
     /**
