@@ -650,8 +650,13 @@ class SavedSearchesTable extends Table
      * @param array $searchableFields Searchable fields
      * @return array
      */
-    protected function _getBasicSearchFields(Table $table, array $searchableFields = [])
+    protected function _getBasicSearchFields(Table $table, array $searchableFields)
     {
+        if (empty($searchableFields)) {
+            $msg = 'Searchable fields for table [' . $table->getAlias() . '] cannot be empty.';
+            throw new InvalidArgumentException($msg);
+        }
+
         $event = new Event('Search.Model.Search.basicSearchFields', $this, [
             'table' => $table
         ]);
@@ -682,10 +687,6 @@ class SavedSearchesTable extends Table
 
         if (!empty($result)) {
             return $result;
-        }
-
-        if (empty($searchableFields)) {
-            $searchableFields = $this->getSearchableFields($table);
         }
 
         foreach ($searchableFields as $field => $properties) {
