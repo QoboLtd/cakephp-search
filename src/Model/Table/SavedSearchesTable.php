@@ -947,9 +947,17 @@ class SavedSearchesTable extends Table
             return $result;
         }
 
-        $table = $this->_getTableInstance($model);
-
+        // get searchable fields and filter out the ones
+        // which do not belong to the current module.
         $searchableFields = $this->getSearchableFields($table);
+        $moduleFields = $this->_filterModuleFields($table, array_keys($searchableFields));
+
+        foreach (array_keys($searchableFields) as $field) {
+            if (in_array($field, $moduleFields)) {
+                continue;
+            }
+            unset($searchableFields[$field]);
+        }
 
         foreach ($data['criteria'] as $fieldName => $criterias) {
             if (empty($criterias)) {
