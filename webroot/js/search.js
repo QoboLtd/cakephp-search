@@ -13,6 +13,7 @@ var search = search || {};
         this.model = '';
         this.fieldProperties = {};
         this.fieldTypeOperators = {};
+        this.associationLabels = {};
         this.deleteBtnHtml = '<div class="input-sm">' +
             '<a href="#" class="search-field-remover">' +
                 '<span class="glyphicon glyphicon-minus"></span>' +
@@ -85,6 +86,15 @@ var search = search || {};
      */
     Search.prototype.setFieldProperties = function (fieldProperties) {
         this.fieldProperties = fieldProperties;
+    };
+
+    /**
+     * Search model setter.
+     *
+     * @param {string} model Model name
+     */
+    Search.prototype.setAssociationLabels = function (associationLabels) {
+        this.associationLabels = associationLabels;
     };
 
     /**
@@ -161,7 +171,10 @@ var search = search || {};
 
         var suffix = '';
         if (this.model !== tableName) {
-            suffix = ' (' + tableName + ')';
+            label = this.associationLabels.hasOwnProperty(tableName) ?
+                this.associationLabels[tableName] :
+                tableName;
+            suffix = ' (' + label + ')';
         }
 
         return input.replace('{{label}}', label + suffix);

@@ -2,6 +2,10 @@
 echo $this->Html->css('Search.search', ['block' => 'css']);
 echo $this->Html->script('Search.search', ['block' => 'scriptBotton']);
 
+echo $this->Html->scriptBlock(
+    'search.setAssociationLabels(' . json_encode($associationLabels) . ');',
+    ['block' => 'scriptBotton']
+);
 echo $this->Html->scriptBlock('search.setModel("' . $savedSearch->model . '");', ['block' => 'scriptBotton']);
 echo $this->Html->scriptBlock(
     'search.setFieldProperties(' . json_encode($searchableFields) . ');',
