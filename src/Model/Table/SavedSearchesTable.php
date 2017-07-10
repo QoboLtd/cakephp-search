@@ -271,6 +271,28 @@ class SavedSearchesTable extends Table
     }
 
     /**
+     * Associations labels getter.
+     *
+     * @param string $tableName Table name
+     * @return array
+     */
+    public function getAssociationLabels($tableName)
+    {
+        $table = $this->_getTableInstance($tableName);
+
+        $result = [];
+        foreach ($table->associations() as $association) {
+            if (!in_array($association->type(), $this->getSearchableAssociations())) {
+                continue;
+            }
+
+            $result[$association->getName()] = Inflector::humanize($association->getForeignKey());
+        }
+
+        return $result;
+    }
+
+    /**
      * Search method.
      *
      * @param string $tableName Table name

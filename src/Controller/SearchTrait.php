@@ -92,6 +92,7 @@ trait SearchTrait
         // INFO: this is valid when a saved search was modified and the form was re-submitted
         $this->set('isEditable', $table->isEditable($entity));
         $this->set('searchOptions', $table->getSearchOptions());
+        $this->set('associationLabels', $table->getAssociationLabels($model));
 
         $this->render($this->_elementSearch);
     }
