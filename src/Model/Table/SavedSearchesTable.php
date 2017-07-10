@@ -244,6 +244,16 @@ class SavedSearchesTable extends Table
     }
 
     /**
+     * Basic search allowed field types getter.
+     *
+     * @return array
+     */
+    public function getBasicSearchFieldTypes()
+    {
+        return $this->_basicSearchFieldTypes;
+    }
+
+    /**
      * Search method.
      *
      * @param string $tableName Table name
@@ -556,7 +566,7 @@ class SavedSearchesTable extends Table
                 continue;
             }
 
-            if (!in_array($searchableFields[$field]['type'], $this->_basicSearchFieldTypes)) {
+            if (!in_array($searchableFields[$field]['type'], $this->getBasicSearchFieldTypes())) {
                 continue;
             }
 
@@ -671,7 +681,7 @@ class SavedSearchesTable extends Table
         }
 
         foreach ($searchableFields as $field => $properties) {
-            if (!in_array($properties['type'], $this->_basicSearchFieldTypes)) {
+            if (!in_array($properties['type'], $this->getBasicSearchFieldTypes())) {
                 continue;
             }
 
