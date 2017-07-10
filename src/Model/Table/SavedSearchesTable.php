@@ -1056,56 +1056,7 @@ class SavedSearchesTable extends Table
                 $sqlOperator = $searchableFields[$fieldName]['operators'][$operator]['operator'];
                 $key = $fieldName . ' ' . $sqlOperator;
 
-                if (!array_key_exists($key, $result)) {
-                    $result[$key] = $value;
-                } else {
-                    switch ($type) {
-                        case 'uuid':
-                        case 'list':
-                        case 'related':
-                            if (is_array($result[$key])) {
-                                array_push($result[$key], $value);
-                            } else {
-                                $result[$key] = [$result[$key], $value];
-                            }
-                            break;
-
-                        case 'integer':
-                        case 'datetime':
-                        case 'date':
-                        case 'time':
-                            switch ($operator) {
-                                case 'greater':
-                                case 'less':
-                                    if (is_array($result[$key])) {
-                                        array_push($result[$key]['AND'], $value);
-                                    } else {
-                                        $result[$key] = ['AND' => [$result[$key], $value]];
-                                    }
-                                    break;
-
-                                default:
-                                    if (is_array($result[$key])) {
-                                        array_push($result[$key], $value);
-                                    } else {
-                                        $result[$key] = [$result[$key], $value];
-                                    }
-                                    break;
-                            }
-                            break;
-
-                        case 'string':
-                        case 'text':
-                        case 'textarea':
-                        case 'email':
-                            if (is_array($result[$key])) {
-                                array_push($result[$key]['OR'], $value);
-                            } else {
-                                $result[$key] = ['OR' => [$result[$key], $value]];
-                            }
-                            break;
-                    }
-                }
+                $result[] = [$key => $value];
             }
         }
 
