@@ -7,10 +7,13 @@ $availableColumns = [];
 $displayColumns = [];
 // get display and available columns
 foreach ($searchableFields as $k => $v) {
+    $tableName = substr($k, 0, strpos($k, '.'));
+    $suffix = $tableName !== $savedSearch->model ? ' (' . $tableName . ')' : '';
+    $label = $v['label'] . $suffix;
     if (in_array($k, $searchData['display_columns'])) {
-        $displayColumns[$k] = $v['label'];
+        $displayColumns[$k] = $label;
     } else {
-        $availableColumns[$k] = $v['label'];
+        $availableColumns[$k] = $label;
     }
 }
 
