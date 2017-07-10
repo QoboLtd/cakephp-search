@@ -444,6 +444,22 @@ class SavedSearchesTable extends Table
             return $this->_searchableFields[$tableAlias];
         }
 
+        $this->_searchableFields[$tableAlias] = array_merge(
+            $this->_getSearchableFields($table),
+            $this->_getAssociatedSearchableFields($table)
+        );
+
+        return $this->_searchableFields[$tableAlias];
+    }
+
+    /**
+     * Get and return searchable fields using Event.
+     *
+     * @param \Cake\ORM\Table $table Table instance
+     * @return array
+     */
+    protected function _getSearchableFields(Table $table)
+    {
         $event = new Event('Search.Model.Search.searchabeFields', $this, [
             'table' => $table
         ]);
@@ -453,9 +469,41 @@ class SavedSearchesTable extends Table
             throw new RuntimeException('Table [' . $table->registryAlias() . '] has no searchable fields defined.');
         }
 
-        $this->_searchableFields[$tableAlias] = $event->result;
+        return $event->result ? $event->result : [];
+    }
 
-        return $this->_searchableFields[$tableAlias];
+    /**
+     * Get associated tables searchable fields.
+     *
+     * @param \Cake\ORM\Table $table Table instance
+     * @return array
+     */
+    protected function _getAssociatedSearchableFields(Table $table)
+    {
+        $result = [];
+        foreach ($table->associations() as $association) {
+            // skip non-supported associations
+            if (!in_array($association->type(), $this->getSearchableAssociations())) {
+                continue;
+            }
+
+            $targetTable = $association->getTarget();
+
+            // skip associations with itself
+            if ($targetTable->getTable() === $table->getTable()) {
+                continue;
+            }
+
+            // fetch associated model searchable fields
+            $searchableFields = $this->_getSearchableFields($targetTable, false);
+            if (empty($searchableFields)) {
+                continue;
+            }
+
+            $result = array_merge($result, $searchableFields);
+        }
+
+        return $result;
     }
 
     /**
