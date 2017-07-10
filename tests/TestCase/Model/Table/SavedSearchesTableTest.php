@@ -299,7 +299,7 @@ class SavedSearchesTableTest extends TestCase
 
         $result = $method->invokeArgs($this->SavedSearches, [
             [],
-            'Dashboards'
+            TableRegistry::get('Dashboards')
         ]);
 
         $this->assertEquals($result, []);
