@@ -539,6 +539,67 @@ class SavedSearchesTableTest extends TestCase
         $this->assertEquals(2, $result->count());
     }
 
+    public function testSearchWithAndAggregator()
+    {
+        $model = 'Dashboards';
+
+        // anonymous event listener that passes some dummy searchable fields
+        $this->SavedSearches->eventManager()->on(
+            'Search.Model.Search.searchabeFields',
+            function ($event, $table) use ($model) {
+                return [
+                    $model . '.name' => [
+                        'type' => 'string',
+                        'operators' => [
+                            'contains' => [
+                                'label' => 'contains',
+                                'operator' => 'LIKE',
+                                'pattern' => '%{{value}}%'
+                            ]
+                        ]
+                    ],
+                    $model . '.modified' => [
+                        'type' => 'datetime',
+                        'operators' => [
+                            'greater' => [
+                                'label' => 'from',
+                                'operator' => '>'
+                            ]
+                        ]
+                    ]
+                ];
+            }
+        );
+
+        $user = [
+            'id' => '00000000-0000-0000-0000-000000000001'
+        ];
+
+        $data = [
+            'aggregator' => 'AND',
+            'criteria' => [
+                $model . '.name' => [
+                    10 => [
+                        'type' => 'string',
+                        'operator' => 'contains',
+                        'value' => 'ipsum'
+                    ]
+                ],
+                $model . '.modified' => [
+                    10 => [
+                        'type' => 'datetime',
+                        'operator' => 'greater',
+                        'value' => '2016-04-27 08:21:53'
+                    ]
+                ]
+            ]
+        ];
+
+        $result = $this->SavedSearches->search($model, $user, $data);
+
+        $this->assertEquals(1, $result->count());
+    }
+
     public function testSearchWithRelatedIsNot()
     {
         $model = 'Dashboards';
