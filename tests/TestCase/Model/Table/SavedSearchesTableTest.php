@@ -512,6 +512,7 @@ class SavedSearchesTableTest extends TestCase
         ];
 
         $data = [
+            'aggregator' => 'OR',
             'criteria' => [
                 $model . '.modified' => [
                     10 => [
