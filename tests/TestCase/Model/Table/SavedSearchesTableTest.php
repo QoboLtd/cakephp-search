@@ -26,8 +26,10 @@ class SavedSearchesTableTest extends TestCase
      * @var array
      */
     public $fixtures = [
-        'plugin.search.dashboards',
         'plugin.search.app_widgets',
+        'plugin.search.articles',
+        'plugin.search.authors',
+        'plugin.search.dashboards',
         'plugin.search.saved_searches',
     ];
 
@@ -142,11 +144,7 @@ class SavedSearchesTableTest extends TestCase
                 'name' => [
                     'type' => 'blob',
                     'operators' => [
-                        'contains' => [
-                            'label' => 'contains',
-                            'operator' => 'LIKE',
-                            'pattern' => '%{{value}}%'
-                        ],
+                        'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%'],
                     ]
                 ]
             ];
@@ -196,11 +194,7 @@ class SavedSearchesTableTest extends TestCase
                     $model . '.name' => [
                         'type' => 'string',
                         'operators' => [
-                            'contains' => [
-                                'label' => 'contains',
-                                'operator' => 'LIKE',
-                                'pattern' => '%{{value}}%'
-                            ],
+                            'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%'],
                         ]
                     ]
                 ];
@@ -236,11 +230,7 @@ class SavedSearchesTableTest extends TestCase
                         $relatedModel . '.name' => [
                             'type' => 'string',
                             'operators' => [
-                                'contains' => [
-                                    'label' => 'contains',
-                                    'operator' => 'LIKE',
-                                    'pattern' => '%{{value}}%'
-                                ],
+                                'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%'],
                             ]
                         ]
                     ];
@@ -251,11 +241,7 @@ class SavedSearchesTableTest extends TestCase
                         'type' => 'related',
                         'source' => 'AppWidgets',
                         'operators' => [
-                            'contains' => [
-                                'label' => 'contains',
-                                'operator' => 'LIKE',
-                                'pattern' => '%{{value}}%'
-                            ],
+                            'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%'],
                         ]
                     ]
                 ];
@@ -364,16 +350,10 @@ class SavedSearchesTableTest extends TestCase
         $data = [
             'criteria' => [
                 $model . '.name' => [
-                    10 => [
-                        'type' => 'string',
-                        'operator' => 'contains',
-                        'value' => 'foo'
-                    ]
+                    10 => ['type' => 'string', 'operator' => 'contains', 'value' => 'foo']
                 ]
             ],
-            'display_columns' => [
-                $model . '.name', $model . '.modified', $model . '.created'
-            ],
+            'display_columns' => [$model . '.name', $model . '.modified', $model . '.created'],
             'sort_by_field' => $model . '.name',
             'sort_by_order' => 'asc',
             'limit' => '20',
@@ -402,16 +382,10 @@ class SavedSearchesTableTest extends TestCase
         $data = [
             'criteria' => [
                 'foo' => [
-                    10 => [
-                        'type' => 'string',
-                        'operator' => 'contains',
-                        'value' => 'foo'
-                    ]
+                    10 => ['type' => 'string', 'operator' => 'contains', 'value' => 'foo']
                 ]
             ],
-            'display_columns' => [
-                'foo'
-            ],
+            'display_columns' => ['foo'],
             'sort_by_field' => 'foo',
             'sort_by_order' => 'foo',
             'limit' => '999',
@@ -444,29 +418,19 @@ class SavedSearchesTableTest extends TestCase
                     $model . '.name' => [
                         'type' => 'string',
                         'operators' => [
-                            'contains' => [
-                                'label' => 'contains',
-                                'operator' => 'LIKE',
-                                'pattern' => '%{{value}}%'
-                            ]
+                            'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%']
                         ]
                     ]
                 ];
             }
         );
 
-        $user = [
-            'id' => '00000000-0000-0000-0000-000000000001'
-        ];
+        $user = ['id' => '00000000-0000-0000-0000-000000000001'];
 
         $data = [
             'criteria' => [
                 $model . '.name' => [
-                    10 => [
-                        'type' => 'string',
-                        'operator' => 'contains',
-                        'value' => 'ipsum'
-                    ]
+                    10 => ['type' => 'string', 'operator' => 'contains', 'value' => 'ipsum']
                 ]
             ],
             'display_columns' => [
@@ -485,6 +449,67 @@ class SavedSearchesTableTest extends TestCase
         $this->assertGreaterThan(0, $result->count());
     }
 
+    public function testSearchWithAssociated()
+    {
+        $model = 'Articles';
+        $relatedModel = 'Authors';
+
+        // anonymous event listener that passes some dummy searchable fields
+        $this->SavedSearches->eventManager()->on(
+            'Search.Model.Search.searchabeFields',
+            function ($event, $table) use ($model, $relatedModel) {
+                return [
+                    $model . '.title' => [
+                        'type' => 'string',
+                        'operators' => [
+                            'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%']
+                        ]
+                    ],
+                    $relatedModel . '.name' => [
+                        'type' => 'string',
+                        'operators' => [
+                            'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%']
+                        ]
+                    ]
+                ];
+            }
+        );
+
+        $user = ['id' => '00000000-0000-0000-0000-000000000001'];
+
+        $data = [
+            'aggregator' => 'AND',
+            'criteria' => [
+                $relatedModel . '.name' => [
+                    10 => ['type' => 'string', 'operator' => 'contains', 'value' => 'Mark']
+                ]
+            ],
+            'display_columns' => [
+                $model . '.title',
+                $relatedModel . '.name',
+                $model . '.created',
+                $model . '.modified'
+            ],
+            'sort_by_field' => $relatedModel . '.name',
+            'sort_by_order' => 'desc'
+        ];
+
+        $result = $this->SavedSearches->search($model, $user, $data);
+        $entity = $result->first();
+
+        $this->assertInstanceOf(\Cake\ORM\Query::class, $result);
+        $this->assertEquals(1, $result->count());
+
+        $this->assertNotEmpty($entity->get('id'));
+        $this->assertNotEmpty($entity->get('title'));
+        $this->assertNotEmpty($entity->get('_matchingData'));
+        $this->assertNotEmpty($entity->get('_matchingData'));
+
+        $associated = $entity->get('_matchingData');
+        $this->assertArrayHasKey($relatedModel, $associated);
+        $this->assertNotEmpty($associated[$relatedModel]->get('name'));
+    }
+
     public function testSearchWithDatetimeIs()
     {
         $model = 'Dashboards';
@@ -497,39 +522,22 @@ class SavedSearchesTableTest extends TestCase
                     $model . '.modified' => [
                         'type' => 'datetime',
                         'operators' => [
-                            'is' => [
-                                'label' => 'is',
-                                'operator' => 'IN'
-                            ]
+                            'is' => ['label' => 'is', 'operator' => 'IN']
                         ]
                     ]
                 ];
             }
         );
 
-        $user = [
-            'id' => '00000000-0000-0000-0000-000000000001'
-        ];
+        $user = ['id' => '00000000-0000-0000-0000-000000000001'];
 
         $data = [
             'aggregator' => 'OR',
             'criteria' => [
                 $model . '.modified' => [
-                    10 => [
-                        'type' => 'datetime',
-                        'operator' => 'is',
-                        'value' => '2016-04-27 08:21:53'
-                    ],
-                    20 => [
-                        'type' => 'datetime',
-                        'operator' => 'is',
-                        'value' => '2016-04-27 08:21:54'
-                    ],
-                    30 => [
-                        'type' => 'datetime',
-                        'operator' => 'is',
-                        'value' => '2016-04-27 08:21:55'
-                    ]
+                    10 => ['type' => 'datetime', 'operator' => 'is', 'value' => '2016-04-27 08:21:53'],
+                    20 => ['type' => 'datetime', 'operator' => 'is', 'value' => '2016-04-27 08:21:54'],
+                    30 => ['type' => 'datetime', 'operator' => 'is', 'value' => '2016-04-27 08:21:55']
                 ]
             ]
         ];
@@ -551,46 +559,29 @@ class SavedSearchesTableTest extends TestCase
                     $model . '.name' => [
                         'type' => 'string',
                         'operators' => [
-                            'contains' => [
-                                'label' => 'contains',
-                                'operator' => 'LIKE',
-                                'pattern' => '%{{value}}%'
-                            ]
+                            'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%']
                         ]
                     ],
                     $model . '.modified' => [
                         'type' => 'datetime',
                         'operators' => [
-                            'greater' => [
-                                'label' => 'from',
-                                'operator' => '>'
-                            ]
+                            'greater' => ['label' => 'from', 'operator' => '>']
                         ]
                     ]
                 ];
             }
         );
 
-        $user = [
-            'id' => '00000000-0000-0000-0000-000000000001'
-        ];
+        $user = ['id' => '00000000-0000-0000-0000-000000000001'];
 
         $data = [
             'aggregator' => 'AND',
             'criteria' => [
                 $model . '.name' => [
-                    10 => [
-                        'type' => 'string',
-                        'operator' => 'contains',
-                        'value' => 'ipsum'
-                    ]
+                    10 => ['type' => 'string', 'operator' => 'contains', 'value' => 'ipsum']
                 ],
                 $model . '.modified' => [
-                    10 => [
-                        'type' => 'datetime',
-                        'operator' => 'greater',
-                        'value' => '2016-04-27 08:21:53'
-                    ]
+                    10 => ['type' => 'datetime', 'operator' => 'greater', 'value' => '2016-04-27 08:21:53']
                 ]
             ]
         ];
@@ -612,38 +603,21 @@ class SavedSearchesTableTest extends TestCase
                     $model . '.role_id' => [
                         'type' => 'related',
                         'operators' => [
-                            'is_not' => [
-                                'label' => 'is not',
-                                'operator' => 'NOT IN'
-                            ]
+                            'is_not' => ['label' => 'is not', 'operator' => 'NOT IN']
                         ]
                     ]
                 ];
             }
         );
 
-        $user = [
-            'id' => '00000000-0000-0000-0000-000000000001'
-        ];
+        $user = ['id' => '00000000-0000-0000-0000-000000000001'];
 
         $data = [
             'criteria' => [
                 $model . '.role_id' => [
-                    10 => [
-                        'type' => 'related',
-                        'operator' => 'is_not',
-                        'value' => '00000000-0000-0000-0000-000000000001'
-                    ],
-                    20 => [
-                        'type' => 'related',
-                        'operator' => 'is_not',
-                        'value' => '00000000-0000-0000-0000-000000000002'
-                    ],
-                    30 => [
-                        'type' => 'related',
-                        'operator' => 'is_not',
-                        'value' => '00000000-0000-0000-0000-000000000003'
-                    ]
+                    10 => ['type' => 'related', 'operator' => 'is_not', 'value' => '00000000-0000-0000-0000-000000000001'],
+                    20 => ['type' => 'related', 'operator' => 'is_not', 'value' => '00000000-0000-0000-0000-000000000002'],
+                    30 => ['type' => 'related', 'operator' => 'is_not', 'value' => '00000000-0000-0000-0000-000000000003']
                 ]
             ]
         ];
@@ -661,35 +635,21 @@ class SavedSearchesTableTest extends TestCase
                 'name' => [
                     'type' => 'string',
                     'operators' => [
-                        'contains' => [
-                            'label' => 'contains',
-                            'operator' => 'LIKE',
-                            'pattern' => '%{{value}}%'
-                        ]
+                        'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%']
                     ]
                 ]
             ];
         });
 
-        $user = [
-            'id' => '00000000-0000-0000-0000-000000000001'
-        ];
+        $user = ['id' => '00000000-0000-0000-0000-000000000001'];
 
         $data = [
             'criteria' => [
                 'name' => [
-                    10 => [
-                        'type' => 'string',
-                        'operator' => 'contains',
-                        'value' => 'ipsum'
-                    ]
+                    10 => ['type' => 'string', 'operator' => 'contains', 'value' => 'ipsum']
                 ]
             ],
-            'display_columns' => [
-                'name',
-                'created',
-                'modified'
-            ],
+            'display_columns' => ['name', 'created', 'modified'],
             'sort_by_field' => 'name',
             'sort_by_order' => 'desc',
             'limit' => '10'
@@ -714,11 +674,7 @@ class SavedSearchesTableTest extends TestCase
                     $model . '.name' => [
                         'type' => 'string',
                         'operators' => [
-                            'contains' => [
-                                'label' => 'contains',
-                                'operator' => 'LIKE',
-                                'pattern' => '%{{value}}%'
-                            ]
+                            'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%']
                         ]
                     ]
                 ];
@@ -727,25 +683,15 @@ class SavedSearchesTableTest extends TestCase
 
         $id = '00000000-0000-0000-0000-000000000001';
 
-        $user = [
-            'id' => '00000000-0000-0000-0000-000000000001'
-        ];
+        $user = ['id' => '00000000-0000-0000-0000-000000000001'];
 
         $data = [
             'criteria' => [
                 $model . '.name' => [
-                    10 => [
-                        'type' => 'string',
-                        'operator' => 'contains',
-                        'value' => 'ipsum'
-                    ]
+                    10 => ['type' => 'string', 'operator' => 'contains', 'value' => 'ipsum']
                 ]
             ],
-            'display_columns' => [
-                $model . '.name',
-                $model . '.created',
-                $model . '.modified'
-            ],
+            'display_columns' => [$model . '.name', $model . '.created', $model . '.modified'],
             'sort_by_field' => $model . '.name',
             'sort_by_order' => 'desc',
             'limit' => '10'
@@ -768,11 +714,7 @@ class SavedSearchesTableTest extends TestCase
                 'name' => [
                     'type' => 'string',
                     'operators' => [
-                        'contains' => [
-                            'label' => 'contains',
-                            'operator' => 'LIKE',
-                            'pattern' => '%{{value}}%'
-                        ]
+                        'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%']
                     ]
                 ]
             ];
@@ -780,9 +722,7 @@ class SavedSearchesTableTest extends TestCase
 
         $id = '00000000-0000-0000-0000-000000000001';
 
-        $user = [
-            'id' => '00000000-0000-0000-0000-000000000001'
-        ];
+        $user = ['id' => '00000000-0000-0000-0000-000000000001'];
 
         $result = $this->SavedSearches->getSearch('Dashboards', $user, $id);
         $this->assertInstanceOf(\Search\Model\Entity\SavedSearch::class, $result);
