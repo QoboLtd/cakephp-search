@@ -465,6 +465,18 @@ class SavedSearchesTableTest extends TestCase
                             'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%']
                         ]
                     ],
+                    $model . '.created' => [
+                        'type' => 'datetime',
+                        'operators' => [
+                            'is' => ['label' => 'is', 'operator' => 'IN']
+                        ]
+                    ],
+                    $model . '.modified' => [
+                        'type' => 'datetime',
+                        'operators' => [
+                            'is' => ['label' => 'is', 'operator' => 'IN']
+                        ]
+                    ],
                     $relatedModel . '.name' => [
                         'type' => 'string',
                         'operators' => [
@@ -754,5 +766,74 @@ class SavedSearchesTableTest extends TestCase
 
         $this->assertInternalType('array', $result);
         $this->assertNotEmpty($result);
+    }
+
+    public function testToDatatablesWithAssociated()
+    {
+        $model = 'Articles';
+        $relatedModel = 'Authors';
+
+        $this->SavedSearches->eventManager()->on(
+            'Search.Model.Search.searchabeFields',
+            function ($event, $table) use ($model, $relatedModel) {
+                return [
+                    $model . '.title' => [
+                        'type' => 'string',
+                        'operators' => [
+                            'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%']
+                        ]
+                    ],
+                    $model . '.created' => [
+                        'type' => 'datetime',
+                        'operators' => [
+                            'is' => ['label' => 'is', 'operator' => 'IN']
+                        ]
+                    ],
+                    $model . '.modified' => [
+                        'type' => 'datetime',
+                        'operators' => [
+                            'is' => ['label' => 'is', 'operator' => 'IN']
+                        ]
+                    ],
+                    $relatedModel . '.name' => [
+                        'type' => 'string',
+                        'operators' => [
+                            'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%']
+                        ]
+                    ]
+                ];
+            }
+        );
+
+        $user = ['id' => '00000000-0000-0000-0000-000000000001'];
+
+        $data = [
+            'aggregator' => 'AND',
+            'criteria' => [
+                $relatedModel . '.name' => [
+                    10 => ['type' => 'string', 'operator' => 'contains', 'value' => 'Mark']
+                ]
+            ],
+            'display_columns' => [
+                $model . '.title',
+                $relatedModel . '.name',
+                $model . '.created',
+                $model . '.modified'
+            ],
+            'sort_by_field' => $relatedModel . '.name',
+            'sort_by_order' => 'desc'
+        ];
+
+        $query = $this->SavedSearches->search($model, $user, $data);
+
+        $result = $this->SavedSearches->toDatatables($query->all(), $data['display_columns'], $model);
+
+        $this->assertEquals(1, count($result));
+        $expected = 1 + count($data['display_columns']);
+        $this->assertEquals($expected, count(current($result)));
+
+        foreach (current($result) as $value) {
+            $this->assertNotNull($value);
+        }
     }
 }
