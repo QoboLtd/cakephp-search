@@ -50,7 +50,6 @@ class DashboardsControllerTest extends IntegrationTestCase
         ]);
         $this->get('/search/dashboards');
 
-
         $this->assertResponseOk();
         $this->assertResponseContains(
             'There are no configured Dashboards for you. Please contact the system administrator.'
@@ -141,20 +140,6 @@ class DashboardsControllerTest extends IntegrationTestCase
                             'model' => 'Contacts',
                             'shared' => 'private',
                             'content' => '',
-                            // 'created' => object(Cake\I18n\Time) {
-
-                            //     'time' => '2017-06-20T15:02:42+03:00',
-                            //     'timezone' => 'Asia/Nicosia',
-                            //     'fixedNowTime' => false
-
-                            // },
-                            // 'modified' => object(Cake\I18n\Time) {
-
-                            //     'time' => '2017-07-12T09:54:38+03:00',
-                            //     'timezone' => 'Asia/Nicosia',
-                            //     'fixedNowTime' => false
-
-                            // },
                             'trashed' => null
                         ]
                     ]
