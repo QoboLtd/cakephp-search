@@ -98,7 +98,7 @@ class WidgetsFixture extends TestFixture
         ],
         [
             'id' => '00000000-0000-0000-0000-000000000005',
-            'dashboard_id' => '00000000-0000-0000-0000-000000000100',
+            'dashboard_id' => '00000000-0000-0000-0000-000000000001',
             'widget_id' => '00000000-0000-0000-0000-000000000002',
             'widget_type' => 'saved_search',
             'widget_options' => 'Lorem Ipsum',
