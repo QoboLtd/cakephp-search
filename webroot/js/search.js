@@ -114,10 +114,10 @@ var search = search || {};
 
     /**
      * Remove button click logic.
-     * @param  {string} id button id
+     *
      * @return {undefined}
      */
-    Search.prototype._onRemoveBtnClick = function (id) {
+    Search.prototype._onRemoveBtnClick = function () {
         $(this.formId).on('click', 'a.search-field-remover', function (event) {
             event.preventDefault();
             $(this).parents('.search-field-wrapper').remove();
@@ -135,7 +135,6 @@ var search = search || {};
      */
     Search.prototype._generateField = function (field, properties, value, setOperator) {
         var timestamp = new Date().getUTCMilliseconds();
-        var id = field + '_' + timestamp;
 
         var inputHtml = this.fieldInputHtml;
         inputHtml = inputHtml.replace('{{fieldType}}', this._generateFieldType(field, properties.type, timestamp));
@@ -154,7 +153,7 @@ var search = search || {};
 
         $(this.formId + ' fieldset').append(inputHtml);
 
-        this._onRemoveBtnClick(id);
+        this._onRemoveBtnClick();
     };
 
     /**
