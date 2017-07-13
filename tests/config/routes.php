@@ -12,3 +12,9 @@ use Cake\Routing\Router;
 Plugin::routes();
 
 Router::connect('/users/login', ['controller' => 'Users', 'action' => 'login']);
+
+Router::scope('/', function ($routes) {
+    // $routes->extensions(['json']);
+    $routes->connect('/:controller', ['action' => 'index'], ['routeClass' => 'DashedRoute']);
+    $routes->connect('/:controller/:action/*', [], ['routeClass' => 'DashedRoute']);
+});
