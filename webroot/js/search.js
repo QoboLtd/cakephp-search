@@ -134,7 +134,7 @@ var search = search || {};
      * @return {undefined}
      */
     Search.prototype._generateField = function (field, properties, value, setOperator) {
-        var timestamp = new Date().getUTCMilliseconds();
+        var timestamp = Math.round(1000000 * Math.random());
 
         var inputHtml = this.fieldInputHtml;
         inputHtml = inputHtml.replace('{{fieldType}}', this._generateFieldType(field, properties.type, timestamp));
@@ -143,12 +143,10 @@ var search = search || {};
             '{{fieldOperator}}',
             this._generateSearchOperator(field, properties.operators, timestamp, setOperator)
         );
-        inputHtml = inputHtml.replace('{{fieldInput}}', this._generateFieldInput(
-            field,
-            properties.input,
-            timestamp,
-            value
-        ));
+        inputHtml = inputHtml.replace(
+            '{{fieldInput}}',
+            this._generateFieldInput(field, properties.input, timestamp, value)
+        );
         inputHtml = inputHtml.replace('{{deleteButton}}', this._generateDeleteButton());
 
         $(this.formId + ' fieldset').append(inputHtml);
