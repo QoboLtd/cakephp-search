@@ -2,6 +2,7 @@
 namespace Search\Test\TestCase\Controller;
 
 use Cake\Core\Configure;
+use Cake\Event\EventManager;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\IntegrationTestCase;
 
@@ -29,9 +30,8 @@ class ArticlesControllerTest extends IntegrationTestCase
 
         $this->session(['Auth.User.id' => '00000000-0000-0000-0000-000000000001']);
 
-        $table = TableRegistry::get('Search.SavedSearches');
         // anonymous event listener that defines searchable fields
-        $table->eventManager()->on('Search.Model.Search.searchabeFields', function ($event, $table) {
+        EventManager::instance()->on('Search.Model.Search.searchabeFields', function ($event, $table) {
             return [
                 'Articles.title' => [
                     'type' => 'string',
@@ -66,6 +66,28 @@ class ArticlesControllerTest extends IntegrationTestCase
         $this->assertResponseContains('<table');
         $this->assertResponseContains('<th>Title</th>');
         $this->assertResponseContains('<th class="actions">Actions</th>');
+    }
+
+    public function testSearchJson()
+    {
+        EventManager::instance()->on('Search.Model.Search.afterFind', function ($event, $entities, $table) {
+            return $entities;
+        });
+
+        $this->configRequest([
+            'headers' => ['Accept' => 'application/json']
+        ]);
+
+        $this->get('/articles/search/00000000-0000-0000-0000-000000000003');
+        $this->assertResponseOk();
+
+        $this->assertResponseContains('data');
+        $this->assertResponseContains('pagination');
+        $this->assertResponseContains('First article title');
+
+        $body = json_decode($this->_getBodyAsString());
+        $this->assertTrue($body->success);
+        $this->assertEquals(1, $body->pagination->count);
     }
 
     public function testSearchPost()

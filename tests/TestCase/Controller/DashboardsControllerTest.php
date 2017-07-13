@@ -34,9 +34,8 @@ class DashboardsControllerTest extends IntegrationTestCase
 
         $this->session(['Auth.User.id' => '00000000-0000-0000-0000-000000000001']);
 
-        $table = TableRegistry::get('Search.SavedSearches');
         // anonymous event listener that defines searchable fields
-        $table->eventManager()->on('Search.Model.Search.searchabeFields', function ($event, $table) {
+        EventManager::instance()->on('Search.Model.Search.searchabeFields', function ($event, $table) {
             return [
                 'Dashboards.name' => [
                     'type' => 'string',
