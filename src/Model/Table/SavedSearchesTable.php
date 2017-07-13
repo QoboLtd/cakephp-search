@@ -14,6 +14,7 @@ use Cake\Utility\Inflector;
 use Cake\Validation\Validator;
 use Cake\View\View;
 use InvalidArgumentException;
+use Qobo\Utils\ModuleConfig\ModuleConfig;
 use RuntimeException;
 use Search\Model\Entity\SavedSearch;
 
@@ -673,6 +674,27 @@ class SavedSearchesTable extends Table
     public function isEditable(SavedSearch $entity)
     {
         return (bool)$entity->get('name');
+    }
+
+    /**
+     * Returns true if table is searchable, false otherwise.
+     *
+     * @param  string $tableName Table name.
+     * @return bool
+     */
+    public function isSearchable($tableName)
+    {
+        if (!is_string($tableName)) {
+            throw new InvalidArgumentException('Provided variable [tableName] must be a string.');
+        }
+
+        list(, $tableName) = pluginSplit($tableName);
+
+        $mc = new ModuleConfig(ModuleConfig::CONFIG_TYPE_MODULE, $tableName);
+
+        $result = (bool)$mc->parse()->table->searchable;
+
+        return $result;
     }
 
     /**

@@ -6,15 +6,12 @@ use Cake\Filesystem\File;
 use Cake\Network\Exception\BadRequestException;
 use Cake\ORM\Query;
 use Cake\ORM\TableRegistry;
-use Search\Controller\Traits\SearchableTrait;
 use Search\Model\Entity\SavedSearch;
 use Search\Model\Table\SavedSearchesTable;
 use Zend\Diactoros\Stream;
 
 trait SearchTrait
 {
-    use SearchableTrait;
-
     /**
      * Table name for Saved Searches model.
      *
@@ -39,11 +36,11 @@ trait SearchTrait
     {
         $model = $this->modelClass;
 
-        if (!$this->_isSearchable($model)) {
+        $table = TableRegistry::get($this->_tableSearch);
+
+        if (!$table->isSearchable($model)) {
             throw new BadRequestException('You cannot search in ' . implode(' - ', pluginSplit($model)) . '.');
         }
-
-        $table = TableRegistry::get($this->_tableSearch);
 
         // redirect on POST requests (PRG pattern)
         if ($this->request->is('post')) {
