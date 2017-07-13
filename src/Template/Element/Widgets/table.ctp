@@ -42,7 +42,9 @@ $title = '<a href="' . $this->Url->build($url) . '">' . $savedSearch->name . '</
                             $label = array_key_exists($tableName, $associationLabels) ?
                                 $associationLabels[$tableName] :
                                 $tableName;
-                            $suffix = $savedSearch->model === $label ? '' : ' (' . $label . ')';
+
+                            list(, $modelName) = pluginSplit($savedSearch->model);
+                            $suffix = $modelName === $label ? '' : ' (' . $label . ')';
                             ?>
                             <th><?= $fields[$field]['label'] . $suffix ?></th>
                         <?php endforeach; ?>

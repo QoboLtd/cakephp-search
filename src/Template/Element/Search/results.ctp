@@ -36,7 +36,9 @@ $uid = uniqid();
                         $label = array_key_exists($tableName, $associationLabels) ?
                             $associationLabels[$tableName] :
                             $tableName;
-                        $suffix = $savedSearch->model === $label ? '' : ' (' . $label . ')';
+
+                        list(, $modelName) = pluginSplit($savedSearch->model);
+                        $suffix = $modelName === $label ? '' : ' (' . $label . ')';
                         ?>
                        <th><?= $searchableFields[$field]['label'] . $suffix ?></th>
                     <?php endforeach; ?>
