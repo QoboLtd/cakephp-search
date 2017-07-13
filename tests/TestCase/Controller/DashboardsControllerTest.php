@@ -3,6 +3,7 @@ namespace Search\Test\TestCase\Controller;
 
 use Cake\Core\Configure;
 use Cake\Event\EventManager;
+use Cake\ORM\TableRegistry;
 use Cake\TestSuite\IntegrationTestCase;
 
 /**
@@ -21,6 +22,7 @@ class DashboardsControllerTest extends IntegrationTestCase
         'plugin.groups.groups',
         'plugin.groups.groups_users',
         'plugin.search.dashboards',
+        'plugin.search.saved_searches',
         'plugin.search.widgets',
         'plugin.roles_capabilities.groups_roles',
         'plugin.roles_capabilities.roles'
@@ -31,6 +33,20 @@ class DashboardsControllerTest extends IntegrationTestCase
         Configure::write('Search.dashboard.columns', ['Left Side', 'Right Side']);
 
         $this->session(['Auth.User.id' => '00000000-0000-0000-0000-000000000001']);
+
+        $table = TableRegistry::get('Search.SavedSearches');
+        // anonymous event listener that defines searchable fields
+        $table->eventManager()->on('Search.Model.Search.searchabeFields', function ($event, $table) {
+            return [
+                'Dashboards.name' => [
+                    'type' => 'string',
+                    'label' => 'Name',
+                    'operators' => [
+                        'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%']
+                    ]
+                ]
+            ];
+        });
     }
 
     /**
@@ -69,7 +85,12 @@ class DashboardsControllerTest extends IntegrationTestCase
         $this->get('/search/dashboards/view/00000000-0000-0000-0000-000000000001');
 
         $this->assertResponseOk();
-        $this->assertResponseContains('Lorem ipsum dolor sit amet');
+
+        $this->assertResponseContains('<h4>Lorem ipsum dolor sit amet</h4>');
+        $this->assertResponseContains('Saved search criteria</a>');
+        $this->assertResponseContains('<table');
+        $this->assertResponseContains('<th>Name</th>');
+        $this->assertResponseContains('<th class="actions">Actions</th>');
     }
 
     public function testAdd()
