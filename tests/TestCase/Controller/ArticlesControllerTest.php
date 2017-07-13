@@ -1,0 +1,219 @@
+<?php
+namespace Search\Test\TestCase\Controller;
+
+use Cake\Core\Configure;
+use Cake\ORM\TableRegistry;
+use Cake\TestSuite\IntegrationTestCase;
+
+/**
+ * Search\Test\App\Controller\ArticlesController Test Case
+ */
+class ArticlesControllerTest extends IntegrationTestCase
+{
+
+    /**
+     * Fixtures
+     *
+     * @var array
+     */
+    public $fixtures = [
+        'plugin.search.articles',
+        'plugin.search.saved_searches',
+    ];
+
+    public function setUp()
+    {
+        $dir = dirname(dirname(__DIR__)) . DS . 'config' . DS . 'data' . DS;
+        Configure::write('CsvMigrations.modules.path', $dir);
+        // Configure::write('Search.dashboard.columns', ['Left Side', 'Right Side']);
+
+        $this->session(['Auth.User.id' => '00000000-0000-0000-0000-000000000001']);
+
+        $table = TableRegistry::get('Search.SavedSearches');
+        // anonymous event listener that defines searchable fields
+        $table->eventManager()->on('Search.Model.Search.searchabeFields', function ($event, $table) {
+            return [
+                'Articles.title' => [
+                    'type' => 'string',
+                    'label' => 'Title',
+                    'operators' => [
+                        'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%']
+                    ]
+                ]
+            ];
+        });
+    }
+
+    public function testSearch()
+    {
+        $this->get('/articles/search');
+
+        $this->assertResponseOk();
+        // search options
+        $this->assertResponseContains('<select name="fields" class="form-control input-sm" id="addFilter">');
+        $this->assertResponseContains('<form method="post" class="save-search-form"');
+        $this->assertResponseContains('<ul id="availableColumns"');
+        $this->assertResponseContains('<ul id="displayColumns"');
+        $this->assertResponseContains('<select name="sort_by_field"');
+        $this->assertResponseContains('<select name="sort_by_order"');
+        $this->assertResponseContains('value="Articles.title"');
+        $this->assertResponseNotContains('value="Articles.content"');
+        $this->assertResponseNotContains('value="Articles.role_id"');
+        $this->assertResponseNotContains('value="Articles.created"');
+        $this->assertResponseNotContains('value="Articles.modified"');
+        // search result
+        $this->assertResponseContains('Articles</a>');
+        $this->assertResponseContains('<table');
+        $this->assertResponseContains('<th>Title</th>');
+        $this->assertResponseContains('<th class="actions">Actions</th>');
+    }
+
+    public function testSearchPost()
+    {
+        $data = [
+            'aggregator' => 'AND',
+            'criteria' => [
+                'Articles.title' => [
+                    679 => ['type' => 'string', 'operator' => 'contains', 'value' => 'Second']
+                ]
+            ],
+            'sort_by_field' => 'Articles.title',
+            'sort_by_order' => 'desc',
+            'display_columns' => ['Articles.title']
+        ];
+
+        $this->post('/articles/search', $data);
+        $this->assertRedirect();
+        $this->assertRedirectContains('/articles/search');
+    }
+
+    public function testSearchPostExisting()
+    {
+        $id = '00000000-0000-0000-0000-000000000003';
+        $data = [
+            'aggregator' => 'AND',
+            'criteria' => [
+                'Articles.title' => [
+                    679 => ['type' => 'string', 'operator' => 'contains', 'value' => 'Second']
+                ]
+            ],
+            'sort_by_field' => 'Articles.title',
+            'sort_by_order' => 'desc',
+            'display_columns' => ['Articles.title']
+        ];
+
+        $table = TableRegistry::get('Search.SavedSearches');
+        $expected = $table->get($id);
+
+        $this->post('/articles/search/' . $id, $data);
+        $this->assertRedirect();
+        $this->assertRedirectContains('/articles/search');
+
+        $entity = $table->get($id);
+        $this->assertEquals($expected->id, $entity->id);
+        $this->assertEquals($expected->name, $entity->name);
+        $this->assertEquals($expected->type, $entity->type);
+        $this->assertEquals($expected->user_id, $entity->user_id);
+        $this->assertEquals($expected->model, $entity->model);
+        $this->assertEquals($expected->shared, $entity->shared);
+        $this->assertNotEquals($expected->content, $entity->content);
+    }
+
+    public function testSaveSearch()
+    {
+        $id = '00000000-0000-0000-0000-000000000003';
+        $data = ['name' => 'foo'];
+
+        $table = TableRegistry::get('Search.SavedSearches');
+        $expected = $table->get($id);
+
+        $this->post('/articles/save-search/' . $id, $data);
+        $this->assertRedirect();
+        $this->assertRedirectContains('/articles/search');
+
+        $entity = $table->get($id);
+        $this->assertNotEquals($expected->name, $entity->name);
+    }
+
+    public function testEditSearch()
+    {
+        $id = '00000000-0000-0000-0000-000000000003';
+        $preId = '00000000-0000-0000-0000-000000000002';
+        $data = ['name' => 'foo'];
+
+        $table = TableRegistry::get('Search.SavedSearches');
+        $expected = $table->get($id);
+
+        $this->post('/articles/edit-search/' . $preId . '/' . $id);
+        $this->assertRedirect();
+        $this->assertRedirectContains('/articles/search');
+
+        $entity = $table->get($id);
+        $this->assertEquals($expected->type, $entity->type);
+        $this->assertEquals($expected->shared, $entity->shared);
+        $this->assertEquals($expected->user_id, $entity->user_id);
+        $this->assertNotEquals($expected->name, $entity->name);
+        $this->assertNotEquals($expected->model, $entity->model);
+        $this->assertNotEquals($expected->content, $entity->content);
+
+        $expected = $table->get($preId);
+        $this->assertEquals($expected->name, $entity->name);
+        $this->assertEquals($expected->type, $entity->type);
+        $this->assertEquals($expected->model, $entity->model);
+        $this->assertEquals($expected->shared, $entity->shared);
+        $this->assertEquals($expected->content, $entity->content);
+        $this->assertEquals($expected->user_id, $entity->user_id);
+    }
+
+    public function testCopySearch()
+    {
+        $id = '00000000-0000-0000-0000-000000000003';
+
+        $table = TableRegistry::get('Search.SavedSearches');
+        $expected = $table->get($id);
+
+        $this->post('/articles/copy-search/' . $id);
+        $this->assertRedirect();
+        $this->assertRedirectContains('/articles/search');
+
+        $id = array_pop(explode('/', $this->_response->getHeaderLine('Location')));
+        $entity = $table->get($id);
+
+        $this->assertEquals($expected->name, $entity->name);
+        $this->assertEquals($expected->type, $entity->type);
+        $this->assertEquals($expected->model, $entity->model);
+        $this->assertEquals($expected->shared, $entity->shared);
+        $this->assertEquals($expected->content, $entity->content);
+        $this->assertEquals($expected->user_id, $entity->user_id);
+    }
+
+    public function testDeleteSearch()
+    {
+        $id = '00000000-0000-0000-0000-000000000003';
+
+        $this->delete('/articles/delete-search/' . $id);
+        $this->assertRedirect();
+        $this->assertRedirectContains('/articles/search');
+
+        $table = TableRegistry::get('Search.SavedSearches');
+        $query = $table->find()->where(['SavedSearches.id' => $id]);
+
+        $this->assertTrue($query->isEmpty());
+    }
+
+    public function testExportSearch()
+    {
+        $id = '00000000-0000-0000-0000-000000000003';
+
+        $this->get('/articles/search/' . $id);
+        $this->post('/articles/export-search/' . $id);
+        $this->assertResponseOk();
+
+        $response = $this->_response;
+
+        $this->assertEquals('text/csv', $response->type());
+        $this->assertEquals('text/csv', $response->getHeaderLine('Content-Type'));
+        $this->assertContains('attachment; filename="Articles', $response->getHeaderLine('Content-Disposition'));
+        $this->assertContains('First article title', $response->body());
+    }
+}
