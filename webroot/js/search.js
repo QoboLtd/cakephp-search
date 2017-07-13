@@ -184,7 +184,7 @@ var search = search || {};
      *
      * @param  {string} field     field name
      * @param  {string} type      field type
-     * @param  {string} timestamp timestamp
+     * @param  {number} timestamp timestamp
      * @return {string}
      */
     Search.prototype._generateFieldType = function (field, type, timestamp) {
@@ -198,7 +198,7 @@ var search = search || {};
      *
      * @param  {string} field       field name
      * @param  {string} type        field type
-     * @param  {string} timestamp   timestamp
+     * @param  {number} timestamp   timestamp
      * @param  {string} setOperator field set operator
      * @return {string}
      */
@@ -228,7 +228,7 @@ var search = search || {};
      *
      * @param  {string} field      field name
      * @param  {object} properties field properties
-     * @param  {string} timestamp  timestamp
+     * @param  {number} timestamp  timestamp
      * @param  {string} value      field value
      * @return {string}
      */
