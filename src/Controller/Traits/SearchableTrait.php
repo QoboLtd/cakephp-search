@@ -1,7 +1,9 @@
 <?php
 namespace Search\Controller\Traits;
 
-use Cake\ORM\TableRegistry;
+use Cake\Core\App;
+use Cake\ORM\Table;
+use Qobo\Utils\ModuleConfig\ModuleConfig;
 
 trait SearchableTrait
 {
@@ -13,16 +15,14 @@ trait SearchableTrait
      */
     protected function _isSearchable($table)
     {
-        $result = false;
-        // get Table instance
-        if (is_string($table)) {
-            $table = TableRegistry::get($table);
+        if ($table instanceof Table) {
+            $table = App::shortName(get_class($table), 'Model/Table', 'Table');
+            list(, $table) = pluginSplit($table);
         }
 
-        // check if is searchable
-        if (method_exists($table, 'isSearchable') && is_callable([$table, 'isSearchable'])) {
-            $result = $table->isSearchable();
-        }
+        $mc = new ModuleConfig(ModuleConfig::CONFIG_TYPE_MODULE, $table);
+
+        $result = (bool)$mc->parse()->table->searchable;
 
         return $result;
     }
