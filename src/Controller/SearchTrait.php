@@ -287,9 +287,12 @@ trait SearchTrait
             'table' => TableRegistry::get($model)
         ]);
         $this->eventManager()->dispatch($event);
+        if ($event->result) {
+            $entities = $event->result;
+        }
 
         $content = [];
-        foreach ($event->result as $k => $entity) {
+        foreach ($entities as $k => $entity) {
             $content[$k] = [];
             foreach ($columns as $column) {
                 // @todo this is temporary fix to stripping out html tags from results columns
