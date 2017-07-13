@@ -26,6 +26,13 @@ class DashboardsControllerTest extends IntegrationTestCase
         'plugin.roles_capabilities.roles'
     ];
 
+    public function setUp()
+    {
+        Configure::write('Search.dashboard.columns', ['Left Side', 'Right Side']);
+
+        $this->session(['Auth.User.id' => '00000000-0000-0000-0000-000000000001']);
+    }
+
     /**
      * @todo find out why this test fails: https://travis-ci.org/QoboLtd/cakephp-search/jobs/167079767
      */
@@ -41,13 +48,6 @@ class DashboardsControllerTest extends IntegrationTestCase
         // remove dashboards fixtures
         $this->fixtureManager->unload($this);
 
-        $this->session([
-            'Auth' => [
-                'User' => [
-                    'id' => '00000000-0000-0000-0000-000000000001',
-                ],
-            ],
-        ]);
         $this->get('/search/dashboards');
 
         $this->assertResponseOk();
@@ -58,8 +58,6 @@ class DashboardsControllerTest extends IntegrationTestCase
 
     public function testIndexRedirect()
     {
-        $this->session(['Auth.User.id' => '00000000-0000-0000-0000-000000000001']);
-
         $this->get('/search/dashboards');
 
         $this->assertRedirect();
@@ -68,10 +66,6 @@ class DashboardsControllerTest extends IntegrationTestCase
 
     public function testView()
     {
-        Configure::write('Search.dashboard.columns', ['Left Side', 'Right Side']);
-
-        $this->session(['Auth.User.id' => '00000000-0000-0000-0000-000000000001']);
-
         $this->get('/search/dashboards/view/00000000-0000-0000-0000-000000000001');
 
         $this->assertResponseOk();
@@ -80,10 +74,6 @@ class DashboardsControllerTest extends IntegrationTestCase
 
     public function testAdd()
     {
-        Configure::write('Search.dashboard.columns', ['Left Side', 'Right Side']);
-
-        $this->session(['Auth.User.id' => '00000000-0000-0000-0000-000000000001']);
-
         $this->get('/search/dashboards/add');
 
         $this->assertResponseOk();
@@ -93,8 +83,6 @@ class DashboardsControllerTest extends IntegrationTestCase
 
     public function testAddPost()
     {
-        $this->session(['Auth.User.id' => '00000000-0000-0000-0000-000000000001']);
-
         $data = [
             'name' => 'Test Dashboard',
             'role_id' => '79928943-0016-4677-869a-e37728ff6564',
@@ -114,10 +102,6 @@ class DashboardsControllerTest extends IntegrationTestCase
 
     public function testEdit()
     {
-        Configure::write('Search.dashboard.columns', ['Left Side', 'Right Side']);
-
-        $this->session(['Auth.User.id' => '00000000-0000-0000-0000-000000000001']);
-
         $this->get('/search/dashboards/edit/00000000-0000-0000-0000-000000000001');
 
         $this->assertResponseOk();
@@ -146,8 +130,6 @@ class DashboardsControllerTest extends IntegrationTestCase
                 ]
             ];
         });
-
-        $this->session(['Auth.User.id' => '00000000-0000-0000-0000-000000000001']);
 
         $data = [
             'name' => 'Test Dashboard',
@@ -184,8 +166,6 @@ class DashboardsControllerTest extends IntegrationTestCase
 
     public function testDelete()
     {
-        $this->session(['Auth.User.id' => '00000000-0000-0000-0000-000000000001']);
-
         $this->delete('/search/dashboards/delete/00000000-0000-0000-0000-000000000001');
 
         $this->assertRedirect();
