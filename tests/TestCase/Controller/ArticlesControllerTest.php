@@ -176,7 +176,8 @@ class ArticlesControllerTest extends IntegrationTestCase
         $this->assertRedirect();
         $this->assertRedirectContains('/articles/search');
 
-        $id = array_pop(explode('/', $this->_response->getHeaderLine('Location')));
+        $location = explode('/', $this->_response->getHeaderLine('Location'));
+        $id = array_pop($location);
         $entity = $table->get($id);
 
         $this->assertEquals($expected->name, $entity->name);
