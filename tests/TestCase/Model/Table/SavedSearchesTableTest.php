@@ -1,6 +1,7 @@
 <?php
 namespace Search\Test\TestCase\Model\Table;
 
+use Cake\Event\EventList;
 use Cake\Http\ServerRequest;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
@@ -108,13 +109,12 @@ class SavedSearchesTableTest extends TestCase
         $this->assertArrayHasKey('aggregators', $result);
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
-    public function testGetSearchableFields()
+    public function testGetSearchableFieldsEventFired()
     {
-        $result = $this->SavedSearches->getSearchableFields('Widgets');
-        $this->assertEventFired('Search.Model.Search.searchabeFields', $this->EventManager());
+        $user = ['id' => '00000000-0000-0000-0000-000000000001'];
+        $this->SavedSearches->EventManager()->setEventList(new EventList());
+        $result = $this->SavedSearches->getSearchableFields('Widgets', $user);
+        $this->assertEventFired('Search.Model.Search.searchabeFields', $this->SavedSearches->EventManager());
     }
 
     /**
@@ -122,7 +122,8 @@ class SavedSearchesTableTest extends TestCase
      */
     public function testGetSearchableFieldsWrongVarType()
     {
-        $result = $this->SavedSearches->getSearchableFields(['Widgets']);
+        $user = ['id' => '00000000-0000-0000-0000-000000000001'];
+        $result = $this->SavedSearches->getSearchableFields(['Widgets'], $user);
     }
 
     public function testGetListingFields()
@@ -279,13 +280,15 @@ class SavedSearchesTableTest extends TestCase
 
     public function test_prepareWhereStatement()
     {
+        $user = ['id' => '00000000-0000-0000-0000-000000000001'];
         $class = new \ReflectionClass('Search\Model\Table\SavedSearchesTable');
         $method = $class->getMethod('_prepareWhereStatement');
         $method->setAccessible(true);
 
         $result = $method->invokeArgs($this->SavedSearches, [
             [],
-            TableRegistry::get('Dashboards')
+            TableRegistry::get('Dashboards'),
+            $user
         ]);
 
         $this->assertEquals($result, []);
@@ -359,7 +362,10 @@ class SavedSearchesTableTest extends TestCase
             'limit' => '20',
             'aggregator' => 'AND'
         ];
-        $result = $this->SavedSearches->validateData($model, $data);
+
+        $user = ['id' => '00000000-0000-0000-0000-000000000001'];
+
+        $result = $this->SavedSearches->validateData($model, $data, $user);
         $this->assertEquals($data, $result);
     }
 
@@ -391,7 +397,10 @@ class SavedSearchesTableTest extends TestCase
             'limit' => '999',
             'aggregator' => 'foo'
         ];
-        $result = $this->SavedSearches->validateData($model, $data);
+
+        $user = ['id' => '00000000-0000-0000-0000-000000000001'];
+
+        $result = $this->SavedSearches->validateData($model, $data, $user);
 
         $this->assertEmpty($result['criteria']);
         $this->assertEmpty($result['display_columns']);
