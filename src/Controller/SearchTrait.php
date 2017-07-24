@@ -73,14 +73,14 @@ trait SearchTrait
             return;
         }
 
-        $searchData = $table->validateData($model, $searchData['latest']);
+        $searchData = $table->validateData($model, $searchData['latest'], $this->Auth->user());
 
         // reset should only be applied to current search id (url parameter)
         // and NOT on newly pre-saved searches and that's we do the ajax
         // request check above, to prevent resetting the pre-saved search.
         $table->resetSearch($entity, $model, $this->Auth->user());
 
-        $this->set('searchableFields', $table->getSearchableFields($model));
+        $this->set('searchableFields', $table->getSearchableFields($model, $this->Auth->user()));
         $this->set('savedSearches', $table->getSavedSearches([$this->Auth->user('id')], [$model]));
         $this->set('model', $model);
         $this->set('searchData', $searchData);

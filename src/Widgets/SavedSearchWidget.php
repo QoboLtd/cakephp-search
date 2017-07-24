@@ -91,7 +91,7 @@ class SavedSearchWidget extends BaseWidget
         $search->content = json_decode($search->content, true);
 
         $this->options['scripts'] = $this->getScripts(['data' => $search]);
-        $this->options['fields'] = $this->_tableInstance->getSearchableFields($search->model);
+        $this->options['fields'] = $this->_tableInstance->getSearchableFields($search->model, $options['user']);
         $this->options['associationLabels'] = $this->_tableInstance->getAssociationLabels($search->model);
 
         $this->_data = $search;
