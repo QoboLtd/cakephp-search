@@ -15,7 +15,6 @@ use Cake\Validation\Validator;
 use Cake\View\View;
 use InvalidArgumentException;
 use Qobo\Utils\ModuleConfig\ModuleConfig;
-use RuntimeException;
 use Search\Model\Entity\SavedSearch;
 
 /**
@@ -303,17 +302,33 @@ class SavedSearchesTable extends Table
      */
     public function search($tableName, array $user, array $data)
     {
-        $data = $this->validateData($tableName, $data);
+        $data = $this->validateData($tableName, $data, $user);
 
         $table = $this->_getTableInstance($tableName);
 
-        $query = $table
-            ->find('all')
-            ->select($this->_getQueryFields($data, $table))
-            ->where([$data['aggregator'] => $this->_prepareWhereStatement($data, $table)])
-            ->order([$table->aliasField($data['sort_by_field']) => $data['sort_by_order']]);
+        // initialize query
+        $query = $table->find('all');
 
-        $this->_searchByAssociations($table, $query, $data);
+        $where = $this->_prepareWhereStatement($data, $table, $user);
+        $select = $this->_getQueryFields($data, $table);
+        $order = [$table->aliasField($data['sort_by_field']) => $data['sort_by_order']];
+
+        $joins = $this->_searchByAssociations($table, $data, $user);
+        // set joins and append to where and select parameters
+        foreach ($joins as $name => $params) {
+            $query->leftJoinWith($name);
+
+            if (!empty($params['where'])) {
+                $where = array_merge($where, $params['where']);
+            }
+
+            if (!empty($params['select'])) {
+                $select = array_merge($select, $params['select']);
+            }
+        }
+
+        // add query clauses
+        $query->select($select)->where([$data['aggregator'] => $where])->order($order);
 
         return $query;
     }
@@ -322,12 +337,13 @@ class SavedSearchesTable extends Table
      * Search by current Table associations.
      *
      * @param \Cake\ORM\Table $table Table instance
-     * @param \Cake\ORM\Query $query Query object
      * @param array $data Search data
-     * @return void
+     * @param array $user User info
+     * @return array
      */
-    protected function _searchByAssociations(Table $table, Query $query, array $data)
+    protected function _searchByAssociations(Table $table, array $data, array $user)
     {
+        $result = [];
         foreach ($table->associations() as $association) {
             // skip non-supported associations
             if (!in_array($association->type(), $this->getSearchableAssociations())) {
@@ -342,26 +358,19 @@ class SavedSearchesTable extends Table
             }
 
             $primaryKey = $targetTable->aliasField($targetTable->getPrimaryKey());
-            $select = array_diff($this->_getQueryFields($data, $targetTable), [$primaryKey]);
-            $where = $this->_prepareWhereStatement($data, $targetTable);
 
-            // skip matching functionality if not related select fields or where clause are available.
-            if (empty($select) && empty($where)) {
-                continue;
+            $select = array_diff($this->_getQueryFields($data, $targetTable), [$primaryKey]);
+            if (!empty($select)) {
+                $result[$association->getName()]['select'] = $select;
             }
 
-            $query->matching($association->getName(), function ($q) use ($data, $select, $where) {
-                if (!empty($select)) {
-                    $q->select($select);
-                }
-
-                if (!empty($where)) {
-                    $q->where([$data['aggregator'] => $where]);
-                }
-
-                return $q;
-            });
+            $where = $this->_prepareWhereStatement($data, $targetTable, $user);
+            if (!empty($where)) {
+                $result[$association->getName()]['where'] = $where;
+            }
         }
+
+        return $result;
     }
 
     /**
@@ -374,7 +383,7 @@ class SavedSearchesTable extends Table
      */
     public function createSearch($model, array $user, array $searchData)
     {
-        $searchData = $this->validateData($model, $searchData);
+        $searchData = $this->validateData($model, $searchData, $user);
 
         // pre-save search
         return $this->_preSave($model, $user, $searchData);
@@ -406,7 +415,7 @@ class SavedSearchesTable extends Table
      * @param string $id Existing search id
      * @return \Search\Model\Entity\SavedSearch
      */
-    public function getSearch($model, $user, $id)
+    public function getSearch($model, array $user, $id)
     {
         $id = !empty($id) ? $id : $this->createSearch($model, $user, []);
         $entity = $this->get($id);
@@ -424,7 +433,7 @@ class SavedSearchesTable extends Table
      * @param array $user User info
      * @return bool
      */
-    public function resetSearch(SavedSearch $entity, $model, $user)
+    public function resetSearch(SavedSearch $entity, $model, array $user)
     {
         $content = json_decode($entity->content, true);
 
@@ -502,10 +511,11 @@ class SavedSearchesTable extends Table
     /**
      * Return Table's searchable fields.
      *
-     * @param  \Cake\ORM\Table|string $table Table object or name.
+     * @param \Cake\ORM\Table|string $table Table object or name.
+     * @param array $user User info
      * @return array
      */
-    public function getSearchableFields($table)
+    public function getSearchableFields($table, array $user)
     {
         // get Table instance
         $table = $this->_getTableInstance($table);
@@ -516,8 +526,8 @@ class SavedSearchesTable extends Table
         }
 
         $this->_searchableFields[$tableAlias] = array_merge(
-            $this->_getSearchableFields($table),
-            $this->_getAssociatedSearchableFields($table)
+            $this->_getSearchableFields($table, $user),
+            $this->_getAssociatedSearchableFields($table, $user)
         );
 
         return $this->_searchableFields[$tableAlias];
@@ -527,18 +537,16 @@ class SavedSearchesTable extends Table
      * Get and return searchable fields using Event.
      *
      * @param \Cake\ORM\Table $table Table instance
+     * @param array $user User info
      * @return array
      */
-    protected function _getSearchableFields(Table $table)
+    protected function _getSearchableFields(Table $table, array $user)
     {
         $event = new Event('Search.Model.Search.searchabeFields', $this, [
-            'table' => $table
+            'table' => $table,
+            'user' => $user
         ]);
         $this->eventManager()->dispatch($event);
-
-        if (empty($event->result)) {
-            throw new RuntimeException('Table [' . $table->registryAlias() . '] has no searchable fields defined.');
-        }
 
         return $event->result ? $event->result : [];
     }
@@ -547,9 +555,10 @@ class SavedSearchesTable extends Table
      * Get associated tables searchable fields.
      *
      * @param \Cake\ORM\Table $table Table instance
+     * @param array $user User info
      * @return array
      */
-    protected function _getAssociatedSearchableFields(Table $table)
+    protected function _getAssociatedSearchableFields(Table $table, array $user)
     {
         $result = [];
         foreach ($table->associations() as $association) {
@@ -566,7 +575,7 @@ class SavedSearchesTable extends Table
             }
 
             // fetch associated model searchable fields
-            $searchableFields = $this->_getSearchableFields($targetTable, false);
+            $searchableFields = $this->_getSearchableFields($targetTable, $user);
             if (empty($searchableFields)) {
                 continue;
             }
@@ -705,7 +714,7 @@ class SavedSearchesTable extends Table
      * @param array $user User info
      * @return array
      */
-    protected function _getBasicSearchCriteria(array $data, $table, $user)
+    protected function _getBasicSearchCriteria(array $data, $table, array $user)
     {
         $result = [];
         if (empty($data['query'])) {
@@ -715,7 +724,7 @@ class SavedSearchesTable extends Table
         // get Table instance
         $table = $this->_getTableInstance($table);
 
-        $searchableFields = $this->getSearchableFields($table);
+        $searchableFields = $this->getSearchableFields($table, $user);
 
         $fields = $this->_getBasicSearchFields($table, $searchableFields);
         if (empty($fields)) {
@@ -772,7 +781,7 @@ class SavedSearchesTable extends Table
      * @param array $user User info
      * @return array
      */
-    protected function _getRelatedModuleValues($module, $data, $user)
+    protected function _getRelatedModuleValues($module, $data, array $user)
     {
         $result = [];
         if (!is_string($module) || empty($module) || empty($data) || empty($user)) {
@@ -888,13 +897,14 @@ class SavedSearchesTable extends Table
      *
      * @param \Cake\ORM\Table|string $table Table name or Instace
      * @param array $data Search data
+     * @param array $user User info
      * @return array
      */
-    public function validateData($table, array $data)
+    public function validateData($table, array $data, array $user)
     {
         $table = $this->_getTableInstance($table);
 
-        $fields = $this->getSearchableFields($table);
+        $fields = $this->getSearchableFields($table, $user);
         $fields = array_keys($fields);
 
         // merge default options
@@ -1029,9 +1039,10 @@ class SavedSearchesTable extends Table
      *
      * @param array $data request data
      * @param \Cake\ORM\Table $table Table instance
+     * @param array $user User info
      * @return array
      */
-    protected function _prepareWhereStatement(array $data, Table $table)
+    protected function _prepareWhereStatement(array $data, Table $table, array $user)
     {
         $result = [];
 
@@ -1041,7 +1052,7 @@ class SavedSearchesTable extends Table
 
         // get searchable fields and filter out the ones
         // which do not belong to the current module.
-        $searchableFields = $this->getSearchableFields($table);
+        $searchableFields = $this->getSearchableFields($table, $user);
         $moduleFields = $this->_filterModuleFields($table, array_keys($searchableFields));
 
         foreach (array_keys($searchableFields) as $field) {
