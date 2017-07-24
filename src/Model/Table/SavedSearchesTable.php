@@ -306,13 +306,29 @@ class SavedSearchesTable extends Table
 
         $table = $this->_getTableInstance($tableName);
 
-        $query = $table
-            ->find('all')
-            ->select($this->_getQueryFields($data, $table))
-            ->where([$data['aggregator'] => $this->_prepareWhereStatement($data, $table)])
-            ->order([$table->aliasField($data['sort_by_field']) => $data['sort_by_order']]);
+        // initialize query
+        $query = $table->find('all');
 
-        $this->_searchByAssociations($table, $query, $data);
+        $where = $this->_prepareWhereStatement($data, $table, $user);
+        $select = $this->_getQueryFields($data, $table);
+        $order = [$table->aliasField($data['sort_by_field']) => $data['sort_by_order']];
+
+        $joins = $this->_searchByAssociations($table, $data, $user);
+        // set joins and append to where and select parameters
+        foreach ($joins as $name => $params) {
+            $query->leftJoinWith($name);
+
+            if (!empty($params['where'])) {
+                $where = array_merge($where, $params['where']);
+            }
+
+            if (!empty($params['select'])) {
+                $select = array_merge($select, $params['select']);
+            }
+        }
+
+        // add query clauses
+        $query->select($select)->where([$data['aggregator'] => $where])->order($order);
 
         return $query;
     }
@@ -321,13 +337,13 @@ class SavedSearchesTable extends Table
      * Search by current Table associations.
      *
      * @param \Cake\ORM\Table $table Table instance
-     * @param \Cake\ORM\Query $query Query object
      * @param array $data Search data
      * @param array $user User info
-     * @return void
+     * @return array
      */
-    protected function _searchByAssociations(Table $table, Query $query, array $data, $user)
+    protected function _searchByAssociations(Table $table, array $data, $user)
     {
+        $result = [];
         foreach ($table->associations() as $association) {
             // skip non-supported associations
             if (!in_array($association->type(), $this->getSearchableAssociations())) {
@@ -342,26 +358,19 @@ class SavedSearchesTable extends Table
             }
 
             $primaryKey = $targetTable->aliasField($targetTable->getPrimaryKey());
-            $select = array_diff($this->_getQueryFields($data, $targetTable), [$primaryKey]);
-            $where = $this->_prepareWhereStatement($data, $targetTable);
 
-            // skip matching functionality if not related select fields or where clause are available.
-            if (empty($select) && empty($where)) {
-                continue;
+            $select = array_diff($this->_getQueryFields($data, $targetTable), [$primaryKey]);
+            if (!empty($select)) {
+                $result[$association->getName()]['select'] = $select;
             }
 
-            $query->matching($association->getName(), function ($q) use ($data, $select, $where) {
-                if (!empty($select)) {
-                    $q->select($select);
-                }
-
-                if (!empty($where)) {
-                    $q->where([$data['aggregator'] => $where]);
-                }
-
-                return $q;
-            });
+            $where = $this->_prepareWhereStatement($data, $targetTable, $user);
+            if (!empty($where)) {
+                $result[$association->getName()]['where'] = $where;
+            }
         }
+
+        return $result;
     }
 
     /**
