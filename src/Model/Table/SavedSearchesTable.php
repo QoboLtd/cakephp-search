@@ -341,7 +341,7 @@ class SavedSearchesTable extends Table
      * @param array $user User info
      * @return array
      */
-    protected function _searchByAssociations(Table $table, array $data, $user)
+    protected function _searchByAssociations(Table $table, array $data, array $user)
     {
         $result = [];
         foreach ($table->associations() as $association) {
@@ -415,7 +415,7 @@ class SavedSearchesTable extends Table
      * @param string $id Existing search id
      * @return \Search\Model\Entity\SavedSearch
      */
-    public function getSearch($model, $user, $id)
+    public function getSearch($model, array $user, $id)
     {
         $id = !empty($id) ? $id : $this->createSearch($model, $user, []);
         $entity = $this->get($id);
@@ -433,7 +433,7 @@ class SavedSearchesTable extends Table
      * @param array $user User info
      * @return bool
      */
-    public function resetSearch(SavedSearch $entity, $model, $user)
+    public function resetSearch(SavedSearch $entity, $model, array $user)
     {
         $content = json_decode($entity->content, true);
 
@@ -781,7 +781,7 @@ class SavedSearchesTable extends Table
      * @param array $user User info
      * @return array
      */
-    protected function _getRelatedModuleValues($module, $data, $user)
+    protected function _getRelatedModuleValues($module, $data, array $user)
     {
         $result = [];
         if (!is_string($module) || empty($module) || empty($data) || empty($user)) {
