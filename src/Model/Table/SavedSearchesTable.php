@@ -273,13 +273,11 @@ class SavedSearchesTable extends Table
     /**
      * Associations labels getter.
      *
-     * @param string $tableName Table name
+     * @param \Cake\ORM\Table $table Table instance
      * @return array
      */
-    public function getAssociationLabels($tableName)
+    public function getAssociationLabels(Table $table)
     {
-        $table = $this->_getTableInstance($tableName);
-
         $result = [];
         foreach ($table->associations() as $association) {
             if (!in_array($association->type(), $this->getSearchableAssociations())) {
@@ -295,16 +293,14 @@ class SavedSearchesTable extends Table
     /**
      * Search method.
      *
-     * @param string $tableName Table name
+     * @param \Cake\ORM\Table $table Table instance
      * @param array $user User info
      * @param array $data Request data
      * @return array
      */
-    public function search($tableName, array $user, array $data)
+    public function search(Table $table, array $user, array $data)
     {
-        $data = $this->validateData($tableName, $data, $user);
-
-        $table = $this->_getTableInstance($tableName);
+        $data = $this->validateData($table, $data, $user);
 
         // initialize query
         $query = $table->find('all');
@@ -376,33 +372,33 @@ class SavedSearchesTable extends Table
     /**
      * Create search.
      *
-     * @param string $model Model name
+     * @param \Cake\ORM\Table $table Table instance
      * @param array $user User info
      * @param array $searchData Request data
      * @return string
      */
-    public function createSearch($model, array $user, array $searchData)
+    public function createSearch(Table $table, array $user, array $searchData)
     {
-        $searchData = $this->validateData($model, $searchData, $user);
+        $searchData = $this->validateData($table, $searchData, $user);
 
         // pre-save search
-        return $this->_preSave($model, $user, $searchData);
+        return $this->_preSave($table, $user, $searchData);
     }
 
     /**
      * Update search.
      *
-     * @param string $model Model name
+     * @param \Cake\ORM\Table $table Table instance
      * @param array $user User info
      * @param array $searchData Request data
      * @param string $id Existing search id
      * @return bool
      */
-    public function updateSearch($model, array $user, array $searchData, $id)
+    public function updateSearch(Table $table, array $user, array $searchData, $id)
     {
         $entity = $this->get($id);
         $content = json_decode($entity->content, true);
-        $entity = $this->_normalizeSearch($entity, $model, $user, $content, $searchData);
+        $entity = $this->_normalizeSearch($entity, $table, $user, $content, $searchData);
 
         return $this->save($entity);
     }
@@ -410,17 +406,17 @@ class SavedSearchesTable extends Table
     /**
      * Get search.
      *
-     * @param string $model Model name
+     * @param \Cake\ORM\Table $table Table instance
      * @param array $user User info
      * @param string $id Existing search id
      * @return \Search\Model\Entity\SavedSearch
      */
-    public function getSearch($model, array $user, $id)
+    public function getSearch(Table $table, array $user, $id)
     {
-        $id = !empty($id) ? $id : $this->createSearch($model, $user, []);
+        $id = !empty($id) ? $id : $this->createSearch($table, $user, []);
         $entity = $this->get($id);
         $content = json_decode($entity->content, true);
-        $entity = $this->_normalizeSearch($entity, $model, $user, $content, $content);
+        $entity = $this->_normalizeSearch($entity, $table, $user, $content, $content);
 
         return $entity;
     }
@@ -429,11 +425,11 @@ class SavedSearchesTable extends Table
      * Reset search.
      *
      * @param \Search\Model\Entity\SavedSearch $entity Search entity
-     * @param string $model Model name
+     * @param \Cake\ORM\Table $table Table instance
      * @param array $user User info
      * @return bool
      */
-    public function resetSearch(SavedSearch $entity, $model, array $user)
+    public function resetSearch(SavedSearch $entity, Table $table, array $user)
     {
         $content = json_decode($entity->content, true);
 
@@ -444,7 +440,7 @@ class SavedSearchesTable extends Table
 
         // for backward compatibility
         $saved = isset($content['saved']) ? $content['saved'] : $content;
-        $entity = $this->_normalizeSearch($entity, $model, $user, $saved, $saved);
+        $entity = $this->_normalizeSearch($entity, $table, $user, $saved, $saved);
 
         return $this->save($entity);
     }
@@ -452,12 +448,12 @@ class SavedSearchesTable extends Table
     /**
      * Default search options.
      *
-     * @param string $tableName Table name
+     * @param \Cake\ORM\Table $table Table instance
      * @return array
      */
-    public function getDefaultOptions($tableName)
+    public function getDefaultOptions(Table $table)
     {
-        $result['display_columns'] = $this->getListingFields($tableName);
+        $result['display_columns'] = $this->getListingFields($table);
         $result['sort_by_field'] = current($result['display_columns']);
         $result['sort_by_order'] = $this->getDefaultSortByOrder();
         $result['aggregator'] = $this->getDefaultAggregator();
@@ -589,14 +585,12 @@ class SavedSearchesTable extends Table
     /**
      * Return Table's listing fields.
      *
-     * @param  \Cake\ORM\Table|string $table Table object or name.
+     * @param \Cake\ORM\Table $table Table instance
      * @return array
      */
-    public function getListingFields($table)
+    public function getListingFields(Table $table)
     {
         $result = [];
-        // get Table instance
-        $table = $this->_getTableInstance($table);
 
         if (method_exists($table, 'getListingFields') && is_callable([$table, 'getListingFields'])) {
             $result = $table->getListingFields();
@@ -650,11 +644,11 @@ class SavedSearchesTable extends Table
      * Prepare search data from request data.
      *
      * @param \Cake\Http\ServerRequest $request Request object
-     * @param string $model Model name
+     * @param \Cake\ORM\Table $table Table instance
      * @param array $user User info
      * @return array
      */
-    public function prepareData(ServerRequest $request, $model, array $user)
+    public function prepareData(ServerRequest $request, Table $table, array $user)
     {
         $result = $request->getData();
 
@@ -665,11 +659,7 @@ class SavedSearchesTable extends Table
 
         // basic search query, converted to search criteria
         $result['aggregator'] = 'OR';
-        $result['criteria'] = $this->_getBasicSearchCriteria(
-            Hash::get($result, 'criteria'),
-            $model,
-            $user
-        );
+        $result['criteria'] = $this->_getBasicSearchCriteria(Hash::get($result, 'criteria'), $table, $user);
 
         return $result;
     }
@@ -710,19 +700,16 @@ class SavedSearchesTable extends Table
      * Prepare basic search query's where statement
      *
      * @param array $data search fields
-     * @param \Cake\ORM\Table|string $table Table object or name
+     * @param \Cake\ORM\Table $table Table object
      * @param array $user User info
      * @return array
      */
-    protected function _getBasicSearchCriteria(array $data, $table, array $user)
+    protected function _getBasicSearchCriteria(array $data, Table $table, array $user)
     {
         $result = [];
         if (empty($data['query'])) {
             return $result;
         }
-
-        // get Table instance
-        $table = $this->_getTableInstance($table);
 
         $searchableFields = $this->getSearchableFields($table, $user);
 
@@ -745,7 +732,8 @@ class SavedSearchesTable extends Table
             $value = $data['query'];
 
             if ('related' === $type) {
-                $value = $this->_getRelatedModuleValues($searchableFields[$field]['source'], $data, $user);
+                $sourceTable = TableRegistry::get($searchableFields[$field]['source']);
+                $value = $this->_getRelatedModuleValues($sourceTable, $data, $user);
             }
 
             if (!is_array($value)) {
@@ -776,28 +764,24 @@ class SavedSearchesTable extends Table
      * run a basic search in the related module (recursively) to fetch and
      * return the entities IDs matching the search string.
      *
-     * @param string $module Related module name
+     * @param \Cake\ORM\Table $table Related table instance
      * @param array $data Search string
      * @param array $user User info
      * @return array
      */
-    protected function _getRelatedModuleValues($module, $data, array $user)
+    protected function _getRelatedModuleValues(Table $table, array $data, array $user)
     {
         $result = [];
-        if (!is_string($module) || empty($module) || empty($data) || empty($user)) {
+        if (empty($data) || empty($user)) {
             return $result;
         }
 
         $data = [
             'aggregator' => 'OR',
-            'criteria' => $this->_getBasicSearchCriteria($data, $module, $user)
+            'criteria' => $this->_getBasicSearchCriteria($data, $table, $user)
         ];
 
-        $query = $this->search(
-            $module,
-            $user,
-            $data
-        );
+        $query = $this->search($table, $user, $data);
 
         foreach ($query->all() as $entity) {
             $result[] = $entity->id;
@@ -895,15 +879,13 @@ class SavedSearchesTable extends Table
      * and sort by field against them. Then validates sort by order againt available options
      * and sets it to the default option if they fail validation.
      *
-     * @param \Cake\ORM\Table|string $table Table name or Instace
+     * @param \Cake\ORM\Table $table Table instace
      * @param array $data Search data
      * @param array $user User info
      * @return array
      */
-    public function validateData($table, array $data, array $user)
+    public function validateData(Table $table, array $data, array $user)
     {
-        $table = $this->_getTableInstance($table);
-
         $fields = $this->getSearchableFields($table, $user);
         $fields = array_keys($fields);
 
@@ -1129,19 +1111,19 @@ class SavedSearchesTable extends Table
     /**
      * Method that pre-saves search and returns saved record id.
      *
-     * @param string $model Model name
+     * @param \Cake\ORM\Table $table Table instance
      * @param array $user User info
      * @param array $data Search data
      * @return string
      */
-    protected function _preSave($model, array $user, array $data)
+    protected function _preSave(Table $table, array $user, array $data)
     {
         // delete old pre-saved searches
         $this->_deletePreSaved();
 
         $entity = $this->newEntity();
 
-        $entity = $this->_normalizeSearch($entity, $model, $user, $data, $data);
+        $entity = $this->_normalizeSearch($entity, $table, $user, $data, $data);
         $this->save($entity);
 
         return $entity->id;
@@ -1151,16 +1133,14 @@ class SavedSearchesTable extends Table
      * Normalize search.
      *
      * @param \Search\Model\Entity\SavedSearch $entity Search entity
-     * @param string $model Model name
+     * @param \Cake\ORM\Table $table Table instance
      * @param array $user User info
      * @param array $saved Saved search data
      * @param array $latest Latest search data
      * @return \Search\Model\Entity\SavedSearch
      */
-    protected function _normalizeSearch(SavedSearch $entity, $model, array $user, array $saved, array $latest)
+    protected function _normalizeSearch(SavedSearch $entity, Table $table, array $user, array $saved, array $latest)
     {
-        $table = $this->_getTableInstance($model);
-
         // Backward compatibility: search content must always contain 'saved' and 'latest' keys.
         $saved = isset($saved['saved']) ? $saved['saved'] : $saved;
         $latest = isset($latest['latest']) ?
@@ -1194,7 +1174,7 @@ class SavedSearchesTable extends Table
         $latest = $filterFunc($latest);
 
         $entity->user_id = $user['id'];
-        $entity->model = $model;
+        $entity->model = $table->getRegistryAlias();
         $entity->shared = $this->getPrivateSharedStatus();
         $entity->content = json_encode(['saved' => $saved, 'latest' => $latest]);
 
