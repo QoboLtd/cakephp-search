@@ -15,7 +15,6 @@ use Cake\Validation\Validator;
 use Cake\View\View;
 use InvalidArgumentException;
 use Qobo\Utils\ModuleConfig\ModuleConfig;
-use RuntimeException;
 use Search\Model\Entity\SavedSearch;
 
 /**
@@ -539,10 +538,6 @@ class SavedSearchesTable extends Table
             'user' => $user
         ]);
         $this->eventManager()->dispatch($event);
-
-        if (empty($event->result)) {
-            throw new RuntimeException('Table [' . $table->registryAlias() . '] has no searchable fields defined.');
-        }
 
         return $event->result ? $event->result : [];
     }
