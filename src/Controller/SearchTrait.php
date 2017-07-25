@@ -6,6 +6,7 @@ use Cake\Filesystem\File;
 use Cake\Network\Exception\BadRequestException;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
+use Search\Utility;
 use Zend\Diactoros\Stream;
 
 trait SearchTrait
@@ -74,7 +75,7 @@ trait SearchTrait
         // request check above, to prevent resetting the pre-saved search.
         $searchTable->resetSearch($entity, $table, $this->Auth->user());
 
-        $this->set('searchableFields', $table->getSearchableFields($model, $this->Auth->user()));
+        $this->set('searchableFields', Utility::instance()->getSearchableFields($table, $this->Auth->user()));
         $this->set('savedSearches', $searchTable->getSavedSearches([$this->Auth->user('id')], [$model]));
         $this->set('model', $model);
         $this->set('searchData', $searchData);
@@ -83,7 +84,7 @@ trait SearchTrait
         // INFO: this is valid when a saved search was modified and the form was re-submitted
         $this->set('isEditable', $searchTable->isEditable($entity));
         $this->set('searchOptions', $searchTable->getSearchOptions());
-        $this->set('associationLabels', $searchTable->getAssociationLabels($table));
+        $this->set('associationLabels', Utility::instance()->getAssociationLabels($table));
 
         $this->render($this->_elementSearch);
     }
@@ -125,7 +126,7 @@ trait SearchTrait
 
         $data = [];
         if ($event->result) {
-            $data = $table->toDatatables($event->result, $displayColumns, $model);
+            $data = Utility::instance()->toDatatables($event->result, $displayColumns, $table);
         }
 
         $pagination = [
@@ -260,11 +261,12 @@ trait SearchTrait
         $this->autoRender = false;
         $this->request->allowMethod(['patch', 'post', 'put']);
 
-        $table = TableRegistry::get($this->_tableSearch);
+        $searchTable = TableRegistry::get($this->_tableSearch);
 
-        $savedSearch = $table->get($id);
+        // get saved search
+        $savedSearch = $searchTable->get($id);
 
-        $model = $savedSearch->model;
+        // extract info
         $searchData = json_decode($savedSearch->content, true);
         $searchData = $searchData['latest'];
         $columns = $searchData['display_columns'];
@@ -272,13 +274,14 @@ trait SearchTrait
         foreach ($columns as $k => $column) {
             $columns[$k] = str_replace($model . '.', '', $column);
         }
+        $table = TableRegistry::get($savedSearch->model);
 
-        $query = $table->search($model, $this->Auth->user(), $searchData);
-        $entities = $query->all();
+        // execute search
+        $entities = $searchTable->search($table, $this->Auth->user(), $searchData)->all();
 
         $event = new Event('Search.Model.Search.afterFind', $this, [
             'entities' => $entities,
-            'table' => TableRegistry::get($model)
+            'table' => $table
         ]);
         $this->eventManager()->dispatch($event);
         if ($event->result) {
