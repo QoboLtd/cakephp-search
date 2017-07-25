@@ -92,6 +92,7 @@ class SavedSearchWidget extends BaseWidget
         // keeps backward compatibility
         $search = $this->_tableInstance->resetSearch($savedSearch, $table, $options['user']);
         $search->content = json_decode($search->content, true);
+        $search->content['saved'] = $this->_tableInstance->validateData($table, $search->content['saved'], $options['user']);
 
         $this->options['scripts'] = $this->getScripts(['data' => $search]);
         $this->options['fields'] = Utility::instance()->getSearchableFields($table, $options['user']);
