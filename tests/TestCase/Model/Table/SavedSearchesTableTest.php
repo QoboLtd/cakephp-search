@@ -2,18 +2,19 @@
 namespace Search\Test\TestCase\Model\Table;
 
 use Cake\Event\EventList;
+use Cake\Event\EventManager;
 use Cake\Http\ServerRequest;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use RuntimeException;
 use Search\Model\Table\SavedSearchesTable;
+use Search\Utility;
 
 /**
  * Search\Model\Table\SavedSearchesTable Test Case
  */
 class SavedSearchesTableTest extends TestCase
 {
-
     /**
      * Test subject
      *
@@ -32,6 +33,7 @@ class SavedSearchesTableTest extends TestCase
         'plugin.search.authors',
         'plugin.search.dashboards',
         'plugin.search.saved_searches',
+        'plugin.roles_capabilities.roles'
     ];
 
     /**
@@ -42,8 +44,115 @@ class SavedSearchesTableTest extends TestCase
     public function setUp()
     {
         parent::setUp();
+
+        Utility::instance(new Utility());
+
         $config = TableRegistry::exists('SavedSearches') ? [] : ['className' => 'Search\Model\Table\SavedSearchesTable'];
         $this->SavedSearches = TableRegistry::get('SavedSearches', $config);
+
+        EventManager::instance()->on('Search.Model.Search.searchabeFields', function ($event, $table) {
+            $tableName = $table->getRegistryAlias();
+
+            $result = [];
+            switch ($tableName) {
+                case 'Dashboards':
+                    $result = [
+                        'Dashboards.name' => [
+                            'type' => 'string',
+                            'operators' => [
+                                'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%']
+                            ]
+                        ],
+                        'Dashboards.image' => [
+                            'type' => 'blob',
+                            'operators' => [
+                                'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%'],
+                            ]
+                        ],
+                        'Dashboards.role_id' => [
+                            'type' => 'related',
+                            'source' => 'Roles',
+                            'operators' => [
+                                'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%'],
+                                'is_not' => ['label' => 'is not', 'operator' => 'NOT IN'],
+                            ]
+                        ],
+                        'Dashboards.modified' => [
+                            'type' => 'datetime',
+                            'operators' => [
+                                'is' => ['label' => 'is', 'operator' => 'IN'],
+                                'greater' => ['label' => 'from', 'operator' => '>']
+                            ]
+                        ],
+                        'Dashboards.created' => [
+                            'type' => 'datetime',
+                            'operators' => [
+                                'is' => ['label' => 'is', 'operator' => 'IN'],
+                                'greater' => ['label' => 'from', 'operator' => '>']
+                            ]
+                        ]
+                    ];
+                    break;
+
+                case 'Roles':
+                    $result = [
+                        'Roles.name' => [
+                            'type' => 'string',
+                            'operators' => [
+                                'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%']
+                            ]
+                        ]
+                    ];
+                    break;
+
+                case 'AppWidgets':
+                    $result = [
+                        'AppWidgets.name' => [
+                            'type' => 'string',
+                            'operators' => [
+                                'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%'],
+                            ]
+                        ]
+                    ];
+                    break;
+
+                case 'Articles':
+                    $result = [
+                        'Articles.title' => [
+                            'type' => 'string',
+                            'operators' => [
+                                'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%']
+                            ]
+                        ],
+                        'Articles.created' => [
+                            'type' => 'datetime',
+                            'operators' => [
+                                'is' => ['label' => 'is', 'operator' => 'IN']
+                            ]
+                        ],
+                        'Articles.modified' => [
+                            'type' => 'datetime',
+                            'operators' => [
+                                'is' => ['label' => 'is', 'operator' => 'IN']
+                            ]
+                        ]
+                    ];
+                    break;
+
+                case 'Authors':
+                    $result = [
+                        'Authors.name' => [
+                            'type' => 'string',
+                            'operators' => [
+                                'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%']
+                            ]
+                        ]
+                    ];
+                    break;
+            }
+
+            return $result;
+        });
     }
 
     /**
@@ -109,28 +218,11 @@ class SavedSearchesTableTest extends TestCase
         $this->assertArrayHasKey('aggregators', $result);
     }
 
-    public function testGetSearchableFieldsEventFired()
-    {
-        $user = ['id' => '00000000-0000-0000-0000-000000000001'];
-        $this->SavedSearches->EventManager()->setEventList(new EventList());
-        $result = $this->SavedSearches->getSearchableFields('Widgets', $user);
-        $this->assertEventFired('Search.Model.Search.searchabeFields', $this->SavedSearches->EventManager());
-    }
-
-    /**
-     * @expectedException \InvalidArgumentException
-     */
-    public function testGetSearchableFieldsWrongVarType()
-    {
-        $user = ['id' => '00000000-0000-0000-0000-000000000001'];
-        $result = $this->SavedSearches->getSearchableFields(['Widgets'], $user);
-    }
-
     public function testGetListingFields()
     {
         $model = 'Dashboards';
         $expected = [$model . '.name', $model . '.modified', $model . '.created'];
-        $result = $this->SavedSearches->getListingFields($model);
+        $result = $this->SavedSearches->getListingFields(TableRegistry::get($model));
 
         $this->assertNotEmpty($result);
         $this->assertEquals($result, $expected);
@@ -139,17 +231,6 @@ class SavedSearchesTableTest extends TestCase
     public function testGetListingFieldsDatabaseColumns()
     {
         $model = 'Dashboards';
-        // anonymous event listener that passes some dummy searchable fields
-        $this->SavedSearches->eventManager()->on('Search.Model.Search.searchabeFields', function ($event, $table) {
-            return [
-                'name' => [
-                    'type' => 'blob',
-                    'operators' => [
-                        'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%'],
-                    ]
-                ]
-            ];
-        });
 
         $table = TableRegistry::get($model);
         $table->setDisplayField('virtual_field');
@@ -176,7 +257,7 @@ class SavedSearchesTableTest extends TestCase
         $model = 'Dashboards';
         $user = ['id' => '00000000-0000-0000-0000-000000000001'];
 
-        $result = $this->SavedSearches->prepareData($request, $model, $user);
+        $result = $this->SavedSearches->prepareData($request, TableRegistry::get($model), $user);
 
         $this->assertNotEmpty($result);
         $this->assertInternalType('array', $result);
@@ -187,21 +268,6 @@ class SavedSearchesTableTest extends TestCase
     {
         $model = 'Dashboards';
 
-        // anonymous event listener that passes some dummy searchable fields
-        $this->SavedSearches->eventManager()->on(
-            'Search.Model.Search.searchabeFields',
-            function ($event, $table) use ($model) {
-                return [
-                    $model . '.name' => [
-                        'type' => 'string',
-                        'operators' => [
-                            'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%'],
-                        ]
-                    ]
-                ];
-            }
-        );
-
         $request = new ServerRequest([
             'post' => [
                 'criteria' => ['query' => 'foo']
@@ -209,7 +275,7 @@ class SavedSearchesTableTest extends TestCase
         ]);
         $user = ['id' => '00000000-0000-0000-0000-000000000001'];
 
-        $result = $this->SavedSearches->prepareData($request, $model, $user);
+        $result = $this->SavedSearches->prepareData($request, TableRegistry::get($model), $user);
 
         $this->assertNotEmpty($result);
         $this->assertInternalType('array', $result);
@@ -222,41 +288,18 @@ class SavedSearchesTableTest extends TestCase
         $model = 'Dashboards';
         $relatedModel = 'AppWidgets';
 
-        // anonymous event listener that passes some dummy searchable fields
-        $this->SavedSearches->eventManager()->on(
-            'Search.Model.Search.searchabeFields',
-            function ($event, $table) use ($model, $relatedModel) {
-                if ($relatedModel === $table->getRegistryAlias()) {
-                    return [
-                        $relatedModel . '.name' => [
-                            'type' => 'string',
-                            'operators' => [
-                                'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%'],
-                            ]
-                        ]
-                    ];
-                }
-
-                return [
-                    $model . '.name' => [
-                        'type' => 'related',
-                        'source' => 'AppWidgets',
-                        'operators' => [
-                            'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%'],
-                        ]
-                    ]
-                ];
-            }
-        );
+        EventManager::instance()->on('Search.Model.Search.basicSearchFields', function ($event, $table) {
+            return ['Dashboards.role_id'];
+        });
 
         $request = new ServerRequest([
             'post' => [
-                'criteria' => ['query' => 'Hello']
+                'criteria' => ['query' => 'Lorem']
             ]
         ]);
         $user = ['id' => '00000000-0000-0000-0000-000000000001'];
 
-        $result = $this->SavedSearches->prepareData($request, $model, $user);
+        $result = $this->SavedSearches->prepareData($request, TableRegistry::get($model), $user);
 
         $this->assertNotEmpty($result);
         $this->assertInternalType('array', $result);
@@ -266,9 +309,9 @@ class SavedSearchesTableTest extends TestCase
         $expected = [
             'type' => 'related',
             'operator' => 'contains',
-            'value' => '00000000-0000-0000-0000-000000000001'
+            'value' => '79928943-0016-4677-869a-e37728ff6564'
         ];
-        $this->assertContains($expected, $result['criteria'][$model . '.name']);
+        $this->assertContains($expected, $result['criteria']['Dashboards.role_id']);
     }
 
     public function dataProviderGetBasicSearchCriteria()
@@ -338,18 +381,6 @@ class SavedSearchesTableTest extends TestCase
     {
         $model = 'Dashboards';
 
-        // anonymous event listener that passes some dummy searchable fields
-        $this->SavedSearches->eventManager()->on(
-            'Search.Model.Search.searchabeFields',
-            function ($event, $table) use ($model) {
-                return [
-                    $model . '.name' => ['type' => 'string'],
-                    $model . '.modified' => ['type' => 'datetime'],
-                    $model . '.created' => ['type' => 'datetime']
-                ];
-            }
-        );
-
         $data = [
             'criteria' => [
                 $model . '.name' => [
@@ -365,25 +396,13 @@ class SavedSearchesTableTest extends TestCase
 
         $user = ['id' => '00000000-0000-0000-0000-000000000001'];
 
-        $result = $this->SavedSearches->validateData($model, $data, $user);
+        $result = $this->SavedSearches->validateData(TableRegistry::get($model), $data, $user);
         $this->assertEquals($data, $result);
     }
 
     public function testValidateDataWrong()
     {
         $model = 'Dashboards';
-
-        // anonymous event listener that passes some dummy searchable fields
-        $this->SavedSearches->eventManager()->on(
-            'Search.Model.Search.searchabeFields',
-            function ($event, $table) use ($model) {
-                return [
-                    $model . '.name' => ['type' => 'string'],
-                    $model . '.modified' => ['type' => 'datetime'],
-                    $model . '.created' => ['type' => 'datetime']
-                ];
-            }
-        );
 
         $data = [
             'criteria' => [
@@ -400,7 +419,7 @@ class SavedSearchesTableTest extends TestCase
 
         $user = ['id' => '00000000-0000-0000-0000-000000000001'];
 
-        $result = $this->SavedSearches->validateData($model, $data, $user);
+        $result = $this->SavedSearches->validateData(TableRegistry::get($model), $data, $user);
 
         $this->assertEmpty($result['criteria']);
         $this->assertEmpty($result['display_columns']);
@@ -418,21 +437,6 @@ class SavedSearchesTableTest extends TestCase
     public function testSearch()
     {
         $model = 'Dashboards';
-
-        // anonymous event listener that passes some dummy searchable fields
-        $this->SavedSearches->eventManager()->on(
-            'Search.Model.Search.searchabeFields',
-            function ($event, $table) use ($model) {
-                return [
-                    $model . '.name' => [
-                        'type' => 'string',
-                        'operators' => [
-                            'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%']
-                        ]
-                    ]
-                ];
-            }
-        );
 
         $user = ['id' => '00000000-0000-0000-0000-000000000001'];
 
@@ -452,7 +456,7 @@ class SavedSearchesTableTest extends TestCase
             'limit' => '10'
         ];
 
-        $result = $this->SavedSearches->search($model, $user, $data);
+        $result = $this->SavedSearches->search(TableRegistry::get($model), $user, $data);
 
         $this->assertInstanceOf(\Cake\ORM\Query::class, $result);
         $this->assertGreaterThan(0, $result->count());
@@ -462,39 +466,6 @@ class SavedSearchesTableTest extends TestCase
     {
         $model = 'Articles';
         $relatedModel = 'Authors';
-
-        // anonymous event listener that passes some dummy searchable fields
-        $this->SavedSearches->eventManager()->on(
-            'Search.Model.Search.searchabeFields',
-            function ($event, $table) use ($model, $relatedModel) {
-                return [
-                    $model . '.title' => [
-                        'type' => 'string',
-                        'operators' => [
-                            'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%']
-                        ]
-                    ],
-                    $model . '.created' => [
-                        'type' => 'datetime',
-                        'operators' => [
-                            'is' => ['label' => 'is', 'operator' => 'IN']
-                        ]
-                    ],
-                    $model . '.modified' => [
-                        'type' => 'datetime',
-                        'operators' => [
-                            'is' => ['label' => 'is', 'operator' => 'IN']
-                        ]
-                    ],
-                    $relatedModel . '.name' => [
-                        'type' => 'string',
-                        'operators' => [
-                            'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%']
-                        ]
-                    ]
-                ];
-            }
-        );
 
         $user = ['id' => '00000000-0000-0000-0000-000000000001'];
 
@@ -515,7 +486,7 @@ class SavedSearchesTableTest extends TestCase
             'sort_by_order' => 'desc'
         ];
 
-        $result = $this->SavedSearches->search($model, $user, $data);
+        $result = $this->SavedSearches->search(TableRegistry::get($model), $user, $data);
         $entity = $result->first();
 
         $this->assertInstanceOf(\Cake\ORM\Query::class, $result);
@@ -535,21 +506,6 @@ class SavedSearchesTableTest extends TestCase
     {
         $model = 'Dashboards';
 
-        // anonymous event listener that passes some dummy searchable fields
-        $this->SavedSearches->eventManager()->on(
-            'Search.Model.Search.searchabeFields',
-            function ($event, $table) use ($model) {
-                return [
-                    $model . '.modified' => [
-                        'type' => 'datetime',
-                        'operators' => [
-                            'is' => ['label' => 'is', 'operator' => 'IN']
-                        ]
-                    ]
-                ];
-            }
-        );
-
         $user = ['id' => '00000000-0000-0000-0000-000000000001'];
 
         $data = [
@@ -563,7 +519,7 @@ class SavedSearchesTableTest extends TestCase
             ]
         ];
 
-        $result = $this->SavedSearches->search($model, $user, $data);
+        $result = $this->SavedSearches->search(TableRegistry::get($model), $user, $data);
 
         $this->assertEquals(2, $result->count());
     }
@@ -571,27 +527,6 @@ class SavedSearchesTableTest extends TestCase
     public function testSearchWithAndAggregator()
     {
         $model = 'Dashboards';
-
-        // anonymous event listener that passes some dummy searchable fields
-        $this->SavedSearches->eventManager()->on(
-            'Search.Model.Search.searchabeFields',
-            function ($event, $table) use ($model) {
-                return [
-                    $model . '.name' => [
-                        'type' => 'string',
-                        'operators' => [
-                            'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%']
-                        ]
-                    ],
-                    $model . '.modified' => [
-                        'type' => 'datetime',
-                        'operators' => [
-                            'greater' => ['label' => 'from', 'operator' => '>']
-                        ]
-                    ]
-                ];
-            }
-        );
 
         $user = ['id' => '00000000-0000-0000-0000-000000000001'];
 
@@ -607,7 +542,7 @@ class SavedSearchesTableTest extends TestCase
             ]
         ];
 
-        $result = $this->SavedSearches->search($model, $user, $data);
+        $result = $this->SavedSearches->search(TableRegistry::get($model), $user, $data);
 
         $this->assertEquals(1, $result->count());
     }
@@ -615,21 +550,6 @@ class SavedSearchesTableTest extends TestCase
     public function testSearchWithRelatedIsNot()
     {
         $model = 'Dashboards';
-
-        // anonymous event listener that passes some dummy searchable fields
-        $this->SavedSearches->eventManager()->on(
-            'Search.Model.Search.searchabeFields',
-            function ($event, $table) use ($model) {
-                return [
-                    $model . '.role_id' => [
-                        'type' => 'related',
-                        'operators' => [
-                            'is_not' => ['label' => 'is not', 'operator' => 'NOT IN']
-                        ]
-                    ]
-                ];
-            }
-        );
 
         $user = ['id' => '00000000-0000-0000-0000-000000000001'];
 
@@ -643,25 +563,13 @@ class SavedSearchesTableTest extends TestCase
             ]
         ];
 
-        $result = $this->SavedSearches->search($model, $user, $data);
+        $result = $this->SavedSearches->search(TableRegistry::get($model), $user, $data);
 
         $this->assertEquals(1, $result->count());
     }
 
     public function testCreateSearch()
     {
-        // anonymous event listener that passes some dummy searchable fields
-        $this->SavedSearches->eventManager()->on('Search.Model.Search.searchabeFields', function ($event, $table) {
-            return [
-                'name' => [
-                    'type' => 'string',
-                    'operators' => [
-                        'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%']
-                    ]
-                ]
-            ];
-        });
-
         $user = ['id' => '00000000-0000-0000-0000-000000000001'];
 
         $data = [
@@ -676,7 +584,7 @@ class SavedSearchesTableTest extends TestCase
             'limit' => '10'
         ];
 
-        $result = $this->SavedSearches->createSearch('Dashboards', $user, $data);
+        $result = $this->SavedSearches->createSearch(TableRegistry::get('Dashboards'), $user, $data);
 
         $this->assertNotEmpty($result);
         $this->assertInternalType('string', $result);
@@ -686,21 +594,6 @@ class SavedSearchesTableTest extends TestCase
     public function testUpdateSearch()
     {
         $model = 'Dashboards';
-
-        // anonymous event listener that passes some dummy searchable fields
-        $this->SavedSearches->eventManager()->on(
-            'Search.Model.Search.searchabeFields',
-            function ($event, $table) use ($model) {
-                return [
-                    $model . '.name' => [
-                        'type' => 'string',
-                        'operators' => [
-                            'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%']
-                        ]
-                    ]
-                ];
-            }
-        );
 
         $id = '00000000-0000-0000-0000-000000000001';
 
@@ -718,7 +611,7 @@ class SavedSearchesTableTest extends TestCase
             'limit' => '10'
         ];
 
-        $result = $this->SavedSearches->updateSearch($model, $user, $data, $id);
+        $result = $this->SavedSearches->updateSearch(TableRegistry::get($model), $user, $data, $id);
         $this->assertInstanceOf(\Search\Model\Entity\SavedSearch::class, $result);
         $this->assertNotEmpty($result->content);
 
@@ -729,23 +622,11 @@ class SavedSearchesTableTest extends TestCase
 
     public function testGetSearch()
     {
-        // anonymous event listener that passes some dummy searchable fields
-        $this->SavedSearches->eventManager()->on('Search.Model.Search.searchabeFields', function ($event, $table) {
-            return [
-                'name' => [
-                    'type' => 'string',
-                    'operators' => [
-                        'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%']
-                    ]
-                ]
-            ];
-        });
-
         $id = '00000000-0000-0000-0000-000000000001';
 
         $user = ['id' => '00000000-0000-0000-0000-000000000001'];
 
-        $result = $this->SavedSearches->getSearch('Dashboards', $user, $id);
+        $result = $this->SavedSearches->getSearch(TableRegistry::get('Dashboards'), $user, $id);
         $this->assertInstanceOf(\Search\Model\Entity\SavedSearch::class, $result);
         $this->assertNotEmpty($result->content);
 
@@ -764,85 +645,5 @@ class SavedSearchesTableTest extends TestCase
         $this->assertArrayHasKey('sort_by_field', $result['latest']);
         $this->assertArrayHasKey('sort_by_order', $result['latest']);
         $this->assertArrayHasKey('limit', $result['latest']);
-    }
-
-    public function testToDatatables()
-    {
-        $table = TableRegistry::get('Dashboards');
-        $query = $table->find();
-
-        $result = $this->SavedSearches->toDatatables($query->all(), ['Dashboards.name'], 'Dashboards');
-
-        $this->assertInternalType('array', $result);
-        $this->assertNotEmpty($result);
-    }
-
-    public function testToDatatablesWithAssociated()
-    {
-        $model = 'Articles';
-        $relatedModel = 'Authors';
-
-        $this->SavedSearches->eventManager()->on(
-            'Search.Model.Search.searchabeFields',
-            function ($event, $table) use ($model, $relatedModel) {
-                return [
-                    $model . '.title' => [
-                        'type' => 'string',
-                        'operators' => [
-                            'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%']
-                        ]
-                    ],
-                    $model . '.created' => [
-                        'type' => 'datetime',
-                        'operators' => [
-                            'is' => ['label' => 'is', 'operator' => 'IN']
-                        ]
-                    ],
-                    $model . '.modified' => [
-                        'type' => 'datetime',
-                        'operators' => [
-                            'is' => ['label' => 'is', 'operator' => 'IN']
-                        ]
-                    ],
-                    $relatedModel . '.name' => [
-                        'type' => 'string',
-                        'operators' => [
-                            'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%']
-                        ]
-                    ]
-                ];
-            }
-        );
-
-        $user = ['id' => '00000000-0000-0000-0000-000000000001'];
-
-        $data = [
-            'aggregator' => 'AND',
-            'criteria' => [
-                $relatedModel . '.name' => [
-                    10 => ['type' => 'string', 'operator' => 'contains', 'value' => 'Mark']
-                ]
-            ],
-            'display_columns' => [
-                $model . '.title',
-                $relatedModel . '.name',
-                $model . '.created',
-                $model . '.modified'
-            ],
-            'sort_by_field' => $relatedModel . '.name',
-            'sort_by_order' => 'desc'
-        ];
-
-        $query = $this->SavedSearches->search($model, $user, $data);
-
-        $result = $this->SavedSearches->toDatatables($query->all(), $data['display_columns'], $model);
-
-        $this->assertEquals(1, count($result));
-        $expected = 1 + count($data['display_columns']);
-        $this->assertEquals($expected, count(current($result)));
-
-        foreach (current($result) as $value) {
-            $this->assertNotNull($value);
-        }
     }
 }

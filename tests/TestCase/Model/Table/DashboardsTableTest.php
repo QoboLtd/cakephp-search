@@ -28,6 +28,8 @@ class DashboardsTableTest extends TestCase
         'plugin.CakeDC/Users.users',
         'plugin.groups.groups',
         'plugin.groups.groups_users',
+        'plugin.roles_capabilities.groups_roles',
+        'plugin.roles_capabilities.roles'
     ];
 
     /**
@@ -38,6 +40,7 @@ class DashboardsTableTest extends TestCase
     public function setUp()
     {
         parent::setUp();
+
         $config = TableRegistry::exists('Dashboards') ? [] : ['className' => 'Search\Model\Table\DashboardsTable'];
         $this->Dashboards = TableRegistry::get('Dashboards', $config);
     }

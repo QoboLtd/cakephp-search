@@ -5,6 +5,7 @@ use Cake\Core\Configure;
 use Cake\Event\EventManager;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\IntegrationTestCase;
+use Search\Utility;
 
 /**
  * Search\Controller\DashboardsController Test Case
@@ -30,6 +31,10 @@ class DashboardsControllerTest extends IntegrationTestCase
 
     public function setUp()
     {
+        parent::setUp();
+
+        Utility::instance(new Utility());
+
         Configure::write('Search.dashboard.columns', ['Left Side', 'Right Side']);
 
         $this->session(['Auth.User.id' => '00000000-0000-0000-0000-000000000001']);
@@ -46,6 +51,16 @@ class DashboardsControllerTest extends IntegrationTestCase
                 ]
             ];
         });
+    }
+
+    /**
+     * tearDown method
+     *
+     * @return void
+     */
+    public function tearDown()
+    {
+        parent::tearDown();
     }
 
     /**

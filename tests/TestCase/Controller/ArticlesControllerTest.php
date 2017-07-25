@@ -24,6 +24,8 @@ class ArticlesControllerTest extends IntegrationTestCase
 
     public function setUp()
     {
+        parent::setUp();
+
         $dir = dirname(dirname(__DIR__)) . DS . 'config' . DS . 'data' . DS;
         Configure::write('CsvMigrations.modules.path', $dir);
         // Configure::write('Search.dashboard.columns', ['Left Side', 'Right Side']);
@@ -42,6 +44,16 @@ class ArticlesControllerTest extends IntegrationTestCase
                 ]
             ];
         });
+    }
+
+    /**
+     * tearDown method
+     *
+     * @return void
+     */
+    public function tearDown()
+    {
+        parent::tearDown();
     }
 
     public function testSearch()
