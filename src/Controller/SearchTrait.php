@@ -269,11 +269,7 @@ trait SearchTrait
         // extract info
         $searchData = json_decode($savedSearch->content, true);
         $searchData = $searchData['latest'];
-        $columns = $searchData['display_columns'];
 
-        foreach ($columns as $k => $column) {
-            $columns[$k] = str_replace($model . '.', '', $column);
-        }
         $table = TableRegistry::get($savedSearch->model);
 
         // execute search
@@ -288,12 +284,14 @@ trait SearchTrait
             $entities = $event->result;
         }
 
+        $entities = Utility::instance()->toCsv($entities, $searchData['display_columns'], $table);
+
         $content = [];
         foreach ($entities as $k => $entity) {
             $content[$k] = [];
-            foreach ($columns as $column) {
+            foreach ($searchData['display_columns'] as $column) {
                 // @todo this is temporary fix to stripping out html tags from results columns
-                $value = trim(strip_tags($entity->get($column)));
+                $value = trim(strip_tags($entity[$column]));
                 // end of temporary fix
                 $content[$k][] = $value;
             }
@@ -302,6 +300,20 @@ trait SearchTrait
         // create temporary file
         $path = TMP . uniqid($this->request->param('action') . '_') . '.csv';
         $file = new File($path, true);
+
+        $associationLabels = Utility::instance()->getAssociationLabels($table);
+        $searchableFields = Utility::instance()->getSearchableFields($table, $this->Auth->user());
+        $columns = [];
+        foreach ($searchData['display_columns'] as $column) {
+            $tableName = substr($column, 0, strpos($column, '.'));
+            $label = array_key_exists($tableName, $associationLabels) ?
+                $associationLabels[$tableName] :
+                $tableName;
+
+            list(, $modelName) = pluginSplit($savedSearch->model);
+            $suffix = $modelName === $label ? '' : ' (' . $label . ')';
+            $columns[] = $searchableFields[$column]['label'] . $suffix;
+        }
 
         // write to temporary file
         $handler = fopen($path, 'w');
