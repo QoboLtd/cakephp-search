@@ -4,17 +4,13 @@ namespace Search\Controller;
 use Cake\Event\Event;
 use Cake\Filesystem\File;
 use Cake\Network\Exception\BadRequestException;
-use Cake\ORM\Query;
+use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
-use Search\Controller\Traits\SearchableTrait;
-use Search\Model\Entity\SavedSearch;
-use Search\Model\Table\SavedSearchesTable;
+use Search\Utility;
 use Zend\Diactoros\Stream;
 
 trait SearchTrait
 {
-    use SearchableTrait;
-
     /**
      * Table name for Saved Searches model.
      *
@@ -39,59 +35,56 @@ trait SearchTrait
     {
         $model = $this->modelClass;
 
-        if (!$this->_isSearchable($model)) {
+        $searchTable = TableRegistry::get($this->_tableSearch);
+        $table = TableRegistry::get($model);
+
+        if (!$searchTable->isSearchable($model)) {
             throw new BadRequestException('You cannot search in ' . implode(' - ', pluginSplit($model)) . '.');
         }
 
-        $table = TableRegistry::get($this->_tableSearch);
-
         // redirect on POST requests (PRG pattern)
         if ($this->request->is('post')) {
-            $searchData = $table->prepareData($this->request, $model, $this->Auth->user());
+            $searchData = $searchTable->prepareData($this->request, $table, $this->Auth->user());
 
             if ($id) {
-                $table->updateSearch($model, $this->Auth->user(), $searchData, $id);
+                $searchTable->updateSearch($table, $this->Auth->user(), $searchData, $id);
             } else {
-                $id = $table->createSearch($model, $this->Auth->user(), $searchData);
+                $id = $searchTable->createSearch($table, $this->Auth->user(), $searchData);
             }
 
             list($plugin, $controller) = pluginSplit($model);
 
-            return $this->redirect([
-                'plugin' => $plugin,
-                'controller' => $controller,
-                'action' => __FUNCTION__,
-                $id
-            ]);
+            return $this->redirect(['plugin' => $plugin, 'controller' => $controller, 'action' => __FUNCTION__, $id]);
         }
 
-        $entity = $table->getSearch($model, $this->Auth->user(), $id);
+        $entity = $searchTable->getSearch($table, $this->Auth->user(), $id);
 
         $searchData = json_decode($entity->content, true);
 
         // return json response and skip any further processing.
         if ($this->request->accepts('application/json')) {
-            $this->_ajaxResponse($searchData, $model);
+            $this->_ajaxResponse($searchData, $table);
 
             return;
         }
 
-        $searchData = $table->validateData($model, $searchData['latest']);
+        $searchData = $searchTable->validateData($table, $searchData['latest'], $this->Auth->user());
 
         // reset should only be applied to current search id (url parameter)
         // and NOT on newly pre-saved searches and that's we do the ajax
         // request check above, to prevent resetting the pre-saved search.
-        $table->resetSearch($entity, $model, $this->Auth->user());
+        $searchTable->resetSearch($entity, $table, $this->Auth->user());
 
-        $this->set('searchFields', $table->getSearchableFields($model));
-        $this->set('savedSearches', $table->getSavedSearches([$this->Auth->user('id')], [$model]));
+        $this->set('searchableFields', Utility::instance()->getSearchableFields($table, $this->Auth->user()));
+        $this->set('savedSearches', $searchTable->getSavedSearches([$this->Auth->user('id')], [$model]));
         $this->set('model', $model);
         $this->set('searchData', $searchData);
         $this->set('savedSearch', $entity);
-        $this->set('preSaveId', $table->createSearch($model, $this->Auth->user(), $searchData));
+        $this->set('preSaveId', $searchTable->createSearch($table, $this->Auth->user(), $searchData));
         // INFO: this is valid when a saved search was modified and the form was re-submitted
-        $this->set('isEditable', $table->isEditable($entity));
-        $this->set('searchOptions', $table->getSearchOptions());
+        $this->set('isEditable', $searchTable->isEditable($entity));
+        $this->set('searchOptions', $searchTable->getSearchOptions());
+        $this->set('associationLabels', Utility::instance()->getAssociationLabels($table));
 
         $this->render($this->_elementSearch);
     }
@@ -100,16 +93,16 @@ trait SearchTrait
      * Ajax response.
      *
      * @param array $data Search data
-     * @param string $model Model name
+     * @param \Cake\ORM\Table $table Table instance
      * @return void
      */
-    protected function _ajaxResponse(array $data, $model)
+    protected function _ajaxResponse(array $data, Table $table)
     {
         if (!$this->request->accepts('application/json')) {
             return;
         }
 
-        $table = TableRegistry::get($this->_tableSearch);
+        $searchTable = TableRegistry::get($this->_tableSearch);
 
         $searchData = $data['latest'];
 
@@ -121,17 +114,20 @@ trait SearchTrait
             current($displayColumns);
         $searchData['sort_by_field'] = $sortField;
 
-        $searchData['sort_by_order'] = $this->request->query('order.0.dir') ?: $table->getDefaultSortByOrder();
+        $searchData['sort_by_order'] = $this->request->query('order.0.dir') ?: $searchTable->getDefaultSortByOrder();
 
-        $query = $table->search($model, $this->Auth->user(), $searchData);
+        $query = $searchTable->search($table, $this->Auth->user(), $searchData);
 
         $event = new Event('Search.Model.Search.afterFind', $this, [
             'entities' => $this->paginate($query),
-            'table' => TableRegistry::get($model)
+            'table' => $table
         ]);
         $this->eventManager()->dispatch($event);
 
-        $data = $table->toDatatables($event->result, $displayColumns, $model);
+        $data = [];
+        if ($event->result) {
+            $data = Utility::instance()->toDatatables($event->result, $displayColumns, $table);
+        }
 
         $pagination = [
             'count' => $query->count()
@@ -141,7 +137,7 @@ trait SearchTrait
             'success' => true,
             'data' => $data,
             'pagination' => $pagination,
-            '_serialize' => ['success', 'preSaveId', 'data', 'pagination']
+            '_serialize' => ['success', 'data', 'pagination']
         ]);
     }
 
@@ -265,34 +261,37 @@ trait SearchTrait
         $this->autoRender = false;
         $this->request->allowMethod(['patch', 'post', 'put']);
 
-        $table = TableRegistry::get($this->_tableSearch);
+        $searchTable = TableRegistry::get($this->_tableSearch);
 
-        $savedSearch = $table->get($id);
+        // get saved search
+        $savedSearch = $searchTable->get($id);
 
-        $model = $savedSearch->model;
+        // extract info
         $searchData = json_decode($savedSearch->content, true);
         $searchData = $searchData['latest'];
-        $columns = $searchData['display_columns'];
 
-        foreach ($columns as $k => $column) {
-            $columns[$k] = str_replace($model . '.', '', $column);
-        }
+        $table = TableRegistry::get($savedSearch->model);
 
-        $query = $table->search($model, $this->Auth->user(), $searchData);
-        $entities = $query->all();
+        // execute search
+        $entities = $searchTable->search($table, $this->Auth->user(), $searchData)->all();
 
         $event = new Event('Search.Model.Search.afterFind', $this, [
             'entities' => $entities,
-            'table' => TableRegistry::get($model)
+            'table' => $table
         ]);
         $this->eventManager()->dispatch($event);
+        if ($event->result) {
+            $entities = $event->result;
+        }
+
+        $entities = Utility::instance()->toCsv($entities, $searchData['display_columns'], $table);
 
         $content = [];
-        foreach ($event->result as $k => $entity) {
+        foreach ($entities as $k => $entity) {
             $content[$k] = [];
-            foreach ($columns as $column) {
+            foreach ($searchData['display_columns'] as $column) {
                 // @todo this is temporary fix to stripping out html tags from results columns
-                $value = trim(strip_tags($entity->get($column)));
+                $value = trim(strip_tags($entity[$column]));
                 // end of temporary fix
                 $content[$k][] = $value;
             }
@@ -301,6 +300,20 @@ trait SearchTrait
         // create temporary file
         $path = TMP . uniqid($this->request->param('action') . '_') . '.csv';
         $file = new File($path, true);
+
+        $associationLabels = Utility::instance()->getAssociationLabels($table);
+        $searchableFields = Utility::instance()->getSearchableFields($table, $this->Auth->user());
+        $columns = [];
+        foreach ($searchData['display_columns'] as $column) {
+            $tableName = substr($column, 0, strpos($column, '.'));
+            $label = array_key_exists($tableName, $associationLabels) ?
+                $associationLabels[$tableName] :
+                $tableName;
+
+            list(, $modelName) = pluginSplit($savedSearch->model);
+            $suffix = $modelName === $label ? '' : ' (' . $label . ')';
+            $columns[] = $searchableFields[$column]['label'] . $suffix;
+        }
 
         // write to temporary file
         $handler = fopen($path, 'w');

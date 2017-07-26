@@ -10,8 +10,10 @@ var search = search || {};
     {
         this.formId = options.hasOwnProperty('formId') ? options.formId : '#SearchFilterForm';
         this.addFieldId = options.hasOwnProperty('addFieldId') ? options.addFieldId : '#addFilter';
+        this.model = '';
         this.fieldProperties = {};
         this.fieldTypeOperators = {};
+        this.associationLabels = {};
         this.deleteBtnHtml = '<div class="input-sm">' +
             '<a href="#" class="search-field-remover">' +
                 '<span class="glyphicon glyphicon-minus"></span>' +
@@ -69,12 +71,30 @@ var search = search || {};
     };
 
     /**
+     * Search model setter.
+     *
+     * @param {string} model Model name
+     */
+    Search.prototype.setModel = function (model) {
+        this.model = model;
+    };
+
+    /**
      * Field properties setter.
      *
      * @param {object} fieldProperties field properties
      */
     Search.prototype.setFieldProperties = function (fieldProperties) {
         this.fieldProperties = fieldProperties;
+    };
+
+    /**
+     * Search model setter.
+     *
+     * @param {string} model Model name
+     */
+    Search.prototype.setAssociationLabels = function (associationLabels) {
+        this.associationLabels = associationLabels;
     };
 
     /**
@@ -94,10 +114,10 @@ var search = search || {};
 
     /**
      * Remove button click logic.
-     * @param  {string} id button id
+     *
      * @return {undefined}
      */
-    Search.prototype._onRemoveBtnClick = function (id) {
+    Search.prototype._onRemoveBtnClick = function () {
         $(this.formId).on('click', 'a.search-field-remover', function (event) {
             event.preventDefault();
             $(this).parents('.search-field-wrapper').remove();
@@ -114,39 +134,47 @@ var search = search || {};
      * @return {undefined}
      */
     Search.prototype._generateField = function (field, properties, value, setOperator) {
-        var timestamp = new Date().getUTCMilliseconds();
-        var id = field + '_' + timestamp;
+        var timestamp = Math.round(1000000 * Math.random());
 
         var inputHtml = this.fieldInputHtml;
         inputHtml = inputHtml.replace('{{fieldType}}', this._generateFieldType(field, properties.type, timestamp));
-        inputHtml = inputHtml.replace('{{fieldLabel}}', this._generateFieldLabel(properties.label));
+        inputHtml = inputHtml.replace('{{fieldLabel}}', this._generateFieldLabel(field, properties.label));
         inputHtml = inputHtml.replace(
             '{{fieldOperator}}',
             this._generateSearchOperator(field, properties.operators, timestamp, setOperator)
         );
-        inputHtml = inputHtml.replace('{{fieldInput}}', this._generateFieldInput(
-            field,
-            properties.input,
-            timestamp,
-            value
-        ));
+        inputHtml = inputHtml.replace(
+            '{{fieldInput}}',
+            this._generateFieldInput(field, properties.input, timestamp, value)
+        );
         inputHtml = inputHtml.replace('{{deleteButton}}', this._generateDeleteButton());
 
         $(this.formId + ' fieldset').append(inputHtml);
 
-        this._onRemoveBtnClick(id);
+        this._onRemoveBtnClick();
     };
 
     /**
      * Generates and returns field label html.
      *
-     * @param  {object} label field label
+     * @param  {string} field field name
+     * @param  {string} label field label
      * @return {string}
      */
-    Search.prototype._generateFieldLabel = function (label) {
+    Search.prototype._generateFieldLabel = function (field, label) {
         var input = this.fieldLabelHtml;
 
-        return input.replace('{{label}}', label);
+        var tableName = field.substr(0, field.indexOf('.'));
+
+        var suffix = '';
+        if (this.model !== tableName) {
+            suffix = this.associationLabels.hasOwnProperty(tableName) ?
+                this.associationLabels[tableName] :
+                tableName;
+            suffix = ' (' + suffix + ')';
+        }
+
+        return input.replace('{{label}}', label + suffix);
     };
 
     /**
@@ -154,7 +182,7 @@ var search = search || {};
      *
      * @param  {string} field     field name
      * @param  {string} type      field type
-     * @param  {string} timestamp timestamp
+     * @param  {number} timestamp timestamp
      * @return {string}
      */
     Search.prototype._generateFieldType = function (field, type, timestamp) {
@@ -168,7 +196,7 @@ var search = search || {};
      *
      * @param  {string} field       field name
      * @param  {string} type        field type
-     * @param  {string} timestamp   timestamp
+     * @param  {number} timestamp   timestamp
      * @param  {string} setOperator field set operator
      * @return {string}
      */
@@ -198,7 +226,7 @@ var search = search || {};
      *
      * @param  {string} field      field name
      * @param  {object} properties field properties
-     * @param  {string} timestamp  timestamp
+     * @param  {number} timestamp  timestamp
      * @param  {string} value      field value
      * @return {string}
      */
