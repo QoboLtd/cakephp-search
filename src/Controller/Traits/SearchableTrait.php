@@ -22,9 +22,8 @@ trait SearchableTrait
         }
 
         try {
-            $mc = new ModuleConfig(ModuleConfig::CONFIG_TYPE_MODULE, $table);
-
-            $result = (bool)$mc->parse()->table->searchable;
+            $config = new ModuleConfig(ModuleConfig::CONFIG_TYPE_MODULE, $table);
+            $result = (bool)$config->parse()->table->searchable;
         } catch (Exception $e) {
             $result = false;
         }

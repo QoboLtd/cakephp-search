@@ -584,9 +584,9 @@ class SavedSearchesTable extends Table
 
         list(, $tableName) = pluginSplit($tableName);
 
-        $mc = new ModuleConfig(ModuleConfig::CONFIG_TYPE_MODULE, $tableName);
+        $config = new ModuleConfig(ModuleConfig::CONFIG_TYPE_MODULE, $tableName);
 
-        $result = (bool)$mc->parse()->table->searchable;
+        $result = (bool)$config->parse()->table->searchable;
 
         return $result;
     }
