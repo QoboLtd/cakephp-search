@@ -49,7 +49,7 @@ class SavedSearchesTable extends Table
      *
      * @var array
      */
-    protected $_sortByOrderOptions = [
+    protected $sortByOrderOptions = [
         'asc' => 'Ascending',
         'desc' => 'Descending'
     ];
@@ -213,7 +213,7 @@ class SavedSearchesTable extends Table
      */
     public function getSortByOrderOptions()
     {
-        return $this->_sortByOrderOptions;
+        return $this->sortByOrderOptions;
     }
 
     /**
