@@ -22,7 +22,7 @@ class Utility
      *
      * @var array
      */
-    protected $_searchableFields = [];
+    protected $searchableFields = [];
 
     /**
      * Searchable associations list.
@@ -61,16 +61,16 @@ class Utility
     {
         $alias = $table->alias();
 
-        if (!empty($this->_searchableFields[$alias])) {
-            return $this->_searchableFields[$alias];
+        if (!empty($this->searchableFields[$alias])) {
+            return $this->searchableFields[$alias];
         }
 
-        $this->_searchableFields[$alias] = array_merge(
+        $this->searchableFields[$alias] = array_merge(
             $this->_getSearchableFields($table, $user),
             $this->_getAssociatedSearchableFields($table, $user)
         );
 
-        return $this->_searchableFields[$alias];
+        return $this->searchableFields[$alias];
     }
 
     /**
