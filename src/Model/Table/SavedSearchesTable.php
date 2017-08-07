@@ -69,7 +69,7 @@ class SavedSearchesTable extends Table
      *
      * @var array
      */
-    protected $_skipDisplayFields = ['id'];
+    protected $skipDisplayFields = ['id'];
 
     /**
      * Filter basic search allowed field types
@@ -183,7 +183,7 @@ class SavedSearchesTable extends Table
      */
     public function getSkippedDisplayFields()
     {
-        return $this->_skipDisplayFields;
+        return $this->skipDisplayFields;
     }
 
     /**
