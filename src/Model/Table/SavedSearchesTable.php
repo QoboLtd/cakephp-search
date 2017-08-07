@@ -76,7 +76,7 @@ class SavedSearchesTable extends Table
      *
      * @var array
      */
-    protected $_basicSearchFieldTypes = ['string', 'text', 'textarea', 'related', 'email', 'url', 'phone'];
+    protected $basicSearchFieldTypes = ['string', 'text', 'textarea', 'related', 'email', 'url', 'phone'];
 
     /**
      * Basic search default fields
@@ -243,7 +243,7 @@ class SavedSearchesTable extends Table
      */
     public function getBasicSearchFieldTypes()
     {
-        return $this->_basicSearchFieldTypes;
+        return $this->basicSearchFieldTypes;
     }
 
     /**
@@ -682,7 +682,7 @@ class SavedSearchesTable extends Table
      * Method that broadcasts an Event to generate the basic search fields.
      * If the Event result is empty then it falls back to using the display field.
      * If the display field is a virtual one then if falls back to searchable fields,
-     * using the ones that their type matches the _basicSearchFieldTypes list.
+     * using the ones that their type matches the basicSearchFieldTypes list.
      *
      * @param \Cake\ORM\Table $table Table instance
      * @param array $searchableFields Searchable fields
