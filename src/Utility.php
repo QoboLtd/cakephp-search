@@ -15,7 +15,7 @@ class Utility
      *
      * @var \Cake\Event\EventManager
      */
-    protected static $_instance;
+    protected static $instance;
 
     /**
      * Target table searchable fields.
@@ -40,14 +40,14 @@ class Utility
     public static function instance(Utility $utility = null)
     {
         if ($utility instanceof Utility) {
-            static::$_instance = $utility;
+            static::$instance = $utility;
         }
 
-        if (empty(static::$_instance)) {
-            static::$_instance = new static();
+        if (empty(static::$instance)) {
+            static::$instance = new static();
         }
 
-        return static::$_instance;
+        return static::$instance;
     }
 
     /**
