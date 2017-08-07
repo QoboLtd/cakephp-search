@@ -59,7 +59,7 @@ class SavedSearchesTable extends Table
      *
      * @var array
      */
-    protected $_aggregatorOptions = [
+    protected $aggregatorOptions = [
         'AND' => 'Match all filters',
         'OR' => 'Match any filter'
     ];
@@ -233,7 +233,7 @@ class SavedSearchesTable extends Table
      */
     public function getAggregatorOptions()
     {
-        return $this->_aggregatorOptions;
+        return $this->aggregatorOptions;
     }
 
     /**
