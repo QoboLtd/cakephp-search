@@ -90,7 +90,7 @@ class SavedSearchesTable extends Table
      *
      * @var array
      */
-    protected $_searchableAssociations = ['manyToOne'];
+    protected $searchableAssociations = ['manyToOne'];
 
     /**
      * Initialize method
@@ -253,7 +253,7 @@ class SavedSearchesTable extends Table
      */
     public function getSearchableAssociations()
     {
-        return $this->_searchableAssociations;
+        return $this->searchableAssociations;
     }
 
     /**

@@ -29,7 +29,7 @@ class Utility
      *
      * @var array
      */
-    protected $_searchableAssociations = ['manyToOne'];
+    protected $searchableAssociations = ['manyToOne'];
 
     /**
      * Returns the globally available instance of a Search\Utility.
@@ -103,7 +103,7 @@ class Utility
         $result = [];
         foreach ($table->associations() as $association) {
             // skip non-supported associations
-            if (!in_array($association->type(), $this->_searchableAssociations)) {
+            if (!in_array($association->type(), $this->searchableAssociations)) {
                 continue;
             }
 
@@ -230,7 +230,7 @@ class Utility
     {
         $result = [];
         foreach ($table->associations() as $association) {
-            if (!in_array($association->type(), $this->_searchableAssociations)) {
+            if (!in_array($association->type(), $this->searchableAssociations)) {
                 continue;
             }
 
