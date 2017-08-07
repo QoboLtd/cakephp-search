@@ -83,7 +83,7 @@ class SavedSearchesTable extends Table
      *
      * @var array
      */
-    protected $_defaultDisplayFields = ['modified', 'created'];
+    protected $defaultDisplayFields = ['modified', 'created'];
 
     /**
      * Searchable associations list
@@ -193,7 +193,7 @@ class SavedSearchesTable extends Table
      */
     public function getDefaultDisplayFields()
     {
-        return $this->_defaultDisplayFields;
+        return $this->defaultDisplayFields;
     }
 
     /**
