@@ -72,13 +72,6 @@ class SavedSearchesTable extends Table
     protected $_skipDisplayFields = ['id'];
 
     /**
-     * Fields used in basic search.
-     *
-     * @var array
-     */
-    protected $_basicSearchFields = [];
-
-    /**
      * Filter basic search allowed field types
      *
      * @var array
