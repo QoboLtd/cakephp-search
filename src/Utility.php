@@ -15,21 +15,21 @@ class Utility
      *
      * @var \Cake\Event\EventManager
      */
-    protected static $_instance;
+    protected static $instance;
 
     /**
      * Target table searchable fields.
      *
      * @var array
      */
-    protected $_searchableFields = [];
+    protected $searchableFields = [];
 
     /**
      * Searchable associations list.
      *
      * @var array
      */
-    protected $_searchableAssociations = ['manyToOne'];
+    protected $searchableAssociations = ['manyToOne'];
 
     /**
      * Returns the globally available instance of a Search\Utility.
@@ -40,14 +40,14 @@ class Utility
     public static function instance(Utility $utility = null)
     {
         if ($utility instanceof Utility) {
-            static::$_instance = $utility;
+            static::$instance = $utility;
         }
 
-        if (empty(static::$_instance)) {
-            static::$_instance = new static();
+        if (empty(static::$instance)) {
+            static::$instance = new static();
         }
 
-        return static::$_instance;
+        return static::$instance;
     }
 
     /**
@@ -61,16 +61,16 @@ class Utility
     {
         $alias = $table->alias();
 
-        if (!empty($this->_searchableFields[$alias])) {
-            return $this->_searchableFields[$alias];
+        if (!empty($this->searchableFields[$alias])) {
+            return $this->searchableFields[$alias];
         }
 
-        $this->_searchableFields[$alias] = array_merge(
+        $this->searchableFields[$alias] = array_merge(
             $this->_getSearchableFields($table, $user),
             $this->_getAssociatedSearchableFields($table, $user)
         );
 
-        return $this->_searchableFields[$alias];
+        return $this->searchableFields[$alias];
     }
 
     /**
@@ -103,7 +103,7 @@ class Utility
         $result = [];
         foreach ($table->associations() as $association) {
             // skip non-supported associations
-            if (!in_array($association->type(), $this->_searchableAssociations)) {
+            if (!in_array($association->type(), $this->searchableAssociations)) {
                 continue;
             }
 
@@ -230,7 +230,7 @@ class Utility
     {
         $result = [];
         foreach ($table->associations() as $association) {
-            if (!in_array($association->type(), $this->_searchableAssociations)) {
+            if (!in_array($association->type(), $this->searchableAssociations)) {
                 continue;
             }
 

@@ -49,7 +49,7 @@ class SavedSearchesTable extends Table
      *
      * @var array
      */
-    protected $_sortByOrderOptions = [
+    protected $sortByOrderOptions = [
         'asc' => 'Ascending',
         'desc' => 'Descending'
     ];
@@ -59,7 +59,7 @@ class SavedSearchesTable extends Table
      *
      * @var array
      */
-    protected $_aggregatorOptions = [
+    protected $aggregatorOptions = [
         'AND' => 'Match all filters',
         'OR' => 'Match any filter'
     ];
@@ -69,35 +69,28 @@ class SavedSearchesTable extends Table
      *
      * @var array
      */
-    protected $_skipDisplayFields = ['id'];
-
-    /**
-     * Fields used in basic search.
-     *
-     * @var array
-     */
-    protected $_basicSearchFields = [];
+    protected $skipDisplayFields = ['id'];
 
     /**
      * Filter basic search allowed field types
      *
      * @var array
      */
-    protected $_basicSearchFieldTypes = ['string', 'text', 'textarea', 'related', 'email', 'url', 'phone'];
+    protected $basicSearchFieldTypes = ['string', 'text', 'textarea', 'related', 'email', 'url', 'phone'];
 
     /**
      * Basic search default fields
      *
      * @var array
      */
-    protected $_defaultDisplayFields = ['modified', 'created'];
+    protected $defaultDisplayFields = ['modified', 'created'];
 
     /**
      * Searchable associations list
      *
      * @var array
      */
-    protected $_searchableAssociations = ['manyToOne'];
+    protected $searchableAssociations = ['manyToOne'];
 
     /**
      * Initialize method
@@ -190,7 +183,7 @@ class SavedSearchesTable extends Table
      */
     public function getSkippedDisplayFields()
     {
-        return $this->_skipDisplayFields;
+        return $this->skipDisplayFields;
     }
 
     /**
@@ -200,7 +193,7 @@ class SavedSearchesTable extends Table
      */
     public function getDefaultDisplayFields()
     {
-        return $this->_defaultDisplayFields;
+        return $this->defaultDisplayFields;
     }
 
     /**
@@ -220,7 +213,7 @@ class SavedSearchesTable extends Table
      */
     public function getSortByOrderOptions()
     {
-        return $this->_sortByOrderOptions;
+        return $this->sortByOrderOptions;
     }
 
     /**
@@ -240,7 +233,7 @@ class SavedSearchesTable extends Table
      */
     public function getAggregatorOptions()
     {
-        return $this->_aggregatorOptions;
+        return $this->aggregatorOptions;
     }
 
     /**
@@ -250,7 +243,7 @@ class SavedSearchesTable extends Table
      */
     public function getBasicSearchFieldTypes()
     {
-        return $this->_basicSearchFieldTypes;
+        return $this->basicSearchFieldTypes;
     }
 
     /**
@@ -260,7 +253,7 @@ class SavedSearchesTable extends Table
      */
     public function getSearchableAssociations()
     {
-        return $this->_searchableAssociations;
+        return $this->searchableAssociations;
     }
 
     /**
@@ -689,7 +682,7 @@ class SavedSearchesTable extends Table
      * Method that broadcasts an Event to generate the basic search fields.
      * If the Event result is empty then it falls back to using the display field.
      * If the display field is a virtual one then if falls back to searchable fields,
-     * using the ones that their type matches the _basicSearchFieldTypes list.
+     * using the ones that their type matches the basicSearchFieldTypes list.
      *
      * @param \Cake\ORM\Table $table Table instance
      * @param array $searchableFields Searchable fields
