@@ -824,12 +824,15 @@ class SavedSearchesTable extends Table
      */
     protected function _validateSortByField($data, array $fields, array $displayColumns, Table $table)
     {
-        // use display field if current sort field is not searchable
-        if (!in_array($data, $fields)) {
-            $data = $table->getDisplayField();
+        // use sort field if is searchable
+        if (in_array($data, $fields)) {
+            return $data;
         }
 
-        // check if sort field exists in the database table
+        // set display field as sort field
+        $data = $table->getDisplayField();
+
+        // check if display field exists in the database table
         if ($table->getSchema()->column($data)) {
             return $table->aliasField($data);
         }
