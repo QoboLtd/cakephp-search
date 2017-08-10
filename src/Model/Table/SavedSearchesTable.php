@@ -763,7 +763,12 @@ class SavedSearchesTable extends Table
         }
 
         $data['display_columns'] = $this->_validateDisplayColumns($data['display_columns'], $fields);
-        $data['sort_by_field'] = $this->_validateSortByField($data['sort_by_field'], $fields, $table);
+        $data['sort_by_field'] = $this->_validateSortByField(
+            $data['sort_by_field'],
+            $fields,
+            $data['display_columns'],
+            $table
+        );
         $data['sort_by_order'] = $this->_validateSortByOrder($data['sort_by_order'], $table);
         $data['aggregator'] = $this->_validateAggregator($data['aggregator']);
 
@@ -813,16 +818,35 @@ class SavedSearchesTable extends Table
      *
      * @param string $data Sort by field value
      * @param array $fields Searchable fields
+     * @param array $displayColumns Display columns
      * @param \Cake\ORM\Table $table Table instance
      * @return string
      */
-    protected function _validateSortByField($data, array $fields, Table $table)
+    protected function _validateSortByField($data, array $fields, array $displayColumns, Table $table)
     {
+        // use display field if current sort field is not searchable
         if (!in_array($data, $fields)) {
-            $data = $table->displayField();
+            $data = $table->getDisplayField();
         }
 
-        return $data;
+        // check if sort field exists in the database table
+        if ($table->getSchema()->column($data)) {
+            return $table->aliasField($data);
+        }
+
+        // use first display column which exists in the database table
+        foreach ($displayColumns as $displayColumn) {
+            // remove table prefix
+            list(, $displayColumn) = explode('.', $displayColumn);
+            if (!$table->getSchema()->column($displayColumn)) {
+                continue;
+            }
+
+            return $table->aliasField($displayColumn);
+        }
+
+        // use primary key as a last resort
+        return $table->aliasField($table->getPrimaryKey());
     }
 
     /**
