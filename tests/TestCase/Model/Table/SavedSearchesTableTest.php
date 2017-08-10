@@ -402,7 +402,7 @@ class SavedSearchesTableTest extends TestCase
 
     public function testValidateDataWrong()
     {
-        $model = 'Dashboards';
+        $table = TableRegistry::get('Dashboards');
 
         $data = [
             'criteria' => [
@@ -419,12 +419,12 @@ class SavedSearchesTableTest extends TestCase
 
         $user = ['id' => '00000000-0000-0000-0000-000000000001'];
 
-        $result = $this->SavedSearches->validateData(TableRegistry::get($model), $data, $user);
+        $result = $this->SavedSearches->validateData($table, $data, $user);
 
         $this->assertEmpty($result['criteria']);
         $this->assertEmpty($result['display_columns']);
 
-        $expected = TableRegistry::get($model)->displayField();
+        $expected = $table->aliasField($table->getDisplayField());
         $this->assertEquals($expected, $result['sort_by_field']);
 
         $expected = $this->SavedSearches->getDefaultSortByOrder();
@@ -432,6 +432,47 @@ class SavedSearchesTableTest extends TestCase
 
         $expected = $this->SavedSearches->getDefaultAggregator();
         $this->assertEquals($expected, $result['aggregator']);
+    }
+
+    public function testValidatePrimaryKeyAsSortField()
+    {
+        $table = TableRegistry::get('Dashboards');
+
+        $data = [
+            'criteria' => ['foo'],
+            'display_columns' => ['foo'],
+            'sort_by_field' => 'foo',
+        ];
+
+        $user = ['id' => '00000000-0000-0000-0000-000000000001'];
+
+        $table->setDisplayField('foo');
+
+        $result = $this->SavedSearches->validateData($table, $data, $user);
+
+        $expected = $table->aliasField($table->aliasField($table->getPrimaryKey()));
+        $this->assertEquals($expected, $result['sort_by_field']);
+    }
+
+    public function testValidateDisplayColumnAsSortField()
+    {
+        $table = TableRegistry::get('Dashboards');
+
+        $expected = $table->aliasField('name');
+
+        $data = [
+            'criteria' => ['foo'],
+            'display_columns' => ['foo', 'bar', $expected],
+            'sort_by_field' => 'foo',
+        ];
+
+        $user = ['id' => '00000000-0000-0000-0000-000000000001'];
+
+        $table->setDisplayField('foo');
+
+        $result = $this->SavedSearches->validateData($table, $data, $user);
+
+        $this->assertEquals($expected, $result['sort_by_field']);
     }
 
     public function testSearch()
