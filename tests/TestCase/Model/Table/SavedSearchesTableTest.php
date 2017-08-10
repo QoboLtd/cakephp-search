@@ -424,7 +424,8 @@ class SavedSearchesTableTest extends TestCase
         $this->assertEmpty($result['criteria']);
         $this->assertEmpty($result['display_columns']);
 
-        $expected = TableRegistry::get($model)->displayField();
+        $table = TableRegistry::get($model);
+        $expected = $table->aliasField($table->getDisplayField());
         $this->assertEquals($expected, $result['sort_by_field']);
 
         $expected = $this->SavedSearches->getDefaultSortByOrder();
