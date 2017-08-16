@@ -1,5 +1,5 @@
 <?php
-namespace Search\Event;
+namespace Search\Event\Model;
 
 use Cake\Event\Event;
 use Cake\Event\EventListenerInterface;
