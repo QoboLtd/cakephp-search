@@ -4,7 +4,7 @@ namespace Search\Test\TestCase\Model\Table;
 use Cake\Event\EventManager;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
-use Search\Event\WidgetsListener;
+use Search\Event\Model\WidgetsListener;
 use Search\Model\Table\WidgetsTable;
 
 /**
