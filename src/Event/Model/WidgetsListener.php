@@ -5,6 +5,7 @@ use Cake\Event\Event;
 use Cake\Event\EventListenerInterface;
 use Cake\Event\EventManager;
 use Cake\ORM\TableRegistry;
+use Search\Event\EventName;
 
 class WidgetsListener implements EventListenerInterface
 {
@@ -14,7 +15,7 @@ class WidgetsListener implements EventListenerInterface
     public function implementedEvents()
     {
         return [
-            'Search.Dashboards.getWidgets' => [
+            (string)EventName::MODEL_DASHBOARDS_GET_WIDGETS() => [
                 'callable' => 'getWidgets',
                 'priority' => 9999999999 // this listener should be called last
             ]
