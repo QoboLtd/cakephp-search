@@ -103,7 +103,7 @@ class WidgetsListener implements EventListenerInterface
      */
     protected function _getReports()
     {
-        $event = new Event('Search.Report.getReports', $this);
+        $event = new Event((string)EventName::MODEL_DASHBOARDS_GET_REPORTS(), $this);
         EventManager::instance()->dispatch($event);
 
         if (empty($event->result)) {

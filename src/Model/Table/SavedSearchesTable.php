@@ -14,6 +14,7 @@ use Cake\Utility\Inflector;
 use Cake\Validation\Validator;
 use InvalidArgumentException;
 use Qobo\Utils\ModuleConfig\ModuleConfig;
+use Search\Event\EventName;
 use Search\Model\Entity\SavedSearch;
 use Search\Utility;
 
@@ -485,7 +486,7 @@ class SavedSearchesTable extends Table
         }
 
         if (empty($result)) {
-            $event = new Event('Search.Model.Search.displayFields', $this, [
+            $event = new Event((string)EventName::MODEL_SEARCH_DISPLAY_FIELDS(), $this, [
                 'table' => $table
             ]);
             $this->eventManager()->dispatch($event);
@@ -695,7 +696,7 @@ class SavedSearchesTable extends Table
             throw new InvalidArgumentException($msg);
         }
 
-        $event = new Event('Search.Model.Search.basicSearchFields', $this, [
+        $event = new Event((string)EventName::MODEL_SEARCH_BASIC_SEARCH_FIELDS(), $this, [
             'table' => $table
         ]);
         $this->eventManager()->dispatch($event);

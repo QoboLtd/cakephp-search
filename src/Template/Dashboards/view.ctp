@@ -1,13 +1,13 @@
 <?php
-
 use Cake\Event\Event;
 use Cake\Log\LogTrait;
+use Search\Event\EventName;
 use Search\Widgets\WidgetFactory;
 
 $scripts = [];
 $chartData = [];
 
-$event = new Event('Search.Dashboards.View.View.Menu.Top', $this, [
+$event = new Event((string)EventName::MENU_TOP_DASHBOARD_VIEW(), $this, [
     'request' => $this->request,
     $dashboard
 ]);

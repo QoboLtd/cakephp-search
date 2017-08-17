@@ -7,6 +7,7 @@ use Cake\ORM\ResultSet;
 use Cake\ORM\Table;
 use Cake\Utility\Inflector;
 use Cake\View\View;
+use Search\Event\EventName;
 
 class Utility
 {
@@ -82,7 +83,7 @@ class Utility
      */
     protected function _getSearchableFields(Table $table, array $user)
     {
-        $event = new Event('Search.Model.Search.searchabeFields', $this, [
+        $event = new Event((string)EventName::MODEL_SEARCH_SEARCHABLE_FIELDS(), $this, [
             'table' => $table,
             'user' => $user
         ]);
@@ -165,7 +166,7 @@ class Utility
                 $result[$key][] = $entity->_matchingData[$tableName]->get($field);
             }
 
-            $event = new Event('Search.View.View.Menu.Actions', new View(), [
+            $event = new Event((string)EventName::MENU_ACTIONS_SEARCH_VIEW(), new View(), [
                 'entity' => $entity,
                 'model' => $registryAlias
             ]);
