@@ -6,7 +6,7 @@ use Cake\Filesystem\File;
 use Cake\Network\Exception\BadRequestException;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
-use Search\Event\EventName;
+use Search\Event\EventName as SearchEventName;
 use Search\Utility;
 use Zend\Diactoros\Stream;
 
@@ -119,7 +119,7 @@ trait SearchTrait
 
         $query = $searchTable->search($table, $this->Auth->user(), $searchData);
 
-        $event = new Event((string)EventName::MODEL_SEARCH_AFTER_FIND(), $this, [
+        $event = new Event((string)SearchEventName::MODEL_SEARCH_AFTER_FIND(), $this, [
             'entities' => $this->paginate($query),
             'table' => $table
         ]);
@@ -276,7 +276,7 @@ trait SearchTrait
         // execute search
         $entities = $searchTable->search($table, $this->Auth->user(), $searchData)->all();
 
-        $event = new Event((string)EventName::MODEL_SEARCH_AFTER_FIND(), $this, [
+        $event = new Event((string)SearchEventName::MODEL_SEARCH_AFTER_FIND(), $this, [
             'entities' => $entities,
             'table' => $table
         ]);
