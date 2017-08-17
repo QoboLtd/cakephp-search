@@ -12,6 +12,7 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Inflector;
 use Cake\Utility\Text;
 use Cake\Validation\Validator;
+use Search\Event\EventName;
 
 /**
  * Widgets Model
@@ -116,7 +117,7 @@ class WidgetsTable extends Table
     public function getWidgets()
     {
         // get widgets through Event broadcast
-        $event = new Event('Search.Dashboards.getWidgets', $this);
+        $event = new Event((string)EventName::MODEL_DASHBOARDS_GET_WIDGETS(), $this);
         $this->eventManager()->dispatch($event);
 
         $widgets = !empty($event->result) ? $event->result : [];
