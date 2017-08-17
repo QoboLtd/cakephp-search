@@ -4,6 +4,7 @@ namespace Search\Widgets;
 use Cake\Datasource\ConnectionManager;
 use Cake\Event\Event;
 use Cake\Utility\Inflector;
+use Search\Event\EventName;
 use Search\Widgets\BaseWidget;
 
 class ReportWidget extends BaseWidget
@@ -84,7 +85,7 @@ class ReportWidget extends BaseWidget
             return $result;
         }
 
-        $event = new Event('Search.Report.getReports', $options['rootView']->request);
+        $event = new Event((string)EventName::MODEL_DASHBOARDS_GET_REPORTS(), $options['rootView']->request);
         $options['rootView']->EventManager()->dispatch($event);
 
         $result = $event->result;

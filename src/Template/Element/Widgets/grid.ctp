@@ -1,6 +1,7 @@
 <?php
 use Cake\Event\Event;
 use Cake\Utility\Inflector;
+use Search\Event\EventName;
 
 $config = $widget->getConfig();
 $data = $widget->getData();
@@ -42,7 +43,7 @@ echo $this->Html->script('Search.grid_report', ['block' => 'scriptBotton']);
                     <?php foreach ($columns as $col) : ?>
                         <?php
                             $_col = preg_replace('/_/', '', $col);
-                            $event = new Event('Search.Dashboard.Widget.GridElement', $this, [
+                            $event = new Event((string)EventName::VIEW_DASHBOARDS_WIDGET_GRID(), $this, [
                                 'model' => $config['modelName'],
                                 'field' => $_col,
                                 'value' => $item[$col],
@@ -51,19 +52,19 @@ echo $this->Html->script('Search.grid_report', ['block' => 'scriptBotton']);
                             $this->eventManager()->dispatch($event);
                         ?>
                         <td><?= !empty($event->result) ? $event->result : $item[$col] ?></td>
-                    <?php endforeach; ?>                    
+                    <?php endforeach; ?>
                     </tr>
                 <?php endforeach; ?>
                 </tbody>
                 <tfoot>
-                    <tr>                        
+                    <tr>
                         <?php foreach ($columns as $col) : ?>
                             <th class="<?= in_array($col, $totals) ? 'sum' : 'normal'; ?>"></th>
                         <?php endforeach; ?>
                     </tr>
                 </tfoot>
                 </table>
-            </div> 
+            </div>
         </div>
     </div>
 </div>
