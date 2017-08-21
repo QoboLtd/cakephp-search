@@ -11,7 +11,7 @@ echo $this->Html->script(
         'Search.view-search-result'
     ],
     [
-        'block' => 'scriptBotton'
+        'block' => 'scriptBottom'
     ]
 );
 echo $this->element('Search.Search/filters', [

@@ -15,7 +15,7 @@ $data = [];
 $columns = explode(',', $config['info']['columns']);
 $options = [];
 
-echo $this->Html->script('Search.grid_report', ['block' => 'scriptBotton']);
+echo $this->Html->script('Search.grid_report', ['block' => 'scriptBottom']);
 ?>
 <div class='dashboard-widget-display_config'>
     <div class="box box-default">

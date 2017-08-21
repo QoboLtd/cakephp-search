@@ -166,12 +166,12 @@ class SavedSearchWidget extends BaseWidget
                         'AdminLTE./plugins/datatables/dataTables.bootstrap.min',
                         'Search.view-search-result',
                     ],
-                    'block' => 'scriptBotton',
+                    'block' => 'scriptBottom',
                 ],
                 'scriptBlock' => [
                     'type' => 'scriptBlock',
                     'content' => 'view_search_result.init(' . json_encode($config) . ');',
-                    'block' => 'scriptBotton',
+                    'block' => 'scriptBottom',
                 ],
             ]
         ];

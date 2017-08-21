@@ -1,7 +1,7 @@
 <?php
 echo $this->Html->css('Search.dashboard', ['block' => 'css']);
 echo $this->Html->script('AdminLTE./plugins/jQueryUI/jquery-ui.min', ['block' => 'script']);
-echo $this->Html->script('Search.dashboard', ['block' => 'scriptBotton']);
+echo $this->Html->script('Search.dashboard', ['block' => 'scriptBottom']);
 ?>
 <section class="content-header">
     <div class="row">

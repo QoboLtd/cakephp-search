@@ -1,20 +1,20 @@
 <?php
 echo $this->Html->css('Search.search', ['block' => 'css']);
-echo $this->Html->script('Search.search', ['block' => 'scriptBotton']);
+echo $this->Html->script('Search.search', ['block' => 'scriptBottom']);
 
 echo $this->Html->scriptBlock(
     'search.setAssociationLabels(' . json_encode($associationLabels) . ');',
-    ['block' => 'scriptBotton']
+    ['block' => 'scriptBottom']
 );
-echo $this->Html->scriptBlock('search.setModel("' . $savedSearch->model . '");', ['block' => 'scriptBotton']);
+echo $this->Html->scriptBlock('search.setModel("' . $savedSearch->model . '");', ['block' => 'scriptBottom']);
 echo $this->Html->scriptBlock(
     'search.setFieldProperties(' . json_encode($searchableFields) . ');',
-    ['block' => 'scriptBotton']
+    ['block' => 'scriptBottom']
 );
 if (!empty($searchData['criteria'])) {
     echo $this->Html->scriptBlock(
         'search.generateCriteriaFields(' . json_encode($searchData['criteria']) . ');',
-        ['block' => 'scriptBotton']
+        ['block' => 'scriptBottom']
     );
 }
 ?>
