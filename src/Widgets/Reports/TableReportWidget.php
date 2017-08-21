@@ -81,7 +81,7 @@ class TableReportWidget extends BaseReportGraphs
                         'Qobo/Utils.vfs_fonts',
                         'Qobo/Utils.jszip.min',
                     ],
-                    'block' => 'scriptBotton',
+                    'block' => 'scriptBottom',
                 ],
             ]
         ];

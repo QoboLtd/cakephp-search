@@ -1,5 +1,5 @@
 <?php
-echo $this->Html->script('Search.saved_searches', ['block' => 'scriptBotton']);
+echo $this->Html->script('Search.saved_searches', ['block' => 'scriptBottom']);
 
 $selectOptions = [];
 foreach ($savedSearches as $savedSearch) {
