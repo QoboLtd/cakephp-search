@@ -693,8 +693,7 @@ class SavedSearchesTable extends Table
     protected function _getBasicSearchFields(Table $table, array $searchableFields)
     {
         if (empty($searchableFields)) {
-            $msg = 'Searchable fields for table [' . $table->getAlias() . '] cannot be empty.';
-            throw new InvalidArgumentException($msg);
+            return [];
         }
 
         $event = new Event((string)EventName::MODEL_SEARCH_BASIC_SEARCH_FIELDS(), $this, [
