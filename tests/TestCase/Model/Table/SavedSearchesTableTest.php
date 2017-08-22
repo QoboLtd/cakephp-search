@@ -283,6 +283,23 @@ class SavedSearchesTableTest extends TestCase
         $this->assertArrayHasKey('aggregator', $result);
     }
 
+
+    public function testPrepareDataBasicSearchWithoutSearchableFields()
+    {
+        $model = 'SomeRandomModel';
+
+        $request = new ServerRequest([
+            'post' => [
+                'criteria' => ['query' => 'foo']
+            ]
+        ]);
+        $user = ['id' => '00000000-0000-0000-0000-000000000001'];
+
+        $result = $this->SavedSearches->prepareData($request, TableRegistry::get($model), $user);
+
+        $this->assertEmpty($result['criteria']);
+    }
+
     public function testPrepareDataBasicSearchWithRelatedField()
     {
         $model = 'Dashboards';
