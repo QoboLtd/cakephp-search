@@ -5,8 +5,8 @@ use Cake\Utility\Inflector;
 $savedSearch = $widget->getData();
 $searchData = empty($savedSearch->content['saved']) ? [] : $savedSearch->content['saved'];
 $widgetOptions = $widget->getOptions();
-$fields = $widgetOptions['fields'];
-$associationLabels = $widgetOptions['associationLabels'];
+$fields = empty($widgetOptions['fields']) ? [] : $widgetOptions['fields'];
+$associationLabels = empty($widgetOptions['associationLabels']) ? [] : $widgetOptions['associationLabels'];
 
 //search url if is a saved one
 list($plugin, $controller) = pluginSplit($savedSearch->model);
