@@ -283,7 +283,6 @@ class SavedSearchesTableTest extends TestCase
         $this->assertArrayHasKey('aggregator', $result);
     }
 
-
     public function testPrepareDataBasicSearchWithoutSearchableFields()
     {
         $model = 'SomeRandomModel';
