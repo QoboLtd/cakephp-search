@@ -13,6 +13,7 @@ use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
 use Cake\Validation\Validator;
 use InvalidArgumentException;
+use Qobo\Utils\ModuleConfig\ConfigType;
 use Qobo\Utils\ModuleConfig\ModuleConfig;
 use Search\Event\EventName;
 use Search\Model\Entity\SavedSearch;
@@ -578,7 +579,7 @@ class SavedSearchesTable extends Table
 
         list(, $tableName) = pluginSplit($tableName);
 
-        $config = new ModuleConfig(ModuleConfig::CONFIG_TYPE_MODULE, $tableName);
+        $config = new ModuleConfig(ConfigType::MODULE(), $tableName);
 
         $result = (bool)$config->parse()->table->searchable;
 

@@ -4,6 +4,7 @@ namespace Search\Controller\Traits;
 use Cake\Core\App;
 use Cake\ORM\Table;
 use Exception;
+use Qobo\Utils\ModuleConfig\ConfigType;
 use Qobo\Utils\ModuleConfig\ModuleConfig;
 
 trait SearchableTrait
@@ -22,7 +23,7 @@ trait SearchableTrait
         }
 
         try {
-            $config = new ModuleConfig(ModuleConfig::CONFIG_TYPE_MODULE, $table);
+            $config = new ModuleConfig(ConfigType::MODULE(), $table);
             $result = (bool)$config->parse()->table->searchable;
         } catch (Exception $e) {
             $result = false;
