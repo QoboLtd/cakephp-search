@@ -3,7 +3,7 @@ use Cake\Event\Event;
 use Cake\Utility\Inflector;
 
 $savedSearch = $widget->getData();
-$searchData = $savedSearch->content['saved'];
+$searchData = empty($savedSearch->content['saved']) ? [] : $savedSearch->content['saved'];
 $widgetOptions = $widget->getOptions();
 $fields = $widgetOptions['fields'];
 $associationLabels = $widgetOptions['associationLabels'];
