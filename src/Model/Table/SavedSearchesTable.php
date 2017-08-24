@@ -264,11 +264,17 @@ class SavedSearchesTable extends Table
      * @param \Cake\ORM\Table $table Table instance
      * @param array $user User info
      * @param array $data Request data
-     * @return array
+     * @return null|\Cake\ORM\Query
      */
     public function search(Table $table, array $user, array $data)
     {
+        $result = null;
+
         $data = $this->validateData($table, $data, $user);
+
+        if (empty($data['criteria'])) {
+            return $result;
+        }
 
         // initialize query
         $query = $table->find('all');
@@ -542,7 +548,7 @@ class SavedSearchesTable extends Table
     {
         $result = $request->getData();
 
-        // non-basic search
+        // advanced search
         if (!Hash::get($result, 'criteria.query')) {
             return $result;
         }
@@ -672,6 +678,9 @@ class SavedSearchesTable extends Table
         ];
 
         $query = $this->search($table, $user, $data);
+        if (!$query) {
+            return $result;
+        }
 
         foreach ($query->all() as $entity) {
             $result[] = $entity->id;
