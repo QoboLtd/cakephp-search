@@ -65,7 +65,7 @@ trait SearchTrait
         // return json response and skip any further processing.
         if ($this->request->accepts('application/json')) {
             $this->viewBuilder()->className('Json');
-            $response = $this->_ajaxResponse($searchData, $table);
+            $response = $this->getAjaxViewVars($searchData, $table);
             $this->set($response);
 
             return;
@@ -93,13 +93,13 @@ trait SearchTrait
     }
 
     /**
-     * Ajax response.
+     * Get AJAX response view variables
      *
      * @param array $data Search data
      * @param \Cake\ORM\Table $table Table instance
      * @return array Variables and values for AJAX response
      */
-    protected function _ajaxResponse(array $data, Table $table)
+    protected function getAjaxViewVars(array $data, Table $table)
     {
         // Default response
         $result = [
