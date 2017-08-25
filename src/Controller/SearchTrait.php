@@ -64,7 +64,9 @@ trait SearchTrait
 
         // return json response and skip any further processing.
         if ($this->request->accepts('application/json')) {
-            $this->_ajaxResponse($searchData, $table);
+            $this->viewBuilder()->className('Json');
+            $response = $this->_ajaxResponse($searchData, $table);
+            $this->set($response);
 
             return;
         }
@@ -95,14 +97,17 @@ trait SearchTrait
      *
      * @param array $data Search data
      * @param \Cake\ORM\Table $table Table instance
-     * @return void
+     * @return array Variables and values for AJAX response
      */
     protected function _ajaxResponse(array $data, Table $table)
     {
-        $this->viewBuilder()->setLayout('ajax');
-        if (!$this->request->accepts('application/json')) {
-            return;
-        }
+        // Default response
+        $result = [
+            'success' => true,
+            'data' => [],
+            'pagination' => 0,
+            '_serialize' => ['success', 'data', 'pagination']
+        ];
 
         $searchTable = TableRegistry::get($this->_tableSearch);
 
@@ -118,39 +123,33 @@ trait SearchTrait
 
         $searchData['sort_by_order'] = $this->request->query('order.0.dir') ?: $searchTable->getDefaultSortByOrder();
 
-        // Default response
-        $response = [
+        $query = $searchTable->search($table, $this->Auth->user(), $searchData);
+        if (!$query) {
+            return $result;
+        }
+
+        $event = new Event((string)SearchEventName::MODEL_SEARCH_AFTER_FIND(), $this, [
+            'entities' => $this->paginate($query),
+            'table' => $table
+        ]);
+        $this->eventManager()->dispatch($event);
+
+        $data = [];
+        if ($event->result) {
+            $data = Utility::instance()->toDatatables($event->result, $displayColumns, $table);
+        }
+        $pagination = [
+            'count' => $query->count()
+        ];
+
+        $result = [
             'success' => true,
-            'data' => [],
-            'pagination' => 0,
+            'data' => $data,
+            'pagination' => $pagination,
             '_serialize' => ['success', 'data', 'pagination']
         ];
 
-        $query = $searchTable->search($table, $this->Auth->user(), $searchData);
-        if ($query) {
-            $event = new Event((string)SearchEventName::MODEL_SEARCH_AFTER_FIND(), $this, [
-                'entities' => $this->paginate($query),
-                'table' => $table
-            ]);
-            $this->eventManager()->dispatch($event);
-
-            $data = [];
-            if ($event->result) {
-                $data = Utility::instance()->toDatatables($event->result, $displayColumns, $table);
-            }
-            $pagination = [
-                'count' => $query->count()
-            ];
-
-            $response = [
-                'success' => true,
-                'data' => $data,
-                'pagination' => $pagination,
-                '_serialize' => ['success', 'data', 'pagination']
-            ];
-        }
-
-        $this->set($response);
+        return $result;
     }
 
     /**
