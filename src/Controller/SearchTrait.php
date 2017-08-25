@@ -99,6 +99,7 @@ trait SearchTrait
      */
     protected function _ajaxResponse(array $data, Table $table)
     {
+        $this->viewBuilder()->setLayout('ajax');
         if (!$this->request->accepts('application/json')) {
             return;
         }
