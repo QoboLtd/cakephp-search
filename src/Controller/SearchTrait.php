@@ -117,29 +117,39 @@ trait SearchTrait
 
         $searchData['sort_by_order'] = $this->request->query('order.0.dir') ?: $searchTable->getDefaultSortByOrder();
 
-        $query = $searchTable->search($table, $this->Auth->user(), $searchData);
-
-        $event = new Event((string)SearchEventName::MODEL_SEARCH_AFTER_FIND(), $this, [
-            'entities' => $this->paginate($query),
-            'table' => $table
-        ]);
-        $this->eventManager()->dispatch($event);
-
-        $data = [];
-        if ($event->result) {
-            $data = Utility::instance()->toDatatables($event->result, $displayColumns, $table);
-        }
-
-        $pagination = [
-            'count' => $query->count()
+        // Default response
+        $response = [
+            'success' => true,
+            'data' => [],
+            'pagination' => 0,
+            '_serialize' => ['success', 'data', 'pagination']
         ];
 
-        $this->set([
-            'success' => true,
-            'data' => $data,
-            'pagination' => $pagination,
-            '_serialize' => ['success', 'data', 'pagination']
-        ]);
+        $query = $searchTable->search($table, $this->Auth->user(), $searchData);
+        if ($query) {
+            $event = new Event((string)SearchEventName::MODEL_SEARCH_AFTER_FIND(), $this, [
+                'entities' => $this->paginate($query),
+                'table' => $table
+            ]);
+            $this->eventManager()->dispatch($event);
+
+            $data = [];
+            if ($event->result) {
+                $data = Utility::instance()->toDatatables($event->result, $displayColumns, $table);
+            }
+            $pagination = [
+                'count' => $query->count()
+            ];
+
+            $response = [
+                'success' => true,
+                'data' => $data,
+                'pagination' => $pagination,
+                '_serialize' => ['success', 'data', 'pagination']
+            ];
+        }
+
+        $this->set($response);
     }
 
     /**
