@@ -311,10 +311,6 @@ trait SearchTrait
             }
         }
 
-        // create temporary file
-        $path = TMP . uniqid($this->request->param('action') . '_') . '.csv';
-        $file = new File($path, true);
-
         $associationLabels = Utility::instance()->getAssociationLabels($table);
         $searchableFields = Utility::instance()->getSearchableFields($table, $this->Auth->user());
         $columns = [];
@@ -328,11 +324,30 @@ trait SearchTrait
             $suffix = $modelName === $label ? '' : ' (' . $label . ')';
             $columns[] = $searchableFields[$column]['label'] . $suffix;
         }
+        // Prepend columns to content
+        array_unshift($content, $columns);
+
+        $response = $this->streamCsv($content, $name);
+
+        return $response;
+    }
+
+    /**
+     * Create the CSV download response
+     *
+     * @param array $data CSV data
+     * @param string $name File name for saving download
+     * @return \Cake\Network\Response
+     */
+    protected function streamCsv(array $data, $name = null)
+    {
+        // create temporary file
+        $path = TMP . uniqid($this->request->param('action') . '_') . '.csv';
+        $file = new File($path, true);
 
         // write to temporary file
         $handler = fopen($path, 'w');
-        fputcsv($handler, $columns);
-        foreach ($content as $row) {
+        foreach ($data as $row) {
             fputcsv($handler, $row);
         }
         fclose($handler);
