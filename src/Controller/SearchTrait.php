@@ -284,18 +284,21 @@ trait SearchTrait
         $table = TableRegistry::get($savedSearch->model);
 
         // execute search
-        $entities = $searchTable->search($table, $this->Auth->user(), $searchData)->all();
+        $entities = $searchTable->search($table, $this->Auth->user(), $searchData);
+        if ($entities) {
+            $entities = $entities->all();
 
-        $event = new Event((string)SearchEventName::MODEL_SEARCH_AFTER_FIND(), $this, [
-            'entities' => $entities,
-            'table' => $table
-        ]);
-        $this->eventManager()->dispatch($event);
-        if ($event->result) {
-            $entities = $event->result;
+            $event = new Event((string)SearchEventName::MODEL_SEARCH_AFTER_FIND(), $this, [
+                'entities' => $entities,
+                'table' => $table
+            ]);
+            $this->eventManager()->dispatch($event);
+            if ($event->result) {
+                $entities = $event->result;
+            }
         }
 
-        $entities = Utility::instance()->toCsv($entities, $searchData['display_columns'], $table);
+        $entities = $entities ? Utility::instance()->toCsv($entities, $searchData['display_columns'], $table) : [];
 
         $content = [];
         foreach ($entities as $k => $entity) {
