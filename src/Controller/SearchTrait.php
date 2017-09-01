@@ -104,7 +104,7 @@ trait SearchTrait
         $result = [
             'success' => true,
             'data' => [],
-            'pagination' => 0,
+            'pagination' => ['count' => 0],
             '_serialize' => ['success', 'data', 'pagination']
         ];
 
@@ -264,7 +264,6 @@ trait SearchTrait
      * @param string $id Pre-saved search id
      * @param string $filename Export filename
      * @return \Cake\Http\Response|void
-     * @throws \Cake\Network\Exception\NotFoundException When record not found.
      */
     public function exportSearch($id, $filename = null)
     {
