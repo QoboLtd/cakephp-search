@@ -238,6 +238,8 @@ class ArticlesControllerTest extends IntegrationTestCase
 
     public function testExportSearch()
     {
+        $this->markTestSkipped();
+
         $id = '00000000-0000-0000-0000-000000000003';
 
         $this->get('/articles/search/' . $id);
