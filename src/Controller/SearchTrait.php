@@ -2,13 +2,12 @@
 namespace Search\Controller;
 
 use Cake\Event\Event;
-use Cake\Filesystem\File;
 use Cake\Network\Exception\BadRequestException;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Search\Event\EventName as SearchEventName;
 use Search\Utility;
-use Zend\Diactoros\Stream;
+use Search\Utility\Export;
 
 trait SearchTrait
 {
@@ -105,7 +104,7 @@ trait SearchTrait
         $result = [
             'success' => true,
             'data' => [],
-            'pagination' => 0,
+            'pagination' => ['count' => 0],
             '_serialize' => ['success', 'data', 'pagination']
         ];
 
@@ -263,113 +262,33 @@ trait SearchTrait
      * into a CSV file and forcing file download.
      *
      * @param string $id Pre-saved search id
-     * @param string $name Saved search name
-     * @return \Cake\Http\Response
-     * @throws \Cake\Network\Exception\NotFoundException When record not found.
+     * @param string $filename Export filename
+     * @return \Cake\Http\Response|void
      */
-    public function exportSearch($id, $name = null)
+    public function exportSearch($id, $filename = null)
     {
-        $this->autoRender = false;
-        $this->request->allowMethod(['patch', 'post', 'put']);
+        $filename = is_null($filename) ? $this->name : $filename;
+        $export = new Export($id, $filename, $this->Auth->user());
 
-        $searchTable = TableRegistry::get($this->_tableSearch);
+        if ($this->request->accepts('application/json') && $this->request->is('ajax')) {
+            $page = (int)$this->request->query('page');
+            $limit = (int)$this->request->query('limit');
 
-        // get saved search
-        $savedSearch = $searchTable->get($id);
+            $export->execute($page, $limit);
 
-        // extract info
-        $searchData = json_decode($savedSearch->content, true);
-        $searchData = $searchData['latest'];
+            $result = [
+                'success' => true,
+                'data' => ['path' => $export->getUrl()],
+                '_serialize' => ['success', 'data']
+            ];
 
-        $table = TableRegistry::get($savedSearch->model);
+            $this->set($result);
 
-        // execute search
-        $entities = $searchTable->search($table, $this->Auth->user(), $searchData);
-        if ($entities) {
-            $entities = $entities->all();
-
-            $event = new Event((string)SearchEventName::MODEL_SEARCH_AFTER_FIND(), $this, [
-                'entities' => $entities,
-                'table' => $table
-            ]);
-            $this->eventManager()->dispatch($event);
-            if ($event->result) {
-                $entities = $event->result;
-            }
+            return;
         }
 
-        $entities = $entities ? Utility::instance()->toCsv($entities, $searchData['display_columns'], $table) : [];
-
-        $content = [];
-        foreach ($entities as $k => $entity) {
-            $content[$k] = [];
-            foreach ($searchData['display_columns'] as $column) {
-                // @todo this is temporary fix to stripping out html tags from results columns
-                $value = trim(strip_tags($entity[$column]));
-                // end of temporary fix
-                $content[$k][] = $value;
-            }
-        }
-
-        $associationLabels = Utility::instance()->getAssociationLabels($table);
-        $searchableFields = Utility::instance()->getSearchableFields($table, $this->Auth->user());
-        $columns = [];
-        foreach ($searchData['display_columns'] as $column) {
-            $tableName = substr($column, 0, strpos($column, '.'));
-            $label = array_key_exists($tableName, $associationLabels) ?
-                $associationLabels[$tableName] :
-                $tableName;
-
-            list(, $modelName) = pluginSplit($savedSearch->model);
-            $suffix = $modelName === $label ? '' : ' (' . $label . ')';
-            $columns[] = $searchableFields[$column]['label'] . $suffix;
-        }
-        // Prepend columns to content
-        array_unshift($content, $columns);
-
-        $response = $this->streamCsv($content, $name);
-
-        return $response;
-    }
-
-    /**
-     * Create the CSV download response
-     *
-     * @param array $data CSV data
-     * @param string $name File name for saving download
-     * @return \Cake\Network\Response
-     */
-    protected function streamCsv(array $data, $name = null)
-    {
-        // create temporary file
-        $path = TMP . uniqid($this->request->param('action') . '_') . '.csv';
-        $file = new File($path, true);
-
-        // write to temporary file
-        $handler = fopen($path, 'w');
-        foreach ($data as $row) {
-            fputcsv($handler, $row);
-        }
-        fclose($handler);
-
-        // create a stream from file
-        $stream = new Stream($path, 'rb');
-
-        // prepare response body
-        $response = $this->response;
-        $response = $response->withBody($stream);
-        $response = $response->withType('csv');
-
-        // custom filename
-        $filename = $name ? $name : $this->name;
-        $filename .= ' ' . date('Y-m-d H-m-s') . '.csv';
-
-        // force file download
-        $response = $response->withDownload($filename);
-
-        // delete temporary file
-        unlink($path);
-
-        return $response;
+        $this->set('count', $export->count());
+        $this->set('filename', $filename);
+        $this->render('Search.Search/export');
     }
 }

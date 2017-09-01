@@ -117,10 +117,11 @@ if (!empty($searchData['criteria'])) {
                 echo $this->Form->button('<i class="fa fa-search"></i> ' . __('Search'), ['class' => 'btn btn-primary']);
                 echo $this->Form->end();
                 echo '&nbsp;';
-                echo $this->Form->postLink(
+                $exportName = ($savedSearch->name ? $savedSearch->name : $this->name) . ' ' . date('Y-m-d H-m-s');
+                echo $this->Html->link(
                     '<i class="fa fa-download"></i> ' . __('Export'),
-                    ['action' => 'export-search', $preSaveId, $savedSearch->has('name') ? $savedSearch->name : null],
-                    ['class' => 'btn btn-primary', 'escape' => false]
+                    ['action' => 'export-search', $preSaveId, $exportName],
+                    ['class' => 'btn btn-default', 'escape' => false]
                 );
                 ?>
             </div>

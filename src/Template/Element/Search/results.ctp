@@ -60,7 +60,7 @@ $options = [
         $preSaveId
     ]),
     'extension' => 'json',
-    'token' => Configure::read('CsvMigrations.api.token'),
+    'token' => Configure::read('Search.api.token'),
     'sort_by_field' => (int)array_search($searchData['sort_by_field'], $searchData['display_columns']),
     'sort_by_order' => $searchData['sort_by_order']
 ];
