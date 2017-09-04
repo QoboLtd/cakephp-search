@@ -9,7 +9,7 @@ return [
         ],
         'export' => [
             'url' => '/uploads/export/',
-            'limit' => 20
+            'limit' => 100
         ]
     ]
 ];

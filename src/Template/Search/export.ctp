@@ -9,27 +9,22 @@ $url = $this->Url->build([
     $filename
 ]);
 
-echo $this->Html->script('Search.exporter', ['block' => 'scriptBottom']);
+echo $this->Html->script(
+    [
+        'Search.exporter',
+        'Search.export.init'
+    ],
+    [
+        'block' => 'scriptBottom'
+    ]
+);
 echo $this->Html->scriptBlock(
-    '$( document ).ready(function() {
-        $("#search-export-link").exporter({
-            url: "' . $url . '",
-            count: ' . $count . ',
-            limit: "' . Configure::read('Search.export.limit') . '",
-            token: "' . Configure::read('Search.api.token') . '"
-        });
-    });
-    $(document).on("progress.search.export", function (e) {
-        var percent = Math.floor(e.percent);
-        $("#search-export-report .progress-bar").css("width", percent + "%");
-        $("#search-export-report .progress-percent").text(percent + "%");
-    })
-    $(document).on("completed.search.export", function (e) {
-        $("#search-export-report").removeClass("bg-blue").addClass("bg-green-active");
-        $("#search-export-report .info-box-icon .fa").removeClass("fa-spinner fa-pulse").addClass("fa-check");
-        $("#search-export-report .progress-status").text("' . __('completed') . '");
-        $("#search-export-link a").attr("href", e.link);
-        $("#search-export-link").removeClass("hidden");
+    'search_export.init({
+        url: "' . $url . '",
+        count: ' . $count . ',
+        limit: "' . Configure::read('Search.export.limit') . '",
+        token: "' . Configure::read('Search.api.token') . '",
+        completed_message: "' . __('completed') . '"
     })',
     ['block' => 'scriptBottom']
 );
