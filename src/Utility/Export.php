@@ -8,6 +8,7 @@ use Cake\Filesystem\File;
 use Cake\ORM\TableRegistry;
 use Search\Event\EventName;
 use Search\Utility;
+use Search\Utility\Search;
 
 final class Export
 {
@@ -168,7 +169,8 @@ final class Export
     {
         $table = TableRegistry::get('Search.SavedSearches');
 
-        $this->query = $table->search(TableRegistry::get($this->search->get('model')), $this->user, $this->data);
+        $search = new Search();
+        $this->query = $search->execute(TableRegistry::get($this->search->get('model')), $this->user, $this->data);
     }
 
     /**

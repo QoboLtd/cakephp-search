@@ -8,6 +8,9 @@ use Cake\ORM\TableRegistry;
 use Search\Event\EventName as SearchEventName;
 use Search\Utility;
 use Search\Utility\Export;
+use Search\Utility\Options as SearchOptions;
+use Search\Utility\Search;
+use Search\Utility\Validator as SearchValidator;
 
 trait SearchTrait
 {
@@ -35,6 +38,7 @@ trait SearchTrait
     {
         $model = $this->modelClass;
 
+        $search = new Search();
         $searchTable = TableRegistry::get($this->_tableSearch);
         $table = TableRegistry::get($model);
 
@@ -44,12 +48,12 @@ trait SearchTrait
 
         // redirect on POST requests (PRG pattern)
         if ($this->request->is('post')) {
-            $searchData = $searchTable->prepareData($this->request, $table, $this->Auth->user());
+            $searchData = $search->prepareData($this->request, $table, $this->Auth->user());
 
             if ($id) {
-                $searchTable->updateSearch($table, $this->Auth->user(), $searchData, $id);
+                $search->update($table, $this->Auth->user(), $searchData, $id);
             } else {
-                $id = $searchTable->createSearch($table, $this->Auth->user(), $searchData);
+                $id = $search->create($table, $this->Auth->user(), $searchData);
             }
 
             list($plugin, $controller) = pluginSplit($model);
@@ -57,35 +61,35 @@ trait SearchTrait
             return $this->redirect(['plugin' => $plugin, 'controller' => $controller, 'action' => __FUNCTION__, $id]);
         }
 
-        $entity = $searchTable->getSearch($table, $this->Auth->user(), $id);
+        $entity = $search->get($table, $this->Auth->user(), $id);
 
         $searchData = json_decode($entity->content, true);
 
         // return json response and skip any further processing.
         if ($this->request->is('ajax') && $this->request->accepts('application/json')) {
             $this->viewBuilder()->className('Json');
-            $response = $this->getAjaxViewVars($searchData, $table);
+            $response = $this->getAjaxViewVars($searchData, $table, $search);
             $this->set($response);
 
             return;
         }
 
-        $searchData = $searchTable->validateData($table, $searchData['latest'], $this->Auth->user());
+        $searchData = SearchValidator::validateData($table, $searchData['latest'], $this->Auth->user());
 
         // reset should only be applied to current search id (url parameter)
         // and NOT on newly pre-saved searches and that's we do the ajax
         // request check above, to prevent resetting the pre-saved search.
-        $searchTable->resetSearch($entity, $table, $this->Auth->user());
+        $search->reset($entity, $table, $this->Auth->user());
 
         $this->set('searchableFields', Utility::instance()->getSearchableFields($table, $this->Auth->user()));
         $this->set('savedSearches', $searchTable->getSavedSearches([$this->Auth->user('id')], [$model]));
         $this->set('model', $model);
         $this->set('searchData', $searchData);
         $this->set('savedSearch', $entity);
-        $this->set('preSaveId', $searchTable->createSearch($table, $this->Auth->user(), $searchData));
+        $this->set('preSaveId', $search->create($table, $this->Auth->user(), $searchData));
         // INFO: this is valid when a saved search was modified and the form was re-submitted
         $this->set('isEditable', $searchTable->isEditable($entity));
-        $this->set('searchOptions', $searchTable->getSearchOptions());
+        $this->set('searchOptions', SearchOptions::get());
         $this->set('associationLabels', Utility::instance()->getAssociationLabels($table));
 
         $this->render($this->_elementSearch);
@@ -96,9 +100,10 @@ trait SearchTrait
      *
      * @param array $data Search data
      * @param \Cake\ORM\Table $table Table instance
+     * @param \Search\Utility\Search $search Search instance
      * @return array Variables and values for AJAX response
      */
-    protected function getAjaxViewVars(array $data, Table $table)
+    protected function getAjaxViewVars(array $data, Table $table, Search $search)
     {
         // Default response
         $result = [
@@ -120,9 +125,9 @@ trait SearchTrait
             current($displayColumns);
         $searchData['sort_by_field'] = $sortField;
 
-        $searchData['sort_by_order'] = $this->request->query('order.0.dir') ?: $searchTable->getDefaultSortByOrder();
+        $searchData['sort_by_order'] = $this->request->query('order.0.dir') ?: SearchOptions::getDefaultSortByOrder();
 
-        $query = $searchTable->search($table, $this->Auth->user(), $searchData);
+        $query = $search->execute($table, $this->Auth->user(), $searchData);
         if (!$query) {
             return $result;
         }
