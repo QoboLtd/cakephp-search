@@ -32,6 +32,27 @@ class ExportTest extends TestCase
                     'operators' => [
                         'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%']
                     ]
+                ],
+                'Articles.created' => [
+                    'type' => 'datetime',
+                    'label' => 'Created',
+                    'operators' => [
+                        'is' => ['label' => 'is', 'operator' => 'IN']
+                    ]
+                ],
+                'Articles.modified' => [
+                    'type' => 'datetime',
+                    'label' => 'Modified',
+                    'operators' => [
+                        'is' => ['label' => 'is', 'operator' => 'IN']
+                    ]
+                ],
+                'Authors.name' => [
+                    'type' => 'string',
+                    'label' => 'Name',
+                    'operators' => [
+                        'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%']
+                    ]
                 ]
             ];
         });
