@@ -6,6 +6,7 @@ use Cake\Event\EventManager;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use Search\Utility;
+use Search\Utility\Search;
 
 /**
  * Search\Utility Test Case
@@ -34,38 +35,23 @@ class UtilityTest extends TestCase
 
         EventManager::instance()->on('Search.Model.Search.searchabeFields', function ($event, $table) {
             return [
-                'Articles.title' => [
-                    'type' => 'string',
-                    'label' => 'Title',
-                    'operators' => [
-                        'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%']
-                    ]
-                ],
-                'Articles.created' => [
-                    'type' => 'datetime',
-                    'label' => 'Created',
-                    'operators' => [
-                        'is' => ['label' => 'is', 'operator' => 'IN']
-                    ]
-                ],
-                'Articles.modified' => [
-                    'type' => 'datetime',
-                    'label' => 'Modified',
-                    'operators' => [
-                        'is' => ['label' => 'is', 'operator' => 'IN']
-                    ]
-                ],
-                'Authors.name' => [
-                    'type' => 'string',
-                    'label' => 'Name',
-                    'operators' => [
-                        'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%']
-                    ]
-                ]
+                'Articles.title' => ['type' => 'string', 'label' => 'Title', 'operators' => [
+                    'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%']
+                ]],
+                'Articles.created' => ['type' => 'datetime', 'label' => 'Created', 'operators' => [
+                    'is' => ['label' => 'is', 'operator' => 'IN']
+                ]],
+                'Articles.modified' => ['type' => 'datetime', 'label' => 'Modified', 'operators' => [
+                    'is' => ['label' => 'is', 'operator' => 'IN']
+                ]],
+                'Authors.name' => ['type' => 'string', 'label' => 'Name', 'operators' => [
+                    'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%']
+                ]]
             ];
         });
 
         $this->Utility = Utility::instance();
+        $this->Search = new Search();
 
         $config = TableRegistry::exists('SavedSearches') ? [] : ['className' => 'Search\Model\Table\SavedSearchesTable'];
         $this->SavedSearches = TableRegistry::get('SavedSearches', $config);
@@ -79,6 +65,7 @@ class UtilityTest extends TestCase
     public function tearDown()
     {
         unset($this->Utility);
+        unset($this->Search);
         unset($this->SavedSearches);
 
         parent::tearDown();
@@ -142,7 +129,7 @@ class UtilityTest extends TestCase
             'sort_by_order' => 'desc'
         ];
 
-        $query = $this->SavedSearches->search($table, $user, $data);
+        $query = $this->Search->execute($table, $user, $data);
 
         $result = $this->Utility->toDatatables($query->all(), $data['display_columns'], $table);
 
@@ -193,7 +180,7 @@ class UtilityTest extends TestCase
             'sort_by_order' => 'desc'
         ];
 
-        $query = $this->SavedSearches->search($table, $user, $data);
+        $query = $this->Search->execute($table, $user, $data);
 
         $result = $this->Utility->toCsv($query->all(), $data['display_columns'], $table);
 
