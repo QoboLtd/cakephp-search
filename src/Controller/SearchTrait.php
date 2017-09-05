@@ -62,7 +62,7 @@ trait SearchTrait
         $searchData = json_decode($entity->content, true);
 
         // return json response and skip any further processing.
-        if ($this->request->accepts('application/json')) {
+        if ($this->request->is('ajax') && $this->request->accepts('application/json')) {
             $this->viewBuilder()->className('Json');
             $response = $this->getAjaxViewVars($searchData, $table);
             $this->set($response);
@@ -270,7 +270,7 @@ trait SearchTrait
         $filename = is_null($filename) ? $this->name : $filename;
         $export = new Export($id, $filename, $this->Auth->user());
 
-        if ($this->request->accepts('application/json') && $this->request->is('ajax')) {
+        if ($this->request->is('ajax') && $this->request->accepts('application/json')) {
             $page = (int)$this->request->query('page');
             $limit = (int)$this->request->query('limit');
 

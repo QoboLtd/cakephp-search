@@ -87,7 +87,10 @@ class ArticlesControllerTest extends IntegrationTestCase
         });
 
         $this->configRequest([
-            'headers' => ['Accept' => 'application/json']
+            'headers' => ['Accept' => 'application/json'],
+            'environment' => [
+                'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest'
+            ]
         ]);
 
         $this->get('/articles/search/00000000-0000-0000-0000-000000000003');
@@ -238,19 +241,36 @@ class ArticlesControllerTest extends IntegrationTestCase
 
     public function testExportSearch()
     {
-        $this->markTestSkipped();
-
         $id = '00000000-0000-0000-0000-000000000003';
 
-        $this->get('/articles/search/' . $id);
-        $this->post('/articles/export-search/' . $id);
+        $this->get('/articles/export-search/' . $id . '/lorem-ipsum');
         $this->assertResponseOk();
 
-        $response = $this->_response;
+        $this->assertEquals('lorem-ipsum', $this->viewVariable('filename'));
+        $this->assertEquals(1, $this->viewVariable('count'));
+    }
 
-        $this->assertEquals('text/csv', $response->type());
-        $this->assertEquals('text/csv', $response->getHeaderLine('Content-Type'));
-        $this->assertContains('attachment; filename="Articles', $response->getHeaderLine('Content-Disposition'));
-        $this->assertContains('First article title', $response->body());
+    public function testExportSearchAjax()
+    {
+        $id = '00000000-0000-0000-0000-000000000003';
+
+        $this->configRequest([
+            'headers' => ['Accept' => 'application/json'],
+            'environment' => [
+                'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest'
+            ]
+        ]);
+
+        $this->get('/articles/export-search/' . $id . '/lorem-ipsum');
+        $this->assertResponseOk();
+
+        $this->assertTrue($this->viewVariable('success'));
+        $data = $this->viewVariable('data');
+        $this->assertEquals('/uploads/export/lorem-ipsum.csv', $data['path']);
+
+        $path = WWW_ROOT . 'uploads' . DS . 'export' . DS . 'lorem-ipsum.csv';
+        $this->assertTrue(file_exists($path));
+
+        unlink($path);
     }
 }

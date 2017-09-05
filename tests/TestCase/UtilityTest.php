@@ -32,42 +32,43 @@ class UtilityTest extends TestCase
     {
         parent::setUp();
 
+        EventManager::instance()->on('Search.Model.Search.searchabeFields', function ($event, $table) {
+            return [
+                'Articles.title' => [
+                    'type' => 'string',
+                    'label' => 'Title',
+                    'operators' => [
+                        'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%']
+                    ]
+                ],
+                'Articles.created' => [
+                    'type' => 'datetime',
+                    'label' => 'Created',
+                    'operators' => [
+                        'is' => ['label' => 'is', 'operator' => 'IN']
+                    ]
+                ],
+                'Articles.modified' => [
+                    'type' => 'datetime',
+                    'label' => 'Modified',
+                    'operators' => [
+                        'is' => ['label' => 'is', 'operator' => 'IN']
+                    ]
+                ],
+                'Authors.name' => [
+                    'type' => 'string',
+                    'label' => 'Name',
+                    'operators' => [
+                        'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%']
+                    ]
+                ]
+            ];
+        });
+
         $this->Utility = Utility::instance();
 
         $config = TableRegistry::exists('SavedSearches') ? [] : ['className' => 'Search\Model\Table\SavedSearchesTable'];
         $this->SavedSearches = TableRegistry::get('SavedSearches', $config);
-
-        EventManager::instance()->on(
-            'Search.Model.Search.searchabeFields',
-            function ($event, $table) {
-                return [
-                    'Articles.title' => [
-                        'type' => 'string',
-                        'operators' => [
-                            'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%']
-                        ]
-                    ],
-                    'Articles.created' => [
-                        'type' => 'datetime',
-                        'operators' => [
-                            'is' => ['label' => 'is', 'operator' => 'IN']
-                        ]
-                    ],
-                    'Articles.modified' => [
-                        'type' => 'datetime',
-                        'operators' => [
-                            'is' => ['label' => 'is', 'operator' => 'IN']
-                        ]
-                    ],
-                    'Authors.name' => [
-                        'type' => 'string',
-                        'operators' => [
-                            'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%']
-                        ]
-                    ]
-                ];
-            }
-        );
     }
 
     /**
