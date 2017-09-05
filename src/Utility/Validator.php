@@ -28,18 +28,18 @@ final class Validator
         $data += Options::getDefaults($table);
 
         if (!empty($data['criteria'])) {
-            $data['criteria'] = static::_validateCriteria($data['criteria'], $fields);
+            $data['criteria'] = static::validateCriteria($data['criteria'], $fields);
         }
 
-        $data['display_columns'] = static::_validateDisplayColumns($data['display_columns'], $fields);
-        $data['sort_by_field'] = static::_validateSortByField(
+        $data['display_columns'] = static::validateDisplayColumns($data['display_columns'], $fields);
+        $data['sort_by_field'] = static::validateSortByField(
             $data['sort_by_field'],
             $fields,
             $data['display_columns'],
             $table
         );
-        $data['sort_by_order'] = static::_validateSortByOrder($data['sort_by_order'], $table);
-        $data['aggregator'] = static::_validateAggregator($data['aggregator']);
+        $data['sort_by_order'] = static::validateSortByOrder($data['sort_by_order'], $table);
+        $data['aggregator'] = static::validateAggregator($data['aggregator']);
 
         return $data;
     }
@@ -51,7 +51,7 @@ final class Validator
      * @param array $fields Searchable fields
      * @return array
      */
-    protected static function _validateCriteria(array $data, array $fields)
+    protected static function validateCriteria(array $data, array $fields)
     {
         foreach ($data as $k => $v) {
             if (in_array($k, $fields)) {
@@ -70,7 +70,7 @@ final class Validator
      * @param array $fields Searchable fields
      * @return array
      */
-    protected static function _validateDisplayColumns(array $data, array $fields)
+    protected static function validateDisplayColumns(array $data, array $fields)
     {
         foreach ($data as $k => $v) {
             if (in_array($v, $fields)) {
@@ -91,7 +91,7 @@ final class Validator
      * @param \Cake\ORM\Table $table Table instance
      * @return string
      */
-    protected static function _validateSortByField($data, array $fields, array $displayColumns, Table $table)
+    protected static function validateSortByField($data, array $fields, array $displayColumns, Table $table)
     {
         // use sort field if is searchable
         if (in_array($data, $fields)) {
@@ -128,7 +128,7 @@ final class Validator
      * @param \Cake\ORM\Table $table Table instance
      * @return string
      */
-    protected static function _validateSortByOrder($data, Table $table)
+    protected static function validateSortByOrder($data, Table $table)
     {
         $options = array_keys(Options::getSortByOrders());
         if (!in_array($data, $options)) {
@@ -144,7 +144,7 @@ final class Validator
      * @param string $data Aggregator value
      * @return string
      */
-    protected static function _validateAggregator($data)
+    protected static function validateAggregator($data)
     {
         $options = array_keys(Options::getAggregators());
         if (!in_array($data, $options)) {
