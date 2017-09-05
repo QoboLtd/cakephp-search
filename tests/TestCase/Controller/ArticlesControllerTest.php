@@ -87,7 +87,10 @@ class ArticlesControllerTest extends IntegrationTestCase
         });
 
         $this->configRequest([
-            'headers' => ['Accept' => 'application/json']
+            'headers' => ['Accept' => 'application/json'],
+            'environment' => [
+                'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest'
+            ]
         ]);
 
         $this->get('/articles/search/00000000-0000-0000-0000-000000000003');
