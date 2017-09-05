@@ -307,7 +307,7 @@ final class Search
             'criteria' => $this->getBasicCriteria($data, $table, $user)
         ];
 
-        $query = $this->search($table, $user, $data);
+        $query = $this->execute($table, $user, $data);
         if (!$query) {
             return $result;
         }
