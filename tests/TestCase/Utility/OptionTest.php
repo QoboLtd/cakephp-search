@@ -1,6 +1,7 @@
 <?php
 namespace Search\Utility;
 
+use Cake\Event\EventManager;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use Search\Utility\Options;
@@ -10,10 +11,6 @@ use Search\Utility\Options;
  */
 class OptionsTest extends TestCase
 {
-    public $fixtures = [
-        'plugin.search.dashboards'
-    ];
-
     public function testGetPrivateSharedStatus()
     {
         $result = Options::getPrivateSharedStatus();
@@ -70,6 +67,19 @@ class OptionsTest extends TestCase
         $model = 'Dashboards';
 
         $expected = [$model . '.name', $model . '.modified', $model . '.created'];
+
+        $result = Options::getListingFields(TableRegistry::get($model));
+        $this->assertEquals($result, $expected);
+    }
+
+    public function testGetListingFieldsFromEvent()
+    {
+        $model = 'Dashboards';
+        $expected = [$model . '.foobar'];
+
+        EventManager::instance()->on('Search.Model.Search.displayFields', function ($event, $table) use ($expected) {
+            return $expected;
+        });
 
         $result = Options::getListingFields(TableRegistry::get($model));
         $this->assertEquals($result, $expected);

@@ -25,12 +25,7 @@ class SavedSearchesTableTest extends TestCase
      * @var array
      */
     public $fixtures = [
-        'plugin.search.app_widgets',
-        'plugin.search.articles',
-        'plugin.search.authors',
-        'plugin.search.dashboards',
-        'plugin.search.saved_searches',
-        'plugin.roles_capabilities.roles'
+        'plugin.search.saved_searches'
     ];
 
     /**
