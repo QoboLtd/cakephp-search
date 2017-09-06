@@ -19,14 +19,14 @@ trait SearchTrait
      *
      * @var string
      */
-    protected $_tableSearch = 'Search.SavedSearches';
+    protected $tableName = 'Search.SavedSearches';
 
     /**
      * Element to be used as Search template.
      *
      * @var string
      */
-    protected $_elementSearch = 'Search.Search/search';
+    protected $searchElement = 'Search.Search/search';
 
     /**
      * Search action
@@ -39,7 +39,7 @@ trait SearchTrait
         $model = $this->modelClass;
 
         $search = new Search();
-        $searchTable = TableRegistry::get($this->_tableSearch);
+        $searchTable = TableRegistry::get($this->tableName);
         $table = TableRegistry::get($model);
 
         if (!$searchTable->isSearchable($model)) {
@@ -52,7 +52,9 @@ trait SearchTrait
 
             if ($id) {
                 $search->update($table, $this->Auth->user(), $searchData, $id);
-            } else {
+            }
+
+            if (!$id) {
                 $id = $search->create($table, $this->Auth->user(), $searchData);
             }
 
@@ -92,7 +94,7 @@ trait SearchTrait
         $this->set('searchOptions', SearchOptions::get());
         $this->set('associationLabels', Utility::instance()->getAssociationLabels($table));
 
-        $this->render($this->_elementSearch);
+        $this->render($this->searchElement);
     }
 
     /**
@@ -112,8 +114,6 @@ trait SearchTrait
             'pagination' => ['count' => 0],
             '_serialize' => ['success', 'data', 'pagination']
         ];
-
-        $searchTable = TableRegistry::get($this->_tableSearch);
 
         $searchData = $data['latest'];
 
@@ -167,7 +167,7 @@ trait SearchTrait
     {
         $this->request->allowMethod(['patch', 'post', 'put']);
 
-        $table = TableRegistry::get($this->_tableSearch);
+        $table = TableRegistry::get($this->tableName);
 
         $search = $table->get($id);
         $search = $table->patchEntity($search, $this->request->data);
@@ -192,7 +192,7 @@ trait SearchTrait
     {
         $this->request->allowMethod(['patch', 'post', 'put']);
 
-        $table = TableRegistry::get($this->_tableSearch);
+        $table = TableRegistry::get($this->tableName);
 
         // get pre-saved search
         $preSaved = $table->get($preId);
@@ -220,7 +220,7 @@ trait SearchTrait
     {
         $this->request->allowMethod(['patch', 'post', 'put']);
 
-        $table = TableRegistry::get($this->_tableSearch);
+        $table = TableRegistry::get($this->tableName);
 
         // get saved search
         $savedSearch = $table->get($id);
@@ -249,7 +249,7 @@ trait SearchTrait
     {
         $this->request->allowMethod(['post', 'delete']);
 
-        $table = TableRegistry::get($this->_tableSearch);
+        $table = TableRegistry::get($this->tableName);
         $savedSearch = $table->get($id);
         if ($table->delete($savedSearch)) {
             $this->Flash->success(__('The saved search has been deleted.'));

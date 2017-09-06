@@ -38,7 +38,7 @@ final class Validator
             $data['display_columns'],
             $table
         );
-        $data['sort_by_order'] = static::validateSortByOrder($data['sort_by_order'], $table);
+        $data['sort_by_order'] = static::validateSortByOrder($data['sort_by_order']);
         $data['aggregator'] = static::validateAggregator($data['aggregator']);
 
         return $data;
@@ -53,11 +53,11 @@ final class Validator
      */
     protected static function validateCriteria(array $data, array $fields)
     {
-        foreach ($data as $k => $v) {
-            if (in_array($k, $fields)) {
+        foreach (array_keys($data) as $key) {
+            if (in_array($key, $fields)) {
                 continue;
             }
-            unset($data[$k]);
+            unset($data[$key]);
         }
 
         return $data;
@@ -125,10 +125,9 @@ final class Validator
      * Validate search sort by order.
      *
      * @param string $data Sort by order value
-     * @param \Cake\ORM\Table $table Table instance
      * @return string
      */
-    protected static function validateSortByOrder($data, Table $table)
+    protected static function validateSortByOrder($data)
     {
         $options = array_keys(Options::getSortByOrders());
         if (!in_array($data, $options)) {

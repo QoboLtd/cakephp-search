@@ -25,7 +25,7 @@ final class Search
      *
      * @var \Search\Model\Table\SavedSearchesTable
      */
-    protected $table;
+    protected $searchTable;
 
     /**
      * Constructor.
@@ -34,7 +34,7 @@ final class Search
      */
     public function __construct()
     {
-        $this->table = TableRegistry::get('Search.SavedSearches');
+        $this->searchTable = TableRegistry::get('Search.SavedSearches');
     }
 
     /**
@@ -58,7 +58,7 @@ final class Search
         // initialize query
         $query = $table->find('all');
 
-        $where = $this->prepareWhereStatement($data, $table, $user);
+        $where = $this->getWhereClause($data, $table, $user);
         $select = $this->getQueryFields($data, $table);
         $order = [$table->aliasField($data['sort_by_field']) => $data['sort_by_order']];
 
@@ -109,11 +109,11 @@ final class Search
      */
     public function update(Table $table, array $user, array $searchData, $id)
     {
-        $entity = $this->table->get($id);
+        $entity = $this->searchTable->get($id);
         $content = json_decode($entity->content, true);
         $entity = $this->normalize($entity, $table, $user, $content, $searchData);
 
-        return $this->table->save($entity);
+        return $this->searchTable->save($entity);
     }
 
     /**
@@ -127,7 +127,7 @@ final class Search
     public function get(Table $table, array $user, $id)
     {
         $id = !empty($id) ? $id : $this->create($table, $user, []);
-        $entity = $this->table->get($id);
+        $entity = $this->searchTable->get($id);
         $content = json_decode($entity->content, true);
         $entity = $this->normalize($entity, $table, $user, $content, $content);
 
@@ -155,7 +155,7 @@ final class Search
         $saved = isset($content['saved']) ? $content['saved'] : $content;
         $entity = $this->normalize($entity, $table, $user, $saved, $saved);
 
-        return $this->table->save($entity);
+        return $this->searchTable->save($entity);
     }
 
     /**
@@ -170,14 +170,16 @@ final class Search
     {
         $result = $request->getData();
 
+        $value = Hash::get($result, 'criteria.query');
+
         // advanced search
-        if (!Hash::get($result, 'criteria.query')) {
+        if (!$value) {
             return $result;
         }
 
         // basic search query, converted to search criteria
         $result['aggregator'] = 'OR';
-        $result['criteria'] = $this->getBasicCriteria(Hash::get($result, 'criteria'), $table, $user);
+        $result['criteria'] = $this->getBasicCriteria($value, $table, $user);
 
         return $result;
     }
@@ -213,7 +215,7 @@ final class Search
                 $result[$association->getName()]['select'] = $select;
             }
 
-            $where = $this->prepareWhereStatement($data, $targetTable, $user);
+            $where = $this->getWhereClause($data, $targetTable, $user);
             if (!empty($where)) {
                 $result[$association->getName()]['where'] = $where;
             }
@@ -225,58 +227,67 @@ final class Search
     /**
      * Prepare basic search query's where statement
      *
-     * @param array $data search fields
+     * @param string $value Search query value
      * @param \Cake\ORM\Table $table Table object
      * @param array $user User info
      * @return array
      */
-    protected function getBasicCriteria(array $data, Table $table, array $user)
+    protected function getBasicCriteria($value, Table $table, array $user)
     {
-        $result = [];
-        if (empty($data['query'])) {
-            return $result;
-        }
-
         $searchableFields = Utility::instance()->getSearchableFields($table, $user);
 
         $fields = $this->getBasicFields($table, $searchableFields);
         if (empty($fields)) {
-            return $result;
+            return [];
         }
 
+        $result = [];
         foreach ($fields as $field) {
-            if (!array_key_exists($field, $searchableFields)) {
+            $val = $this->getBasicFieldValue($field, $value, $searchableFields);
+            if (empty($val)) {
                 continue;
             }
+            $result[$field] = $val;
+        }
 
-            if (!in_array($searchableFields[$field]['type'], Options::getBasicSearchFieldTypes())) {
-                continue;
-            }
+        return $result;
+    }
 
-            $type = $searchableFields[$field]['type'];
-            $operator = key($searchableFields[$field]['operators']);
-            $value = $data['query'];
+    /**
+     * Field value getter for basic search criteria.
+     *
+     * @param string $field Field name
+     * @param string $value Search query value
+     * @param array $searchFields Searchable fields
+     * @return array
+     */
+    protected function getBasicFieldValue($field, $value, $searchFields)
+    {
+        if (!array_key_exists($field, $searchFields)) {
+            return [];
+        }
 
-            if ('related' === $type) {
-                $sourceTable = TableRegistry::get($searchableFields[$field]['source']);
-                $value = $this->getRelatedModuleValues($sourceTable, $data, $user);
-            }
+        $type = $searchFields[$field]['type'];
+        if (!in_array($type, Options::getBasicSearchFieldTypes())) {
+            return [];
+        }
 
-            if (!is_array($value)) {
-                $value = (array)$value;
-            }
+        if ('related' === $type) {
+            $sourceTable = TableRegistry::get($searchFields[$field]['source']);
+            $value = $this->getRelatedModuleValues($sourceTable, $value, $user);
+        }
 
-            if (empty($value)) {
-                continue;
-            }
+        if (empty($value)) {
+            continue;
+        }
 
-            foreach ($value as $val) {
-                $result[$field][] = [
-                    'type' => $type,
-                    'operator' => $operator,
-                    'value' => $val
-                ];
-            }
+        $result = [];
+        foreach ((array)$value as $val) {
+            $result[] = [
+                'type' => $type,
+                'operator' => key($searchFields[$field]['operators']),
+                'value' => $val
+            ];
         }
 
         return $result;
@@ -291,20 +302,20 @@ final class Search
      * return the entities IDs matching the search string.
      *
      * @param \Cake\ORM\Table $table Related table instance
-     * @param array $data Search string
+     * @param string $value Search query value
      * @param array $user User info
      * @return array
      */
-    protected function getRelatedModuleValues(Table $table, array $data, array $user)
+    protected function getRelatedModuleValues(Table $table, string $value, array $user)
     {
         $result = [];
-        if (empty($data) || empty($user)) {
+        if (empty($user)) {
             return $result;
         }
 
         $data = [
             'aggregator' => 'OR',
-            'criteria' => $this->getBasicCriteria($data, $table, $user)
+            'criteria' => $this->getBasicCriteria($value, $table, $user)
         ];
 
         $query = $this->execute($table, $user, $data);
@@ -340,39 +351,63 @@ final class Search
         ]);
         EventManager::instance()->dispatch($event);
 
-        $result = $event->result;
+        $result = (array)$event->result;
 
         if (empty($result)) {
-            $result = $table->aliasField($table->displayField());
+            $result = (array)$table->aliasField($table->displayField());
         }
 
-        if (!is_array($result)) {
-            $result = (array)$result;
-        }
-
-        $columns = $table->schema()->columns();
-        foreach ($columns as &$column) {
-            $column = $table->aliasField($column);
-        }
-
-        // remove non-existing database fields (virtual field for example)
-        foreach ($result as $key => $field) {
-            if (in_array($field, $columns)) {
-                continue;
-            }
-            unset($result[$key]);
-        }
+        $result = $this->filterBasicFields($table, $result);
 
         if (!empty($result)) {
             return $result;
         }
 
-        foreach ($searchableFields as $field => $properties) {
-            if (!in_array($properties['type'], Options::getBasicSearchFieldTypes())) {
-                continue;
-            }
+        $result = $this->getDefaultBasicFields($searchableFields);
 
-            $result[] = $field;
+        return $result;
+    }
+
+    /**
+     * Filters basic search fields by removing virtual ones.
+     *
+     * @param \Cake\ORM\Table $table Table instance
+     * @param array $fields Basic search fields
+     * @return array
+     */
+    protected function filterBasicFields(Table $table, array $fields)
+    {
+        // get table columns, aliased
+        $columns = $table->schema()->columns();
+        foreach ($columns as $index => $column) {
+            $columns[$index] = $table->aliasField($column);
+        }
+
+        // filter out virtual fields
+        foreach ($fields as $index => $field) {
+            if (!in_array($field, $columns)) {
+                unset($fields[$index]);
+            }
+        }
+
+        return $fields;
+    }
+
+    /**
+     * Default basic search fields getter.
+     *
+     * @param array $searchFields Searchable fields
+     * @return array
+     */
+    protected function getDefaultBasicFields($searchFields)
+    {
+        $result = [];
+        $types = Options::getBasicSearchFieldTypes();
+
+        foreach ($searchFields as $field => $properties) {
+            if (in_array($properties['type'], $types)) {
+                $result[] = $field;
+            }
         }
 
         return $result;
@@ -410,7 +445,7 @@ final class Search
      * @param array $user User info
      * @return array
      */
-    protected function prepareWhereStatement(array $data, Table $table, array $user)
+    protected function getWhereClause(array $data, Table $table, array $user)
     {
         $result = [];
 
@@ -418,48 +453,57 @@ final class Search
             return $result;
         }
 
-        // get searchable fields and filter out the ones
-        // which do not belong to the current module.
         $searchableFields = Utility::instance()->getSearchableFields($table, $user);
+        // get current module searchable fields.
         $moduleFields = $this->filterModuleFields($table, array_keys($searchableFields));
-
-        foreach (array_keys($searchableFields) as $field) {
-            if (in_array($field, $moduleFields)) {
-                continue;
-            }
-            unset($searchableFields[$field]);
-        }
 
         foreach ($data['criteria'] as $fieldName => $criterias) {
             if (empty($criterias)) {
                 continue;
             }
-            $fieldName = $table->aliasField($fieldName);
 
-            if (!isset($searchableFields[$fieldName])) {
+            $fieldName = $table->aliasField($fieldName);
+            if (!in_array($fieldName, $moduleFields)) {
                 continue;
             }
 
             foreach ($criterias as $criteria) {
-                $type = $criteria['type'];
-                $value = $criteria['value'];
-                if ('' === trim($value)) {
+                $condition = $this->getWhereCondition($fieldName, $criteria, $searchableFields);
+                if (empty($condition)) {
                     continue;
                 }
-                $operator = $criteria['operator'];
-                if (isset($searchableFields[$fieldName]['operators'][$operator]['pattern'])) {
-                    $value = str_replace(
-                        '{{value}}',
-                        $value,
-                        $searchableFields[$fieldName]['operators'][$operator]['pattern']
-                    );
-                }
-                $sqlOperator = $searchableFields[$fieldName]['operators'][$operator]['operator'];
-                $key = $fieldName . ' ' . $sqlOperator;
-
-                $result[] = [$key => $value];
+                $result[] = $condition;
             }
         }
+
+        return $result;
+    }
+
+    /**
+     * Prepare and return where statement condition.
+     *
+     * @param string $field Field name
+     * @param array $criteria Criteria properties
+     * @param array $searchFields Searchable fields
+     * @return array
+     */
+    protected function getWhereCondition($field, array $criteria, array $searchFields)
+    {
+        $result = [];
+
+        $value = trim($criteria['value']);
+        if (empty($value)) {
+            return $result;
+        }
+
+        if (isset($searchFields[$field]['operators'][$criteria['operator']]['pattern'])) {
+            $pattern = $searchFields[$field]['operators'][$criteria['operator']]['pattern'];
+            $value = str_replace('{{value}}', $value, $pattern);
+        }
+
+        $key = $field . ' ' . $searchFields[$field]['operators'][$criteria['operator']]['operator'];
+
+        $result[$key] = $value;
 
         return $result;
     }
@@ -507,10 +551,10 @@ final class Search
         // delete old pre-saved searches
         $this->deletePreSaved();
 
-        $entity = $this->table->newEntity();
+        $entity = $this->searchTable->newEntity();
 
         $entity = $this->normalize($entity, $table, $user, $data, $data);
-        $this->table->save($entity);
+        $this->searchTable->save($entity);
 
         return $entity->id;
     }
@@ -574,7 +618,7 @@ final class Search
      */
     protected function deletePreSaved()
     {
-        $this->table->deleteAll([
+        $this->searchTable->deleteAll([
             'modified <' => new \DateTime(static::DELETE_OLDER_THAN),
             'name IS' => null
         ]);

@@ -405,11 +405,11 @@ class SearchTest extends TestCase
         $this->assertArrayHasKey('limit', $result['latest']);
     }
 
-    public function testPrepareWhereStatement()
+    public function testGetWhereClause()
     {
         $user = ['id' => '00000000-0000-0000-0000-000000000001'];
         $class = new ReflectionClass(Search::class);
-        $method = $class->getMethod('prepareWhereStatement');
+        $method = $class->getMethod('getWhereClause');
         $method->setAccessible(true);
 
         $result = $method->invokeArgs($this->Search, [

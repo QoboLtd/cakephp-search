@@ -28,7 +28,7 @@ final class Options
      *
      * @var array
      */
-    protected static $searchableAssociations = ['manyToOne'];
+    protected static $associations = ['manyToOne'];
 
     /**
      * Basic search default fields
@@ -42,7 +42,7 @@ final class Options
      *
      * @var array
      */
-    protected static $basicSearchFieldTypes = ['string', 'text', 'textarea', 'related', 'email', 'url', 'phone'];
+    protected static $basicFieldTypes = ['string', 'text', 'textarea', 'related', 'email', 'url', 'phone'];
 
     /**
      * Search sort by order options.
@@ -108,7 +108,7 @@ final class Options
      */
     public static function getSearchableAssociations()
     {
-        return static::$searchableAssociations;
+        return static::$associations;
     }
 
     /**
@@ -138,7 +138,7 @@ final class Options
      */
     public static function getBasicSearchFieldTypes()
     {
-        return static::$basicSearchFieldTypes;
+        return static::$basicFieldTypes;
     }
 
     /**
@@ -173,59 +173,86 @@ final class Options
     }
 
     /**
-     * Return Table's listing fields.
+     * Current table display fields getter.
      *
      * @param \Cake\ORM\Table $table Table instance
      * @return array
      */
     public static function getListingFields(Table $table)
     {
+        // broadcast event to fetch display fields
+        $event = new Event((string)EventName::MODEL_SEARCH_DISPLAY_FIELDS(), Validator::class, [
+            'table' => $table
+        ]);
+        EventManager::instance()->dispatch($event);
+
+        $result = (array)$event->result;
+
+        if (empty($result)) {
+            $result = static::getDefaultDisplayFields($table);
+        }
+
+        $result = array_diff($result, static::getSkippedDisplayFields(true, $table));
+
+        // reset numeric indexes
+        return array_values($result);
+    }
+
+    /**
+     * Default display fields getter.
+     *
+     * @param \Cake\ORM\Table $table Table instance
+     * @return array
+     */
+    protected static function getDefaultDisplayFields(Table $table)
+    {
         $result = [];
 
-        if (method_exists($table, 'getListingFields') && is_callable([$table, 'getListingFields'])) {
-            $result = $table->getListingFields();
-        }
+        array_push($result, $table->getPrimaryKey());
+        array_push($result, $table->getDisplayField());
 
-        if (empty($result)) {
-            $event = new Event((string)EventName::MODEL_SEARCH_DISPLAY_FIELDS(), Validator::class, [
-                'table' => $table
-            ]);
-            EventManager::instance()->dispatch($event);
+        $result = array_merge($result, static::$defaultDisplayFields);
 
-            $result = $event->result;
-        }
-
-        if (empty($result)) {
-            $result[] = $table->getPrimaryKey();
-            $result[] = $table->getDisplayField();
-            foreach (static::$defaultDisplayFields as $field) {
-                $result[] = $field;
-            }
-
-            foreach ($result as $k => $field) {
-                if ($table->hasField($field)) {
-                    $result[$k] = $table->aliasField($field);
-                    continue;
-                }
-
+        // remove virtual fields
+        foreach ($result as $k => $field) {
+            if (!$table->hasField($field)) {
                 unset($result[$k]);
             }
         }
 
-        if (!is_array($result)) {
-            $result = (array)$result;
+        // alias fields
+        foreach ($result as $k => $field) {
+            $result[$k] = $table->aliasField($field);
         }
 
-        $skippedDisplayFields = [];
+        return $result;
+    }
+
+    /**
+     * Skipped display fields getter.
+     * To alias the fields you need to set $aliased flag
+     * to true and pass the table instance.
+     *
+     * @param bool $aliased Alias flag
+     * @param \Cake\ORM\Table $table Table instance
+     * @return array
+     */
+    protected static function getSkippedDisplayFields($aliased = false, $table = null)
+    {
+        $aliased = (bool)$aliased;
+
+        if (!$aliased) {
+            return static::$skipDisplayFields;
+        }
+
+        if (!$table instanceof Table) {
+            return static::$skipDisplayFields;
+        }
+
+        $result = [];
         foreach (static::$skipDisplayFields as $field) {
-            $skippedDisplayFields[] = $table->aliasField($field);
+            $result[] = $table->aliasField($field);
         }
-
-        // skip display fields
-        $result = array_diff($result, $skippedDisplayFields);
-
-        // reset numeric indexes
-        $result = array_values($result);
 
         return $result;
     }
