@@ -243,7 +243,7 @@ final class Search
 
         $result = [];
         foreach ($fields as $field) {
-            $val = $this->getBasicFieldValue($field, $value, $searchableFields);
+            $val = $this->getBasicFieldValue($field, $value, $searchableFields, $user);
             if (empty($val)) {
                 continue;
             }
@@ -259,9 +259,10 @@ final class Search
      * @param string $field Field name
      * @param string $value Search query value
      * @param array $searchFields Searchable fields
+     * @param array $user User info
      * @return array
      */
-    protected function getBasicFieldValue($field, $value, $searchFields)
+    protected function getBasicFieldValue($field, $value, $searchFields, array $user)
     {
         if (!array_key_exists($field, $searchFields)) {
             return [];
