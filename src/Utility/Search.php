@@ -307,7 +307,7 @@ final class Search
      * @param array $user User info
      * @return array
      */
-    protected function getRelatedModuleValues(Table $table, string $value, array $user)
+    protected function getRelatedModuleValues(Table $table, $value, array $user)
     {
         $result = [];
         if (empty($user)) {
