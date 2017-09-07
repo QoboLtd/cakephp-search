@@ -10,7 +10,7 @@ use Search\Utility;
 use Search\Utility\Options;
 use Search\Utility\Search;
 
-final class BasicSearch
+class BasicSearch
 {
     /**
      * Searchable table.

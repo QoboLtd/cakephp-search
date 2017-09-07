@@ -6,7 +6,7 @@ use Cake\Event\EventManager;
 use Cake\ORM\Table;
 use Search\Event\EventName;
 
-final class Options
+class Options
 {
     /**
      * Private shared status value

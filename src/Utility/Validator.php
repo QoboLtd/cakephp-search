@@ -5,7 +5,7 @@ use Cake\ORM\Table;
 use Search\Utility;
 use Search\Utility\Options;
 
-final class Validator
+class Validator
 {
     /**
      * Base search data validation method.

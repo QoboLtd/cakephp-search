@@ -12,7 +12,7 @@ use Search\Utility\BasicSearch;
 use Search\Utility\Options;
 use Search\Utility\Validator;
 
-final class Search
+class Search
 {
     /**
      * Delete older than value

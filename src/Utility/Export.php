@@ -10,7 +10,7 @@ use Search\Event\EventName;
 use Search\Utility;
 use Search\Utility\Search;
 
-final class Export
+class Export
 {
     protected $id;
 
