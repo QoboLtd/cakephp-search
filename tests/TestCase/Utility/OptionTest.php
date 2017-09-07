@@ -11,6 +11,10 @@ use Search\Utility\Options;
  */
 class OptionsTest extends TestCase
 {
+    public $fixtures = [
+        'plugin.search.dashboards'
+    ];
+
     public function testGetPrivateSharedStatus()
     {
         $result = Options::getPrivateSharedStatus();

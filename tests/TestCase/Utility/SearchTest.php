@@ -32,7 +32,8 @@ class SearchTest extends TestCase
     {
         parent::setUp();
 
-        $this->Search = new Search();
+        $this->user = ['id' => '00000000-0000-0000-0000-000000000001'];
+        $this->Search = new Search(TableRegistry::get('Dashboards'), $this->user);
 
         EventManager::instance()->on('Search.Model.Search.searchabeFields', function ($event, $table) {
             $tableName = $table->getRegistryAlias();
@@ -113,8 +114,18 @@ class SearchTest extends TestCase
     public function tearDown()
     {
         unset($this->Search);
+        unset($this->user);
 
         parent::tearDown();
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    public function testInstantiateWithEmptyUser()
+    {
+        $user = [];
+        new Search(TableRegistry::get('Dashboards'), $user);
     }
 
     public function testPrepareData()
@@ -122,10 +133,8 @@ class SearchTest extends TestCase
         $request = new ServerRequest(['post' => [
             'criteria' => ['name' => 'foo']
         ]]);
-        $model = 'Dashboards';
-        $user = ['id' => '00000000-0000-0000-0000-000000000001'];
 
-        $result = $this->Search->prepareData($request, TableRegistry::get($model), $user);
+        $result = $this->Search->prepareData($request);
 
         $this->assertNotEmpty($result);
         $this->assertInternalType('array', $result);
@@ -134,17 +143,12 @@ class SearchTest extends TestCase
 
     public function testPrepareDataBasicSearch()
     {
-        $model = 'Dashboards';
-
         $request = new ServerRequest(['post' => [
             'criteria' => ['query' => 'foo']
         ]]);
-        $user = ['id' => '00000000-0000-0000-0000-000000000001'];
 
-        $result = $this->Search->prepareData($request, TableRegistry::get($model), $user);
+        $result = $this->Search->prepareData($request);
 
-        $this->assertNotEmpty($result);
-        $this->assertInternalType('array', $result);
         $this->assertArrayHasKey('criteria', $result);
         $this->assertArrayHasKey('aggregator', $result);
     }
@@ -156,18 +160,15 @@ class SearchTest extends TestCase
         $request = new ServerRequest(['post' => [
             'criteria' => ['query' => 'foo']
         ]]);
-        $user = ['id' => '00000000-0000-0000-0000-000000000001'];
 
-        $result = $this->Search->prepareData($request, TableRegistry::get($model), $user);
+        $search = new Search(TableRegistry::get($model), $this->user);
+        $result = $search->prepareData($request);
 
         $this->assertEmpty($result['criteria']);
     }
 
     public function testPrepareDataBasicSearchWithRelatedField()
     {
-        $model = 'Dashboards';
-        $relatedModel = 'AppWidgets';
-
         EventManager::instance()->on('Search.Model.Search.basicSearchFields', function ($event, $table) {
             return ['Dashboards.role_id'];
         });
@@ -175,12 +176,9 @@ class SearchTest extends TestCase
         $request = new ServerRequest(['post' => [
             'criteria' => ['query' => 'Lorem']
         ]]);
-        $user = ['id' => '00000000-0000-0000-0000-000000000001'];
 
-        $result = $this->Search->prepareData($request, TableRegistry::get($model), $user);
+        $result = $this->Search->prepareData($request);
 
-        $this->assertNotEmpty($result);
-        $this->assertInternalType('array', $result);
         $this->assertArrayHasKey('criteria', $result);
         $this->assertArrayHasKey('aggregator', $result);
 
@@ -195,8 +193,6 @@ class SearchTest extends TestCase
     public function testExecute()
     {
         $model = 'Dashboards';
-
-        $user = ['id' => '00000000-0000-0000-0000-000000000001'];
 
         $data = [
             'criteria' => [
@@ -214,7 +210,7 @@ class SearchTest extends TestCase
             'limit' => '10'
         ];
 
-        $result = $this->Search->execute(TableRegistry::get($model), $user, $data);
+        $result = $this->Search->execute($data);
 
         $this->assertInstanceOf(Query::class, $result);
         $this->assertGreaterThan(0, $result->count());
@@ -224,8 +220,6 @@ class SearchTest extends TestCase
     {
         $model = 'Articles';
         $relatedModel = 'Authors';
-
-        $user = ['id' => '00000000-0000-0000-0000-000000000001'];
 
         $data = [
             'aggregator' => 'AND',
@@ -244,7 +238,8 @@ class SearchTest extends TestCase
             'sort_by_order' => 'desc'
         ];
 
-        $result = $this->Search->execute(TableRegistry::get($model), $user, $data);
+        $search = new Search(TableRegistry::get($model), $this->user);
+        $result = $search->execute($data);
         $entity = $result->first();
 
         $this->assertInstanceOf(Query::class, $result);
@@ -264,8 +259,6 @@ class SearchTest extends TestCase
     {
         $model = 'Dashboards';
 
-        $user = ['id' => '00000000-0000-0000-0000-000000000001'];
-
         $data = [
             'aggregator' => 'OR',
             'criteria' => [
@@ -277,7 +270,7 @@ class SearchTest extends TestCase
             ]
         ];
 
-        $result = $this->Search->execute(TableRegistry::get($model), $user, $data);
+        $result = $this->Search->execute($data);
 
         $this->assertEquals(2, $result->count());
     }
@@ -285,8 +278,6 @@ class SearchTest extends TestCase
     public function testExecuteWithAndAggregator()
     {
         $model = 'Dashboards';
-
-        $user = ['id' => '00000000-0000-0000-0000-000000000001'];
 
         $data = [
             'aggregator' => 'AND',
@@ -300,7 +291,7 @@ class SearchTest extends TestCase
             ]
         ];
 
-        $result = $this->Search->execute(TableRegistry::get($model), $user, $data);
+        $result = $this->Search->execute($data);
 
         $this->assertEquals(1, $result->count());
     }
@@ -308,8 +299,6 @@ class SearchTest extends TestCase
     public function testExecuteWithRelatedIsNot()
     {
         $model = 'Dashboards';
-
-        $user = ['id' => '00000000-0000-0000-0000-000000000001'];
 
         $data = [
             'criteria' => [
@@ -321,15 +310,13 @@ class SearchTest extends TestCase
             ]
         ];
 
-        $result = $this->Search->execute(TableRegistry::get($model), $user, $data);
+        $result = $this->Search->execute($data);
 
         $this->assertEquals(1, $result->count());
     }
 
     public function testCreate()
     {
-        $user = ['id' => '00000000-0000-0000-0000-000000000001'];
-
         $data = [
             'criteria' => [
                 'name' => [
@@ -342,7 +329,7 @@ class SearchTest extends TestCase
             'limit' => '10'
         ];
 
-        $result = $this->Search->create(TableRegistry::get('Dashboards'), $user, $data);
+        $result = $this->Search->create($data);
 
         $this->assertNotEmpty($result);
         $this->assertInternalType('string', $result);
@@ -354,8 +341,6 @@ class SearchTest extends TestCase
         $model = 'Dashboards';
 
         $id = '00000000-0000-0000-0000-000000000001';
-
-        $user = ['id' => '00000000-0000-0000-0000-000000000001'];
 
         $data = [
             'criteria' => [
@@ -369,7 +354,7 @@ class SearchTest extends TestCase
             'limit' => '10'
         ];
 
-        $result = $this->Search->update(TableRegistry::get($model), $user, $data, $id);
+        $result = $this->Search->update($data, $id);
         $this->assertInstanceOf(SavedSearch::class, $result);
         $this->assertNotEmpty($result->content);
 
@@ -382,9 +367,7 @@ class SearchTest extends TestCase
     {
         $id = '00000000-0000-0000-0000-000000000001';
 
-        $user = ['id' => '00000000-0000-0000-0000-000000000001'];
-
-        $result = $this->Search->get(TableRegistry::get('Dashboards'), $user, $id);
+        $result = $this->Search->get($id);
         $this->assertInstanceOf(SavedSearch::class, $result);
         $this->assertNotEmpty($result->content);
 
@@ -407,15 +390,12 @@ class SearchTest extends TestCase
 
     public function testGetWhereClause()
     {
-        $user = ['id' => '00000000-0000-0000-0000-000000000001'];
         $class = new ReflectionClass(Search::class);
         $method = $class->getMethod('getWhereClause');
         $method->setAccessible(true);
 
         $result = $method->invokeArgs($this->Search, [
-            [],
-            TableRegistry::get('Dashboards'),
-            $user
+            []
         ]);
 
         $this->assertEquals($result, []);

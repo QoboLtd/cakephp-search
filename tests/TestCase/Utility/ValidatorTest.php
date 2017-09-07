@@ -12,6 +12,10 @@ use Search\Utility\Validator;
  */
 class ValidatorTest extends TestCase
 {
+    public $fixtures = [
+        'plugin.search.dashboards'
+    ];
+
     /**
      * setUp method
      *
