@@ -76,13 +76,7 @@ final class Search
      */
     public function execute(array $data)
     {
-        $result = null;
-
         $data = Validator::validateData($this->table, $data, $this->user);
-
-        if (empty($data['criteria'])) {
-            return $result;
-        }
 
         // initialize query
         $query = $this->table->find('all');
