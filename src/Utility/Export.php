@@ -167,8 +167,9 @@ final class Export
      */
     protected function setQuery()
     {
-        $search = new Search();
-        $this->query = $search->execute(TableRegistry::get($this->search->get('model')), $this->user, $this->data);
+        $table = TableRegistry::get($this->search->get('model'));
+        $search = new Search($table, $this->user);
+        $this->query = $search->execute($this->data);
     }
 
     /**

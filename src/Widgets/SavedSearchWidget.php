@@ -91,9 +91,9 @@ class SavedSearchWidget extends BaseWidget
 
         $table = TableRegistry::get($savedSearch->model);
 
-        $search = new Search();
+        $search = new Search($table, $options['user']);
         // keeps backward compatibility
-        $entity = $search->reset($savedSearch, $table, $options['user']);
+        $entity = $search->reset($savedSearch, $options['user']);
         $entity->content = json_decode($entity->content, true);
         $entity->content['saved'] = Validator::validateData($table, $entity->content['saved'], $options['user']);
 

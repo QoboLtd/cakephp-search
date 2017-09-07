@@ -38,9 +38,9 @@ trait SearchTrait
     {
         $model = $this->modelClass;
 
-        $search = new Search();
         $searchTable = TableRegistry::get($this->tableName);
         $table = TableRegistry::get($model);
+        $search = new Search($table, $this->Auth->user());
 
         if (!$searchTable->isSearchable($model)) {
             throw new BadRequestException('You cannot search in ' . implode(' - ', pluginSplit($model)) . '.');
@@ -48,14 +48,14 @@ trait SearchTrait
 
         // redirect on POST requests (PRG pattern)
         if ($this->request->is('post')) {
-            $searchData = $search->prepareData($this->request, $table, $this->Auth->user());
+            $searchData = $search->prepareData($this->request);
 
             if ($id) {
-                $search->update($table, $this->Auth->user(), $searchData, $id);
+                $search->update($searchData, $id);
             }
 
             if (!$id) {
-                $id = $search->create($table, $this->Auth->user(), $searchData);
+                $id = $search->create($searchData);
             }
 
             list($plugin, $controller) = pluginSplit($model);
@@ -63,7 +63,7 @@ trait SearchTrait
             return $this->redirect(['plugin' => $plugin, 'controller' => $controller, 'action' => __FUNCTION__, $id]);
         }
 
-        $entity = $search->get($table, $this->Auth->user(), $id);
+        $entity = $search->get($id);
 
         $searchData = json_decode($entity->content, true);
 
@@ -81,14 +81,14 @@ trait SearchTrait
         // reset should only be applied to current search id (url parameter)
         // and NOT on newly pre-saved searches and that's we do the ajax
         // request check above, to prevent resetting the pre-saved search.
-        $search->reset($entity, $table, $this->Auth->user());
+        $search->reset($entity);
 
         $this->set('searchableFields', Utility::instance()->getSearchableFields($table, $this->Auth->user()));
         $this->set('savedSearches', $searchTable->getSavedSearches([$this->Auth->user('id')], [$model]));
         $this->set('model', $model);
         $this->set('searchData', $searchData);
         $this->set('savedSearch', $entity);
-        $this->set('preSaveId', $search->create($table, $this->Auth->user(), $searchData));
+        $this->set('preSaveId', $search->create($searchData));
         // INFO: this is valid when a saved search was modified and the form was re-submitted
         $this->set('isEditable', $searchTable->isEditable($entity));
         $this->set('searchOptions', SearchOptions::get());
@@ -127,7 +127,7 @@ trait SearchTrait
 
         $searchData['sort_by_order'] = $this->request->query('order.0.dir') ?: SearchOptions::getDefaultSortByOrder();
 
-        $query = $search->execute($table, $this->Auth->user(), $searchData);
+        $query = $search->execute($searchData);
         if (!$query) {
             return $result;
         }
@@ -223,19 +223,20 @@ trait SearchTrait
         $table = TableRegistry::get($this->tableName);
 
         // get saved search
-        $savedSearch = $table->get($id);
+        $entity = $table->get($id);
+        $data = $entity->toArray();
 
-        $search = $table->newEntity();
+        $entity = $table->newEntity();
 
         // patch new entity with saved search data
-        $search = $table->patchEntity($search, $savedSearch->toArray());
-        if ($table->save($search)) {
+        $entity = $table->patchEntity($entity, $data);
+        if ($table->save($entity)) {
             $this->Flash->success(__('The search has been copied.'));
         } else {
             $this->Flash->error(__('The search could not be copied. Please, try again.'));
         }
 
-        return $this->redirect(['action' => 'search', $search->id]);
+        return $this->redirect(['action' => 'search', $entity->id]);
     }
 
     /**
@@ -250,8 +251,8 @@ trait SearchTrait
         $this->request->allowMethod(['post', 'delete']);
 
         $table = TableRegistry::get($this->tableName);
-        $savedSearch = $table->get($id);
-        if ($table->delete($savedSearch)) {
+        $entity = $table->get($id);
+        if ($table->delete($entity)) {
             $this->Flash->success(__('The saved search has been deleted.'));
         } else {
             $this->Flash->error(__('The saved search could not be deleted. Please, try again.'));
