@@ -224,7 +224,7 @@ final class BasicSearch
         ];
 
         $query = $search->execute($data);
-        if (!$query) {
+        if ($query->isEmpty()) {
             return [];
         }
 
