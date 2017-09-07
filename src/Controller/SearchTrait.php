@@ -3,6 +3,7 @@ namespace Search\Controller;
 
 use Cake\Event\Event;
 use Cake\Network\Exception\BadRequestException;
+use Cake\ORM\ResultSet;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Search\Event\EventName as SearchEventName;
@@ -70,7 +71,7 @@ trait SearchTrait
         // return json response and skip any further processing.
         if ($this->request->is('ajax') && $this->request->accepts('application/json')) {
             $this->viewBuilder()->className('Json');
-            $response = $this->getAjaxViewVars($searchData, $table, $search);
+            $response = $this->getAjaxViewVars($searchData['latest'], $table, $search);
             $this->set($response);
 
             return;
@@ -100,23 +101,13 @@ trait SearchTrait
     /**
      * Get AJAX response view variables
      *
-     * @param array $data Search data
+     * @param array $searchData Search data
      * @param \Cake\ORM\Table $table Table instance
      * @param \Search\Utility\Search $search Search instance
      * @return array Variables and values for AJAX response
      */
-    protected function getAjaxViewVars(array $data, Table $table, Search $search)
+    protected function getAjaxViewVars(array $searchData, Table $table, Search $search)
     {
-        // Default response
-        $result = [
-            'success' => true,
-            'data' => [],
-            'pagination' => ['count' => 0],
-            '_serialize' => ['success', 'data', 'pagination']
-        ];
-
-        $searchData = $data['latest'];
-
         $displayColumns = $searchData['display_columns'];
 
         $sortField = $this->request->query('order.0.column') ?: 0;
@@ -128,20 +119,25 @@ trait SearchTrait
         $searchData['sort_by_order'] = $this->request->query('order.0.dir') ?: SearchOptions::getDefaultSortByOrder();
 
         $query = $search->execute($searchData);
-        if (!$query) {
-            return $result;
-        }
 
-        $event = new Event((string)SearchEventName::MODEL_SEARCH_AFTER_FIND(), $this, [
-            'entities' => $this->paginate($query),
+        $resultSet = $this->paginate($query);
+        $eventName = (string)SearchEventName::MODEL_SEARCH_AFTER_FIND();
+        $event = new Event($eventName, $this, [
+            'entities' => $resultSet,
             'table' => $table
         ]);
         $this->eventManager()->dispatch($event);
 
-        $data = [];
-        if ($event->result) {
-            $data = Utility::instance()->toDatatables($event->result, $displayColumns, $table);
+        // overwrite result-set with event result, if a registered listener is found.
+        if (!empty($this->eventManager()->listeners($eventName))) {
+            $resultSet = $event->result;
         }
+
+        $data = [];
+        if ($resultSet instanceof ResultSet) {
+            $data = Utility::instance()->toDatatables($resultSet, $displayColumns, $table);
+        }
+
         $pagination = [
             'count' => $query->count()
         ];
