@@ -213,9 +213,14 @@ final class BasicSearch
         $search = new Search($table, $this->user);
         $basicSearch = new BasicSearch($table, $this->user);
 
+        $criteria = $basicSearch->getCriteria($value);
+        if (empty($criteria)) {
+            return [];
+        }
+
         $data = [
             'aggregator' => 'OR',
-            'criteria' => $basicSearch->getCriteria($value)
+            'criteria' => $criteria
         ];
 
         $query = $search->execute($data);
