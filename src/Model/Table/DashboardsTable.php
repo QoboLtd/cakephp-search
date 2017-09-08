@@ -1,6 +1,7 @@
 <?php
 namespace Search\Model\Table;
 
+use Cake\Core\Configure;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -32,9 +33,8 @@ class DashboardsTable extends Table
         $this->addBehavior('Timestamp');
         $this->addBehavior('Muffin/Trash.Trash');
 
-        $this->belongsTo('Roles', [
-            'foreignKey' => 'role_id',
-            'className' => 'Search.Roles'
+        $this->belongsTo('RolesCapabilities.Roles', [
+            'foreignKey' => 'role_id'
         ]);
 
         $this->hasMany('Widgets', [
@@ -82,11 +82,8 @@ class DashboardsTable extends Table
      * @param  array $user user details
      * @return \Cake\ORM\Query
      */
-    public function getUserDashboards($user)
+    public function getUserDashboards(array $user)
     {
-        $groupsTable = TableRegistry::get('Groups.Groups');
-        $capsTable = TableRegistry::get('RolesCapabilities.Capabilities');
-
         // get all dashboards
         $query = $this->find('all')->order('name');
 
@@ -95,23 +92,30 @@ class DashboardsTable extends Table
             return $query;
         }
 
-        $userGroups = [];
-        if (method_exists($groupsTable, 'getUserGroups') && !empty($user)) {
-            $userGroups = $groupsTable->getUserGroups($user['id']);
+        $roles = [];
+        $groups = $this->Roles->Groups->getUserGroups($user['id']);
+        // get group(s) roles
+        if (!empty($groups)) {
+            $roles = $this->Roles->Capabilities->getGroupsRoles($groups);
         }
 
-        $userRoles = [];
-        if (!empty($userGroups) && method_exists($capsTable, 'getGroupsRoles')) {
-            $userRoles = $capsTable->getGroupsRoles($userGroups);
+        if (empty($roles)) {
+            // get all dashboards not assigned to any role
+            $query->where(['Dashboards.role_id IS NULL']);
+
+            return $query;
+        }
+
+        // return all dashboards for Admins
+        if (in_array(Configure::read('RolesCapabilities.Roles.Admin.name'), $roles)) {
+            return $query;
         }
 
         // get role(s) dashboards
-        if (!empty($userRoles)) {
-             $query = $query->where(['Dashboards.role_id IN' => array_keys($userRoles)]);
-        }
-
-        // get all dashboards not assigned to any role
-        $query = $query->orWhere(['Dashboards.role_id IS NULL']);
+        $query->where(['OR' => [
+            ['Dashboards.role_id IN' => array_keys($roles)],
+            ['Dashboards.role_id IS NULL']
+        ]]);
 
         return $query;
     }
