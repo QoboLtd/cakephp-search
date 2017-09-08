@@ -3,6 +3,7 @@ namespace Search\Utility;
 
 use Cake\Event\EventManager;
 use Cake\TestSuite\TestCase;
+use Search\Utility\Export;
 
 /**
  * Search\Utility\Export Test Case

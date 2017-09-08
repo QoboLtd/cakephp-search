@@ -8,8 +8,9 @@ use Cake\Filesystem\File;
 use Cake\ORM\TableRegistry;
 use Search\Event\EventName;
 use Search\Utility;
+use Search\Utility\Search;
 
-final class Export
+class Export
 {
     protected $id;
 
@@ -166,9 +167,9 @@ final class Export
      */
     protected function setQuery()
     {
-        $table = TableRegistry::get('Search.SavedSearches');
-
-        $this->query = $table->search(TableRegistry::get($this->search->get('model')), $this->user, $this->data);
+        $table = TableRegistry::get($this->search->get('model'));
+        $search = new Search($table, $this->user);
+        $this->query = $search->execute($this->data);
     }
 
     /**
