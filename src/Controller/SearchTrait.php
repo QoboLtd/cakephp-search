@@ -3,11 +3,15 @@ namespace Search\Controller;
 
 use Cake\Event\Event;
 use Cake\Network\Exception\BadRequestException;
+use Cake\ORM\ResultSet;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Search\Event\EventName as SearchEventName;
 use Search\Utility;
 use Search\Utility\Export;
+use Search\Utility\Options as SearchOptions;
+use Search\Utility\Search;
+use Search\Utility\Validator as SearchValidator;
 
 trait SearchTrait
 {
@@ -16,14 +20,14 @@ trait SearchTrait
      *
      * @var string
      */
-    protected $_tableSearch = 'Search.SavedSearches';
+    protected $tableName = 'Search.SavedSearches';
 
     /**
      * Element to be used as Search template.
      *
      * @var string
      */
-    protected $_elementSearch = 'Search.Search/search';
+    protected $searchElement = 'Search.Search/search';
 
     /**
      * Search action
@@ -35,8 +39,9 @@ trait SearchTrait
     {
         $model = $this->modelClass;
 
-        $searchTable = TableRegistry::get($this->_tableSearch);
+        $searchTable = TableRegistry::get($this->tableName);
         $table = TableRegistry::get($model);
+        $search = new Search($table, $this->Auth->user());
 
         if (!$searchTable->isSearchable($model)) {
             throw new BadRequestException('You cannot search in ' . implode(' - ', pluginSplit($model)) . '.');
@@ -44,12 +49,14 @@ trait SearchTrait
 
         // redirect on POST requests (PRG pattern)
         if ($this->request->is('post')) {
-            $searchData = $searchTable->prepareData($this->request, $table, $this->Auth->user());
+            $searchData = $search->prepareData($this->request);
 
             if ($id) {
-                $searchTable->updateSearch($table, $this->Auth->user(), $searchData, $id);
-            } else {
-                $id = $searchTable->createSearch($table, $this->Auth->user(), $searchData);
+                $search->update($searchData, $id);
+            }
+
+            if (!$id) {
+                $id = $search->create($searchData);
             }
 
             list($plugin, $controller) = pluginSplit($model);
@@ -57,61 +64,50 @@ trait SearchTrait
             return $this->redirect(['plugin' => $plugin, 'controller' => $controller, 'action' => __FUNCTION__, $id]);
         }
 
-        $entity = $searchTable->getSearch($table, $this->Auth->user(), $id);
+        $entity = $search->get($id);
 
         $searchData = json_decode($entity->content, true);
 
         // return json response and skip any further processing.
         if ($this->request->is('ajax') && $this->request->accepts('application/json')) {
             $this->viewBuilder()->className('Json');
-            $response = $this->getAjaxViewVars($searchData, $table);
+            $response = $this->getAjaxViewVars($searchData['latest'], $table, $search);
             $this->set($response);
 
             return;
         }
 
-        $searchData = $searchTable->validateData($table, $searchData['latest'], $this->Auth->user());
+        $searchData = SearchValidator::validateData($table, $searchData['latest'], $this->Auth->user());
 
         // reset should only be applied to current search id (url parameter)
         // and NOT on newly pre-saved searches and that's we do the ajax
         // request check above, to prevent resetting the pre-saved search.
-        $searchTable->resetSearch($entity, $table, $this->Auth->user());
+        $search->reset($entity);
 
         $this->set('searchableFields', Utility::instance()->getSearchableFields($table, $this->Auth->user()));
         $this->set('savedSearches', $searchTable->getSavedSearches([$this->Auth->user('id')], [$model]));
         $this->set('model', $model);
         $this->set('searchData', $searchData);
         $this->set('savedSearch', $entity);
-        $this->set('preSaveId', $searchTable->createSearch($table, $this->Auth->user(), $searchData));
+        $this->set('preSaveId', $search->create($searchData));
         // INFO: this is valid when a saved search was modified and the form was re-submitted
         $this->set('isEditable', $searchTable->isEditable($entity));
-        $this->set('searchOptions', $searchTable->getSearchOptions());
+        $this->set('searchOptions', SearchOptions::get());
         $this->set('associationLabels', Utility::instance()->getAssociationLabels($table));
 
-        $this->render($this->_elementSearch);
+        $this->render($this->searchElement);
     }
 
     /**
      * Get AJAX response view variables
      *
-     * @param array $data Search data
+     * @param array $searchData Search data
      * @param \Cake\ORM\Table $table Table instance
+     * @param \Search\Utility\Search $search Search instance
      * @return array Variables and values for AJAX response
      */
-    protected function getAjaxViewVars(array $data, Table $table)
+    protected function getAjaxViewVars(array $searchData, Table $table, Search $search)
     {
-        // Default response
-        $result = [
-            'success' => true,
-            'data' => [],
-            'pagination' => ['count' => 0],
-            '_serialize' => ['success', 'data', 'pagination']
-        ];
-
-        $searchTable = TableRegistry::get($this->_tableSearch);
-
-        $searchData = $data['latest'];
-
         $displayColumns = $searchData['display_columns'];
 
         $sortField = $this->request->query('order.0.column') ?: 0;
@@ -120,23 +116,28 @@ trait SearchTrait
             current($displayColumns);
         $searchData['sort_by_field'] = $sortField;
 
-        $searchData['sort_by_order'] = $this->request->query('order.0.dir') ?: $searchTable->getDefaultSortByOrder();
+        $searchData['sort_by_order'] = $this->request->query('order.0.dir') ?: SearchOptions::getDefaultSortByOrder();
 
-        $query = $searchTable->search($table, $this->Auth->user(), $searchData);
-        if (!$query) {
-            return $result;
-        }
+        $query = $search->execute($searchData);
 
-        $event = new Event((string)SearchEventName::MODEL_SEARCH_AFTER_FIND(), $this, [
-            'entities' => $this->paginate($query),
+        $resultSet = $this->paginate($query);
+        $eventName = (string)SearchEventName::MODEL_SEARCH_AFTER_FIND();
+        $event = new Event($eventName, $this, [
+            'entities' => $resultSet,
             'table' => $table
         ]);
         $this->eventManager()->dispatch($event);
 
-        $data = [];
-        if ($event->result) {
-            $data = Utility::instance()->toDatatables($event->result, $displayColumns, $table);
+        // overwrite result-set with event result, if a registered listener is found.
+        if (!empty($this->eventManager()->listeners($eventName))) {
+            $resultSet = $event->result;
         }
+
+        $data = [];
+        if ($resultSet instanceof ResultSet) {
+            $data = Utility::instance()->toDatatables($resultSet, $displayColumns, $table);
+        }
+
         $pagination = [
             'count' => $query->count()
         ];
@@ -162,7 +163,7 @@ trait SearchTrait
     {
         $this->request->allowMethod(['patch', 'post', 'put']);
 
-        $table = TableRegistry::get($this->_tableSearch);
+        $table = TableRegistry::get($this->tableName);
 
         $search = $table->get($id);
         $search = $table->patchEntity($search, $this->request->data);
@@ -187,7 +188,7 @@ trait SearchTrait
     {
         $this->request->allowMethod(['patch', 'post', 'put']);
 
-        $table = TableRegistry::get($this->_tableSearch);
+        $table = TableRegistry::get($this->tableName);
 
         // get pre-saved search
         $preSaved = $table->get($preId);
@@ -215,22 +216,23 @@ trait SearchTrait
     {
         $this->request->allowMethod(['patch', 'post', 'put']);
 
-        $table = TableRegistry::get($this->_tableSearch);
+        $table = TableRegistry::get($this->tableName);
 
         // get saved search
-        $savedSearch = $table->get($id);
+        $entity = $table->get($id);
+        $data = $entity->toArray();
 
-        $search = $table->newEntity();
+        $entity = $table->newEntity();
 
         // patch new entity with saved search data
-        $search = $table->patchEntity($search, $savedSearch->toArray());
-        if ($table->save($search)) {
+        $entity = $table->patchEntity($entity, $data);
+        if ($table->save($entity)) {
             $this->Flash->success(__('The search has been copied.'));
         } else {
             $this->Flash->error(__('The search could not be copied. Please, try again.'));
         }
 
-        return $this->redirect(['action' => 'search', $search->id]);
+        return $this->redirect(['action' => 'search', $entity->id]);
     }
 
     /**
@@ -244,9 +246,9 @@ trait SearchTrait
     {
         $this->request->allowMethod(['post', 'delete']);
 
-        $table = TableRegistry::get($this->_tableSearch);
-        $savedSearch = $table->get($id);
-        if ($table->delete($savedSearch)) {
+        $table = TableRegistry::get($this->tableName);
+        $entity = $table->get($id);
+        if ($table->delete($entity)) {
             $this->Flash->success(__('The saved search has been deleted.'));
         } else {
             $this->Flash->error(__('The saved search could not be deleted. Please, try again.'));

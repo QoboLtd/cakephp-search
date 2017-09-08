@@ -5,6 +5,8 @@ use Cake\Core\Configure;
 use Cake\ORM\TableRegistry;
 use Cake\Routing\Router;
 use Search\Utility;
+use Search\Utility\Search;
+use Search\Utility\Validator;
 use Search\Widgets\BaseWidget;
 
 class SavedSearchWidget extends BaseWidget
@@ -89,16 +91,17 @@ class SavedSearchWidget extends BaseWidget
 
         $table = TableRegistry::get($savedSearch->model);
 
+        $search = new Search($table, $options['user']);
         // keeps backward compatibility
-        $search = $this->_tableInstance->resetSearch($savedSearch, $table, $options['user']);
-        $search->content = json_decode($search->content, true);
-        $search->content['saved'] = $this->_tableInstance->validateData($table, $search->content['saved'], $options['user']);
+        $entity = $search->reset($savedSearch, $options['user']);
+        $entity->content = json_decode($entity->content, true);
+        $entity->content['saved'] = Validator::validateData($table, $entity->content['saved'], $options['user']);
 
-        $this->options['scripts'] = $this->getScripts(['data' => $search]);
+        $this->options['scripts'] = $this->getScripts(['data' => $entity]);
         $this->options['fields'] = Utility::instance()->getSearchableFields($table, $options['user']);
         $this->options['associationLabels'] = Utility::instance()->getAssociationLabels($table);
 
-        $this->_data = $search;
+        $this->_data = $entity;
 
         return $this->getData();
     }
