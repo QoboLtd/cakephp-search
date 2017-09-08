@@ -111,9 +111,11 @@ class_alias($pluginName . '\Test\App\Controller\AppController', 'App\Controller\
 $loadPluginRoutes = file_exists(dirname(__FILE__) . DS . 'config' . DS . 'routes.php');
 $loadPluginBootstrap = file_exists(dirname(__FILE__) . DS . 'config' . DS . 'bootstrap.php');
 Cake\Core\Plugin::load('Qobo/Utils', ['bootstrap' => true]);
+Cake\Core\Plugin::load('RolesCapabilities', ['bootstrap' => true]);
 Cake\Core\Plugin::load($pluginName, ['path' => ROOT . DS, 'autoload' => true, 'routes' => $loadPluginRoutes, 'bootstrap' => $loadPluginBootstrap]);
 
 Cake\Routing\DispatcherFactory::add('Routing');
 Cake\Routing\DispatcherFactory::add('ControllerFactory');
 
 Configure::load('Search.search');
+Configure::load('RolesCapabilities.roles_capabilities');

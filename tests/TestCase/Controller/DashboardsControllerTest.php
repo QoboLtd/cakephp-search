@@ -96,11 +96,42 @@ class DashboardsControllerTest extends IntegrationTestCase
 
     public function testView()
     {
-        $this->get('/search/dashboards/view/00000000-0000-0000-0000-000000000001');
+        $this->get('/search/dashboards/view/00000000-0000-0000-0000-000000000002');
 
         $this->assertResponseOk();
 
         $this->assertResponseContains('<h4>Lorem ipsum dolor sit amet</h4>');
+    }
+
+    public function testViewNonAdminUser()
+    {
+        $this->get('/search/dashboards/view/00000000-0000-0000-0000-000000000003');
+
+        $this->assertResponseCode(403);
+    }
+
+    public function testViewAdminUser()
+    {
+        // admin user
+        $this->session(['Auth.User.id' => '00000000-0000-0000-0000-000000000002']);
+
+        $this->get('/search/dashboards/view/00000000-0000-0000-0000-000000000003');
+
+        $this->assertResponseOk();
+
+        $this->assertResponseContains('<h4>Everyone Dashboard</h4>');
+    }
+
+    public function testViewAdminUserWithHtmlTable()
+    {
+        // admin user
+        $this->session(['Auth.User.id' => '00000000-0000-0000-0000-000000000002']);
+
+        $this->get('/search/dashboards/view/00000000-0000-0000-0000-000000000001');
+
+        $this->assertResponseOk();
+
+        $this->assertResponseContains('<h4>Admins Dashboard</h4>');
         $this->assertResponseContains('Saved search criteria</a>');
         $this->assertResponseContains('<table');
         $this->assertResponseContains('<th>Name</th>');

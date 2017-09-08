@@ -1,8 +1,11 @@
 <?php
 namespace Search\Test\TestCase\Model\Table;
 
+use Cake\ORM\Query;
+use Cake\ORM\RulesChecker;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
+use Cake\Validation\Validator;
 use Search\Model\Table\DashboardsTable;
 
 /**
@@ -62,7 +65,7 @@ class DashboardsTableTest extends TestCase
         $validator = new \Cake\Validation\Validator();
         $result = $this->Dashboards->validationDefault($validator);
 
-        $this->assertInstanceOf('\Cake\Validation\Validator', $result);
+        $this->assertInstanceOf(Validator::class, $result);
     }
 
     public function testBuildRules()
@@ -70,7 +73,7 @@ class DashboardsTableTest extends TestCase
         $rules = new \Cake\ORM\RulesChecker();
         $result = $this->Dashboards->buildRules($rules);
 
-        $this->assertInstanceOf('\Cake\ORM\RulesChecker', $result);
+        $this->assertInstanceOf(RulesChecker::class, $result);
     }
 
     public function testGetUserDashboards()
@@ -78,7 +81,17 @@ class DashboardsTableTest extends TestCase
         $user = ['id' => '00000000-0000-0000-0000-000000000001'];
 
         $query = $this->Dashboards->getUserDashboards($user);
-        $this->assertInstanceOf('\Cake\ORM\Query', $query);
+        $this->assertInstanceOf(Query::class, $query);
+        $this->assertEquals(1, $query->count());
+    }
+
+    public function testGetUserDashboardsWithoutRolesAndGroups()
+    {
+        $user = ['id' => '00000000-0000-0000-0000-000000000003'];
+
+        $query = $this->Dashboards->getUserDashboards($user);
+        $this->assertInstanceOf(Query::class, $query);
+        $this->assertEquals(2, $query->count());
     }
 
     public function testGetUserDashboardsSuperuser()
@@ -86,6 +99,7 @@ class DashboardsTableTest extends TestCase
         $user = ['is_superuser' => true];
 
         $query = $this->Dashboards->getUserDashboards($user);
-        $this->assertInstanceOf('\Cake\ORM\Query', $query);
+        $this->assertInstanceOf(Query::class, $query);
+        $this->assertEquals(4, $query->count());
     }
 }

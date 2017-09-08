@@ -41,8 +41,8 @@ class DashboardsFixture extends TestFixture
     public $records = [
         [
             'id' => '00000000-0000-0000-0000-000000000001',
-            'name' => 'Lorem ipsum dolor sit amet',
-            'role_id' => '34cc7d4c-0b7e-4ff2-9e5d-4d48bcdb3d2e',
+            'name' => 'Admins Dashboard',
+            'role_id' => '00000000-0000-0000-0000-000000000001',
             'created' => '2016-04-27 08:21:53',
             'modified' => '2016-04-27 08:21:53',
             'trashed' => null,
@@ -53,6 +53,22 @@ class DashboardsFixture extends TestFixture
             'role_id' => null,
             'created' => '2016-04-27 08:21:54',
             'modified' => '2016-04-27 08:21:54',
+            'trashed' => null,
+        ],
+        [
+            'id' => '00000000-0000-0000-0000-000000000003',
+            'name' => 'Everyone Dashboard',
+            'role_id' => '00000000-0000-0000-0000-000000000002',
+            'created' => '2016-04-27 08:21:56',
+            'modified' => '2016-04-27 08:21:56',
+            'trashed' => null,
+        ],
+        [
+            'id' => '00000000-0000-0000-0000-000000000004',
+            'name' => 'Example Dashboard',
+            'role_id' => '00000000-0000-0000-0000-000000000009',
+            'created' => '2016-04-27 08:21:57',
+            'modified' => '2016-04-27 08:21:57',
             'trashed' => null,
         ],
     ];
