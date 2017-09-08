@@ -3,6 +3,7 @@ namespace Search\Controller;
 
 use Cake\Core\Configure;
 use Cake\Event\Event;
+use Cake\Network\Exception\ForbiddenException;
 use Cake\ORM\TableRegistry;
 use Search\Controller\AppController;
 use Search\Model\Entity\Widget;
@@ -23,10 +24,9 @@ class DashboardsController extends AppController
     public function index()
     {
         $query = $this->Dashboards->getUserDashboards($this->Auth->user());
-        $dashboards = $query->all();
 
-        if (0 < $dashboards->count()) {
-            return $this->redirect(['action' => 'view', $dashboards->first()->id]);
+        if (!$query->isEmpty()) {
+            return $this->redirect(['action' => 'view', $query->first()->id]);
         }
     }
 
@@ -36,6 +36,7 @@ class DashboardsController extends AppController
      * @param string|null $id Dashboard id.
      * @return void
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     * @throws \Cake\Network\Exception\ForbiddenException
      */
     public function view($id = null)
     {
@@ -51,9 +52,13 @@ class DashboardsController extends AppController
             ]
         ]);
 
-        if (method_exists($this, '_checkRoleAccess')) {
-            $this->_checkRoleAccess($dashboard->role_id);
+        $query = $this->Dashboards->getUserDashboards($this->Auth->user());
+
+        $userDashboards = $query->find('list')->toArray();
+        if (!array_key_exists($dashboard->id, $userDashboards)) {
+            throw new ForbiddenException();
         }
+
         $this->set('dashboardWidgets', $dashboard->widgets);
         $this->set('columns', Configure::readOrFail('Search.dashboard.columns'));
         $this->set('user', $this->Auth->user());
