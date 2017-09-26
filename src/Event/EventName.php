@@ -18,5 +18,6 @@ class EventName extends Enum
     const MODEL_SEARCH_DISPLAY_FIELDS = 'Search.Model.Search.displayFields';
     const MODEL_SEARCH_SEARCHABLE_FIELDS = 'Search.Model.Search.searchabeFields';
 
+    const VIEW_SEARCH_ACTIONS = 'Search.View.Search.resultActions';
     const VIEW_DASHBOARDS_WIDGET_GRID = 'Search.Dashboard.Widget.GridElement';
 }
