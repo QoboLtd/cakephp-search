@@ -1,4 +1,7 @@
 <?php
+use Cake\Event\Event;
+use Search\Event\EventName;
+
 echo $this->Html->css('Search.search', ['block' => 'css']);
 echo $this->Html->script('Search.search', ['block' => 'scriptBottom']);
 
@@ -123,6 +126,19 @@ if (!empty($searchData['criteria'])) {
                     ['action' => 'export-search', $preSaveId, $exportName],
                     ['class' => 'btn btn-default', 'escape' => false]
                 );
+
+                $event = new Event((string)EventName::VIEW_SEARCH_ACTIONS(), $this, [
+                    'request' => $this->request,
+                    'entity' => $savedSearch,
+                    'options' => [
+                        'preSaveId' => $preSaveId,
+                    ]
+                ]);
+
+                $this->eventManager()->dispatch($event);
+                if (!empty($event->result)) {
+                    echo $event->result;
+                }
                 ?>
             </div>
             <div class="col-md-4 col-lg-3">
