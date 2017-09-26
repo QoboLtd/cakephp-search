@@ -130,7 +130,6 @@ if (!empty($searchData['criteria'])) {
                 $event = new Event((string)EventName::VIEW_SEARCH_ACTIONS(), $this, [
                     'request' => $this->request,
                     'entity' => $savedSearch,
-                    'user' => $user,
                     'options' => [
                         'preSaveId' => $preSaveId,
                     ]
