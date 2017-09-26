@@ -71,7 +71,7 @@ foreach ($searchData['display_columns'] as $field) {
 $options['columns'][] = ['name' => 'actions'];
 
 echo $this->Html->scriptBlock(
-    'view_search_result.init(' . json_encode($options) . ');',
+    'view_search_result.init(' . json_encode($options) . '); api_options = {"token": "' . Configure::read('Search.api.token') . '"};',
     ['block' => 'scriptBottom']
 );
 echo $this->Html->css('Search.search-datatables', ['block' => 'css']);
