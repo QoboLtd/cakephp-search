@@ -1,7 +1,18 @@
 <?php
-    $config = $widget->getConfig();
-    $data = $widget->getData();
-    $type = $widget->getType();
+/**
+ * Copyright (c) Qobo Ltd. (https://www.qobo.biz)
+ *
+ * Licensed under The MIT License
+ * For full copyright and license information, please see the LICENSE
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @copyright     Copyright (c) Qobo Ltd. (https://www.qobo.biz)
+ * @license       https://opensource.org/licenses/mit-license.php MIT License
+ */
+
+$config = $widget->getConfig();
+$data = $widget->getData();
+$type = $widget->getType();
 ?>
 <div class='dashboard-widget-display_config'>
     <div class="box box-default">
