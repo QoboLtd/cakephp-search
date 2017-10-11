@@ -320,21 +320,39 @@ class Search
      */
     protected function getWhereCondition($field, array $criteria)
     {
-        $result = [];
-
         $value = trim($criteria['value']);
-        if (empty($value)) {
-            return $result;
+        if ('' === $value) {
+            return $this->getEmptyWhereCondition($field, $criteria);
         }
 
-        if (isset($this->searchFields[$field]['operators'][$criteria['operator']]['pattern'])) {
-            $pattern = $this->searchFields[$field]['operators'][$criteria['operator']]['pattern'];
+        $operator = $this->searchFields[$field]['operators'][$criteria['operator']];
+
+        $key = $field . ' ' . $operator['operator'];
+
+        if (isset($operator['pattern'])) {
+            $pattern = $operator['pattern'];
             $value = str_replace('{{value}}', $value, $pattern);
         }
 
-        $key = $field . ' ' . $this->searchFields[$field]['operators'][$criteria['operator']]['operator'];
+        $result = [$key => $value];
 
-        $result[$key] = $value;
+        return $result;
+    }
+
+    /**
+     * Prepare and return where statement condition for empty value.
+     *
+     * @param string $field Field name
+     * @param array $criteria Criteria properties
+     * @return array
+     */
+    protected function getEmptyWhereCondition($field, array $criteria)
+    {
+        $emptyCriteria = $this->searchFields[$field]['operators'][$criteria['operator']]['emptyCriteria'];
+
+        foreach ($emptyCriteria['values'] as $value) {
+            $result[$emptyCriteria['aggregator']][] = $field . ' ' . trim($value);
+        }
 
         return $result;
     }
