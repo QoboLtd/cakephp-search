@@ -33,22 +33,38 @@ class BasicSearchTest extends TestCase
                 case 'Dashboards':
                     $result = [
                         'Dashboards.name' => ['type' => 'string', 'operators' => [
-                            'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%']
+                            'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%', 'emptyCriteria' => [
+                                'aggregator' => 'OR', 'values' => ['IS NULL', '= ""']
+                            ]]
                         ]],
                         'Dashboards.image' => ['type' => 'blob', 'operators' => [
-                            'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%'],
+                            'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%', 'emptyCriteria' => [
+                                'aggregator' => 'OR', 'values' => ['IS NULL', '= ""']
+                            ]],
                         ]],
                         'Dashboards.role_id' => ['type' => 'related', 'source' => 'Roles', 'operators' => [
-                            'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%'],
-                            'is_not' => ['label' => 'is not', 'operator' => 'NOT IN'],
+                            'is' => ['label' => 'is', 'operator' => 'IN', 'emptyCriteria' => [
+                                'aggregator' => 'OR', 'values' => ['IS NULL', '= ""']
+                            ]],
+                            'is_not' => ['label' => 'is not', 'operator' => 'NOT IN', 'emptyCriteria' => [
+                                'aggregator' => 'AND', 'values' => ['IS NOT NULL', '!= ""']
+                            ]],
                         ]],
                         'Dashboards.modified' => ['type' => 'datetime', 'operators' => [
-                            'is' => ['label' => 'is', 'operator' => 'IN'],
-                            'greater' => ['label' => 'from', 'operator' => '>']
+                            'is' => ['label' => 'is', 'operator' => 'IN', 'emptyCriteria' => [
+                                'aggregator' => 'OR', 'valuesF' => ['IS NULL', '= ""', '= "0000-00-00 00:00:00"']
+                            ]],
+                            'greater' => ['label' => 'from', 'operator' => '>', 'emptyCriteria' => [
+                                'aggregator' => 'AND', 'values' => ['IS NOT NULL', '!= ""', '!= "0000-00-00 00:00:00"']
+                            ]]
                         ]],
                         'Dashboards.created' => ['type' => 'datetime', 'operators' => [
-                            'is' => ['label' => 'is', 'operator' => 'IN'],
-                            'greater' => ['label' => 'from', 'operator' => '>']
+                            'is' => ['label' => 'is', 'operator' => 'IN', 'emptyCriteria' => [
+                                'aggregator' => 'OR', 'values' => ['IS NULL', '= ""', '= "0000-00-00 00:00:00"']
+                            ]],
+                            'greater' => ['label' => 'from', 'operator' => '>', 'emptyCriteria' => [
+                                'aggregator' => 'AND', 'values' => ['IS NOT NULL', '!= ""', '!= "0000-00-00 00:00:00"']
+                            ]]
                         ]]
                     ];
                     break;
@@ -56,7 +72,9 @@ class BasicSearchTest extends TestCase
                 case 'Roles':
                     $result = [
                         'Roles.name' => ['type' => 'string', 'operators' => [
-                            'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%']
+                            'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%', 'emptyCriteria' => [
+                                'aggregator' => 'OR', 'values' => ['IS NULL', '= ""']
+                            ]]
                         ]]
                     ];
                     break;
@@ -122,7 +140,7 @@ class BasicSearchTest extends TestCase
                 ['type' => 'string', 'operator' => 'contains', 'value' => 'Lorem']
             ],
             'Dashboards.role_id' => [
-                ['type' => 'related', 'operator' => 'contains', 'value' => '79928943-0016-4677-869a-e37728ff6564']
+                ['type' => 'related', 'operator' => 'is', 'value' => '79928943-0016-4677-869a-e37728ff6564']
             ]
         ];
 

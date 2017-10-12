@@ -43,22 +43,38 @@ class SearchTest extends TestCase
                 case 'Dashboards':
                     $result = [
                         'Dashboards.name' => ['type' => 'string', 'operators' => [
-                            'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%']
+                            'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%', 'emptyCriteria' => [
+                                'aggregator' => 'OR', 'values' => ['IS NULL', '= ""']
+                            ]]
                         ]],
                         'Dashboards.image' => ['type' => 'blob', 'operators' => [
-                            'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%'],
+                            'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%', 'emptyCriteria' => [
+                                'aggregator' => 'OR', 'values' => ['IS NULL', '= ""']
+                            ]],
                         ]],
                         'Dashboards.role_id' => ['type' => 'related', 'source' => 'Roles', 'operators' => [
-                            'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%'],
-                            'is_not' => ['label' => 'is not', 'operator' => 'NOT IN'],
+                            'is' => ['label' => 'is', 'operator' => 'IN', 'emptyCriteria' => [
+                                'aggregator' => 'OR', 'values' => ['IS NULL', '= ""']
+                            ]],
+                            'is_not' => ['label' => 'is not', 'operator' => 'NOT IN', 'emptyCriteria' => [
+                                'aggregator' => 'AND', 'values' => ['IS NOT NULL', '!= ""']
+                            ]],
                         ]],
                         'Dashboards.modified' => ['type' => 'datetime', 'operators' => [
-                            'is' => ['label' => 'is', 'operator' => 'IN'],
-                            'greater' => ['label' => 'from', 'operator' => '>']
+                            'is' => ['label' => 'is', 'operator' => 'IN', 'emptyCriteria' => [
+                                'aggregator' => 'OR', 'valuesF' => ['IS NULL', '= ""', '= "0000-00-00 00:00:00"']
+                            ]],
+                            'greater' => ['label' => 'from', 'operator' => '>', 'emptyCriteria' => [
+                                'aggregator' => 'AND', 'values' => ['IS NOT NULL', '!= ""', '!= "0000-00-00 00:00:00"']
+                            ]]
                         ]],
                         'Dashboards.created' => ['type' => 'datetime', 'operators' => [
-                            'is' => ['label' => 'is', 'operator' => 'IN'],
-                            'greater' => ['label' => 'from', 'operator' => '>']
+                            'is' => ['label' => 'is', 'operator' => 'IN', 'emptyCriteria' => [
+                                'aggregator' => 'OR', 'values' => ['IS NULL', '= ""', '= "0000-00-00 00:00:00"']
+                            ]],
+                            'greater' => ['label' => 'from', 'operator' => '>', 'emptyCriteria' => [
+                                'aggregator' => 'AND', 'values' => ['IS NOT NULL', '!= ""', '!= "0000-00-00 00:00:00"']
+                            ]]
                         ]]
                     ];
                     break;
@@ -66,7 +82,9 @@ class SearchTest extends TestCase
                 case 'Roles':
                     $result = [
                         'Roles.name' => ['type' => 'string', 'operators' => [
-                            'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%']
+                            'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%', 'emptyCriteria' => [
+                                'aggregator' => 'OR', 'values' => ['IS NULL', '= ""']
+                            ]]
                         ]]
                     ];
                     break;
@@ -74,7 +92,9 @@ class SearchTest extends TestCase
                 case 'AppWidgets':
                     $result = [
                         'AppWidgets.name' => ['type' => 'string', 'operators' => [
-                            'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%'],
+                            'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%', 'emptyCriteria' => [
+                                'aggregator' => 'OR', 'values' => ['IS NULL', '= ""']
+                            ]],
                         ]]
                     ];
                     break;
@@ -82,13 +102,19 @@ class SearchTest extends TestCase
                 case 'Articles':
                     $result = [
                         'Articles.title' => ['type' => 'string', 'operators' => [
-                            'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%']
+                            'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%', 'emptyCriteria' => [
+                                'aggregator' => 'OR', 'values' => ['IS NULL', '= ""']
+                            ]]
                         ]],
                         'Articles.created' => ['type' => 'datetime', 'operators' => [
-                            'is' => ['label' => 'is', 'operator' => 'IN']
+                            'is' => ['label' => 'is', 'operator' => 'IN', 'emptyCriteria' => [
+                                'aggregator' => 'OR', 'values' => ['IS NULL', '= ""', '= "0000-00-00 00:00:00"']
+                            ]]
                         ]],
                         'Articles.modified' => ['type' => 'datetime', 'operators' => [
-                            'is' => ['label' => 'is', 'operator' => 'IN']
+                            'is' => ['label' => 'is', 'operator' => 'IN', 'emptyCriteria' => [
+                                'aggregator' => 'OR', 'values' => ['IS NULL', '= ""', '= "0000-00-00 00:00:00"']
+                            ]]
                         ]]
                     ];
                     break;
@@ -96,7 +122,9 @@ class SearchTest extends TestCase
                 case 'Authors':
                     $result = [
                         'Authors.name' => ['type' => 'string', 'operators' => [
-                            'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%']
+                            'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%', 'emptyCriteria' => [
+                                'aggregator' => 'OR', 'values' => ['IS NULL', '= ""']
+                            ]]
                         ]]
                     ];
                     break;
@@ -184,7 +212,7 @@ class SearchTest extends TestCase
 
         $expected = [
             'type' => 'related',
-            'operator' => 'contains',
+            'operator' => 'is',
             'value' => '79928943-0016-4677-869a-e37728ff6564'
         ];
         $this->assertContains($expected, $result['criteria']['Dashboards.role_id']);
@@ -214,6 +242,32 @@ class SearchTest extends TestCase
 
         $this->assertInstanceOf(Query::class, $result);
         $this->assertGreaterThan(0, $result->count());
+    }
+
+    public function testExecuteEmptyCriteria()
+    {
+        $model = 'Dashboards';
+        $field = 'role_id';
+
+        $data = [
+            'criteria' => [
+                $model . '.' . $field => [
+                    10 => ['type' => 'string', 'operator' => 'is', 'value' => '']
+                ]
+            ],
+            'display_columns' => [
+                $model . '.' . $field
+            ],
+            'sort_by_field' => $model . '.name',
+            'sort_by_order' => 'desc',
+            'limit' => '10'
+        ];
+
+        $result = $this->Search->execute($data);
+
+        $this->assertInstanceOf(Query::class, $result);
+        $this->assertEquals(1, $result->count());
+        $this->assertNull($result->first()->get($field));
     }
 
     public function testExecuteWithAssociated()
