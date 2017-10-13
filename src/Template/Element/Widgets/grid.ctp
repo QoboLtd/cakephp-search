@@ -52,17 +52,9 @@ echo $this->Html->script('Search.grid_report', ['block' => 'scriptBottom']);
                 <?php foreach ($dataRecords as $k => $item) : ?>
                     <tr>
                     <?php foreach ($columns as $col) : ?>
-                        <?php
-                            $_col = preg_replace('/_/', '', $col);
-                            $event = new Event((string)EventName::VIEW_DASHBOARDS_WIDGET_GRID(), $this, [
-                                'model' => $config['modelName'],
-                                'field' => $_col,
-                                'value' => $item[$col],
-                                $options
-                            ]);
-                            $this->eventManager()->dispatch($event);
-                        ?>
-                        <td><?= !empty($event->result) ? $event->result : $item[$col] ?></td>
+                        <td><?= $this->element('Search.Result/grid-item', [
+                            'config' => $config, 'column' => $col, 'item' => $item
+                        ]) ?></td>
                     <?php endforeach; ?>
                     </tr>
                 <?php endforeach; ?>

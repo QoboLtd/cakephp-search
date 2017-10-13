@@ -10,9 +10,6 @@
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
 
-use Cake\Event\Event;
-use Search\Event\EventName;
-
 echo $this->Html->css('Search.search', ['block' => 'css']);
 echo $this->Html->script('Search.search', ['block' => 'scriptBottom']);
 
@@ -131,25 +128,9 @@ if (!empty($searchData['criteria'])) {
                 echo $this->Form->button('<i class="fa fa-search"></i> ' . __('Search'), ['class' => 'btn btn-primary']);
                 echo $this->Form->end();
                 echo '&nbsp;';
-                $exportName = ($savedSearch->name ? $savedSearch->name : $this->name) . ' ' . date('Y-m-d H-m-s');
-                echo $this->Html->link(
-                    '<i class="fa fa-download"></i> ' . __('Export'),
-                    ['action' => 'export-search', $preSaveId, $exportName],
-                    ['class' => 'btn btn-default', 'escape' => false]
-                );
-
-                $event = new Event((string)EventName::VIEW_SEARCH_ACTIONS(), $this, [
-                    'request' => $this->request,
-                    'entity' => $savedSearch,
-                    'options' => [
-                        'preSaveId' => $preSaveId,
-                    ]
+                echo $this->element('Search.Menu/search-view-options', [
+                    'entity' => $savedSearch, 'id' => $preSaveId
                 ]);
-
-                $this->eventManager()->dispatch($event);
-                if (!empty($event->result)) {
-                    echo $event->result;
-                }
                 ?>
             </div>
             <div class="col-md-4 col-lg-3">
@@ -162,7 +143,6 @@ if (!empty($searchData['criteria'])) {
                 </div>
             <?php endif; ?>
                 <div class="form-group">
-                <?= $this->Form->label(__('Save search')) ?>
                 <?= $this->element('Search.Search/Forms/save_search', [
                     'preSaveId' => $preSaveId,
                     'savedSearch' => $savedSearch,
