@@ -10,8 +10,6 @@
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
 
-$name = ($entity->get('name') ? $entity->get('name') : $this->name) . ' ' . date('Y-m-d H-m-s');
-
 $url = ['plugin' => $this->plugin, 'controller' => $this->name, 'action' => 'exportSearch', $id, $name];
 echo $this->Html->link('<i class="fa fa-download"></i> ' . __('Export'), $url, [
     'class' => 'btn btn-default', 'escape' => false

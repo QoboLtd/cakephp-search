@@ -128,8 +128,10 @@ if (!empty($searchData['criteria'])) {
                 echo $this->Form->button('<i class="fa fa-search"></i> ' . __('Search'), ['class' => 'btn btn-primary']);
                 echo $this->Form->end();
                 echo '&nbsp;';
+                $exportName = ($savedSearch->get('name') ? $savedSearch->get('name') : $this->name);
+                $exportName .= ' ' . date('Y-m-d H-i-s');
                 echo $this->element('Search.Menu/search-view-options', [
-                    'entity' => $savedSearch, 'id' => $preSaveId
+                    'entity' => $savedSearch, 'name' => $exportName, 'id' => $preSaveId
                 ]);
                 ?>
             </div>
