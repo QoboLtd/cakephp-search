@@ -97,7 +97,7 @@ class UtilityTest extends TestCase
         $query = $table->find();
 
         $fields = ['Dashboards.name'];
-        $result = $this->Utility->toDatatables($query->all(), $fields, $table);
+        $result = $this->Utility->toDatatables($query->all(), $fields, $table, []);
 
         $this->assertInternalType('array', $result);
         $this->assertNotEmpty($result);
@@ -128,7 +128,8 @@ class UtilityTest extends TestCase
 
         $query = $this->Search->execute($data);
 
-        $result = $this->Utility->toDatatables($query->all(), $data['display_columns'], TableRegistry::get('Articles'));
+        $table = TableRegistry::get('Articles');
+        $result = $this->Utility->toDatatables($query->all(), $data['display_columns'], $table, []);
 
         foreach ($result as $row) {
             $this->assertEquals(count($data['display_columns']) + 1, count($row));

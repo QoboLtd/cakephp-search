@@ -10,19 +10,10 @@
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
 
-use Cake\Event\Event;
-use Cake\Log\LogTrait;
-use Search\Event\EventName;
 use Search\Widgets\WidgetFactory;
 
 $scripts = [];
 $chartData = [];
-
-$event = new Event((string)EventName::MENU_TOP_DASHBOARD_VIEW(), $this, [
-    'request' => $this->request,
-    $dashboard
-]);
-$this->eventManager()->dispatch($event);
 ?>
 <section class="content-header">
     <div class="row">
@@ -32,7 +23,9 @@ $this->eventManager()->dispatch($event);
         <div class="col-xs-12 col-md-6">
             <div class="pull-right">
                 <div class="btn-group btn-group-sm" role="group">
-                    <?= $event->result; ?>
+                    <?= $this->element('Search.Menu/dashboards-view-top', [
+                        'entity' => $dashboard
+                    ]); ?>
                 </div>
             </div>
         </div>

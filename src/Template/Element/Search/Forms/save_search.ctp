@@ -9,8 +9,10 @@
  * @copyright     Copyright (c) Qobo Ltd. (https://www.qobo.biz)
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
-?>
-<?= $this->Form->create(null, [
+
+echo $this->Form->label(__('Save search'));
+
+echo $this->Form->create(null, [
     'class' => 'save-search-form',
     'url' => [
         'plugin' => $this->request->plugin,

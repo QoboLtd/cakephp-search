@@ -143,9 +143,10 @@ class Utility
      * @param \Cake\ORM\ResultSet $resultSet ResultSet
      * @param array $fields Display fields
      * @param \Cake\ORM\Table $table Table instance
+     * @param array $user User info
      * @return array
      */
-    public function toDatatables(ResultSet $resultSet, array $fields, Table $table)
+    public function toDatatables(ResultSet $resultSet, array $fields, Table $table, array $user)
     {
         $result = [];
 
@@ -153,6 +154,7 @@ class Utility
             return $result;
         }
 
+        $cakeView = new View();
         $registryAlias = $table->getRegistryAlias();
         $alias = $table->getAlias();
 
@@ -176,13 +178,11 @@ class Utility
                 $result[$key][] = $entity->_matchingData[$tableName]->get($field);
             }
 
-            $event = new Event((string)EventName::MENU_ACTIONS_SEARCH_VIEW(), new View(), [
+            $result[$key][] = $cakeView->element('Search.Menu/search-view-actions', [
                 'entity' => $entity,
-                'model' => $registryAlias
+                'model' => $registryAlias,
+                'user' => $user
             ]);
-            EventManager::instance()->dispatch($event);
-
-            $result[$key][] = '<div class="btn-group btn-group-xs" role="group">' . $event->result . '</div>';
         }
 
         return $result;

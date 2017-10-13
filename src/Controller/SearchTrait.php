@@ -145,7 +145,7 @@ trait SearchTrait
 
         $data = [];
         if ($resultSet instanceof ResultSet) {
-            $data = Utility::instance()->toDatatables($resultSet, $displayColumns, $table);
+            $data = Utility::instance()->toDatatables($resultSet, $displayColumns, $table, $this->Auth->user());
         }
 
         $pagination = [
