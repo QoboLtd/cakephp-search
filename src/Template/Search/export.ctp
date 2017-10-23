@@ -41,7 +41,9 @@ echo $this->Html->scriptBlock(
 );
 ?>
 <section class="content-header">
-    <h4>Export</h4>
+    <h4>Export &raquo; <?= $this->Html->link($filename, [
+        'plugin' => $this->plugin, 'controller' => $this->name, 'action' => 'search', $this->request->param('pass.0')
+    ]) ?></h4>
 </section>
 <section class="content">
     <div class="row">
