@@ -266,9 +266,10 @@ class ArticlesControllerTest extends IntegrationTestCase
 
         $this->assertTrue($this->viewVariable('success'));
         $data = $this->viewVariable('data');
-        $this->assertEquals('/uploads/export/lorem-ipsum.csv', $data['path']);
+        $this->assertRegexp('/\/uploads\/export\/lorem-ipsum \d+-\d+-\d+ \d+-\d+-\d+\.csv/', $data['path']);
 
-        $path = WWW_ROOT . 'uploads' . DS . 'export' . DS . 'lorem-ipsum.csv';
+        $parts = explode('/', $data['path']);
+        $path = WWW_ROOT . 'uploads' . DS . 'export' . DS . end($parts);
         $this->assertTrue(file_exists($path));
 
         unlink($path);

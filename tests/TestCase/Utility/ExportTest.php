@@ -84,14 +84,15 @@ class ExportTest extends TestCase
 
     public function testGetUrl()
     {
-        $this->assertEquals('/uploads/export/Foobar.csv', $this->Export->getUrl());
+        $this->assertRegexp('/\/uploads\/export\/Foobar \d+-\d+-\d+ \d+-\d+-\d+\.csv/', $this->Export->getUrl());
     }
 
     public function testExecute()
     {
         $this->Export->execute(1, 10);
 
-        $path = WWW_ROOT . 'uploads' . DS . 'export' . DS . 'Foobar.csv';
+        $parts = explode('/', $this->Export->getUrl());
+        $path = WWW_ROOT . 'uploads' . DS . 'export' . DS . end($parts);
         $this->assertTrue(file_exists($path));
 
         unlink($path);
