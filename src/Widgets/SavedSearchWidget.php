@@ -146,6 +146,10 @@ class SavedSearchWidget extends BaseWidget
         // DataTables options
         $config = [
             'table_id' => '#' . $this->getContainerId(),
+            'order' => [
+                (int)array_search($searchData['sort_by_field'], $searchData['display_columns']),
+                $searchData['sort_by_order']
+            ],
             'ajax' => [
                 'token' => Configure::read('Search.api.token'),
                 'url' => Router::url([
