@@ -12,6 +12,7 @@
 
 use Cake\Core\Configure;
 
+$tableId = 'table-datatable-' . uniqid();
 echo $this->Html->css(
     [
         'Qobo/Utils./plugins/datatables/css/dataTables.bootstrap.min',
@@ -30,6 +31,35 @@ echo $this->Html->script(
     ['block' => 'scriptBottom']
 );
 
+$orderField = (int)array_search($searchData['sort_by_field'], $searchData['display_columns']);
+if (Configure::read('Search.batch.active')) {
+    $orderField += 1;
+}
+
+$dataTableOptions = [
+    'table_id' => '#' . $tableId,
+    'order' => [
+        $orderField,
+        $searchData['sort_by_order']
+    ],
+    'ajax' => [
+        'token' => Configure::read('Search.api.token'),
+        'url' => $this->Url->build([
+            'plugin' => $this->request->plugin,
+            'controller' => $this->request->controller,
+            'action' => 'search',
+            $preSaveId
+        ]),
+        'extras' => ['format' => 'datatables', 'menus' => 1]
+    ],
+];
+
+echo $this->Html->scriptBlock(
+    '// initialize dataTable
+    datatables_init.init(' . json_encode($dataTableOptions) . ');',
+    ['block' => 'scriptBottom']
+);
+
 //search url if is a saved one
 list($plugin, $controller) = pluginSplit($savedSearch->model);
 $url = [
@@ -41,8 +71,6 @@ $url = [
 
 $searchName = $savedSearch->has('name') ? $savedSearch->name : $this->name;
 $title = '<a href="' . $this->Url->build($url) . '">' . $searchName . '</a>';
-
-$uid = uniqid();
 ?>
 <?php if (!empty($searchData['display_columns'])) : ?>
 <div class="box box-solid">
@@ -56,7 +84,7 @@ $uid = uniqid();
     </div>
     <div class="box-body">
         <div class="table-responsive">
-            <table id="table-datatable-<?= $uid ?>" class="table table-hover table-condensed table-vertical-align" width="100%">
+            <table id="<?= $tableId ?>" class="table table-hover table-condensed table-vertical-align" width="100%">
                 <thead>
                     <tr>
                     <?php foreach ($searchData['display_columns'] as $field) : ?>
@@ -78,31 +106,4 @@ $uid = uniqid();
         </div>
     </div>
 </div>
-<?php
-// DataTables options
-$options = [
-    'table_id' => '#table-datatable-' . $uid,
-    'url' => $this->Url->build([
-        'plugin' => $this->request->plugin,
-        'controller' => $this->request->controller,
-        'action' => $this->request->action,
-        $preSaveId
-    ]),
-    'extension' => 'json',
-    'token' => Configure::read('Search.api.token'),
-    'sort_by_field' => (int)array_search($searchData['sort_by_field'], $searchData['display_columns']),
-    'sort_by_order' => $searchData['sort_by_order']
-];
-
-foreach ($searchData['display_columns'] as $field) {
-    $options['columns'][] = ['name' => $field];
-}
-$options['columns'][] = ['name' => 'actions'];
-
-echo $this->Html->scriptBlock(
-    'view_search_result.init(' . json_encode($options) . '); api_options = {"token": "' . Configure::read('Search.api.token') . '"};',
-    ['block' => 'scriptBottom']
-);
-echo $this->Html->css('Search.search-datatables', ['block' => 'css']);
-?>
 <?php endif; ?>
