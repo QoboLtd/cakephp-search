@@ -15,7 +15,6 @@
 </section>
 <section class="content">
 <?php
-echo $this->Html->css('AdminLTE./plugins/datatables/dataTables.bootstrap', ['block' => 'css']);
 echo $this->Html->script(
     [
         'AdminLTE./plugins/datatables/jquery.dataTables.min',
