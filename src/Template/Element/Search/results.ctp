@@ -53,6 +53,9 @@ $dataTableOptions = [
         'extras' => ['format' => 'datatables', 'menus' => 1]
     ],
 ];
+if (Configure::read('Search.batch.active')) {
+    $dataTableOptions['batch'] = ['id' => Configure::read('Search.batch.button_id')];
+}
 
 echo $this->Html->scriptBlock(
     '// initialize dataTable
@@ -87,6 +90,9 @@ $title = '<a href="' . $this->Url->build($url) . '">' . $searchName . '</a>';
             <table id="<?= $tableId ?>" class="table table-hover table-condensed table-vertical-align" width="100%">
                 <thead>
                     <tr>
+                    <?php if (Configure::read('Search.batch.active')) : ?>
+                        <th class="dt-select-column"></th>
+                    <?php endif; ?>
                     <?php foreach ($searchData['display_columns'] as $field) : ?>
                         <?php
                         $tableName = substr($field, 0, strpos($field, '.'));
