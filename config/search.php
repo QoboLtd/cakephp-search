@@ -4,6 +4,10 @@ return [
         'api' => [
             'token' => null
         ],
+        'batch' => [
+            'active' => true,
+            'button_id' => '#batch-button'
+        ],
         'dashboard' => [
             'columns' => ['Left Side', 'Right Side']
         ],

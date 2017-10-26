@@ -146,44 +146,43 @@ class SavedSearchWidget extends BaseWidget
         // DataTables options
         $config = [
             'table_id' => '#' . $this->getContainerId(),
-            'url' => Router::url([
-                'plugin' => $plugin,
-                'controller' => $controller,
-                'action' => 'search',
-                $options['data']->id,
-            ]),
-            'extension' => 'json',
-            'token' => Configure::read('CsvMigrations.api.token'),
-            'sort_by_field' => (int)array_search($searchData['sort_by_field'], $searchData['display_columns']),
-            'sort_by_order' => $searchData['sort_by_order']
+            'order' => [
+                (int)array_search($searchData['sort_by_field'], $searchData['display_columns']),
+                $searchData['sort_by_order']
+            ],
+            'ajax' => [
+                'token' => Configure::read('Search.api.token'),
+                'url' => Router::url([
+                    'plugin' => $plugin, 'controller' => $controller, 'action' => 'search', $options['data']->id
+                ]),
+                'extras' => ['format' => 'datatables']
+            ],
         ];
-        foreach ($searchData['display_columns'] as $field) {
-            $config['columns'][] = ['name' => $field];
-        }
-        $config['columns'][] = ['name' => 'actions'];
 
         $content = [
             'post' => [
                 'css' => [
                     'type' => 'css',
                     'content' => [
-                        'AdminLTE./plugins/datatables/dataTables.bootstrap',
-                        'Search.search-datatables',
+                        'Qobo/Utils./plugins/datatables/css/dataTables.bootstrap.min',
+                        'Qobo/Utils./plugins/datatables/extensions/Select/css/select.bootstrap.min',
+                        'Qobo/Utils./css/dataTables.batch'
                     ],
                     'block' => 'css',
                 ],
                 'javascript' => [
                     'type' => 'script',
                     'content' => [
-                        'AdminLTE./plugins/datatables/jquery.dataTables.min',
-                        'AdminLTE./plugins/datatables/dataTables.bootstrap.min',
-                        'Search.view-search-result',
+                        'Qobo/Utils./plugins/datatables/datatables.min',
+                        'Qobo/Utils./plugins/datatables/js/dataTables.bootstrap.min',
+                        'Qobo/Utils./plugins/datatables/extensions/Select/js/dataTables.select.min',
+                        'Qobo/Utils.dataTables.init',
                     ],
                     'block' => 'scriptBottom',
                 ],
                 'scriptBlock' => [
                     'type' => 'scriptBlock',
-                    'content' => 'view_search_result.init(' . json_encode($config) . ');',
+                    'content' => 'datatables_init.init(' . json_encode($config) . ');',
                     'block' => 'scriptBottom',
                 ],
             ]

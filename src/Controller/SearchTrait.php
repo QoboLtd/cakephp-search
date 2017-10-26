@@ -50,7 +50,7 @@ trait SearchTrait
         $model = $this->modelClass;
 
         $searchTable = TableRegistry::get($this->tableName);
-        $table = TableRegistry::get($model);
+        $table = $this->{$this->name};
         $search = new Search($table, $this->Auth->user());
 
         if (!$searchTable->isSearchable($model)) {
@@ -119,6 +119,11 @@ trait SearchTrait
     protected function getAjaxViewVars(array $searchData, Table $table, Search $search)
     {
         $displayColumns = $searchData['display_columns'];
+
+        if ((bool)$this->request->query('primary_key')) {
+            $primaryKey = $table->aliasField($table->getPrimaryKey());
+            array_unshift($displayColumns, $primaryKey);
+        }
 
         $sortField = $this->request->query('order.0.column') ?: 0;
         $sortField = array_key_exists($sortField, $displayColumns) ?

@@ -80,7 +80,7 @@ class ArticlesControllerTest extends IntegrationTestCase
         $this->assertResponseContains('<th class="actions">Actions</th>');
     }
 
-    public function testSearchJson()
+    public function testSearchAjax()
     {
         EventManager::instance()->on('Search.Model.Search.afterFind', function ($event, $entities, $table) {
             return $entities;
@@ -100,9 +100,29 @@ class ArticlesControllerTest extends IntegrationTestCase
         $this->assertResponseContains('pagination');
         $this->assertResponseContains('First article title');
 
-        $body = json_decode($this->_getBodyAsString());
-        $this->assertTrue($body->success);
-        $this->assertEquals(1, $body->pagination->count);
+        $response = json_decode($this->_getBodyAsString());
+        $this->assertTrue($response->success);
+        $this->assertEquals(1, $response->pagination->count);
+    }
+
+    public function testSearchAjaxWithPrimaryKey()
+    {
+        EventManager::instance()->on('Search.Model.Search.afterFind', function ($event, $entities, $table) {
+            return $entities;
+        });
+
+        $this->configRequest([
+            'headers' => ['Accept' => 'application/json'],
+            'environment' => [
+                'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest'
+            ]
+        ]);
+
+        $queryString = '?' . http_build_query(['primary_key' => 1]);
+        $this->get('/articles/search/00000000-0000-0000-0000-000000000003' . $queryString);
+
+        $response = json_decode($this->_getBodyAsString());
+        $this->assertEquals('00000000-0000-0000-0000-000000000001', $response->data[0][0]);
     }
 
     public function testSearchPost()
