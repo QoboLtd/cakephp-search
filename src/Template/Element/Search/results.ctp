@@ -12,6 +12,24 @@
 
 use Cake\Core\Configure;
 
+echo $this->Html->css(
+    [
+        'Qobo/Utils./plugins/datatables/css/dataTables.bootstrap.min',
+        'Qobo/Utils./plugins/datatables/extensions/Select/css/select.bootstrap.min',
+        'Qobo/Utils./css/dataTables.batch'
+    ],
+    ['block' => 'css']
+);
+echo $this->Html->script(
+    [
+        'Qobo/Utils./plugins/datatables/datatables.min',
+        'Qobo/Utils./plugins/datatables/js/dataTables.bootstrap.min',
+        'Qobo/Utils./plugins/datatables/extensions/Select/js/dataTables.select.min',
+        'Qobo/Utils.dataTables.init'
+    ],
+    ['block' => 'scriptBottom']
+);
+
 //search url if is a saved one
 list($plugin, $controller) = pluginSplit($savedSearch->model);
 $url = [
