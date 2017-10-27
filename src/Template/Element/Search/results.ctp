@@ -36,7 +36,7 @@ if (Configure::read('Search.batch.active')) {
     $orderField += 1;
 }
 
-$dataTableOptions = [
+$dtOptions = [
     'table_id' => '#' . $tableId,
     'order' => [
         $orderField,
@@ -54,12 +54,12 @@ $dataTableOptions = [
     ],
 ];
 if (Configure::read('Search.batch.active')) {
-    $dataTableOptions['batch'] = ['id' => Configure::read('Search.batch.button_id')];
+    $dtOptions['batch'] = ['id' => Configure::read('Search.batch.button_id')];
 }
 
 echo $this->Html->scriptBlock(
     '// initialize dataTable
-    datatables_init.init(' . json_encode($dataTableOptions) . ');',
+    new DataTablesInit(' . json_encode($dtOptions) . ');',
     ['block' => 'scriptBottom']
 );
 
