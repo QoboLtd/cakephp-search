@@ -182,7 +182,7 @@ class SavedSearchWidget extends BaseWidget
                 ],
                 'scriptBlock' => [
                     'type' => 'scriptBlock',
-                    'content' => 'datatables_init.init(' . json_encode($config) . ');',
+                    'content' => 'new DataTablesInit(' . json_encode($config) . ');',
                     'block' => 'scriptBottom',
                 ],
             ]
