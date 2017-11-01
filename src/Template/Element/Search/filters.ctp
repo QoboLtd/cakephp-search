@@ -9,6 +9,7 @@
  * @copyright     Copyright (c) Qobo Ltd. (https://www.qobo.biz)
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
+use Cake\I18n\Time;
 
 echo $this->Html->css('Search.search', ['block' => 'css']);
 echo $this->Html->script('Search.search', ['block' => 'scriptBottom']);
@@ -129,6 +130,7 @@ if (!empty($searchData['criteria'])) {
                 echo $this->Form->end();
                 echo '&nbsp;';
                 $exportName = ($savedSearch->get('name') ? $savedSearch->get('name') : $this->name);
+                $exportName .= ' ' . $this->Time->format(Time::now(), 'yyyy-MM-dd HH-mm-ss');
                 echo $this->element('Search.Menu/search-view-options', [
                     'entity' => $savedSearch, 'name' => $exportName, 'id' => $preSaveId
                 ]);

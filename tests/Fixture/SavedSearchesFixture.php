@@ -74,7 +74,7 @@ class SavedSearchesFixture extends TestFixture
             'user_id' => '00000000-0000-0000-0000-000000000001',
             'model' => 'Articles',
             'shared' => 'private',
-            'content' => '{"saved":{"criteria":{"Articles.title":[{"type":"string","operator":"contains","value":"first"}]},"aggregator":"OR","display_columns":["Articles.title"],"sort_by_field":"title","sort_by_order":"desc"},"latest":{"criteria":{"Articles.title":[{"type":"string","operator":"contains","value":"first"}]},"aggregator":"OR","display_columns":["Articles.title"],"sort_by_field":"title","sort_by_order":"desc"}}',
+            'content' => '{"saved":{"criteria":{"Articles.title":[{"type":"string","operator":"contains","value":"article"}]},"aggregator":"OR","display_columns":["Articles.title"],"sort_by_field":"title","sort_by_order":"desc"},"latest":{"criteria":{"Articles.title":[{"type":"string","operator":"contains","value":"article"}]},"aggregator":"OR","display_columns":["Articles.title"],"sort_by_field":"title","sort_by_order":"desc"}}',
             'created' => '2016-07-01 10:39:23',
             'modified' => '2016-07-01 10:41:31',
             'trashed' => null,
