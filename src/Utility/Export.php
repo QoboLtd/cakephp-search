@@ -15,7 +15,6 @@ use Cake\Core\Configure;
 use Cake\Event\Event;
 use Cake\Event\EventManager;
 use Cake\Filesystem\File;
-use Cake\I18n\Time;
 use Cake\ORM\TableRegistry;
 use Search\Event\EventName;
 use Search\Utility;
@@ -146,9 +145,6 @@ class Export
      */
     protected function setFilename($filename, $extension = 'csv')
     {
-        $time = Time::now();
-        $filename .= ' ' . $time->i18nFormat('yyyy-MM-dd HH-mm-ss');
-
         $this->filename = $filename . '.' . $extension;
     }
 
