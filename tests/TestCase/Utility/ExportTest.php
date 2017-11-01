@@ -79,22 +79,39 @@ class ExportTest extends TestCase
 
     public function testCount()
     {
-        $this->assertEquals(1, $this->Export->count());
+        $this->assertEquals(2, $this->Export->count());
     }
 
     public function testGetUrl()
     {
-        $this->assertRegexp('/\/uploads\/export\/Foobar \d+-\d+-\d+ \d+-\d+-\d+\.csv/', $this->Export->getUrl());
+        $this->assertEquals('/uploads/export/Foobar.csv', $this->Export->getUrl());
     }
 
     public function testExecute()
     {
-        $this->Export->execute(1, 10);
+        $count = $this->Export->count();
+        $limit = 1;
+
+        for ($page = 1; $page <= $count; $page++) {
+            $this->Export->execute($page, $limit);
+        }
 
         $parts = explode('/', $this->Export->getUrl());
         $path = WWW_ROOT . 'uploads' . DS . 'export' . DS . end($parts);
         $this->assertTrue(file_exists($path));
 
+        $fh = fopen($path, 'r');
+        $data = [];
+        while (!feof($fh)) {
+            $data[] = fgetcsv($fh);
+        }
+        fclose($fh);
         unlink($path);
+
+        // remove empty csv rows
+        $data = array_filter($data);
+
+        // csv rows must be equal to search records count, +1 for the headers row
+        $this->assertEquals($count + 1, count($data));
     }
 }
