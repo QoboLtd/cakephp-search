@@ -99,6 +99,7 @@ class ExportTest extends TestCase
         $parts = explode('/', $this->Export->getUrl());
         $path = WWW_ROOT . 'uploads' . DS . 'export' . DS . end($parts);
         $this->assertTrue(file_exists($path));
+        $this->assertTrue(is_readable($path));
 
         $fh = fopen($path, 'r');
         $data = [];
