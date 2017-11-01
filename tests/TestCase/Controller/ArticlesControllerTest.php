@@ -102,7 +102,7 @@ class ArticlesControllerTest extends IntegrationTestCase
 
         $response = json_decode($this->_getBodyAsString());
         $this->assertTrue($response->success);
-        $this->assertEquals(1, $response->pagination->count);
+        $this->assertEquals(2, $response->pagination->count);
     }
 
     public function testSearchAjaxWithPrimaryKey()
@@ -122,7 +122,7 @@ class ArticlesControllerTest extends IntegrationTestCase
         $this->get('/articles/search/00000000-0000-0000-0000-000000000003' . $queryString);
 
         $response = json_decode($this->_getBodyAsString());
-        $this->assertEquals('00000000-0000-0000-0000-000000000001', $response->data[0][0]);
+        $this->assertEquals('00000000-0000-0000-0000-000000000002', $response->data[0][0]);
     }
 
     public function testSearchPost()
@@ -267,7 +267,7 @@ class ArticlesControllerTest extends IntegrationTestCase
         $this->assertResponseOk();
 
         $this->assertEquals('lorem-ipsum', $this->viewVariable('filename'));
-        $this->assertEquals(1, $this->viewVariable('count'));
+        $this->assertEquals(2, $this->viewVariable('count'));
     }
 
     public function testExportSearchAjax()
@@ -286,7 +286,7 @@ class ArticlesControllerTest extends IntegrationTestCase
 
         $this->assertTrue($this->viewVariable('success'));
         $data = $this->viewVariable('data');
-        $this->assertRegexp('/\/uploads\/export\/lorem-ipsum \d+-\d+-\d+ \d+-\d+-\d+\.csv/', $data['path']);
+        $this->assertEquals('/uploads/export/lorem-ipsum.csv', $data['path']);
 
         $parts = explode('/', $data['path']);
         $path = WWW_ROOT . 'uploads' . DS . 'export' . DS . end($parts);
