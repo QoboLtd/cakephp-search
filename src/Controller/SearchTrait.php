@@ -120,11 +120,6 @@ trait SearchTrait
     {
         $displayColumns = $searchData['display_columns'];
 
-        if ((bool)$this->request->query('primary_key')) {
-            $primaryKey = $table->aliasField($table->getPrimaryKey());
-            array_unshift($displayColumns, $primaryKey);
-        }
-
         $sortField = $this->request->query('order.0.column') ?: 0;
         $sortField = array_key_exists($sortField, $displayColumns) ?
             $displayColumns[$sortField] :
@@ -150,6 +145,9 @@ trait SearchTrait
 
         $data = [];
         if ($resultSet instanceof ResultSet) {
+            if ((bool)$this->request->query('primary_key')) {
+                array_unshift($displayColumns, $table->aliasField($table->getPrimaryKey()));
+            }
             $data = Utility::instance()->toDatatables($resultSet, $displayColumns, $table, $this->Auth->user());
         }
 
