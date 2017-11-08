@@ -32,10 +32,13 @@ $url = [
 // search title
 $title = '<a href="' . $this->Url->build($url) . '">' . $savedSearch->name . '</a>';
 
+// Export button
 if (Configure::read('Search.dashboardExport')) {
-    $exportLink = "<a href='/" . $savedSearch->model . '/export-search/' . $savedSearch->id . '/' . $savedSearch->name . "' class='btn btn-primary pull-right'><i class='fa fa-download'></i>" .
-                                                                                                                                                                                __('Export') . "</a>";
+    $exportLink = "<a href='/" . $savedSearch->model . '/export-search/' . $savedSearch->id . '/' . $savedSearch->name . "' class='dt-button pull-right'>" . __('Export') . "</a>";
 }
+
+echo $this->Html->css(['Search.grid'], ['block' => 'css']);
+
 ?>
 <?php if (!empty($searchData['display_columns'])) : ?>
 <div class="dashboard-widget-saved_search">
