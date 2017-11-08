@@ -1,5 +1,4 @@
 $(document).ready(function () {
-    var columns = [];
     $('.report-grid').DataTable({
         "dom": 'Bfrtip',
         "buttons": [

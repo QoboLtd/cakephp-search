@@ -10,6 +10,7 @@
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
 
+use Cake\Core\Configure;
 use Cake\Event\Event;
 use Cake\Utility\Inflector;
 
@@ -30,6 +31,14 @@ $url = [
 
 // search title
 $title = '<a href="' . $this->Url->build($url) . '">' . $savedSearch->name . '</a>';
+
+// Export button
+if (Configure::read('Search.dashboardExport')) {
+    $exportLink = "<a href='/" . $savedSearch->model . '/export-search/' . $savedSearch->id . '/' . $savedSearch->name . "' class='dt-button pull-right'>" . __('Export') . "</a>";
+}
+
+echo $this->Html->css(['Search.grid'], ['block' => 'css']);
+
 ?>
 <?php if (!empty($searchData['display_columns'])) : ?>
 <div class="dashboard-widget-saved_search">
@@ -44,6 +53,9 @@ $title = '<a href="' . $this->Url->build($url) . '">' . $savedSearch->name . '</
         </div>
         <div class="box-body">
             <div class="table-responsive">
+                <?php if (!empty($exportLink)) : ?>
+                    <?= $exportLink ?>
+                <?php endif; ?>     
                 <table id="<?= $widget->getContainerId() ?>" class="table table-hover table-condensed table-vertical-align" width="100%">
                     <thead>
                         <tr>
