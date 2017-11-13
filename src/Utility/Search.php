@@ -236,9 +236,6 @@ class Search
         foreach ($criteria['criteria'] as $key => $val) {
             $items = [];
 
-            if ($key != 'query') {
-                list ($module, $field) = explode('.', $key);
-            }
             if (is_array($val)) {
                 foreach ($val as $k => $v) {
                     if ($v['operator'] != 'is') {
