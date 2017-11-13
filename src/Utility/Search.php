@@ -15,7 +15,10 @@ use Cake\Http\ServerRequest;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
+use Cake\Utility\Inflector;
 use InvalidArgumentException;
+use Qobo\Utils\ModuleConfig\ConfigType;
+use Qobo\Utils\ModuleConfig\ModuleConfig;
 use Search\Model\Entity\SavedSearch;
 use Search\Utility;
 use Search\Utility\BasicSearch;
@@ -28,6 +31,16 @@ class Search
      * Delete older than value
      */
     const DELETE_OLDER_THAN = '-3 hours';
+
+    /**
+     * DBlist constant
+     */
+    const LIST_TYPE_DBLIST = 'dblist';
+
+    /**
+     * File list constant
+     */
+    const LIST_TYPE_FILELIST = 'list';
 
     /**
      * Searchable table.
@@ -220,8 +233,6 @@ class Search
     {
         $result = $criteria;
 
-        $table = TableRegistry::get('CsvMigrations.DblistItems');
-
         foreach ($criteria['criteria'] as $key => $val) {
             $items = [];
 
@@ -234,13 +245,9 @@ class Search
                         continue;
                     }
 
-                    $query = $table->find('all', [
-                        'conditions' => ['value' => $v['value']],
-                    ]);
-                    $item = $query->first();
-                    array_push($items, $item->value);
+                    array_push($items, $v['value']);
 
-                    $ret = $this->processChildren($item->id, $table);
+                    $ret = $this->processChildren($v['value'], $v['type'], $key);
 
                     if (!empty($ret)) {
                         $items = array_merge($items, $ret);
@@ -255,13 +262,13 @@ class Search
     }
 
     /**
-     * getChildren method
+     * getDbListChildren method
      *
      * @param string $id of parent item
      * @param object $table where lists are stored
      * @return array
      */
-    private function getChildren($id, $table)
+    private function getDbListChildren($id, $table)
     {
         $query = $table->find('all', [
             'conditions' => ['parent_id' => $id],
@@ -272,17 +279,63 @@ class Search
     }
 
     /**
-     * getChildren method
+     * getFileListChildren method
      *
-     *
+     * @param string $parent_value of parent item
+     * @param string $listName for target list
+     * @return array with children elements or empty
      */
-    private function processChildren($parent_id, $table)
+    private function getFileListChildren($parent_value, $listName)
+    {
+        if (strpos($listName, '.') !== false) {
+            list ($module, $name) = explode('.', $listName);
+            $listName = strtolower(Inflector::singularize($module) . '_' . Inflector::pluralize($name));
+        }
+        $mc = new ModuleConfig(ConfigType::LISTS(), null, $listName);
+        $listData = $mc->parse()->items;
+        $result = json_decode(json_encode($listData), true);
+
+        $list = [];
+        foreach ($result as $item) {
+            if ($item['value'] == $parent_value && !empty($item['children'])) {
+                foreach ($item['children'] as $child) {
+                    array_push($list, ['value' => $child['value']]);
+                }
+            }
+        }
+
+        return $list;
+    }
+
+    /**
+     * processChildren method
+     *
+     * @param string $value to search
+     * @param string $type - dblist of list stored in files
+     * @param string $listName to find children in
+     * @return array with childen items or empty
+     */
+    private function processChildren($value, $type = self::LIST_TYPE_DBLIST, $listName = '')
     {
         $result = [];
-        $list = $this->getChildren($parent_id, $table);
+
+        if ($type == static::LIST_TYPE_DBLIST) {
+            $table = TableRegistry::get('CsvMigrations.DblistItems');
+            $query = $table->find('all', [
+                'conditions' => ['value' => $value],
+            ]);
+            $item = $query->first();
+
+            $list = $this->getDbListChildren($item['id'], $table);
+        } elseif ($type == static::LIST_TYPE_FILELIST) {
+            $list = $this->getFileListChildren($value, $listName);
+        } else {
+            $list = [];
+        }
+
         foreach ($list as $item) {
             array_push($result, $item['value']);
-            $ret = $this->processChildren($item['id'], $table);
+            $ret = $this->processChildren($item['value'], $type, $listName);
 
             if (!empty($ret)) {
                 $resutl = array_merge($result, $ret);
