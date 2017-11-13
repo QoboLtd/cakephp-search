@@ -453,11 +453,7 @@ class Search
      */
     protected function getWhereCondition($field, array $criteria)
     {
-        if (!is_array($criteria['value'])) {
-            $value = trim($criteria['value']);
-        } else {
-            $value = $criteria['value'];
-        }
+        $value = is_array($criteria['value']) ? $criteria['value'] : trim($criteria['value']);
 
         if ('' === $value) {
             return $this->getEmptyWhereCondition($field, $criteria);
