@@ -231,8 +231,6 @@ class Search
      */
     protected function processSearchCriteria($criteria)
     {
-        $result = $criteria;
-
         foreach ($criteria['criteria'] as $key => $val) {
             $items = [];
 
@@ -261,14 +259,14 @@ class Search
     /**
      * getDbListChildren method
      *
-     * @param string $id of parent item
+     * @param string $parentId of parent item
      * @param object $table where lists are stored
      * @return array
      */
-    private function getDbListChildren($id, $table)
+    private function getDbListChildren($parentId, $table)
     {
         $query = $table->find('all', [
-            'conditions' => ['parent_id' => $id],
+            'conditions' => ['parent_id' => $parentId],
         ]);
         $children = $query->toArray();
 
@@ -278,23 +276,24 @@ class Search
     /**
      * getFileListChildren method
      *
-     * @param string $parent_value of parent item
+     * @param string $parentValue of parent item
      * @param string $listName for target list
      * @return array with children elements or empty
      */
-    private function getFileListChildren($parent_value, $listName)
+    private function getFileListChildren($parentValue, $listName)
     {
         if (strpos($listName, '.') !== false) {
             list ($module, $name) = explode('.', $listName);
             $listName = strtolower(Inflector::singularize($module) . '_' . Inflector::pluralize($name));
         }
-        $mc = new ModuleConfig(ConfigType::LISTS(), null, $listName);
-        $listData = $mc->parse()->items;
+
+        $moduleConfig = new ModuleConfig(ConfigType::LISTS(), null, $listName);
+        $listData = $moduleConfig->parse()->items;
         $result = json_decode(json_encode($listData), true);
 
         $list = [];
         foreach ($result as $item) {
-            if ($item['value'] == $parent_value && !empty($item['children'])) {
+            if ($item['value'] == $parentValue && !empty($item['children'])) {
                 foreach ($item['children'] as $child) {
                     array_push($list, ['value' => $child['value']]);
                 }
@@ -315,6 +314,7 @@ class Search
     private function processChildren($value, $type = self::LIST_TYPE_DBLIST, $listName = '')
     {
         $result = [];
+        $list = [];
 
         if ($type == static::LIST_TYPE_DBLIST) {
             $table = TableRegistry::get('CsvMigrations.DblistItems');
@@ -326,8 +326,6 @@ class Search
             $list = $this->getDbListChildren($item['id'], $table);
         } elseif ($type == static::LIST_TYPE_FILELIST) {
             $list = $this->getFileListChildren($value, $listName);
-        } else {
-            $list = [];
         }
 
         foreach ($list as $item) {
@@ -335,7 +333,7 @@ class Search
             $ret = $this->processChildren($item['value'], $type, $listName);
 
             if (!empty($ret)) {
-                $resutl = array_merge($result, $ret);
+                $result = array_merge($result, $ret);
             }
         }
 
