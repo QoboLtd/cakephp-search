@@ -193,6 +193,8 @@ class Search
     {
         $result = $request->getData();
 
+        $result = $this->processSearchCriteria($result);
+
         $value = Hash::get($result, 'criteria.query');
 
         // advanced search
@@ -204,6 +206,88 @@ class Search
         $result['aggregator'] = 'OR';
         $basicSearch = new BasicSearch($this->table, $this->user);
         $result['criteria'] = $basicSearch->getCriteria($value);
+
+        return $result;
+    }
+
+    /**
+     * processSearchCriteria method
+     *
+     * @param array $criteria for search
+     * @return array
+     */
+    protected function processSearchCriteria($criteria)
+    {
+        $result = $criteria;
+
+        $table = TableRegistry::get('CsvMigrations.DblistItems');
+
+        foreach ($criteria['criteria'] as $key => $val) {
+            $items = [];
+
+            if ($key != 'query') {
+                list ($module, $field) = explode('.', $key);
+            }
+            if (is_array($val)) {
+                foreach ($val as $k => $v) {
+                    if ($v['operator'] != 'is') {
+                        continue;
+                    }
+
+                    $query = $table->find('all', [
+                        'conditions' => ['value' => $v['value']],
+                    ]);
+                    $item = $query->first();
+                    array_push($items, $item->value);
+
+                    $ret = $this->processChildren($item->id, $table);
+
+                    if (!empty($ret)) {
+                        $items = array_merge($items, $ret);
+                    }
+
+                    $criteria['criteria'][$key][$k]['value'] = $items;
+                }
+            }
+        }
+
+        return $criteria;
+    }
+
+    /**
+     * getChildren method
+     *
+     * @param string $id of parent item
+     * @param object $table where lists are stored
+     * @return array
+     */
+    private function getChildren($id, $table)
+    {
+        $query = $table->find('all', [
+            'conditions' => ['parent_id' => $id],
+        ]);
+        $children = $query->toArray();
+
+        return $children;
+    }
+
+    /**
+     * getChildren method
+     *
+     *
+     */
+    private function processChildren($parent_id, $table)
+    {
+        $result = [];
+        $list = $this->getChildren($parent_id, $table);
+        foreach ($list as $item) {
+            array_push($result, $item['value']);
+            $ret = $this->processChildren($item['id'], $table);
+
+            if (!empty($ret)) {
+                $resutl = array_merge($result, $ret);
+            }
+        }
 
         return $result;
     }
@@ -278,6 +362,7 @@ class Search
 
             foreach ($criterias as $criteria) {
                 $condition = $this->getWhereCondition($fieldName, $criteria);
+
                 if (empty($condition)) {
                     continue;
                 }
@@ -320,7 +405,12 @@ class Search
      */
     protected function getWhereCondition($field, array $criteria)
     {
-        $value = trim($criteria['value']);
+        if (!is_array($criteria['value'])) {
+            $value = trim($criteria['value']);
+        } else {
+            $value = $criteria['value'];
+        }
+
         if ('' === $value) {
             return $this->getEmptyWhereCondition($field, $criteria);
         }
