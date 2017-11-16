@@ -17,10 +17,7 @@ use Cake\Http\ServerRequest;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
-use Cake\Utility\Inflector;
 use InvalidArgumentException;
-use Qobo\Utils\ModuleConfig\ConfigType;
-use Qobo\Utils\ModuleConfig\ModuleConfig;
 use Search\Event\EventName;
 use Search\Model\Entity\SavedSearch;
 use Search\Utility;
@@ -205,11 +202,7 @@ class Search
         ]);
         EventManager::instance()->dispatch($event);
 
-        error_log(__METHOD__ . ": result before event --> " . print_r($result, true) . "\n", 3, '/tmp/search.log');
-
         $result = $event->result ? $event->result : $result;
-
-        error_log(__METHOD__ . ": result after event --> " . print_r($result, true) . "\n", 3, '/tmp/search.log');
 
         $value = Hash::get($result, 'criteria.query');
 
