@@ -11,11 +11,14 @@
  */
 namespace Search\Utility;
 
+use Cake\Event\Event;
+use Cake\Event\EventManager;
 use Cake\Http\ServerRequest;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use InvalidArgumentException;
+use Search\Event\EventName;
 use Search\Model\Entity\SavedSearch;
 use Search\Utility;
 use Search\Utility\BasicSearch;
@@ -193,6 +196,14 @@ class Search
     {
         $result = $request->getData();
 
+        //$result = $this->processSearchCriteria($result);
+        $event = new Event((string)EventName::MODEL_SEARCH_CHILD_ITEMS(), $this, [
+            'criteria' => $result
+        ]);
+        EventManager::instance()->dispatch($event);
+
+        $result = $event->result ? $event->result : $result;
+
         $value = Hash::get($result, 'criteria.query');
 
         // advanced search
@@ -278,6 +289,7 @@ class Search
 
             foreach ($criterias as $criteria) {
                 $condition = $this->getWhereCondition($fieldName, $criteria);
+
                 if (empty($condition)) {
                     continue;
                 }
@@ -320,7 +332,8 @@ class Search
      */
     protected function getWhereCondition($field, array $criteria)
     {
-        $value = trim($criteria['value']);
+        $value = is_array($criteria['value']) ? $criteria['value'] : trim($criteria['value']);
+
         if ('' === $value) {
             return $this->getEmptyWhereCondition($field, $criteria);
         }
