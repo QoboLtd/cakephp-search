@@ -166,7 +166,8 @@ class SavedSearchWidget extends BaseWidget
                     'content' => [
                         'Qobo/Utils./plugins/datatables/css/dataTables.bootstrap.min',
                         'Qobo/Utils./plugins/datatables/extensions/Select/css/select.bootstrap.min',
-                        'Qobo/Utils./css/dataTables.batch'
+                        'Qobo/Utils./css/dataTables.batch',
+                        'Search.grid'
                     ],
                     'block' => 'css',
                 ],
