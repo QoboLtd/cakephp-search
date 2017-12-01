@@ -109,8 +109,8 @@ class AppWidgetsTable extends Table
     /**
      * Map content column to json custom type.
      *
-     * @param Cake\Database\Schema\TableSchema $schema Table schema object
-     * @return Cake\Database\Schema\TableSchema
+     * @param \Cake\Database\Schema\TableSchema $schema Table schema object
+     * @return \Cake\Database\Schema\TableSchema
      */
     protected function _initializeSchema(TableSchema $schema)
     {
