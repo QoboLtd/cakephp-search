@@ -105,7 +105,7 @@ class SavedSearchesTable extends Table
      *
      * @param  array  $users  users ids
      * @param  array  $models models names
-     * @return Cake\ORM\ResultSet
+     * @return \Cake\ORM\ResultSet
      */
     public function getSavedSearches(array $users = [], array $models = [])
     {

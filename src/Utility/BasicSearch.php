@@ -15,6 +15,7 @@ use Cake\Event\Event;
 use Cake\Event\EventManager;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
+use InvalidArgumentException;
 use Search\Event\EventName;
 use Search\Utility;
 use Search\Utility\Options;
