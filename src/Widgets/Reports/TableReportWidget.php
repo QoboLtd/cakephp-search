@@ -72,7 +72,7 @@ class TableReportWidget extends BaseReportGraphs
                 'css' => [
                     'type' => 'css',
                     'content' => [
-                        'AdminLTE./plugins/datatables/dataTables.bootstrap',
+                        'Qobo/Utils./plugins/datatables/css/dataTables.bootstrap.min',
                         'Qobo/Utils.buttons.dataTables.min',
                         'Search.grid'
                     ],
@@ -81,8 +81,8 @@ class TableReportWidget extends BaseReportGraphs
                 'javascript' => [
                     'type' => 'script',
                     'content' => [
-                        'AdminLTE./plugins/datatables/jquery.dataTables.min',
-                        'AdminLTE./plugins/datatables/dataTables.bootstrap.min',
+                        'Qobo/Utils./plugins/datatables/js/dataTables.bootstrap.min',
+                        'Qobo/Utils./plugins/datatables/datatables.min',
                         'Qobo/Utils.dataTables.buttons.min',
                         'Qobo/Utils.buttons.flash.min',
                         'Qobo/Utils.buttons.print.min',
