@@ -39,6 +39,7 @@ echo $this->Html->script('Search.qobo.grid', ['block' => 'scriptBottom']);
         </div>
     </div>
     <div id="grid-app">
+        <?= $this->Form->input('options', ['type' => 'hidden', 'id' => 'grid_layout', 'value' => json_encode([['foo' => 'bar']])]);?>
         <div class="box box-solid">
             <div class="box-body">
                 <div class="box-header">
