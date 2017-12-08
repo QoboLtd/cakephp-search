@@ -148,7 +148,7 @@ trait SearchTrait
             if ((bool)$this->request->query('primary_key')) {
                 array_unshift($displayColumns, $table->aliasField($table->getPrimaryKey()));
             }
-            $data = Utility::instance()->toDatatables($resultSet, $displayColumns, $table, $this->Auth->user());
+            $data = Utility::instance()->formatter($resultSet, $displayColumns, $table, $this->Auth->user());
         }
 
         $pagination = [
