@@ -118,11 +118,10 @@ class ArticlesControllerTest extends IntegrationTestCase
             ]
         ]);
 
-        $queryString = '?' . http_build_query(['primary_key' => 1]);
-        $this->get('/articles/search/00000000-0000-0000-0000-000000000003' . $queryString);
+        $this->get('/articles/search/00000000-0000-0000-0000-000000000003');
 
         $response = json_decode($this->_getBodyAsString());
-        $this->assertEquals('00000000-0000-0000-0000-000000000002', $response->data[0][0]);
+        $this->assertEquals('00000000-0000-0000-0000-000000000002', $response->data[0]->id);
     }
 
     public function testSearchPost()
