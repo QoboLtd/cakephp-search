@@ -53,12 +53,7 @@ class DashboardsController extends AppController
         $dashboard = $this->Dashboards->get($id, [
             'contain' => [
                 'Roles',
-                'Widgets' => [
-                    'sort' => [
-                        'Widgets.row' => 'ASC',
-                        'Widgets.column' => 'ASC'
-                    ]
-                ]
+                'Widgets'
             ]
         ]);
 
