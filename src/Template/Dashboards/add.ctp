@@ -42,7 +42,7 @@ echo $this->Html->script('Search.qobo.grid', ['block' => 'scriptBottom']);
         </div>
     </div>
     <div id="grid-app">
-        <?= $this->Form->input('options', ['type' => 'hidden', 'id' => 'grid_layout', 'value' => null]);?>
+        <?= $this->Form->input('options', ['type' => 'hidden', 'id' => 'dashboard-options', 'value' => null]);?>
         <div class="box box-solid">
             <div class="box-body">
                 <div class="box-header">

@@ -79,6 +79,8 @@ class DashboardsController extends AppController
     /**
      * Add method
      *
+     * @TODO: refactor the code. Eyez bleeedzz
+     *
      * @return \Cake\Network\Response|void Redirects on successful add, renders view otherwise.
      */
     public function add()
@@ -95,7 +97,7 @@ class DashboardsController extends AppController
 
             $dashboard = $this->Dashboards->patchEntity($dashboard, [
                 'name' => $data['name'],
-                'role_id' => $data['role_id']
+                'role_id' => $data['role_id'],
             ]);
 
             $resultedDashboard = $this->Dashboards->save($dashboard);
@@ -105,24 +107,24 @@ class DashboardsController extends AppController
 
                 $dashboardId = $resultedDashboard->id;
 
-                if (!empty($data['widgets'])) {
-                    $count = count($data['widgets']['widget_id']);
-                    for ($i = 0; $i < $count; $i++) {
-                        array_push($widgets, [
-                            'dashboard_id' => $dashboardId,
-                            'widget_id' => $data['widgets']['widget_id'][$i],
-                            'widget_type' => $data['widgets']['widget_type'][$i],
-                            'widget_options' => null,
-                            'column' => $data['widgets']['column'][$i],
-                            'row' => $data['widgets']['row'][$i],
-                        ]);
-                    }
+                $data['widgets'] = json_decode($data['options'], true);
 
+                if (!empty($data['widgets'])) {
                     $widgetTable = TableRegistry::get('Search.Widgets');
-                    foreach ($widgets as $w) {
-                        $widget = $widgetTable->newEntity();
-                        $widget = $widgetTable->patchEntity($widget, $w);
-                        $widgetTable->save($widget);
+
+                    foreach ($data['widgets'] as $k => $item) {
+                        $widget = [
+                            'dashboard_id' => $dashboardId,
+                            'widget_id' => $item['id'],
+                            'widget_type' => $item['type'],
+                            'widget_options' => json_encode($item),
+                            'column' => 0,
+                            'row' => 0,
+                        ];
+
+                        $widgetEntity = $widgetTable->newEntity();
+                        $widgetEntity = $widgetTable->patchEntity($widgetEntity, $widget);
+                        $widgetTable->save($widgetEntity);
                     }
                 }
 

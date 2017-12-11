@@ -33,20 +33,45 @@ new Vue({
         GridLink,
     },
     data: {
+        targetElement: '#dashboard-options',
         elements: [],
         layout: [],
+        dashboard:[],
         index:0,
         token: api_token // getting token from global variable into vue app.
     },
     beforeMount: function() {
-        // @TODO:
-        // 1. Fetch layout items in case we're editing it.
-        // 2. Fetch all items (widgets) that we'd like to add to grid.
-        // Summary: set initial data from AJAX to data()
         this.getGridElements();
     },
     mounted: function() {
         this.index = this.layout.length;
+    },
+    watch: {
+        // save all the visible options into dashboard var
+        layout: {
+            handler: function() {
+                var that = this;
+                this.dashboard = [];
+
+                if(this.layout.length > 0) {
+                    console.log('filtering out data');
+                    this.layout.forEach(function(element) {
+                        that.dashboard.push({
+                            i: element.i,
+                            h: element.h,
+                            w: element.w,
+                            x: element.x,
+                            y: element.y,
+                            id: element.data.id,
+                            type: element.type,
+                        });
+                    });
+                }
+
+                $(this.targetElement).val(JSON.stringify(this.dashboard));
+            },
+            deep: true
+        }
     },
     methods: {
         getElementIcon: function(item) {
@@ -72,9 +97,21 @@ new Vue({
                 that.elements = response;
             });
         },
-        addItem: function(item) {
-            console.log(item);
+        getGridElementsById: function(id) {
+            var that = this;
 
+            $.ajax({
+                url: '/search/dashboard/edit/' + id,
+                dataType: 'json',
+                type: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + this.token
+                }
+            }).then(function(response){
+                console.log('editing existing layout');
+            });
+        },
+        addItem: function(item) {
             let element = {
                 x: 0,
                 y: 0,
