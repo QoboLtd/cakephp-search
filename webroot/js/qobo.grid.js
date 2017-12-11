@@ -49,6 +49,15 @@ new Vue({
         this.index = this.layout.length;
     },
     methods: {
+        getElementIcon: function(item) {
+            let className = 'fa-table';
+
+            if (item.data.type == 'graph') {
+                className = 'fa-area-chart';
+            }
+
+            return className;
+        },
         getGridElements: function() {
             var that = this;
 
