@@ -36,6 +36,7 @@ new Vue({
         widgets: [],
         layout: [],
         index:0,
+        token: api_token // getting token from global variable into vue app.
     },
     beforeMount: function() {
         // @TODO:
@@ -47,6 +48,9 @@ new Vue({
         this.index = this.layout.length;
     },
     methods: {
+        getGridElements: function() {
+
+        },
         addItem: function(id) {
             let element = {
                 x: 0,
