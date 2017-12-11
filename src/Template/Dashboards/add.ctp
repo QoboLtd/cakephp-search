@@ -67,13 +67,13 @@ echo $this->Html->script('Search.qobo.grid', ['block' => 'scriptBottom']);
                                    class="box box-solid box-success"
                         >
                             <div class='box-header with-border'>
-                                <h3 class="box-title"><i class="fa fa-bar-chart"></i>Test - {{item.widget_id}}</h3>
+                                <h3 class="box-title"><i class="fa fa-bar-chart"></i>{{item.data.model}}</h3>
                                 <div class="box-tools">
-                                    <div class="btn btn-box-tool"><grid-item-link :data-id="item.i" :index="item.i" state="remove" @remove-item="removeItem(item)"></grid-link></div>
+                                    <div class="btn btn-box-tool"><grid-item-link :data-id="item.id" :index="item.i" state="remove" @remove-item="removeItem(item)"></grid-link></div>
                                 </div>
                             </div>
                             <div class="box-body">
-                                <p>Description - {{item.widget_id}}</p>
+                                <p>{{item.data.name}}</p>
                             </div>
                         </grid-item>
                     </grid-layout>
@@ -86,21 +86,19 @@ echo $this->Html->script('Search.qobo.grid', ['block' => 'scriptBottom']);
             </div>
             <div class="box-body">
                 <ul class="droppable-area">
-                    <?php for($i = 0; $i <= 3; $i++): ?>
-                    <li class="col-lg-3 col-xs-6">
+                    <li class="col-lg-3 col-xs-6" v-for="item in elements">
                         <div class="box box-info box-solid">
                             <div class='box-header with-border'>
-                                <h3 class="box-title"><i class="fa fa-bar-chart"></i>Test - <?= $i;?></h3>
+                                <h3 class="box-title"><i class="fa fa-bar-chart"></i>{{item.data.model}}</h3>
                                 <div class="box-tools">
-                                    <div class="btn btn-box-tool"><grid-item-link data-id="<?= $i;?>" state="add" @add-item="addItem"></grid-link></div>
+                                    <div class="btn btn-box-tool"><grid-item-link :data-id="item.id" state="add" @add-item="addItem(item)"></grid-link></div>
                                 </div>
                             </div>
                             <div class="box-body">
-                                <p>Description - <?= $i;?></p>
+                                <p>{{item.data.name}}</p>
                             </div>
                         </div>
                     </li>
-                    <?php endfor;?>
                 </ul>
             </div>
         </div>

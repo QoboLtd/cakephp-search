@@ -17,7 +17,7 @@ var GridLink = Vue.component('grid-item-link',{
     methods: {
         toggleItem: function() {
             if ('add' == this.state) {
-                this.$emit('add-item', this.dataId);
+                this.$emit('add-item', this);
             } else if('remove' == this.state) {
                 this.$emit('remove-item', this);
             }
@@ -33,7 +33,7 @@ new Vue({
         GridLink,
     },
     data: {
-        widgets: [],
+        elements: [],
         layout: [],
         index:0,
         token: api_token // getting token from global variable into vue app.
@@ -43,27 +43,40 @@ new Vue({
         // 1. Fetch layout items in case we're editing it.
         // 2. Fetch all items (widgets) that we'd like to add to grid.
         // Summary: set initial data from AJAX to data()
+        this.getGridElements();
     },
     mounted: function() {
         this.index = this.layout.length;
     },
     methods: {
         getGridElements: function() {
+            var that = this;
 
+            $.ajax({
+                type: 'post',
+                dataType: 'json',
+                url: '/search/widgets/index',
+                headers: {
+                    'Authorization': 'Bearer ' + this.token
+                }
+            }).then(function(response) {
+                that.elements = response;
+            });
         },
-        addItem: function(id) {
+        addItem: function(item) {
+            console.log(item);
+
             let element = {
                 x: 0,
                 y: 0,
                 w: 2,
                 h: 2,
-                i: this.index+"",
-                draggable: true,
-                widget_id: id
+                i: this.index + "",
+                draggable: true
             };
 
             this.index++;
-            this.layout.push(element);
+            this.layout.push(Object.assign({}, element, item));
         },
         removeItem: function(item) {
             this.layout.splice(this.layout.indexOf(item), 1);
