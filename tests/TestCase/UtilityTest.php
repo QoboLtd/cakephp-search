@@ -91,13 +91,13 @@ class UtilityTest extends TestCase
         $this->assertEventFired('Search.Model.Search.searchabeFields', EventManager::instance());
     }
 
-    public function testToDatatables()
+    public function testFormatter()
     {
         $table = TableRegistry::get('Dashboards');
         $query = $table->find();
 
         $fields = ['Dashboards.name'];
-        $result = $this->Utility->toDatatables($query->all(), $fields, $table, []);
+        $result = $this->Utility->formatter($query->all(), $fields, $table, []);
 
         $this->assertInternalType('array', $result);
         $this->assertNotEmpty($result);
@@ -107,7 +107,7 @@ class UtilityTest extends TestCase
         }
     }
 
-    public function testToDatatablesWithAssociated()
+    public function testFormatterWithAssociated()
     {
         $data = [
             'aggregator' => 'AND',
@@ -129,7 +129,7 @@ class UtilityTest extends TestCase
         $query = $this->Search->execute($data);
 
         $table = TableRegistry::get('Articles');
-        $result = $this->Utility->toDatatables($query->all(), $data['display_columns'], $table, []);
+        $result = $this->Utility->formatter($query->all(), $data['display_columns'], $table, []);
 
         foreach ($result as $row) {
             $this->assertEquals(count($data['display_columns']) + 1, count($row));

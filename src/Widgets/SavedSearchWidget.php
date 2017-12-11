@@ -144,7 +144,7 @@ class SavedSearchWidget extends BaseWidget
         list($plugin, $controller) = pluginSplit($options['data']->model);
 
         // DataTables options
-        $config = [
+        $dtOptions = [
             'table_id' => '#' . $this->getContainerId(),
             'order' => [
                 (int)array_search($searchData['sort_by_field'], $searchData['display_columns']),
@@ -155,7 +155,18 @@ class SavedSearchWidget extends BaseWidget
                 'url' => Router::url([
                     'plugin' => $plugin, 'controller' => $controller, 'action' => 'search', $options['data']->id
                 ]),
-                'extras' => ['format' => 'datatables']
+                'columns' => call_user_func(function () use ($searchData, $options) {
+                    $result = [];
+
+                    foreach ($searchData['display_columns'] as $field) {
+                        list(, $fieldName) = pluginSplit($field);
+                        $result[] = $fieldName;
+                    }
+                    $result[] = Utility::MENU_PROPERTY_NAME;
+
+                    return $result;
+                }),
+                'extras' => ['format' => 'pretty']
             ],
         ];
 
@@ -183,7 +194,7 @@ class SavedSearchWidget extends BaseWidget
                 ],
                 'scriptBlock' => [
                     'type' => 'scriptBlock',
-                    'content' => 'new DataTablesInit(' . json_encode($config) . ');',
+                    'content' => 'new DataTablesInit(' . json_encode($dtOptions) . ');',
                     'block' => 'scriptBottom',
                 ],
             ]
