@@ -64,7 +64,39 @@ class DashboardsController extends AppController
             throw new ForbiddenException();
         }
 
-        $this->set('dashboardWidgets', $dashboard->widgets);
+        $widgets = [];
+
+        foreach ($dashboard->widgets as $item) {
+            $opts = json_decode($item->widget_options, true);
+            $x = (int)$opts['x'];
+            $y = (int)$opts['y'];
+
+            $widgets[$y][$x] = $item;
+        }
+
+        ksort($widgets);
+
+        foreach($widgets as $k => $items) {
+            if (count($items) < 2) {
+                continue;
+            }
+
+            usort($widgets[$k], function($a, $b) {
+                $opts_a = json_decode($a->widget_options, true);
+                $opts_b = json_decode($b->widget_options, true);
+
+                $x_a = (int)$opts_a['x'];
+                $x_b = (int)$opts_b['x'];
+
+                if ($x_a == $x_b) {
+                    return 0;
+                }
+
+                return ($x_a < $x_b) ? -1 : 1;
+            });
+        }
+
+        $this->set('dashboardWidgets', $widgets);
         $this->set('columns', Configure::readOrFail('Search.dashboard.columns'));
         $this->set('user', $this->Auth->user());
         $this->set('dashboard', $dashboard);

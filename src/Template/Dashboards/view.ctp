@@ -36,47 +36,51 @@ $chartData = [];
 // @see https://codepen.io/desandro/pen/eJJEXd
 ?>
 <section class="container-fluid">
-    <div class="grid">
-    <?php foreach ($dashboardWidgets as $dw): ?>
+    <?php foreach ($dashboardWidgets as $row => $column): ?>
+        <?php //pr($row);?>
+        <div class="row">
+        <?php foreach($column as $k => $dw) : ?>
         <?php
             $options = json_decode($dw->widget_options, true);
             $width = (!empty($options['w'])) ? 'col-xs-' . $options['w'] : 'col-xs-6';
         ?>
-        <div class="grid-sizer <?= $width;?>">
-        <?php
-             try {
-                $widgetHandler = WidgetFactory::create($dw->widget_type, ['entity' => $dw]);
+            <div class="<?=$width;?>">
+            <?php
+                 try {
+                    $widgetHandler = WidgetFactory::create($dw->widget_type, ['entity' => $dw]);
 
-                $widgetHandler->getResults(['entity' => $dw, 'user' => $user, 'rootView' => $this]);
+                    $widgetHandler->getResults(['entity' => $dw, 'user' => $user, 'rootView' => $this]);
 
-                if ($widgetHandler->getRenderElement() == 'Search.Widgets/graph') {
-                    $chartData[] = $widgetHandler->getData();
+                    if ($widgetHandler->getRenderElement() == 'Search.Widgets/graph') {
+                        $chartData[] = $widgetHandler->getData();
+                    }
+
+                    $dataOptions = $widgetHandler->getOptions();
+
+                    if (!empty($dataOptions['scripts'])) {
+                        $scripts[] = $dataOptions['scripts'];
+                    }
+
+                    echo $this->element(
+                        $widgetHandler->getRenderElement(),
+                        ['widget' => $widgetHandler],
+                        ['plugin' => false]
+                    );
+                } catch (\Exception $e) {
+                    $this->log("Cannot process widget: " . $e->getMessage(), 'error');
+                    echo $this->element('Search.missing_element', [
+                        'exception' => $e,
+                        'messages' => !empty($widgetHandler) ? $widgetHandler->getErrors() : ['Unknown error']
+                    ]);
                 }
-
-                $dataOptions = $widgetHandler->getOptions();
-
-                if (!empty($dataOptions['scripts'])) {
-                    $scripts[] = $dataOptions['scripts'];
-                }
-
-                echo $this->element(
-                    $widgetHandler->getRenderElement(),
-                    ['widget' => $widgetHandler],
-                    ['plugin' => false]
-                );
-            } catch (\Exception $e) {
-                $this->log("Cannot process widget: " . $e->getMessage(), 'error');
-                echo $this->element('Search.missing_element', [
-                    'exception' => $e,
-                    'messages' => !empty($widgetHandler) ? $widgetHandler->getErrors() : ['Unknown error']
-                ]);
-            }
-        ?>
+            ?>
+            </div>
+        <?php endforeach;?>
         </div>
     <?php endforeach; ?>
     </div>
 </section>
 
 <?php echo $this->Html->script('https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js', ['block' => 'scriptBottom']);?>
-<?php echo $this->Html->scriptBlock("$('.grid').masonry({itemSelector: '.grid-item',columnWidth: '.grid-sizer',percentPosition: true});", ['block' => 'scriptBottom']);?>
+<?php echo $this->Html->scriptBlock("$('.grid').masonry({itemSelector: '.grid-item',columnWidth: '.grid-sizer',percentPosition: true, horizontalOrder:true});", ['block' => 'scriptBottom']);?>
 <?php echo $this->element('Search.widget_libraries', ['scripts' => $scripts, 'chartData' => $chartData]); ?>

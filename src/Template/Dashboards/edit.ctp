@@ -55,8 +55,8 @@ echo $this->Html->script('Search.qobo.grid', ['block' => 'scriptBottom']);
                     <grid-layout
                         :layout="layout"
                         :row-height="50"
-                        :vertical-compact="true"
-                        :margin="[10, 10]"
+                        :vertical-compact="false"
+                        :margin="[5, 5]"
                         :use-css-transforms="true"
                     >
                         <grid-item v-for="item in layout" :key="item.i"
