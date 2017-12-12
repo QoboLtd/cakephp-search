@@ -80,7 +80,4 @@ $chartData = [];
     <?php endforeach; ?>
     </div>
 </section>
-
-<?php echo $this->Html->script('https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js', ['block' => 'scriptBottom']);?>
-<?php echo $this->Html->scriptBlock("$('.grid').masonry({itemSelector: '.grid-item',columnWidth: '.grid-sizer',percentPosition: true, horizontalOrder:true});", ['block' => 'scriptBottom']);?>
 <?php echo $this->element('Search.widget_libraries', ['scripts' => $scripts, 'chartData' => $chartData]); ?>
