@@ -12,18 +12,21 @@
 
 use Cake\Core\Configure;
 
-echo $this->Html->css('Search.dashboard', ['block' => 'css']);
+echo $this->Html->css(['Search.dashboard', 'Search.grid'], ['block' => 'css']);
 echo $this->Html->script('AdminLTE./plugins/jQueryUI/jquery-ui.min', ['block' => 'script']);
 echo $this->Html->script('Search.dashboard', ['block' => 'scriptBottom']);
 echo $this->Html->script('https://unpkg.com/vue@2.5.9/dist/vue.js', ['block' => 'scriptBottom']);
 echo $this->Html->script('Search.vue-grid-layout', ['block' => 'scriptBottom']);
+
 echo $this->Html->scriptBlock('var api_token = "' . Configure::read('Search.api.token') . '";', ['block' => 'scriptBottom']);
+echo $this->Html->scriptBlock("var grid_layout = '" . json_encode($savedWidgetData) . "';", ['block' => 'scriptBottom']);
+
 echo $this->Html->script('Search.qobo.grid', ['block' => 'scriptBottom']);
 ?>
 <section class="content-header">
     <div class="row">
         <div class="col-xs-12 col-md-6">
-            <h4><?= __('Edit {0}', ['Dashboard']) ?></h4>
+            <h4><?= __('Create {0}', ['Dashboard']) ?></h4>
         </div>
     </div>
 </section>
@@ -42,7 +45,7 @@ echo $this->Html->script('Search.qobo.grid', ['block' => 'scriptBottom']);
         </div>
     </div>
     <div id="grid-app">
-        <?= $this->Form->input('options', ['type' => 'hidden', 'id' => 'dashboard-options', 'value' => json_encode($dashboardOptions)]);?>
+        <?= $this->Form->input('options', ['type' => 'hidden', 'id' => 'dashboard-options', 'value' => null]);?>
         <div class="box box-solid">
             <div class="box-body">
                 <div class="box-header">
@@ -69,7 +72,7 @@ echo $this->Html->script('Search.qobo.grid', ['block' => 'scriptBottom']);
                             <div class='box-header with-border'>
                                 <h3 class="box-title"><i class="fa" v-bind:class="getElementIcon(item)"></i> {{item.data.model}}</h3>
                                 <div class="box-tools">
-                                    <div class="btn btn-box-tool"><grid-item-link :data-id="item.id" :index="item.i" state="remove" @remove-item="removeItem(item)"></grid-link></div>
+                                    <div class="btn btn-box-tool"><a href="#" @click="removeItem(item)"><i class='fa fa-minus-circle'></i></a></div>
                                 </div>
                             </div>
                             <div class="box-body">
@@ -80,7 +83,6 @@ echo $this->Html->script('Search.qobo.grid', ['block' => 'scriptBottom']);
                 </div>
             </div>
         </div>
-
         <div class="box box-solid">
             <div class="box-header with-border">
                 <h3 class="box-title"><?= __('Available Widgets');?></h3>
@@ -92,7 +94,7 @@ echo $this->Html->script('Search.qobo.grid', ['block' => 'scriptBottom']);
                             <div class='box-header with-border'>
                                 <h3 class="box-title"><i class="fa" v-bind:class="getElementIcon(item)"></i> {{item.data.model}}</h3>
                                 <div class="box-tools">
-                                    <div class="btn btn-box-tool"><grid-item-link :data-id="item.id" state="add" @add-item="addItem(item)"></grid-link></div>
+                                    <div class="btn btn-box-tool"><a href="#" @click="addItem(item)"><i class='fa fa-plus-circle'></i></a></div>
                                 </div>
                             </div>
                             <div class="box-body">

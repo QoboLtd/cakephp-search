@@ -17,7 +17,10 @@ echo $this->Html->script('AdminLTE./plugins/jQueryUI/jquery-ui.min', ['block' =>
 echo $this->Html->script('Search.dashboard', ['block' => 'scriptBottom']);
 echo $this->Html->script('https://unpkg.com/vue@2.5.9/dist/vue.js', ['block' => 'scriptBottom']);
 echo $this->Html->script('Search.vue-grid-layout', ['block' => 'scriptBottom']);
+
 echo $this->Html->scriptBlock('var api_token = "' . Configure::read('Search.api.token') . '";', ['block' => 'scriptBottom']);
+echo $this->Html->scriptBlock("var grid_layout = '" . json_encode($savedWidgetData) . "';", ['block' => 'scriptBottom']);
+
 echo $this->Html->script('Search.qobo.grid', ['block' => 'scriptBottom']);
 ?>
 <section class="content-header">

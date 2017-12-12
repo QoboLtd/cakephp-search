@@ -130,8 +130,9 @@ class DashboardsController extends AppController
         }
 
         $roles = $this->Dashboards->Roles->find('list', ['limit' => 200]);
+        $savedWidgetData = [];
 
-        $this->set(compact('dashboard', 'roles', 'widgets'));
+        $this->set(compact('dashboard', 'roles', 'widgets', 'savedWidgetData'));
         $this->set('columns', Configure::readOrFail('Search.dashboard.columns'));
         $this->set('_serialize', ['dashboard']);
     }
@@ -147,12 +148,7 @@ class DashboardsController extends AppController
     {
         $dashboard = $this->Dashboards->get($id, [
             'contain' => [
-                'Widgets' => [
-                    'sort' => [
-                        'Widgets.row' => 'ASC',
-                        'Widgets.column' => 'ASC'
-                    ]
-                ]
+                'Widgets'
             ]
         ]);
 
@@ -163,40 +159,38 @@ class DashboardsController extends AppController
 
         $dashboardOptions = [];
 
-        foreach ($dashboardWidgets as $k => $widget) {
-            $dashboardOptions[] = json_decode($widget['widget_options'], true);
-        }
-
-
         $widgets = $widgetsTable->getWidgets();
         $savedWidgetData = [];
-        foreach ($dashboardWidgets as $dashboardWidget) {
+        foreach ($dashboardWidgets as $dw) {
             foreach ($widgets as $k => $widget) {
-                if ($dashboardWidget->widget_id !== $widget['data']['id']) {
+                if ($dw->widget_id !== $widget['data']['id']) {
                     continue;
                 }
-                $widget['data']['column'] = $dashboardWidget->column;
-                $widget['data']['row'] = $dashboardWidget->row;
-                array_push($savedWidgetData, $widget);
-                unset($widgets[$k]);
+
+                $item = array_merge([], ['data' => $widget['data']], json_decode($dw['widget_options'], true));
+                unset($item['data']['content'], $item['data']['created'], $item['data']['modified']);
+                array_push($savedWidgetData, $item);
             }
         }
 
         if ($this->request->is(['patch', 'post', 'put'])) {
-            $data = $this->request->data;
+            $data = $this->request->getData();
             $widgets = [];
 
+            $data['widgets'] = json_decode($data['options'], true);
+
             if (!empty($data['widgets'])) {
-                $count = count($data['widgets']['widget_id']);
-                for ($i = 0; $i < $count; $i++) {
-                    array_push($widgets, [
-                        'dashboard_id' => $dashboard->id,
-                        'widget_id' => $data['widgets']['widget_id'][$i],
-                        'widget_type' => $data['widgets']['widget_type'][$i],
-                        'widget_options' => null,
-                        'column' => $data['widgets']['column'][$i],
-                        'row' => $data['widgets']['row'][$i],
-                    ]);
+                foreach ($data['widgets'] as $k => $item) {
+                    $widget = [
+                        'dashboard_id' => $id,
+                        'widget_id' => $item['id'],
+                        'widget_type' => $item['type'],
+                        'widget_options' => json_encode($item),
+                        'column' => 0,
+                        'row' => 0,
+                    ];
+
+                    array_push($widgets, $widget);
                 }
             }
 
@@ -231,7 +225,7 @@ class DashboardsController extends AppController
 
         $roles = $this->Dashboards->Roles->find('list', ['limit' => 200]);
 
-        $this->set(compact('dashboard', 'roles', 'widgets', 'savedWidgetData', 'dashboardOptions'));
+        $this->set(compact('dashboard', 'roles', 'widgets', 'savedWidgetData'));
         $this->set('columns', Configure::readOrFail('Search.dashboard.columns'));
         $this->set('_serialize', ['dashboard']);
     }

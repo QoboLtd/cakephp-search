@@ -21,11 +21,7 @@ new Vue({
         this.getLayoutElements();
     },
     mounted: function() {
-        if (this.layout.length > 0) {
-
-        } else {
-            this.index = this.layout.length;
-        }
+        this.index = this.layout.length;
     },
     watch: {
         // save all the visible options into dashboard var
@@ -60,7 +56,13 @@ new Vue({
             return className;
         },
         getLayoutElements: function() {
-            // function called in case of editing the dashboard.
+            let gridLayout = [];
+
+            if (typeof grid_layout !== undefined ) {
+                gridLayout = grid_layout;
+                this.layout = JSON.parse(gridLayout);
+            }
+
         },
         getGridElements: function() {
             var that = this;
