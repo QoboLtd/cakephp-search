@@ -22,6 +22,11 @@ use Search\Event\EventName;
 class Utility
 {
     /**
+     * Property name for menu items
+     */
+    const MENU_PROPERTY_NAME = 'actions_column';
+
+    /**
      * The globally available instance of Search Utility.
      *
      * @var \Cake\Event\EventManager
@@ -138,7 +143,7 @@ class Utility
     }
 
     /**
-     * Method that re-formats entities to Datatables supported format.
+     * Method that formats resultset.
      *
      * @param \Cake\ORM\ResultSet $resultSet ResultSet
      * @param array $fields Display fields
@@ -146,7 +151,7 @@ class Utility
      * @param array $user User info
      * @return array
      */
-    public function toDatatables(ResultSet $resultSet, array $fields, Table $table, array $user)
+    public function formatter(ResultSet $resultSet, array $fields, Table $table, array $user)
     {
         $result = [];
 
@@ -163,7 +168,7 @@ class Utility
                 list($tableName, $field) = explode('.', $field);
                 // current table field
                 if ($alias === $tableName) {
-                    $result[$key][] = $entity->get($field);
+                    $result[$key][$field] = $entity->get($field);
                     continue;
                 }
 
@@ -175,10 +180,10 @@ class Utility
                     continue;
                 }
                 // associated table field
-                $result[$key][] = $entity->_matchingData[$tableName]->get($field);
+                $result[$key][$field] = $entity->_matchingData[$tableName]->get($field);
             }
 
-            $result[$key][] = $cakeView->element('Search.Menu/search-view-actions', [
+            $result[$key][static::MENU_PROPERTY_NAME] = $cakeView->element('Search.Menu/search-view-actions', [
                 'entity' => $entity,
                 'model' => $registryAlias,
                 'user' => $user

@@ -11,6 +11,8 @@
  */
 
 use Cake\Core\Configure;
+use Cake\ORM\TableRegistry;
+use Search\Utility;
 
 $tableId = 'table-datatable-' . uniqid();
 echo $this->Html->css(
@@ -38,10 +40,7 @@ if (Configure::read('Search.batch.active')) {
 
 $dtOptions = [
     'table_id' => '#' . $tableId,
-    'order' => [
-        $orderField,
-        $searchData['sort_by_order']
-    ],
+    'order' => [$orderField, $searchData['sort_by_order']],
     'ajax' => [
         'token' => Configure::read('Search.api.token'),
         'url' => $this->Url->build([
@@ -50,7 +49,24 @@ $dtOptions = [
             'action' => 'search',
             $preSaveId
         ]),
-        'extras' => ['format' => 'datatables', 'menus' => 1]
+        'columns' => call_user_func(function () use ($searchData, $model) {
+            $result = [];
+
+            // add primary key to DataTable columns if batch is active
+            if (Configure::read('Search.batch.active')) {
+                $table = TableRegistry::get($model);
+                $result[] = $table->getPrimaryKey();
+            }
+
+            foreach ($searchData['display_columns'] as $field) {
+                list(, $fieldName) = pluginSplit($field);
+                $result[] = $fieldName;
+            }
+            $result[] = Utility::MENU_PROPERTY_NAME;
+
+            return $result;
+        }),
+        'extras' => ['format' => 'pretty']
     ],
 ];
 if (Configure::read('Search.batch.active')) {
