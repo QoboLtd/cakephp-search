@@ -76,12 +76,12 @@ class DashboardsController extends AppController
 
         ksort($widgets);
 
-        foreach($widgets as $k => $items) {
+        foreach ($widgets as $k => $items) {
             if (count($items) < 2) {
                 continue;
             }
 
-            usort($widgets[$k], function($a, $b) {
+            usort($widgets[$k], function ($a, $b) {
                 $opts_a = json_decode($a->widget_options, true);
                 $opts_b = json_decode($b->widget_options, true);
 
@@ -134,7 +134,7 @@ class DashboardsController extends AppController
 
                 $dashboardId = $resultedDashboard->id;
 
-                $data['widgets'] = json_decode($data['options'], true);
+                $data['widgets'] = !empty($data['options']) ? json_decode($data['options'], true) : [];
 
                 if (!empty($data['widgets'])) {
                     $widgetTable = TableRegistry::get('Search.Widgets');
@@ -199,7 +199,9 @@ class DashboardsController extends AppController
                     continue;
                 }
 
-                $item = array_merge([], ['data' => $widget['data']], json_decode($dw['widget_options'], true));
+                $widgetOptions = !empty($dw['widget_options']) ? json_decode($dw['widget_options'], true) : [];
+                $item = array_merge([], ['data' => $widget['data']], $widgetOptions);
+
                 unset($item['data']['content'], $item['data']['created'], $item['data']['modified']);
                 array_push($savedWidgetData, $item);
             }
@@ -209,7 +211,7 @@ class DashboardsController extends AppController
             $data = $this->request->getData();
             $widgets = [];
 
-            $data['widgets'] = json_decode($data['options'], true);
+            $data['widgets'] = !empty($data['options']) ? json_decode($data['options'], true) : [];
 
             if (!empty($data['widgets'])) {
                 foreach ($data['widgets'] as $k => $item) {

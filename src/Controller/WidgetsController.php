@@ -25,6 +25,11 @@ use Search\Model\Entity\Widget;
  */
 class WidgetsController extends AppController
 {
+    /**
+     * Index Method
+     *
+     * @return \Cake\Network\Response|null
+     */
     public function index()
     {
         $table = TableRegistry::get('Search.Widgets');

@@ -26,7 +26,7 @@ echo $this->Html->script('Search.qobo.grid', ['block' => 'scriptBottom']);
 <section class="content-header">
     <div class="row">
         <div class="col-xs-12 col-md-6">
-            <h4><?= __('Create {0}', ['Dashboard']) ?></h4>
+            <h4><?= __('Edit {0}', ['Dashboard']) ?></h4>
         </div>
     </div>
 </section>
