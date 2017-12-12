@@ -69,7 +69,7 @@ echo $this->Html->script('Search.qobo.grid', ['block' => 'scriptBottom']);
                             <div class='box-header with-border'>
                                 <h3 class="box-title"><i class="fa" v-bind:class="getElementIcon(item)"></i> {{item.data.model}}</h3>
                                 <div class="box-tools">
-                                    <div class="btn btn-box-tool"><grid-item-link :data-id="item.id" :index="item.i" state="remove" @remove-item="removeItem(item)"></grid-link></div>
+                                    <div class="btn btn-box-tool"><a href="#" @click="removeItem(item)"><i class='fa fa-minus-circle'></i></a></div>
                                 </div>
                             </div>
                             <div class="box-body">
@@ -91,7 +91,7 @@ echo $this->Html->script('Search.qobo.grid', ['block' => 'scriptBottom']);
                             <div class='box-header with-border'>
                                 <h3 class="box-title"><i class="fa" v-bind:class="getElementIcon(item)"></i> {{item.data.model}}</h3>
                                 <div class="box-tools">
-                                    <div class="btn btn-box-tool"><grid-item-link :data-id="item.id" state="add" @add-item="addItem(item)"></grid-link></div>
+                                    <div class="btn btn-box-tool"><a href="#" @click="addItem(item)"><i class='fa fa-plus-circle'></i></a></div>
                                 </div>
                             </div>
                             <div class="box-body">

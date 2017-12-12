@@ -161,6 +161,13 @@ class DashboardsController extends AppController
 
         $widgetsTable = TableRegistry::get('Search.Widgets');
 
+        $dashboardOptions = [];
+
+        foreach ($dashboardWidgets as $k => $widget) {
+            $dashboardOptions[] = json_decode($widget['widget_options'], true);
+        }
+
+
         $widgets = $widgetsTable->getWidgets();
         $savedWidgetData = [];
         foreach ($dashboardWidgets as $dashboardWidget) {
@@ -224,7 +231,7 @@ class DashboardsController extends AppController
 
         $roles = $this->Dashboards->Roles->find('list', ['limit' => 200]);
 
-        $this->set(compact('dashboard', 'roles', 'widgets', 'savedWidgetData'));
+        $this->set(compact('dashboard', 'roles', 'widgets', 'savedWidgetData', 'dashboardOptions'));
         $this->set('columns', Configure::readOrFail('Search.dashboard.columns'));
         $this->set('_serialize', ['dashboard']);
     }

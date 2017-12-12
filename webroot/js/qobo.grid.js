@@ -1,50 +1,31 @@
 var GridLayout = VueGridLayout.GridLayout;
 var GridItem = VueGridLayout.GridItem;
 
-var GridLink = Vue.component('grid-item-link',{
-    template: `<a href="#" data-id:="dataId">
-                    <i class="fa" v-bind:class="icon" @click="toggleItem"></i>
-                </a>`,
-    props: ['dataId','index', 'state'],
-    data: function() {
-        return {
-            icon: null
-        };
-    },
-    beforeMount: function() {
-        this.icon = ('add' == this.state) ? 'fa-plus-circle' : 'fa-minus-circle';
-    },
-    methods: {
-        toggleItem: function() {
-            if ('add' == this.state) {
-                this.$emit('add-item', this);
-            } else if('remove' == this.state) {
-                this.$emit('remove-item', this);
-            }
-        },
-    }
-});
-
 new Vue({
     el: "#grid-app",
     components: {
         GridLayout,
         GridItem,
-        GridLink,
     },
     data: {
         targetElement: '#dashboard-options',
+        dashboard:[],
         elements: [],
         layout: [],
-        dashboard:[],
         index:0,
         token: api_token // getting token from global variable into vue app.
     },
     beforeMount: function() {
         this.getGridElements();
+
+        this.getLayoutElements();
     },
     mounted: function() {
-        this.index = this.layout.length;
+        if (this.layout.length > 0) {
+
+        } else {
+            this.index = this.layout.length;
+        }
     },
     watch: {
         // save all the visible options into dashboard var
@@ -54,7 +35,6 @@ new Vue({
                 this.dashboard = [];
 
                 if(this.layout.length > 0) {
-                    console.log('filtering out data');
                     this.layout.forEach(function(element) {
                         that.dashboard.push({
                             i: element.i,
@@ -77,11 +57,10 @@ new Vue({
         getElementIcon: function(item) {
             let className = 'fa-table';
 
-            if (item.data.type == 'graph') {
-                className = 'fa-area-chart';
-            }
-
             return className;
+        },
+        getLayoutElements: function() {
+            // function called in case of editing the dashboard.
         },
         getGridElements: function() {
             var that = this;
@@ -97,20 +76,6 @@ new Vue({
                 that.elements = response;
             });
         },
-        getGridElementsById: function(id) {
-            var that = this;
-
-            $.ajax({
-                url: '/search/dashboard/edit/' + id,
-                dataType: 'json',
-                type: 'POST',
-                headers: {
-                    'Authorization': 'Bearer ' + this.token
-                }
-            }).then(function(response){
-                console.log('editing existing layout');
-            });
-        },
         addItem: function(item) {
             let element = {
                 x: 0,
@@ -118,11 +83,13 @@ new Vue({
                 w: 2,
                 h: 2,
                 i: this.index + "",
-                draggable: true
+                draggable: true,
             };
 
+            let layoutElement = Object.assign({}, element, item);
+
+            this.layout.push(layoutElement);
             this.index++;
-            this.layout.push(Object.assign({}, element, item));
         },
         removeItem: function(item) {
             this.layout.splice(this.layout.indexOf(item), 1);
