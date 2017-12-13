@@ -79,7 +79,7 @@ class DashboardsController extends AppController
                 $widgets[$y][$x] = $item;
             }
         }
-        //dd($widgets);
+
         ksort($widgets);
 
         foreach ($widgets as $k => $items) {
@@ -124,7 +124,7 @@ class DashboardsController extends AppController
         $widgets = $widgetsTable->getWidgets();
 
         if ($this->request->is('post')) {
-            $data = $this->request->data;
+            $data = $this->request->getData();
 
             $widgets = [];
 
@@ -143,22 +143,7 @@ class DashboardsController extends AppController
                 $data['widgets'] = !empty($data['options']) ? json_decode($data['options'], true) : [];
 
                 if (!empty($data['widgets'])) {
-                    $widgetTable = TableRegistry::get('Search.Widgets');
-
-                    foreach ($data['widgets'] as $k => $item) {
-                        $widget = [
-                            'dashboard_id' => $dashboardId,
-                            'widget_id' => $item['id'],
-                            'widget_type' => $item['type'],
-                            'widget_options' => json_encode($item),
-                            'row' => 0,
-                            'column' => 0,
-                        ];
-
-                        $widgetEntity = $widgetTable->newEntity();
-                        $widgetEntity = $widgetTable->patchEntity($widgetEntity, $widget);
-                        $widgetTable->save($widgetEntity);
-                    }
+                    $saved = $widgetsTable->saveDashboardWidgets($dashboardId, $data['widgets']);
                 }
 
                 return $this->redirect(['action' => 'view', $dashboard->id]);
@@ -184,22 +169,19 @@ class DashboardsController extends AppController
      */
     public function edit($id = null)
     {
+        $savedWidgetData = [];
         $dashboard = $this->Dashboards->get($id, [
-            'contain' => [
-                'Widgets'
-            ]
+            'contain' => ['Widgets']
         ]);
 
         $dashboardWidgets = $dashboard->widgets;
         unset($dashboard->widgets);
 
         $widgetsTable = TableRegistry::get('Search.Widgets');
-
-        $dashboardOptions = [];
-
         $widgets = $widgetsTable->getWidgets();
-        $savedWidgetData = [];
+
         $sequence = 0;
+
         foreach ($dashboardWidgets as $dw) {
             foreach ($widgets as $k => $widget) {
                 if ($dw->widget_id !== $widget['data']['id']) {
@@ -226,24 +208,6 @@ class DashboardsController extends AppController
 
         if ($this->request->is(['patch', 'post', 'put'])) {
             $data = $this->request->getData();
-            $widgets = [];
-
-            $data['widgets'] = !empty($data['options']) ? json_decode($data['options'], true) : [];
-
-            if (!empty($data['widgets'])) {
-                foreach ($data['widgets'] as $k => $item) {
-                    $widget = [
-                        'dashboard_id' => $id,
-                        'widget_id' => $item['id'],
-                        'widget_type' => $item['type'],
-                        'widget_options' => json_encode($item),
-                        'row' => 0,
-                        'column' => 0
-                    ];
-
-                    array_push($widgets, $widget);
-                }
-            }
 
             unset($dashboard->widgets);
 
@@ -260,12 +224,9 @@ class DashboardsController extends AppController
                     'dashboard_id' => $dashboard->id
                 ]);
 
-                if (!empty($widgets)) {
-                    foreach ($widgets as $w) {
-                        $widget = $widgetTable->newEntity();
-                        $widget = $widgetTable->patchEntity($widget, $w);
-                        $resultedWidgets = $widgetTable->save($widget);
-                    }
+                $data['widgets'] = !empty($data['options']) ? json_decode($data['options'], true) : [];
+                if (!empty($data['widgets'])) {
+                    $saved = $widgetsTable->saveDashboardWidgets($id, $data['widgets']);
                 }
 
                 return $this->redirect(['action' => 'view', $id]);
