@@ -74,6 +74,10 @@ new Vue({
         getElementIcon: function(item) {
             let className = 'fa-table';
 
+            if (!item.hasOwnProperty('type')) {
+                return className;
+            }
+
             switch(item.type) {
                 case 'report':
                     className = 'fa-pie-chart';
@@ -109,6 +113,7 @@ new Vue({
             });
         },
         addItem: function(item) {
+            this.index++;
             let element = {
                 x: 0,
                 y: 0,
@@ -119,9 +124,7 @@ new Vue({
             };
 
             let layoutElement = Object.assign({}, element, item);
-
             this.layout.push(layoutElement);
-            this.index++;
         },
         removeItem: function(item) {
             this.layout.splice(this.layout.indexOf(item), 1);

@@ -193,17 +193,28 @@ class DashboardsController extends AppController
 
         $widgets = $widgetsTable->getWidgets();
         $savedWidgetData = [];
+        $sequence = 0;
         foreach ($dashboardWidgets as $dw) {
             foreach ($widgets as $k => $widget) {
                 if ($dw->widget_id !== $widget['data']['id']) {
                     continue;
                 }
 
-                $widgetOptions = !empty($dw['widget_options']) ? json_decode($dw['widget_options'], true) : [];
-                $item = array_merge([], ['data' => $widget['data']], $widgetOptions);
+                $widgetOptions = $widgetsTable->getWidgetPosition($dw, ['sequence' => $sequence]);
 
+                $item = array_merge(
+                    [
+                        'id' => $widget['data']['id']
+                    ],
+                    [
+                        'data' => $widget['data']
+                    ],
+                    $widgetOptions
+                );
                 unset($item['data']['content'], $item['data']['created'], $item['data']['modified']);
                 array_push($savedWidgetData, $item);
+
+                $sequence++;
             }
         }
 

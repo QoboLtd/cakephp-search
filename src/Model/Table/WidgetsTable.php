@@ -153,4 +153,33 @@ class WidgetsTable extends Table
 
         return $result;
     }
+
+    /**
+     * getWidgetPosition method
+     *
+     * @param
+     *
+     * @return array $options
+     */
+     public function getWidgetPosition($widget = null, $options = [])
+     {
+        $result = [];
+
+        if (!empty($widget['widget_options'])) {
+            $result = json_decode($widget['widget_options'], true);
+
+            return $result;
+        }
+
+        $sequence = !empty($options['sequence']) ? $options['sequence'] : 0;
+
+        $result['i'] = "$sequence";
+        $result['x'] = !empty($widget['row']) ? 6 : 0;
+        $result['y'] = $sequence;
+        $result['h'] = 3;
+        $result['w'] = 6;
+        $result['type'] = !empty($widget['widget_type']) ? $widget['widget_type'] : $widget['data']['type'];
+
+        return $result;
+     }
 }
