@@ -21,7 +21,8 @@
                                    :min-w="2"
                                    :min-h="2"
                                    :i="item.i"
-                                   class="box box-solid box-success"
+                                   class="box box-solid"
+                                   v-bind:class="getElementBackground(item)"
                         >
                             <div class='box-header with-border'>
                                 <h3 class="box-title"><i class="fa" v-bind:class="getElementIcon(item)"></i> {{item.data.model}}</h3>
@@ -44,7 +45,7 @@
             <div class="box-body">
                 <ul class="droppable-area">
                     <li class="col-lg-3 col-xs-6" v-for="item in elements">
-                        <div class="box box-info box-solid">
+                        <div class="box box-solid" v-bind:class="getElementBackground(item)">
                             <div class='box-header with-border'>
                                 <h3 class="box-title"><i class="fa" v-bind:class="getElementIcon(item)"></i> {{item.data.model}}</h3>
                                 <div class="box-tools">

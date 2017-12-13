@@ -50,8 +50,38 @@ new Vue({
         }
     },
     methods: {
+        getElementBackground: function(item) {
+            let colorClass = 'box-info';
+
+            if (!item.hasOwnProperty('type')) {
+                return colorClass;
+            }
+
+            switch(item.type) {
+                case 'report':
+                    colorClass = 'box-success';
+                    break;
+                case 'app':
+                    colorClass = 'box-warning';
+                    break;
+                case 'saved_search':
+                    colorClass = 'box-info';
+                    break;
+            }
+
+            return colorClass;
+        },
         getElementIcon: function(item) {
             let className = 'fa-table';
+
+            switch(item.type) {
+                case 'report':
+                    className = 'fa-pie-chart';
+                    break;
+                case 'app':
+                    className = 'fa-cube';
+                    break;
+            }
 
             return className;
         },
