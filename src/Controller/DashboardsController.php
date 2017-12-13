@@ -58,6 +58,7 @@ class DashboardsController extends AppController
         ]);
 
         $query = $this->Dashboards->getUserDashboards($this->Auth->user());
+        $widgetsTable = TableRegistry::get('Search.Widgets');
 
         $userDashboards = $query->find('list')->toArray();
         if (!array_key_exists($dashboard->id, $userDashboards)) {
@@ -66,14 +67,19 @@ class DashboardsController extends AppController
 
         $widgets = [];
 
-        foreach ($dashboard->widgets as $item) {
-            $opts = json_decode($item->widget_options, true);
+        foreach ($dashboard->widgets as $k => $item) {
+            $opts = $widgetsTable->getWidgetPosition($item); //, ['sequence' => $k]);
+
             $x = (int)$opts['x'];
             $y = (int)$opts['y'];
 
-            $widgets[$y][$x] = $item;
+            if (isset($widgets[$y][$x])) {
+                $widgets[$y][] = $item;
+            } else {
+                $widgets[$y][$x] = $item;
+            }
         }
-
+        //dd($widgets);
         ksort($widgets);
 
         foreach ($widgets as $k => $items) {
@@ -145,8 +151,8 @@ class DashboardsController extends AppController
                             'widget_id' => $item['id'],
                             'widget_type' => $item['type'],
                             'widget_options' => json_encode($item),
-                            'column' => 0,
                             'row' => 0,
+                            'column' => 0,
                         ];
 
                         $widgetEntity = $widgetTable->newEntity();
@@ -231,8 +237,8 @@ class DashboardsController extends AppController
                         'widget_id' => $item['id'],
                         'widget_type' => $item['type'],
                         'widget_options' => json_encode($item),
-                        'column' => 0,
                         'row' => 0,
+                        'column' => 0
                     ];
 
                     array_push($widgets, $widget);

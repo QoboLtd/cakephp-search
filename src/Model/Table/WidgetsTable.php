@@ -157,12 +157,13 @@ class WidgetsTable extends Table
     /**
      * getWidgetPosition method
      *
-     * @param
+     * @param mixed $widget array
+     * @param array $options with extra configs
      *
      * @return array $options
      */
-     public function getWidgetPosition($widget = null, $options = [])
-     {
+    public function getWidgetPosition($widget = null, $options = [])
+    {
         $result = [];
 
         if (!empty($widget['widget_options'])) {
@@ -174,12 +175,13 @@ class WidgetsTable extends Table
         $sequence = !empty($options['sequence']) ? $options['sequence'] : 0;
 
         $result['i'] = "$sequence";
-        $result['x'] = !empty($widget['row']) ? 6 : 0;
+        $result['x'] = ($widget['row'] > 0) ? 6 : 0;
         $result['y'] = $sequence;
         $result['h'] = 3;
         $result['w'] = 6;
+        $result['id'] = $widget['id'];
         $result['type'] = !empty($widget['widget_type']) ? $widget['widget_type'] : $widget['data']['type'];
 
         return $result;
-     }
+    }
 }
