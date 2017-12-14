@@ -200,6 +200,9 @@ class DashboardsController extends AppController
                     $widgetOptions
                 );
                 unset($item['data']['content'], $item['data']['created'], $item['data']['modified']);
+                if (!empty($item['data']['query'])) {
+                    unset($item['data']['query']);
+                }
                 array_push($savedWidgetData, $item);
 
                 $sequence++;
