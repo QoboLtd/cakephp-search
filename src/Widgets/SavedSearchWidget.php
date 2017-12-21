@@ -107,7 +107,6 @@ class SavedSearchWidget extends BaseWidget
         $entity->content = json_decode($entity->content, true);
         $entity->content['saved'] = Validator::validateData($table, $entity->content['saved'], $options['user']);
 
-        $this->options['scripts'] = $this->getScripts(['data' => $entity]);
         $this->options['fields'] = Utility::instance()->getSearchableFields($table, $options['user']);
         $this->options['associationLabels'] = Utility::instance()->getAssociationLabels($table);
 
@@ -129,78 +128,6 @@ class SavedSearchWidget extends BaseWidget
         $this->containerId = self::TABLE_PREFIX . md5($entity->id);
 
         return $this->containerId;
-    }
-
-    /**
-     * Retrieve the list of scripts needed to render the widget
-     *
-     * @param array $options passed
-     * @return array $content with CSS/JS libs.
-     */
-    public function getScripts(array $options = [])
-    {
-        $searchData = $options['data']->content['saved'];
-
-        list($plugin, $controller) = pluginSplit($options['data']->model);
-
-        // DataTables options
-        $dtOptions = [
-            'table_id' => '#' . $this->getContainerId(),
-            'order' => [
-                (int)array_search($searchData['sort_by_field'], $searchData['display_columns']),
-                $searchData['sort_by_order']
-            ],
-            'ajax' => [
-                'token' => Configure::read('Search.api.token'),
-                'url' => Router::url([
-                    'plugin' => $plugin, 'controller' => $controller, 'action' => 'search', $options['data']->id
-                ]),
-                'columns' => call_user_func(function () use ($searchData, $options) {
-                    $result = [];
-
-                    foreach ($searchData['display_columns'] as $field) {
-                        list(, $fieldName) = pluginSplit($field);
-                        $result[] = $fieldName;
-                    }
-                    $result[] = Utility::MENU_PROPERTY_NAME;
-
-                    return $result;
-                }),
-                'extras' => ['format' => 'pretty']
-            ],
-        ];
-
-        $content = [
-            'post' => [
-                'css' => [
-                    'type' => 'css',
-                    'content' => [
-                        'Qobo/Utils./plugins/datatables/css/dataTables.bootstrap.min',
-                        'Qobo/Utils./plugins/datatables/extensions/Select/css/select.bootstrap.min',
-                        'Qobo/Utils./css/dataTables.batch',
-                        'Search.grid'
-                    ],
-                    'block' => 'css',
-                ],
-                'javascript' => [
-                    'type' => 'script',
-                    'content' => [
-                        'Qobo/Utils./plugins/datatables/datatables.min',
-                        'Qobo/Utils./plugins/datatables/js/dataTables.bootstrap.min',
-                        'Qobo/Utils./plugins/datatables/extensions/Select/js/dataTables.select.min',
-                        'Qobo/Utils.dataTables.init',
-                    ],
-                    'block' => 'scriptBottom',
-                ],
-                'scriptBlock' => [
-                    'type' => 'scriptBlock',
-                    'content' => 'new DataTablesInit(' . json_encode($dtOptions) . ');',
-                    'block' => 'scriptBottom',
-                ],
-            ]
-        ];
-
-        return $content;
     }
 
     /**
