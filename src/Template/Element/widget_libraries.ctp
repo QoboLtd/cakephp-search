@@ -40,5 +40,8 @@ if (!empty($scripts)) {
 }
 
 if (isset($chartData) && !empty($chartData)) {
-    echo $this->Html->scriptBlock('var chartsData = ' . json_encode($chartData) . ';');
+    echo $this->Html->scriptBlock('
+        var chartsData = chartsData || [];
+        chartsData = chartsData.concat(' . json_encode($chartData) . ');
+    ');
 }
