@@ -462,7 +462,7 @@ class Search
 
         $entity->user_id = $this->user['id'];
         $entity->model = $this->table->getRegistryAlias();
-        $entity->shared = Options::getPrivateSharedStatus();
+        $entity->shared = Options::SHARED_STATUS_PRIVATE;
         $entity->content = json_encode(['saved' => $saved, 'latest' => $latest]);
 
         return $entity;
