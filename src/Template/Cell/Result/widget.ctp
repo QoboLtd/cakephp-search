@@ -37,7 +37,8 @@ if ($isGroup) {
             'https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js',
             'AdminLTE./plugins/morris/morris.min',
             'Qobo/Utils./plugins/d3/d3.min',
-            'Qobo/Utils./plugins/d3/extensions/d3-funnel.min'
+            'Qobo/Utils./plugins/d3/extensions/d3-funnel.min',
+            'Search.reportGraphs'
         ],
         ['block' => 'scriptBottom']
     );
@@ -45,7 +46,7 @@ if ($isGroup) {
     echo $cakeView->Html->scriptBlock('
         var chartsData = chartsData || [];
         chartsData = chartsData.concat(' . json_encode($chartOptions) . ');
-    ', ['block' => 'scriptBottom']);
+    ');
 }
 
 if ($isExport) {
