@@ -91,5 +91,17 @@ class SavedSearchesFixture extends TestFixture
             'modified' => '2016-07-01 10:41:31',
             'trashed' => '2016-07-01 10:41:31',
         ],
+        [
+            'id' => '00000000-0000-0000-0000-000000000005',
+            'name' => 'Articles saved criteria with Group by',
+            'type' => 'criteria',
+            'user_id' => '00000000-0000-0000-0000-000000000001',
+            'model' => 'Articles',
+            'shared' => 'private',
+            'content' => '{"saved":{"criteria":{"Articles.title":[{"type":"string","operator":"contains","value":"article"}]},"aggregator":"OR","display_columns":["Articles.title"],"sort_by_field":"title","sort_by_order":"desc","group_by":"Articles.author_id"},"latest":{"criteria":{"Articles.title":[{"type":"string","operator":"contains","value":"article"}]},"aggregator":"OR","display_columns":["Articles.title"],"sort_by_field":"title","sort_by_order":"desc","group_by":"Articles.author_id"}}',
+            'created' => '2016-07-01 10:39:23',
+            'modified' => '2016-07-01 10:41:31',
+            'trashed' => null,
+        ],
     ];
 }
