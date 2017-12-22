@@ -31,7 +31,7 @@ $chartData = [];
         </div>
     </div>
 </section>
-<section class="container-fluid">
+<section class="content">
     <?php foreach ($dashboardWidgets as $row => $column) : ?>
         <div class="row">
         <?php foreach ($column as $k => $dw) : ?>
@@ -71,7 +71,6 @@ $chartData = [];
             ?>
             </div>
         <?php endforeach;?>
-        </div>
     <?php endforeach; ?>
     </div>
 </section>
