@@ -215,11 +215,14 @@ class Export
      */
     protected function getRows($page, $limit)
     {
-        $result = [];
+        $displayColumns = $this->getDisplayColumns();
+        if (empty($displayColumns)) {
+            return [];
+        }
 
         $query = $this->query->page($page, $limit);
         if ($query->isEmpty()) {
-            return $result;
+            return [];
         }
 
         $entities = $query->all();
@@ -234,15 +237,16 @@ class Export
             $entities = $event->result;
         }
 
-        $entities = $entities ? Utility::instance()->toCsv($entities, $this->data['display_columns'], $table) : [];
+        $entities = $entities ? Utility::instance()->toCsv($entities, $displayColumns, $table) : [];
 
         if (empty($entities)) {
-            return $result;
+            return [];
         }
 
+        $result = [];
         foreach ($entities as $k => $entity) {
             $result[$k] = [];
-            foreach ($this->data['display_columns'] as $column) {
+            foreach ($displayColumns as $column) {
                 // @todo this is temporary fix to stripping out html tags from results columns
                 $value = trim(strip_tags($entity[$column]));
                 // end of temporary fix
@@ -260,10 +264,10 @@ class Export
      */
     protected function getHeaders()
     {
-        $result = [];
+        $displayColumns = $this->getDisplayColumns();
 
-        if (empty($this->data['display_columns'])) {
-            return $result;
+        if (empty($displayColumns)) {
+            return [];
         }
 
         $table = TableRegistry::get($this->search->model);
@@ -271,20 +275,47 @@ class Export
         $associationLabels = Utility::instance()->getAssociationLabels($table);
         $searchableFields = Utility::instance()->getSearchableFields($table, $this->user);
 
-        foreach ($this->data['display_columns'] as $column) {
-            $tableName = substr($column, 0, strpos($column, '.'));
+        $result = [];
+        foreach ($displayColumns as $column) {
+            $label = $column;
+            if (array_key_exists($label, $searchableFields)) {
+                $label = $searchableFields[$label]['label'];
+            }
 
-            $label = array_key_exists($tableName, $associationLabels) ?
-                $associationLabels[$tableName] :
-                $tableName;
+            list($fieldModel, ) = pluginSplit($column);
+            if (array_key_exists($fieldModel, $associationLabels)) {
+                $label .= ' (' . $associationLabels[$fieldModel] . ')';
+            }
 
-            list(, $modelName) = pluginSplit($this->search->model);
-            $suffix = $modelName === $label ? '' : ' (' . $label . ')';
-
-            $result[] = $searchableFields[$column]['label'] . $suffix;
+            $result[] = $label;
         }
 
         return $result;
+    }
+
+    /**
+     * Display columns getter.
+     *
+     * @return array
+     */
+    protected function getDisplayColumns()
+    {
+        if (property_exists($this, 'displayColumns')) {
+            return $this->displayColumns;
+        }
+
+        $this->displayColumns = !empty($this->data['display_columns']) ? $this->data['display_columns'] : [];
+
+        $groupByField = !empty($this->data['group_by']) ? $this->data['group_by'] : '';
+
+        if ($groupByField) {
+            list($prefix, ) = pluginSplit($groupByField);
+            $countField = $prefix . '.' . Search::GROUP_BY_FIELD;
+
+            $this->displayColumns = [$groupByField, $countField];
+        }
+
+        return $this->displayColumns;
     }
 
     /**
