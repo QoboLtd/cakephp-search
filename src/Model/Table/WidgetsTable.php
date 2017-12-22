@@ -153,4 +153,72 @@ class WidgetsTable extends Table
 
         return $result;
     }
+
+    /**
+     * getWidgetPosition method
+     *
+     * @param mixed $widget array
+     * @param array $options with extra configs
+     *
+     * @return array $options
+     */
+    public function getWidgetPosition($widget = null, $options = [])
+    {
+        $result = [];
+
+        if (!empty($widget['widget_options'])) {
+            $result = json_decode($widget['widget_options'], true);
+
+            return $result;
+        }
+
+        $sequence = !empty($options['sequence']) ? $options['sequence'] : 0;
+
+        $result['i'] = "$sequence";
+        $result['x'] = ($widget['row'] > 0) ? 6 : 0;
+        $result['y'] = $sequence;
+        $result['h'] = 3;
+        $result['w'] = 6;
+        $result['id'] = $widget['id'];
+        $result['type'] = !empty($widget['widget_type']) ? $widget['widget_type'] : $widget['data']['type'];
+
+        return $result;
+    }
+
+    /**
+     * Save Dashboard Widgets
+     *
+     * @param uuid $dashboardId of the instance
+     * @param array $widgets of the dashboard
+     *
+     * @return bool $result of the save operation.
+     */
+    public function saveDashboardWidgets($dashboardId, $widgets = [])
+    {
+        $result = false;
+
+        if (empty($widgets)) {
+            return $result;
+        }
+
+        foreach ($widgets as $k => $item) {
+            $widget = [
+                'dashboard_id' => $dashboardId,
+                'widget_id' => $item['id'],
+                'widget_type' => $item['type'],
+                'widget_options' => json_encode($item),
+                'row' => 0,
+                'column' => 0,
+            ];
+
+            $entity = $this->newEntity();
+            $entity = $this->patchEntity($entity, $widget);
+
+            if ($this->save($entity)) {
+                $result = true;
+            }
+        }
+
+        return $result;
+    }
 }
