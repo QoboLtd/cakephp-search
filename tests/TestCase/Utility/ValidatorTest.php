@@ -116,11 +116,9 @@ class ValidatorTest extends TestCase
         $expected = $table->aliasField($table->getDisplayField());
         $this->assertEquals($expected, $result['sort_by_field']);
 
-        $expected = Options::getDefaultSortByOrder();
-        $this->assertEquals($expected, $result['sort_by_order']);
+        $this->assertEquals(Options::DEFAULT_SORT_BY_ORDER, $result['sort_by_order']);
 
-        $expected = Options::getDefaultAggregator();
-        $this->assertEquals($expected, $result['aggregator']);
+        $this->assertEquals(Options::DEFAULT_AGGREGATOR, $result['aggregator']);
     }
 
     public function testValidatePrimaryKeyAsSortField()

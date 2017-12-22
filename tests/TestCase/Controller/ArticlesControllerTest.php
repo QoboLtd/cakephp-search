@@ -68,6 +68,7 @@ class ArticlesControllerTest extends IntegrationTestCase
         $this->assertResponseContains('<ul id="displayColumns"');
         $this->assertResponseContains('<select name="sort_by_field"');
         $this->assertResponseContains('<select name="sort_by_order"');
+        $this->assertResponseContains('<select name="group_by"');
         $this->assertResponseContains('value="Articles.title"');
         $this->assertResponseNotContains('value="Articles.content"');
         $this->assertResponseNotContains('value="Articles.role_id"');
@@ -121,7 +122,27 @@ class ArticlesControllerTest extends IntegrationTestCase
         $this->get('/articles/search/00000000-0000-0000-0000-000000000003');
 
         $response = json_decode($this->_getBodyAsString());
-        $this->assertEquals('00000000-0000-0000-0000-000000000002', $response->data[0]->id);
+        $this->assertEquals('00000000-0000-0000-0000-000000000002', $response->data[0]->{'Articles.id'});
+    }
+
+    public function testSearchAjaxWithGroupBy()
+    {
+        EventManager::instance()->on('Search.Model.Search.afterFind', function ($event, $entities, $table) {
+            return $entities;
+        });
+
+        $this->configRequest([
+            'headers' => ['Accept' => 'application/json'],
+            'environment' => [
+                'HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest'
+            ]
+        ]);
+
+        $this->get('/articles/search/00000000-0000-0000-0000-000000000005');
+
+        $response = json_decode($this->_getBodyAsString());
+        $this->assertTrue($response->success);
+        $this->assertEquals(2, $response->pagination->count);
     }
 
     public function testSearchPost()
@@ -135,6 +156,7 @@ class ArticlesControllerTest extends IntegrationTestCase
             ],
             'sort_by_field' => 'Articles.title',
             'sort_by_order' => 'desc',
+            'group_by' => 'Articles.author_id',
             'display_columns' => ['Articles.title']
         ];
 

@@ -16,6 +16,7 @@ echo $this->Html->script('Search.search_options', ['block' => 'scriptBottom']);
 
 $availableColumns = [];
 $displayColumns = [];
+$groupByColumns = [];
 // get display and available columns
 foreach ($searchableFields as $k => $v) {
     $tableName = substr($k, 0, strpos($k, '.'));
@@ -29,10 +30,14 @@ foreach ($searchableFields as $k => $v) {
     } else {
         $availableColumns[$k] = $v['label'] . $suffix;
     }
+
+    if ($savedSearch->model === $tableName) {
+        $groupByColumns[$k] = $v['label'] . $suffix;
+    }
 }
 
-// alphabetically sort available columns
 asort($availableColumns);
+asort($groupByColumns);
 
 // sort display columns based on saved search display_columns order
 $displayColumns = array_merge(array_flip($searchData['display_columns']), $displayColumns);
@@ -82,6 +87,20 @@ $displayColumns = array_merge(array_flip($searchData['display_columns']), $displ
             $searchOptions['sortByOrder'],
             [
                 'default' => isset($searchData['sort_by_order']) ? $searchData['sort_by_order'] : 'asc',
+                'class' => 'form-control input-sm'
+             ]
+        );
+        ?>
+        </div>
+        <div class="form-group">
+        <?php
+        echo $this->Form->label(__('Group By'));
+        echo $this->Form->select(
+            'group_by',
+            $groupByColumns,
+            [
+                'empty' => true,
+                'default' => isset($searchData['group_by']) ? $searchData['group_by'] : '',
                 'class' => 'form-control input-sm'
              ]
         );

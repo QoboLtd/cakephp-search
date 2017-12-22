@@ -38,6 +38,7 @@ class BarChartReportWidget extends BaseReportGraphs
             'options' => [
                 'element' => $this->getContainerId(),
                 'resize' => true,
+                'hideHover' => true
             ],
         ];
 

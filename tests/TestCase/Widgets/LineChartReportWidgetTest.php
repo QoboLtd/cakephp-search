@@ -142,7 +142,8 @@ class LineChartReportWidgetTest extends TestCase
                 'labels' => ['City', 'Country', 'Post Code'],
                 'xkey' => ['name'],
                 'ykeys' => ['id', 'title'],
-                'data' => $data
+                'data' => $data,
+                'hideHover' => true,
             ]
         ];
 

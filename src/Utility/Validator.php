@@ -141,7 +141,7 @@ class Validator
     {
         $options = array_keys(Options::getSortByOrders());
         if (!in_array($data, $options)) {
-            $data = Options::getDefaultSortByOrder();
+            $data = Options::DEFAULT_SORT_BY_ORDER;
         }
 
         return $data;
@@ -157,7 +157,7 @@ class Validator
     {
         $options = array_keys(Options::getAggregators());
         if (!in_array($data, $options)) {
-            $data = Options::getDefaultAggregator();
+            $data = Options::DEFAULT_AGGREGATOR;
         }
 
         return $data;

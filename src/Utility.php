@@ -165,10 +165,10 @@ class Utility
 
         foreach ($resultSet as $key => $entity) {
             foreach ($fields as $field) {
-                list($tableName, $field) = explode('.', $field);
+                list($tableName, $fieldName) = explode('.', $field);
                 // current table field
                 if ($alias === $tableName) {
-                    $result[$key][$field] = $entity->get($field);
+                    $result[$key][$field] = $entity->get($fieldName);
                     continue;
                 }
 
@@ -180,7 +180,7 @@ class Utility
                     continue;
                 }
                 // associated table field
-                $result[$key][$field] = $entity->_matchingData[$tableName]->get($field);
+                $result[$key][$field] = $entity->_matchingData[$tableName]->get($fieldName);
             }
 
             $result[$key][static::MENU_PROPERTY_NAME] = $cakeView->element('Search.Menu/search-view-actions', [

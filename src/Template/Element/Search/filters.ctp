@@ -30,15 +30,7 @@ if (!empty($searchData['criteria'])) {
     );
 }
 ?>
-<div class="box box-solid collapsed-box">
-    <div class="box-header with-border">
-        <h3 class="box-title"><?= __('Advanced Search') ?></h3>
-        <div class="box-tools pull-right">
-            <button type="button" class="btn btn-box-tool" data-widget="collapse">
-                <i class="fa fa-plus"></i>
-            </button>
-        </div>
-    </div>
+<div class="box box-solid">
     <div class="box-body">
         <?= $this->Form->create(null, [
             'id' => 'SearchFilterForm',
@@ -52,9 +44,6 @@ if (!empty($searchData['criteria'])) {
             ]
         ]); ?>
         <div class="row">
-            <div class="col-xs-12">
-                <h4><?= __('Filters') ?></h4>
-            </div>
             <div class="col-lg-3 col-lg-push-9">
                 <div class="form-group">
                 <?php
@@ -115,9 +104,6 @@ if (!empty($searchData['criteria'])) {
             </div>
         </div>
         <div class="row">
-            <div class="col-xs-12">
-                <h4><?= __('Options') ?></h4>
-            </div>
             <div class="col-md-8 col-lg-9">
                 <?php
                 echo $this->element('Search.Search/options', [

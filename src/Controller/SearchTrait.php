@@ -118,15 +118,21 @@ trait SearchTrait
      */
     protected function getAjaxViewVars(array $searchData, Table $table, Search $search)
     {
-        $displayColumns = $searchData['display_columns'];
+        $displayColumns = [];
 
-        $sortField = $this->request->query('order.0.column') ?: 0;
-        $sortField = array_key_exists($sortField, $displayColumns) ?
-            $displayColumns[$sortField] :
-            current($displayColumns);
-        $searchData['sort_by_field'] = $sortField;
+        if (empty($searchData['group_by'])) {
+            $displayColumns = $searchData['display_columns'];
+        }
 
-        $searchData['sort_by_order'] = $this->request->query('order.0.dir') ?: SearchOptions::getDefaultSortByOrder();
+        if (!empty($searchData['group_by'])) {
+            list($prefix, ) = pluginSplit($searchData['group_by']);
+            $displayColumns = array_merge($displayColumns, (array)$searchData['group_by']);
+            $displayColumns[] = $prefix . '.' . Search::GROUP_BY_FIELD;
+        }
+
+        $searchData['sort_by_field'] = $this->request->query('sort');
+
+        $searchData['sort_by_order'] = $this->request->query('direction') ?: SearchOptions::DEFAULT_SORT_BY_ORDER;
 
         $query = $search->execute($searchData);
 

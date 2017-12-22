@@ -33,6 +33,11 @@ class Search
     const DELETE_OLDER_THAN = '-3 hours';
 
     /**
+     * Group by count field
+     */
+    const GROUP_BY_FIELD = 'total';
+
+    /**
      * Searchable table.
      *
      * @var \Cake\ORM\Table
@@ -95,6 +100,7 @@ class Search
         $query = $this->table->find('all');
 
         $where = $this->getWhereClause($data);
+        $group = $this->getGroupByClause($data);
         $select = $this->getSelectClause($data);
         $order = [$this->table->aliasField($data['sort_by_field']) => $data['sort_by_order']];
 
@@ -112,8 +118,14 @@ class Search
             }
         }
 
+        $select = !empty($group) ? $group : $select;
+        if (!empty($group)) {
+            $select = $group;
+            $select[static::GROUP_BY_FIELD] = $query->func()->count($group[0]);
+        }
+
         // add query clauses
-        $query->select($select)->where([$data['aggregator'] => $where])->order($order);
+        $query->select($select)->where([$data['aggregator'] => $where])->order($order)->group($group);
 
         return $query;
     }
@@ -400,6 +412,17 @@ class Search
     }
 
     /**
+     * Group by clause getter method.
+     *
+     * @param array $data Search data
+     * @return array
+     */
+    protected function getGroupByClause(array $data)
+    {
+        return empty($data['group_by']) ? [] : (array)$data['group_by'];
+    }
+
+    /**
      * Method that pre-saves search and returns saved record id.
      *
      * @param array $data Search data
@@ -462,7 +485,7 @@ class Search
 
         $entity->user_id = $this->user['id'];
         $entity->model = $this->table->getRegistryAlias();
-        $entity->shared = Options::getPrivateSharedStatus();
+        $entity->shared = Options::SHARED_STATUS_PRIVATE;
         $entity->content = json_encode(['saved' => $saved, 'latest' => $latest]);
 
         return $entity;

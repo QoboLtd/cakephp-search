@@ -15,24 +15,6 @@ class OptionsTest extends TestCase
         'plugin.search.dashboards'
     ];
 
-    public function testGetPrivateSharedStatus()
-    {
-        $result = Options::getPrivateSharedStatus();
-        $this->assertEquals('private', $result);
-    }
-
-    public function testGetDefaultSortByOrder()
-    {
-        $result = Options::getDefaultSortByOrder();
-        $this->assertEquals($result, 'desc');
-    }
-
-    public function testGetDefaultAggregator()
-    {
-        $result = Options::getDefaultAggregator();
-        $this->assertEquals($result, 'AND');
-    }
-
     public function testGetSearchableAssociations()
     {
         $result = Options::getSearchableAssociations();

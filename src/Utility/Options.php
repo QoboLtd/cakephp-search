@@ -82,36 +82,6 @@ class Options
     protected static $skipDisplayFields = ['id'];
 
     /**
-     * Returns private shared status.
-     *
-     * @return string
-     */
-    public static function getPrivateSharedStatus()
-    {
-        return static::SHARED_STATUS_PRIVATE;
-    }
-
-    /**
-     * Getter method for default sql sort by order.
-     *
-     * @return string
-     */
-    public static function getDefaultSortByOrder()
-    {
-        return static::DEFAULT_SORT_BY_ORDER;
-    }
-
-    /**
-     * Getter method for default sql aggragator.
-     *
-     * @return string
-     */
-    public static function getDefaultAggregator()
-    {
-        return static::DEFAULT_AGGREGATOR;
-    }
-
-    /**
      * Searchable associations getter.
      *
      * @return array
