@@ -12,11 +12,6 @@
 
 use Cake\Utility\Inflector;
 
-// Export button
-// if (Configure::read('Search.dashboardExport')) {
-//     $exportLink = "<a href='/" . $savedSearch->model . '/export-search/' . $savedSearch->id . '/' . $savedSearch->name . "' class='dt-button pull-right'>" . __('Export') . "</a>";
-// }
-
 echo $cakeView->Html->css(
     [
         'Qobo/Utils./plugins/datatables/css/dataTables.bootstrap.min',
