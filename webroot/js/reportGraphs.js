@@ -109,7 +109,6 @@
                     var chartData = that.normalizeData(data.data);
 
                     that.options.data = chartData;
-                    console.log(that.options);
 
                     that.draw();
                 },
