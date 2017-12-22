@@ -31,50 +31,48 @@ $chartData = [];
         </div>
     </div>
 </section>
-<section class="content">
-    <div class="row">
-        <?php $columnsCount = count($columns); for ($col = 0; $col < $columnsCount; $col++) : ?>
-            <div class="col-md-<?= 12 / $columnsCount ?>">
-            <?php if (!empty($dashboardWidgets)) : ?>
-                <?php
-                foreach ($dashboardWidgets as $dw) {
-                    if ($dw->column !== $col) {
-                        continue;
-                    }
+<section class="container-fluid">
+    <?php foreach ($dashboardWidgets as $row => $column) : ?>
+        <div class="row">
+        <?php foreach ($column as $k => $dw) : ?>
+        <?php
+            $options = json_decode($dw->widget_options, true);
+            $width = (!empty($options['w'])) ? 'col-xs-' . $options['w'] : 'col-xs-6';
+        ?>
+            <div class="<?=$width;?>">
+            <?php
+            try {
+                $widgetHandler = WidgetFactory::create($dw->widget_type, ['entity' => $dw]);
 
-                    try {
-                        $widgetHandler = WidgetFactory::create($dw->widget_type, ['entity' => $dw]);
+                $widgetHandler->getResults(['entity' => $dw, 'user' => $user, 'rootView' => $this]);
 
-                        $widgetHandler->getResults(['entity' => $dw, 'user' => $user, 'rootView' => $this]);
-
-                        if ($widgetHandler->getRenderElement() == 'Search.Widgets/graph') {
-                            $chartData[] = $widgetHandler->getData();
-                        }
-
-                        $dataOptions = $widgetHandler->getOptions();
-
-                        if (!empty($dataOptions['scripts'])) {
-                            $scripts[] = $dataOptions['scripts'];
-                        }
-
-                        echo $this->element(
-                            $widgetHandler->getRenderElement(),
-                            ['widget' => $widgetHandler],
-                            ['plugin' => false]
-                        );
-                    } catch (\Exception $e) {
-                        $this->log("Cannot process widget: " . $e->getMessage(), 'error');
-                        echo $this->element('Search.missing_element', [
-                            'exception' => $e,
-                            'messages' => !empty($widgetHandler) ? $widgetHandler->getErrors() : ['Unknown error']
-                        ]);
-                    }
+                if ($widgetHandler->getRenderElement() == 'Search.Widgets/graph') {
+                    $chartData[] = $widgetHandler->getData();
                 }
-                ?>
-            <?php endif; ?>
+
+                $dataOptions = $widgetHandler->getOptions();
+
+                if (!empty($dataOptions['scripts'])) {
+                    $scripts[] = $dataOptions['scripts'];
+                }
+
+                echo $this->element(
+                    $widgetHandler->getRenderElement(),
+                    ['widget' => $widgetHandler],
+                    ['plugin' => false]
+                );
+            } catch (\Exception $e) {
+                $this->log("Cannot process widget: " . $e->getMessage(), 'error');
+                echo $this->element('Search.missing_element', [
+                    'exception' => $e,
+                    'messages' => !empty($widgetHandler) ? $widgetHandler->getErrors() : ['Unknown error']
+                ]);
+            }
+            ?>
             </div>
-        <?php endfor; ?>
+        <?php endforeach;?>
+        </div>
+    <?php endforeach; ?>
     </div>
 </section>
-
 <?php echo $this->element('Search.widget_libraries', ['scripts' => $scripts, 'chartData' => $chartData]); ?>

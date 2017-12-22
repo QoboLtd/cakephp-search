@@ -53,23 +53,56 @@ class DashboardsController extends AppController
         $dashboard = $this->Dashboards->get($id, [
             'contain' => [
                 'Roles',
-                'Widgets' => [
-                    'sort' => [
-                        'Widgets.row' => 'ASC',
-                        'Widgets.column' => 'ASC'
-                    ]
-                ]
+                'Widgets'
             ]
         ]);
 
         $query = $this->Dashboards->getUserDashboards($this->Auth->user());
+        $widgetsTable = TableRegistry::get('Search.Widgets');
 
         $userDashboards = $query->find('list')->toArray();
         if (!array_key_exists($dashboard->id, $userDashboards)) {
             throw new ForbiddenException();
         }
 
-        $this->set('dashboardWidgets', $dashboard->widgets);
+        $widgets = [];
+
+        foreach ($dashboard->widgets as $k => $item) {
+            $opts = $widgetsTable->getWidgetPosition($item); //, ['sequence' => $k]);
+
+            $x = (int)$opts['x'];
+            $y = (int)$opts['y'];
+
+            if (isset($widgets[$y][$x])) {
+                $widgets[$y][] = $item;
+            } else {
+                $widgets[$y][$x] = $item;
+            }
+        }
+
+        ksort($widgets);
+
+        foreach ($widgets as $k => $items) {
+            if (count($items) < 2) {
+                continue;
+            }
+
+            usort($widgets[$k], function ($a, $b) {
+                $opts_a = json_decode($a->widget_options, true);
+                $opts_b = json_decode($b->widget_options, true);
+
+                $x_a = (int)$opts_a['x'];
+                $x_b = (int)$opts_b['x'];
+
+                if ($x_a == $x_b) {
+                    return 0;
+                }
+
+                return ($x_a < $x_b) ? -1 : 1;
+            });
+        }
+
+        $this->set('dashboardWidgets', $widgets);
         $this->set('columns', Configure::readOrFail('Search.dashboard.columns'));
         $this->set('user', $this->Auth->user());
         $this->set('dashboard', $dashboard);
@@ -78,6 +111,8 @@ class DashboardsController extends AppController
 
     /**
      * Add method
+     *
+     * @TODO: refactor the code. Eyez bleeedzz
      *
      * @return \Cake\Network\Response|void Redirects on successful add, renders view otherwise.
      */
@@ -89,13 +124,13 @@ class DashboardsController extends AppController
         $widgets = $widgetsTable->getWidgets();
 
         if ($this->request->is('post')) {
-            $data = $this->request->data;
+            $data = $this->request->getData();
 
             $widgets = [];
 
             $dashboard = $this->Dashboards->patchEntity($dashboard, [
                 'name' => $data['name'],
-                'role_id' => $data['role_id']
+                'role_id' => $data['role_id'],
             ]);
 
             $resultedDashboard = $this->Dashboards->save($dashboard);
@@ -105,25 +140,10 @@ class DashboardsController extends AppController
 
                 $dashboardId = $resultedDashboard->id;
 
-                if (!empty($data['widgets'])) {
-                    $count = count($data['widgets']['widget_id']);
-                    for ($i = 0; $i < $count; $i++) {
-                        array_push($widgets, [
-                            'dashboard_id' => $dashboardId,
-                            'widget_id' => $data['widgets']['widget_id'][$i],
-                            'widget_type' => $data['widgets']['widget_type'][$i],
-                            'widget_options' => null,
-                            'column' => $data['widgets']['column'][$i],
-                            'row' => $data['widgets']['row'][$i],
-                        ]);
-                    }
+                $data['widgets'] = !empty($data['options']) ? json_decode($data['options'], true) : [];
 
-                    $widgetTable = TableRegistry::get('Search.Widgets');
-                    foreach ($widgets as $w) {
-                        $widget = $widgetTable->newEntity();
-                        $widget = $widgetTable->patchEntity($widget, $w);
-                        $widgetTable->save($widget);
-                    }
+                if (!empty($data['widgets'])) {
+                    $saved = $widgetsTable->saveDashboardWidgets($dashboardId, $data['widgets']);
                 }
 
                 return $this->redirect(['action' => 'view', $dashboard->id]);
@@ -133,8 +153,9 @@ class DashboardsController extends AppController
         }
 
         $roles = $this->Dashboards->Roles->find('list', ['limit' => 200]);
+        $savedWidgetData = [];
 
-        $this->set(compact('dashboard', 'roles', 'widgets'));
+        $this->set(compact('dashboard', 'roles', 'widgets', 'savedWidgetData'));
         $this->set('columns', Configure::readOrFail('Search.dashboard.columns'));
         $this->set('_serialize', ['dashboard']);
     }
@@ -148,53 +169,48 @@ class DashboardsController extends AppController
      */
     public function edit($id = null)
     {
+        $savedWidgetData = [];
         $dashboard = $this->Dashboards->get($id, [
-            'contain' => [
-                'Widgets' => [
-                    'sort' => [
-                        'Widgets.row' => 'ASC',
-                        'Widgets.column' => 'ASC'
-                    ]
-                ]
-            ]
+            'contain' => ['Widgets']
         ]);
 
         $dashboardWidgets = $dashboard->widgets;
         unset($dashboard->widgets);
 
         $widgetsTable = TableRegistry::get('Search.Widgets');
-
         $widgets = $widgetsTable->getWidgets();
-        $savedWidgetData = [];
-        foreach ($dashboardWidgets as $dashboardWidget) {
+
+        $sequence = 0;
+
+        foreach ($dashboardWidgets as $dw) {
             foreach ($widgets as $k => $widget) {
-                if ($dashboardWidget->widget_id !== $widget['data']['id']) {
+                if ($dw->widget_id !== $widget['data']['id']) {
                     continue;
                 }
-                $widget['data']['column'] = $dashboardWidget->column;
-                $widget['data']['row'] = $dashboardWidget->row;
-                array_push($savedWidgetData, $widget);
-                unset($widgets[$k]);
+
+                $widgetOptions = $widgetsTable->getWidgetPosition($dw, ['sequence' => $sequence]);
+
+                $item = array_merge(
+                    [
+                        'id' => $widget['data']['id']
+                    ],
+                    [
+                        'data' => $widget['data']
+                    ],
+                    $widgetOptions
+                );
+                unset($item['data']['content'], $item['data']['created'], $item['data']['modified']);
+                if (!empty($item['data']['query'])) {
+                    unset($item['data']['query']);
+                }
+                array_push($savedWidgetData, $item);
+
+                $sequence++;
             }
         }
 
         if ($this->request->is(['patch', 'post', 'put'])) {
-            $data = $this->request->data;
-            $widgets = [];
-
-            if (!empty($data['widgets'])) {
-                $count = count($data['widgets']['widget_id']);
-                for ($i = 0; $i < $count; $i++) {
-                    array_push($widgets, [
-                        'dashboard_id' => $dashboard->id,
-                        'widget_id' => $data['widgets']['widget_id'][$i],
-                        'widget_type' => $data['widgets']['widget_type'][$i],
-                        'widget_options' => null,
-                        'column' => $data['widgets']['column'][$i],
-                        'row' => $data['widgets']['row'][$i],
-                    ]);
-                }
-            }
+            $data = $this->request->getData();
 
             unset($dashboard->widgets);
 
@@ -211,12 +227,9 @@ class DashboardsController extends AppController
                     'dashboard_id' => $dashboard->id
                 ]);
 
-                if (!empty($widgets)) {
-                    foreach ($widgets as $w) {
-                        $widget = $widgetTable->newEntity();
-                        $widget = $widgetTable->patchEntity($widget, $w);
-                        $resultedWidgets = $widgetTable->save($widget);
-                    }
+                $data['widgets'] = !empty($data['options']) ? json_decode($data['options'], true) : [];
+                if (!empty($data['widgets'])) {
+                    $saved = $widgetsTable->saveDashboardWidgets($id, $data['widgets']);
                 }
 
                 return $this->redirect(['action' => 'view', $id]);

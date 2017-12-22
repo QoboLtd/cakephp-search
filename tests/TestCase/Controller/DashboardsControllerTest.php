@@ -155,6 +155,7 @@ class DashboardsControllerTest extends IntegrationTestCase
             'widgets' => [
                 'widget_id' => ['00000000-0000-0000-0000-000000009999'],
                 'widget_type' => ['saved_search'],
+                'widget_options' => json_encode(['x' => 0, 'y' => 0, 'i' => '999', 'h' => '2', 'w' => '2']),
                 'row' => ['0'],
                 'column' => ['0']
             ]
