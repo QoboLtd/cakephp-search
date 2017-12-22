@@ -24,7 +24,7 @@ use Search\Utility\Search;
 
 final class ResultCell extends Cell
 {
-    private $requiredOptions = ['entity', 'searchData', 'searchableFields', 'associationLabels', 'preSaveId'];
+    private $requiredOptions = ['entity', 'searchData', 'searchableFields', 'associationLabels', 'batch', 'preSaveId'];
 
     private $charts = [
         ['type' => 'funnelChart', 'icon' => 'filter'],
@@ -103,23 +103,7 @@ final class ResultCell extends Cell
      */
     private function setIsBatch()
     {
-        $this->set('isBatch', (bool)$this->getBatch());
-    }
-
-    /**
-     * Batch getter.
-     *
-     * @return bool
-     */
-    private function getBatch()
-    {
-        if (property_exists($this, 'batch')) {
-            return $this->batch;
-        }
-
-        $this->batch = (bool)Configure::read('Search.batch.active');
-
-        return $this->batch;
+        $this->set('isBatch', (bool)$this->batch);
     }
 
     /**
@@ -266,7 +250,7 @@ final class ResultCell extends Cell
             ],
         ];
 
-        if (!$this->getGroupByField() && $this->getBatch()) {
+        if (!$this->getGroupByField() && $this->batch) {
             $result['batch'] = ['id' => Configure::read('Search.batch.button_id')];
         }
 
@@ -328,7 +312,7 @@ final class ResultCell extends Cell
     {
         $result = (int)array_search($this->searchData['sort_by_field'], $this->getDisplayColumns());
 
-        if ($this->getBatch() && !$this->getGroupByField()) {
+        if ($this->batch && !$this->getGroupByField()) {
             $result += 1;
         }
 
@@ -362,7 +346,7 @@ final class ResultCell extends Cell
             $result[] = Utility::MENU_PROPERTY_NAME;
         }
 
-        if (!$this->getGroupByField() && $this->getBatch()) {
+        if (!$this->getGroupByField() && $this->batch) {
             $table = TableRegistry::get($this->entity->get('model'));
             // add primary key in FIRST position
             array_unshift($result, $table->aliasField($table->getPrimaryKey()));

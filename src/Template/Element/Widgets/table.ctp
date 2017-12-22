@@ -19,6 +19,7 @@ $args = [
         'searchData' => $savedSearch->get('content')['saved'],
         'searchableFields' => $widgetOptions['fields'],
         'associationLabels' => $widgetOptions['associationLabels'],
+        'batch' => false,
         'preSaveId' => $savedSearch->get('id')
     ],
     $this
