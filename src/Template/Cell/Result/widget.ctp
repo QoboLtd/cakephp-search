@@ -17,7 +17,13 @@ use Cake\Utility\Inflector;
 //     $exportLink = "<a href='/" . $savedSearch->model . '/export-search/' . $savedSearch->id . '/' . $savedSearch->name . "' class='dt-button pull-right'>" . __('Export') . "</a>";
 // }
 
-echo $cakeView->Html->css('Qobo/Utils./plugins/datatables/css/dataTables.bootstrap.min', ['block' => 'css']);
+echo $cakeView->Html->css(
+    [
+        'Qobo/Utils./plugins/datatables/css/dataTables.bootstrap.min',
+        'Search.grid'
+    ],
+    ['block' => 'css']
+);
 
 echo $cakeView->Html->script(
     [
@@ -47,6 +53,10 @@ if ($isGroup) {
     ', ['block' => 'scriptBottom']);
 }
 
+if ($isExport) {
+    echo $cakeView->Html->css('Qobo/Utils.buttons.dataTables.min', ['block' => 'css']);
+}
+
 echo $cakeView->Html->scriptBlock('new DataTablesInit(' . json_encode($dtOptions) . ');', ['block' => 'scriptBottom']);
 ?>
 <div class="dashboard-widget-saved-search nav-tabs-custom">
@@ -70,8 +80,8 @@ echo $cakeView->Html->scriptBlock('new DataTablesInit(' . json_encode($dtOptions
     <div class="tab-content">
         <div id="table_<?= $tableOptions['id'] ?>" class="tab-pane active">
             <div class="table-responsive">
-                <?php if (!empty($exportLink)) : ?>
-                    <?= $exportLink ?>
+                <?php if ($isExport) : ?>
+                    <?= $this->Html->link(__('Export'), $viewOptions['exportUrl'], ['class' => 'dt-button pull-right']) ?>
                 <?php endif; ?>
                 <table id="<?= $tableOptions['id'] ?>" class="table table-hover table-condensed table-vertical-align" width="100%">
                     <thead>

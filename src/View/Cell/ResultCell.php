@@ -45,6 +45,7 @@ final class ResultCell extends Cell
         $this->setView($view);
         $this->setIsBatch();
         $this->setIsGroup();
+        $this->setIsExport();
         $this->setViewOptions();
         $this->setTableOptions();
         $this->setDatatableOptions();
@@ -148,6 +149,32 @@ final class ResultCell extends Cell
     }
 
     /**
+     * Export flag setter.
+     *
+     * @return void
+     */
+    private function setIsExport()
+    {
+        $this->set('isExport', (bool)$this->getExport());
+    }
+
+    /**
+     * Export status getter.
+     *
+     * @return bool
+     */
+    private function getExport()
+    {
+        if (property_exists($this, 'export')) {
+            return $this->export;
+        }
+
+        $this->export = (bool)Configure::read('Search.dashboardExport');
+
+        return $this->export;
+    }
+
+    /**
      * View options setter.
      *
      * @return void
@@ -161,6 +188,16 @@ final class ResultCell extends Cell
         $url = ['plugin' => $plugin, 'controller' => $controller, 'action' => 'search', $this->entity->get('id')];
 
         $result = ['title' => $title, 'url' => $url];
+
+        if ($this->getExport()) {
+            $result['exportUrl'] = Router::url([
+                'plugin' => $plugin,
+                'controller' => $controller,
+                'action' => 'export-search',
+                $this->entity->get('id'),
+                $this->entity->get('name')
+            ]);
+        }
 
         $this->set('viewOptions', $result);
     }
