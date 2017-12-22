@@ -37,13 +37,11 @@ final class ResultCell extends Cell
      *
      * @param array $options Search options
      * @param \Cake\View\View $view View instance
-     * @param array $viewVars Vars to be passed to the Cell View
      * @return void
      */
-    public function display(array $options, View $view, array $viewVars = [])
+    public function display(array $options, View $view)
     {
         $this->validateOptions($options);
-        $this->setViewVars($viewVars);
         $this->setView($view);
         $this->setIsBatch();
         $this->setIsGroup();
@@ -67,19 +65,6 @@ final class ResultCell extends Cell
             }
 
             $this->{$name} = $options[$name];
-        }
-    }
-
-    /**
-     * View variables setter.
-     *
-     * @param array $viewVars View variables
-     * @return void
-     */
-    private function setViewVars(array $viewVars)
-    {
-        foreach ($viewVars as $name => $option) {
-            $this->set($name, $option);
         }
     }
 

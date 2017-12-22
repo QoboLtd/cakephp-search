@@ -21,8 +21,7 @@ $args = [
         'associationLabels' => $widgetOptions['associationLabels'],
         'preSaveId' => $savedSearch->get('id')
     ],
-    $this,
-    ['widget' => $widget]
+    $this
 ];
 
 $cell = $this->cell('Search.Result', $args);
