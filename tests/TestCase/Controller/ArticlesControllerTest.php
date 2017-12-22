@@ -122,7 +122,7 @@ class ArticlesControllerTest extends IntegrationTestCase
         $this->get('/articles/search/00000000-0000-0000-0000-000000000003');
 
         $response = json_decode($this->_getBodyAsString());
-        $this->assertEquals('00000000-0000-0000-0000-000000000002', $response->data[0]->id);
+        $this->assertEquals('00000000-0000-0000-0000-000000000002', $response->data[0]->{'Articles.id'});
     }
 
     public function testSearchAjaxWithGroupBy()
