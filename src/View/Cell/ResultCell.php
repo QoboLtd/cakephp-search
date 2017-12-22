@@ -305,6 +305,7 @@ final class ResultCell extends Cell
                 'options' => [
                     'element' => Inflector::delimit($chart['type']) . '_' . $this->getTableId(),
                     'resize' => true,
+                    'hideHover' => true,
                     'data' => [],
                     'barColors' => ['#0874c7', '#04645e', '#5661f8', '#8298c1', '#c6ba08', '#07ada3'],
                     'lineColors' => ['#0874c7', '#04645e', '#5661f8', '#8298c1', '#c6ba08', '#07ada3'],
