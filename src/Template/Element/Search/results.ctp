@@ -10,12 +10,15 @@
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
 
+use Cake\Core\Configure;
+
 $args = [
     [
         'entity' => $savedSearch,
         'searchData' => $searchData,
         'searchableFields' => $searchableFields,
         'associationLabels' => $associationLabels,
+        'batch' => (bool)Configure::read('Search.batch.active'),
         'preSaveId' => $preSaveId
     ],
     $this

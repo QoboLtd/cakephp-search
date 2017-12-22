@@ -37,9 +37,9 @@ $chartData = [];
         <?php foreach ($column as $k => $dw) : ?>
         <?php
             $options = json_decode($dw->widget_options, true);
-            $width = (!empty($options['w'])) ? 'col-xs-' . $options['w'] : 'col-xs-6';
+            $width = (!empty($options['w'])) ? $options['w'] : '6';
         ?>
-            <div class="<?=$width;?>">
+            <div class="col-md-<?=$width;?>">
             <?php
             try {
                 $widgetHandler = WidgetFactory::create($dw->widget_type, ['entity' => $dw]);
