@@ -71,7 +71,7 @@ $chartData = [];
             ?>
             </div>
         <?php endforeach;?>
+        </div>
     <?php endforeach; ?>
-    </div>
 </section>
 <?php echo $this->element('Search.widget_libraries', ['scripts' => $scripts, 'chartData' => $chartData]); ?>

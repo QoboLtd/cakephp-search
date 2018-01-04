@@ -113,22 +113,42 @@ new Vue({
             });
         },
         addItem: function(item) {
-            this.index++;
             let element = {
                 x: 0,
-                y: 0,
+                y: this.getLastRow(),
                 w: 2,
                 h: 2,
-                i: this.index + "",
+                i: this.getUniqueId(),
                 draggable: true,
             };
 
             let layoutElement = Object.assign({}, element, item);
             this.layout.push(layoutElement);
+            this.index = this.layout.length;
         },
         removeItem: function(item) {
             this.layout.splice(this.layout.indexOf(item), 1);
-            this.index--;
+            this.index = this.layout.index;
+        },
+        getUniqueId: function() {
+            return '_' + Math.random().toString(36).substr(2, 9);
+        },
+        getLastRow: function() {
+            let last = 0;
+
+            if (!this.layout.length) {
+                return last;
+            }
+
+            this.layout.forEach(function(element) {
+                if(element.y >= last) {
+                    last = element.y;
+                }
+            });
+
+            last++;
+
+            return last;
         }
     }
 });
