@@ -115,7 +115,7 @@ new Vue({
         addItem: function(item) {
             let element = {
                 x: 0,
-                y: 0,
+                y: this.getLastRow(),
                 w: 2,
                 h: 2,
                 i: this.getUniqueId(),
