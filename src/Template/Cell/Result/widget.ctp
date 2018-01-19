@@ -30,6 +30,8 @@ echo $cakeView->Html->script(
 );
 
 if ($isGroup) {
+    $chartsCount = count($chartOptions);
+
     echo $cakeView->Html->css('AdminLTE./plugins/morris/morris', ['block' => 'css']);
 
     echo $cakeView->Html->script(
@@ -56,25 +58,25 @@ if ($isExport) {
 echo $cakeView->Html->scriptBlock('new DataTablesInit(' . json_encode($dtOptions) . ');', ['block' => 'scriptBottom']);
 ?>
 <div class="dashboard-widget-saved-search nav-tabs-custom">
-    <ul class="nav nav-tabs pull-right">
+    <ul class="nav nav-tabs pull-right" id="widget-<?= md5(implode('', $viewOptions['url'])) ?>">
+        <li>
+            <a href="#table_<?= $tableOptions['id'] ?>" data-toggle="tab" aria-expanded="true">
+                <i class="fa fa-table"></i>
+            </a>
+        </li>
     <?php if ($isGroup) : ?>
-        <?php foreach ($chartOptions as $chart) : ?>
-            <li class="">
+        <?php foreach ($chartOptions as $key => $chart) : ?>
+            <li class="<?= $chartsCount === $key + 1 ? 'active' : '' ?>">
                 <a href="<?= '#' . Inflector::delimit($chart['chart']) . '_' . $tableOptions['id'] ?>" data-toggle="tab" aria-expanded="false">
                     <i class="fa fa-<?= $chart['icon'] ?>"></i>
                 </a>
             </li>
         <?php endforeach; ?>
     <?php endif; ?>
-        <li class="active">
-            <a href="#table_<?= $tableOptions['id'] ?>" data-toggle="tab" aria-expanded="true">
-                <i class="fa fa-table"></i>
-            </a>
-        </li>
         <li class="pull-left header"><?= $this->Html->link($viewOptions['title'], $viewOptions['url']) ?></li>
     </ul>
     <div class="tab-content">
-        <div id="table_<?= $tableOptions['id'] ?>" class="tab-pane active">
+        <div id="table_<?= $tableOptions['id'] ?>" class="tab-pane">
             <div class="table-responsive">
                 <?php if ($isExport) : ?>
                     <?= $this->Html->link(__('Export'), $viewOptions['exportUrl'], ['class' => 'dt-button pull-right']) ?>
@@ -94,8 +96,8 @@ echo $cakeView->Html->scriptBlock('new DataTablesInit(' . json_encode($dtOptions
             </div>
         </div>
     <?php if ($isGroup) : ?>
-        <?php foreach ($chartOptions as $chart) : ?>
-            <div id="<?= Inflector::delimit($chart['chart']) . '_' . $tableOptions['id'] ?>" class="tab-pane"></div>
+        <?php foreach ($chartOptions as $key => $chart) : ?>
+            <div id="<?= Inflector::delimit($chart['chart']) . '_' . $tableOptions['id'] ?>" class="tab-pane <?= $chartsCount === $key + 1 ? 'active' : '' ?>"></div>
         <?php endforeach; ?>
     <?php endif; ?>
     </div>
