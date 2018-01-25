@@ -122,7 +122,7 @@ class DashboardsControllerTest extends IntegrationTestCase
         $this->assertResponseContains('<h4>Everyone Dashboard</h4>');
     }
 
-    public function testViewAdminUserWithHtmlTable()
+    public function testViewWithSavedSearch()
     {
         // admin user
         $this->session(['Auth.User.id' => '00000000-0000-0000-0000-000000000002']);
@@ -136,7 +136,23 @@ class DashboardsControllerTest extends IntegrationTestCase
         $this->assertResponseContains('<table');
         $this->assertResponseContains('<th>Name</th>');
         $this->assertResponseContains('<th class="actions">Actions</th>');
-        $this->assertResponseContains('<li class="active">');
+        $this->assertResponseContains('<li class="active"');
+    }
+
+    public function testViewWithGroupBySavedSearch()
+    {
+        // admin user
+        $this->session(['Auth.User.id' => '00000000-0000-0000-0000-000000000002']);
+
+        $this->get('/search/dashboards/view/00000000-0000-0000-0000-000000000004');
+
+        $this->assertResponseOk();
+
+        $this->assertResponseContains('#funnel_chart_table');
+        $this->assertResponseContains('#donut_chart_table');
+        $this->assertResponseContains('#bar_chart_table');
+        $this->assertResponseContains('<li class="active"');
+        $this->assertResponseContains('class="tab-pane active"');
     }
 
     public function testAdd()
