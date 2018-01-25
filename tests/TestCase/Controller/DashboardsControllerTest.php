@@ -136,6 +136,7 @@ class DashboardsControllerTest extends IntegrationTestCase
         $this->assertResponseContains('<table');
         $this->assertResponseContains('<th>Name</th>');
         $this->assertResponseContains('<th class="actions">Actions</th>');
+        $this->assertResponseContains('<li class="active">');
     }
 
     public function testAdd()
