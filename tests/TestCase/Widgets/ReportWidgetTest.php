@@ -345,7 +345,7 @@ class ReportWidgetTest extends TestCase
     public function getQueriesList()
     {
         return [
-            ['SELECT id,created FROM widgets LIMIT 10', 5],
+            ['SELECT id,created FROM widgets LIMIT 10', 6],
             ['SELECT id,created FROM widgets WHERE id = 1', 0],
         ];
     }

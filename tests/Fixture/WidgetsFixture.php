@@ -108,5 +108,17 @@ class WidgetsFixture extends TestFixture
             'modified' => '2016-10-19 12:08:59',
             'trashed' => null
         ],
+        [
+            'id' => '00000000-0000-0000-0000-000000000006',
+            'dashboard_id' => '00000000-0000-0000-0000-000000000004',
+            'widget_id' => '00000000-0000-0000-0000-000000000005',
+            'widget_type' => 'saved_search',
+            'widget_options' => '{"i":"0","h":2,"w":6,"x":6,"y":2,"id":"00000000-0000-0000-0000-000000000002","type":"saved_search"}',
+            'column' => 0,
+            'row' => 3,
+            'created' => '2016-10-19 12:08:59',
+            'modified' => '2016-10-19 12:08:59',
+            'trashed' => null
+        ],
     ];
 }

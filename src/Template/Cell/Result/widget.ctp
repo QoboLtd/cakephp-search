@@ -59,7 +59,7 @@ echo $cakeView->Html->scriptBlock('new DataTablesInit(' . json_encode($dtOptions
 ?>
 <div class="dashboard-widget-saved-search nav-tabs-custom">
     <ul class="nav nav-tabs pull-right" id="widget-<?= md5(implode('', $viewOptions['url'])) ?>">
-        <li>
+        <li class="<?= ! $isGroup ? 'active' : '' ?>">
             <a href="#table_<?= $tableOptions['id'] ?>" data-toggle="tab" aria-expanded="true">
                 <i class="fa fa-table"></i>
             </a>
@@ -76,7 +76,7 @@ echo $cakeView->Html->scriptBlock('new DataTablesInit(' . json_encode($dtOptions
         <li class="pull-left header"><?= $this->Html->link($viewOptions['title'], $viewOptions['url']) ?></li>
     </ul>
     <div class="tab-content">
-        <div id="table_<?= $tableOptions['id'] ?>" class="tab-pane">
+        <div id="table_<?= $tableOptions['id'] ?>" class="tab-pane <?= ! $isGroup ? 'active' : '' ?>">
             <div class="table-responsive">
                 <?php if ($isExport) : ?>
                     <?= $this->Html->link(__('Export'), $viewOptions['exportUrl'], ['class' => 'dt-button pull-right']) ?>
@@ -87,7 +87,7 @@ echo $cakeView->Html->scriptBlock('new DataTablesInit(' . json_encode($dtOptions
                         <?php foreach ($tableOptions['headers'] as $header) : ?>
                             <th><?= $header ?></th>
                         <?php endforeach; ?>
-                        <?php if (!$isGroup) : ?>
+                        <?php if (! $isGroup) : ?>
                             <th class="actions"><?= __('Actions') ?></th>
                         <?php endif; ?>
                         </tr>
