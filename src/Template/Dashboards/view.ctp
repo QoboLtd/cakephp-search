@@ -62,11 +62,10 @@ $chartData = [];
                     ['plugin' => false]
                 );
 
-                if (empty($widgetContent))  {
+                if (empty($widgetContent)) {
                     throw new \Exception(__('Widget is unavailable'));
                 }
                 echo $widgetContent;
-
             } catch (\Exception $e) {
                 $this->log("Cannot process widget: " . $e->getMessage(), 'error');
                 echo $this->element('Search.missing_element', [
