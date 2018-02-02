@@ -9,9 +9,12 @@
  * @copyright     Copyright (c) Qobo Ltd. (https://www.qobo.biz)
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
-
 $savedSearch = $widget->getData();
 $widgetOptions = $widget->getOptions();
+
+if (empty($savedSearch)) {
+    return '';
+}
 
 $args = [
     [

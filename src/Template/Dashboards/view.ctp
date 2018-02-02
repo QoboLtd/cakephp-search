@@ -56,11 +56,17 @@ $chartData = [];
                     $scripts[] = $dataOptions['scripts'];
                 }
 
-                echo $this->element(
+                $widgetContent = $this->element(
                     $widgetHandler->getRenderElement(),
                     ['widget' => $widgetHandler],
                     ['plugin' => false]
                 );
+
+                if (empty($widgetContent))  {
+                    throw new \Exception(__('Widget is unavailable'));
+                }
+                echo $widgetContent;
+
             } catch (\Exception $e) {
                 $this->log("Cannot process widget: " . $e->getMessage(), 'error');
                 echo $this->element('Search.missing_element', [
