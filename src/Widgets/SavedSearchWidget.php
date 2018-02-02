@@ -92,6 +92,8 @@ class SavedSearchWidget extends BaseWidget
         try {
             $query = $this->_tableInstance->findById($this->_entity->widget_id);
             if ($query->isEmpty()) {
+                $this->errors[] = 'No data found for this entity';
+
                 return $savedSearch;
             }
             $savedSearch = $query->first();
