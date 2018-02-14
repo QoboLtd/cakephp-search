@@ -11,6 +11,8 @@ new Vue({
         targetElement: '#dashboard-options',
         dashboard:[],
         elements: [],
+        widgetTypes: [],
+        searchModules: [],
         layout: [],
         index:0,
         token: api_token // getting token from global variable into vue app.
@@ -73,7 +75,7 @@ new Vue({
         },
         getElementIcon: function(item) {
             let className = 'fa-table';
-
+            
             if (!item.hasOwnProperty('type')) {
                 return className;
             }
@@ -100,7 +102,8 @@ new Vue({
         },
         getGridElements: function() {
             var that = this;
-
+            let types = [];
+            let models = [];
             $.ajax({
                 type: 'post',
                 dataType: 'json',
@@ -110,6 +113,19 @@ new Vue({
                 }
             }).then(function(response) {
                 that.elements = response;
+                
+                that.elements.forEach(function(element){
+                    if (!types.includes(element.type)) {
+                      types.push(element.type);
+                    }
+
+                    if (!models.includes(element.data.model)) {
+                        models.push(element.data.model);
+                    }
+                });
+                
+                that.widgetTypes = types;
+                that.searchModules = models;
             });
         },
         addItem: function(item) {

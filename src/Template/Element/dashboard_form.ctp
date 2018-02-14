@@ -42,23 +42,39 @@
             <div class="box-header with-border">
                 <h3 class="box-title"><?= __('Available Widgets');?></h3>
             </div>
-            <div class="box-body">
-                <ul class="droppable-area">
-                    <li class="col-lg-3 col-xs-6" v-for="item in elements">
-                        <div class="box box-solid" v-bind:class="getElementBackground(item)">
-                            <div class='box-header with-border'>
-                                <h3 class="box-title"><i class="fa" v-bind:class="getElementIcon(item)"></i> {{item.data.model}}</h3>
-                                <div class="box-tools">
-                                    <div class="btn btn-box-tool"><a href="#" @click="addItem(item)"><i class='fa fa-plus-circle'></i></a></div>
-                                </div>
-                            </div>
+            
+            <div class="row">
+                <div class="col-md-2">
+                    <ul class="nav nav-tabs nav-stacked">
+                        <li v-for="type in widgetTypes">
+                            <a :href="'#' + type" data-toggle="tab">{{type}}</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="col-md-10">
+                    <div class="tab-content">                    
+                        <div role="tabpanel" class="tab-pane" v-for="type in widgetTypes" :id="type">
                             <div class="box-body">
-                                <p>{{item.data.name}}</p>
+                                <ul class="droppable-area">
+                                    <li class="col-lg-3 col-xs-6" v-for="item in elements" v-if="item.type == type">
+                                        <div class="box box-solid" v-bind:class="getElementBackground(item)">
+                                            <div class='box-header with-border'>
+                                                <h3 class="box-title"><i class="fa" v-bind:class="getElementIcon(item)"></i> {{item.data.model}}</h3>
+                                                <div class="box-tools">
+                                                    <div class="btn btn-box-tool"><a href="#" @click="addItem(item)"><i class='fa fa-plus-circle'></i></a></div>
+                                                </div>
+                                            </div>
+                                            <div class="box-body">
+                                                <p>{{item.data.name}}</p>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
                             </div>
-                        </div>
-                    </li>
-                </ul>
+                        </div>      
+                    </div>                
+                </div>
             </div>
         </div>
     </div>
-
