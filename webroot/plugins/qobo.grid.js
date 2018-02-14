@@ -119,7 +119,7 @@ new Vue({
                       types.push(element.type);
                     }
 
-                    if (!models.includes(element.data.model)) {
+                    if (element.type == 'saved_search' && !models.includes(element.data.model)) {
                         models.push(element.data.model);
                     }
                 });
@@ -165,6 +165,16 @@ new Vue({
             last++;
 
             return last;
+        },
+        camelize: function(str) {
+            str = str.replace(/(?:\_|\W)(.)/g, function(match, chr) {
+                return ' ' + chr.toUpperCase();
+            });
+            
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        },
+        getActiveTab: function(type, defaultValue, cssClass) {
+            return cssClass + ' ' + (type == defaultValue ? 'active' : '');
         }
     }
 });
