@@ -124,8 +124,8 @@ new Vue({
                     }
                 });
                 
-                that.widgetTypes = types;
-                that.searchModules = models;
+                that.widgetTypes = types.sort();
+                that.searchModules = models.sort();
             });
         },
         addItem: function(item) {
