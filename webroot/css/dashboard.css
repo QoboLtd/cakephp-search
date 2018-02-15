@@ -78,7 +78,7 @@
     color: #555 !important;
     height: auto !important;
 }
-.nav-stacked>li.active>a {
+.nav-stacked .active a {
     background-color: #3c8dbc !important;
     color: #FFF !important;
 }
