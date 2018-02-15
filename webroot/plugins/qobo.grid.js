@@ -25,6 +25,11 @@ new Vue({
     mounted: function() {
         this.index = this.layout.length;
     },
+    beforeUpdate: function() {
+        this.$nextTick(function() {
+            this.adjustBoxesHeight();
+        });     
+    },
     watch: {
         // save all the visible options into dashboard var
         layout: {
@@ -175,6 +180,15 @@ new Vue({
         },
         getActiveTab: function(type, defaultValue, cssClass) {
             return cssClass + ' ' + (type == defaultValue ? 'active' : '');
+        },
+        adjustBoxesHeight: function()
+        {
+            var maxHeight = Math.max.apply(null, $("div.available-widget").map(function ()
+            {
+                return $(this).height();
+            }).get());
+            
+            $("div.available-widget").height(maxHeight + 5);
         }
     }
 });

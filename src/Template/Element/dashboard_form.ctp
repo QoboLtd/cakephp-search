@@ -46,7 +46,7 @@
             <div class="row">
                 <div class="col-md-2">
                     <ul class="nav nav-tabs nav-stacked">
-                        <li v-for="type in widgetTypes" v-bind:class="getActiveTab(type, widgetTypes[0], '')">
+                        <li v-for="type in widgetTypes" v-bind:class="getActiveTab(type, widgetTypes[0], '')" class="widget-tab">
                             <a :href="'#' + type" data-toggle="tab">{{camelize(type)}}</a>
                         </li>
                     </ul>
@@ -58,14 +58,14 @@
                             <div class="box-body">
                                  <ul class="nav nav-tabs" v-if="type == 'saved_search'">
                                     <li v-for="model in searchModules" v-bind:class="getActiveTab(model, searchModules[0], '')">
-                                        <a :href="'#' + model" data-toggle="tab" style="">{{camelize(model)}}</a>
+                                        <a :href="'#' + model" data-toggle="tab">{{camelize(model)}}</a>
                                     </li>
                                 </ul>  
                                 <div class="tab-content" v-if="type == 'saved_search'">                    
                                     <div role="tabpanel"  v-bind:class="getActiveTab(model, searchModules[0], 'tab-pane')" v-for="model in searchModules" :id="model">
                                         <ul class="droppable-area">
                                             <li class="col-lg-3 col-xs-6" v-for="item in elements" v-if="item.type == type && item.data.model == model">
-                                                <div class="box box-solid" v-bind:class="getElementBackground(item)">
+                                                <div class="box box-solid available-widgets" v-bind:class="getElementBackground(item)">
                                                     <div class='box-header with-border'>
                                                         <h3 class="box-title"><i class="fa" v-bind:class="getElementIcon(item)"></i> {{item.data.model}}</h3>
                                                         <div class="box-tools">
@@ -82,7 +82,7 @@
                                 </div>    
                                 <ul class="droppable-area" v-if="type != 'saved_search'">
                                     <li class="col-lg-3 col-xs-6" v-for="item in elements" v-if="item.type == type">
-                                        <div class="box box-solid" v-bind:class="getElementBackground(item)">
+                                        <div class="box box-solid available-widget" v-bind:class="getElementBackground(item)">
                                             <div class='box-header with-border'>
                                                 <h3 class="box-title"><i class="fa" v-bind:class="getElementIcon(item)"></i> {{item.data.model}}</h3>
                                                 <div class="box-tools">
