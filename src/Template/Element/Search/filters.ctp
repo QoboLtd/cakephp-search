@@ -30,7 +30,7 @@ if (!empty($searchData['criteria'])) {
     );
 }
 ?>
-<div class="box box-solid">
+<div class="box box-primary">
     <div class="box-body">
         <?= $this->Form->create(null, [
             'id' => 'SearchFilterForm',
