@@ -48,7 +48,7 @@ echo $this->Html->scriptBlock(
 <section class="content">
     <div class="row">
         <div class="col-xs-12 col-md-8 col-lg-4">
-            <div class="box box-solid no-padding">
+            <div class="box box-primary no-padding">
                 <div class="box-body">
                     <!-- Apply any bg-* class to to the info-box to color it -->
                     <div id="search-export-report" class="info-box bg-blue">

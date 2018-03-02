@@ -31,7 +31,7 @@ echo $this->Html->script('Search./plugins/qobo.grid', ['block' => 'scriptBottom'
 </section>
 <section class="content">
     <?= $this->Form->create($dashboard, ['id' => 'dashboardForm']) ?>
-    <div class="box box-solid">
+    <div class="box box-primary">
         <div class="box-body">
             <div class="row">
                 <div class="col-xs-12 col-md-6">

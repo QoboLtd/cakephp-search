@@ -38,7 +38,7 @@ if ($isBatch) {
 
 echo $cakeView->Html->scriptBlock('new DataTablesInit(' . json_encode($dtOptions) . ');', ['block' => 'scriptBottom']);
 ?>
-<div class="box box-solid">
+<div class="box box-primary">
     <div class="box-header">
         <h3 class="box-title"><?= $this->Html->link($viewOptions['title'], $viewOptions['url']) ?></h3>
         <div class="box-tools pull-right">
