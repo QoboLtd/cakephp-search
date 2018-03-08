@@ -130,10 +130,10 @@ var search = search || {};
      * @param  {string}    field       field name
      * @param  {object}    properties  field properties
      * @param  {string}    value       field value
-     * @param  {string}    setOperator field set operator
+     * @param  {string}    operator    field operator
      * @return {undefined}
      */
-    Search.prototype._generateField = function (field, properties, value, setOperator) {
+    Search.prototype._generateField = function (field, properties, value, operator) {
         var timestamp = Math.round(1000000 * Math.random());
 
         var inputHtml = this.fieldInputHtml;
@@ -141,7 +141,7 @@ var search = search || {};
         inputHtml = inputHtml.replace('{{fieldLabel}}', this._generateFieldLabel(field, properties.label));
         inputHtml = inputHtml.replace(
             '{{fieldOperator}}',
-            this._generateSearchOperator(field, properties.operators, timestamp, setOperator)
+            this._generateSearchOperator(field, properties.operators, timestamp, operator)
         );
         inputHtml = inputHtml.replace(
             '{{fieldInput}}',
