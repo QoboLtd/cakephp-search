@@ -263,6 +263,16 @@ var search = search || {};
     Search.prototype._handleSpecialInputs = function (element, value) {
         var html = $(element);
 
+        // handle select2 inputs
+        if (0 < $(html).find('select[data-type="select2"]').length) {
+            value = Array === value.constructor ? value : [value];
+            value.forEach(function (val) {
+                $(html).find('select').append('<option value="' + val + '" selected="selected"></option>');
+            });
+
+            return html.get(0).outerHTML;
+        }
+
         // handle select element
         var has_select = $(html).find('select');
         if (html.is('select') || 0 < has_select.length) {
