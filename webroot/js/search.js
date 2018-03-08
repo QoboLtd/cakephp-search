@@ -14,10 +14,16 @@ var search = search || {};
         this.fieldProperties = {};
         this.fieldTypeOperators = {};
         this.associationLabels = {};
-        this.deleteBtnHtml = '<div class="input-sm">' +
-            '<a href="#" class="search-field-remover">' +
+        this.filterButtonsHtml = '<div class="input-sm">' +
+            '<a href="#" data-action="delete">' +
                 '<span class="glyphicon glyphicon-minus"></span>' +
             '</a>' +
+            '&emsp;' +
+            '<a href="#" data-action="clone" data-options={{options}}>' +
+                '<span class="glyphicon glyphicon-plus"></span>' +
+            '</a>' +
+        '</div>';
+        this.duplicateBtnHtml = '<div class="input-sm">' +
         '</div>';
         this.operatorSelectHtml = '<select ' +
             'name="criteria[{{field}}][{{timestamp}}][operator]" ' +
@@ -36,7 +42,7 @@ var search = search || {};
                 '<div class="col-xs-12 col-md-3 col-lg-2">{{fieldLabel}}</div>' +
                 '<div class="col-xs-4 col-md-2 col-lg-3">{{fieldOperator}}</div>' +
                 '<div class="col-xs-6 col-md-5 col-lg-4">{{fieldInput}}</div>' +
-                '<div class="col-xs-2 col-lg-1">{{deleteButton}}</div>' +
+                '<div class="col-xs-2">{{filterButtons}}</div>' +
             '</div>' +
         '</div>';
     }
@@ -48,6 +54,7 @@ var search = search || {};
      */
     Search.prototype.init = function () {
         this._onfieldSelect();
+        this._onFilterButtonsClick();
     };
 
     /**
@@ -120,14 +127,30 @@ var search = search || {};
     };
 
     /**
-     * Remove button click logic.
+     * Filter input buttons on-click logic.
      *
      * @return {undefined}
      */
-    Search.prototype._onRemoveBtnClick = function () {
-        $(this.formId).on('click', 'a.search-field-remover', function (event) {
+    Search.prototype._onFilterButtonsClick = function () {
+        var that = this;
+
+        $(this.formId).on('click', 'a[data-action="delete"]', function (event) {
             event.preventDefault();
+
             $(this).parents('.search-field-wrapper').remove();
+        });
+
+        $(this.formId).on('click', 'a[data-action="clone"]', function (event) {
+            event.preventDefault();
+
+            $(this).parents('.search-field-wrapper').after(
+                that._generateField(
+                    $(this).data('options').field,
+                    that.fieldProperties[$(this).data('options').field],
+                    $(this).data('options').value,
+                    $(this).data('options').operator
+                )
+            );
         });
     };
 
@@ -162,10 +185,15 @@ var search = search || {};
             '{{fieldInput}}',
             this._generateFieldInput(field, properties.input, timestamp, value)
         );
-        inputHtml = inputHtml.replace('{{deleteButton}}', this.deleteBtnHtml);
 
-
-        this._onRemoveBtnClick();
+        // add buttons
+        inputHtml = inputHtml.replace(
+            '{{filterButtons}}',
+            this.filterButtonsHtml.replace(
+                '{{options}}',
+                "\'" + JSON.stringify({field, value, operator}) + "\'"
+            )
+        );
 
         return inputHtml;
     };
