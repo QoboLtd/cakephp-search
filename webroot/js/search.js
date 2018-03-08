@@ -147,7 +147,7 @@ var search = search || {};
             '{{fieldInput}}',
             this._generateFieldInput(field, properties.input, timestamp, value)
         );
-        inputHtml = inputHtml.replace('{{deleteButton}}', this._generateDeleteButton());
+        inputHtml = inputHtml.replace('{{deleteButton}}', this.deleteBtnHtml);
 
         $(this.formId + ' fieldset').append(inputHtml);
 
@@ -304,17 +304,6 @@ var search = search || {};
         }
 
         return element;
-    };
-
-    /**
-     * Generates and returns field delete button html.
-     *
-     * @return {string}
-     */
-    Search.prototype._generateDeleteButton = function () {
-        var button = this.deleteBtnHtml;
-
-        return button;
     };
 
     search = new Search({
