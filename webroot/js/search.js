@@ -14,10 +14,16 @@ var search = search || {};
         this.fieldProperties = {};
         this.fieldTypeOperators = {};
         this.associationLabels = {};
-        this.deleteBtnHtml = '<div class="input-sm">' +
-            '<a href="#" class="search-field-remover">' +
+        this.filterButtonsHtml = '<div class="input-sm">' +
+            '<a href="#" data-action="delete">' +
                 '<span class="glyphicon glyphicon-minus"></span>' +
             '</a>' +
+            '&emsp;' +
+            '<a href="#" data-action="clone" data-options={{options}}>' +
+                '<span class="glyphicon glyphicon-plus"></span>' +
+            '</a>' +
+        '</div>';
+        this.duplicateBtnHtml = '<div class="input-sm">' +
         '</div>';
         this.operatorSelectHtml = '<select ' +
             'name="criteria[{{field}}][{{timestamp}}][operator]" ' +
@@ -36,7 +42,7 @@ var search = search || {};
                 '<div class="col-xs-12 col-md-3 col-lg-2">{{fieldLabel}}</div>' +
                 '<div class="col-xs-4 col-md-2 col-lg-3">{{fieldOperator}}</div>' +
                 '<div class="col-xs-6 col-md-5 col-lg-4">{{fieldInput}}</div>' +
-                '<div class="col-xs-2 col-lg-1">{{deleteButton}}</div>' +
+                '<div class="col-xs-2">{{filterButtons}}</div>' +
             '</div>' +
         '</div>';
     }
@@ -48,6 +54,7 @@ var search = search || {};
      */
     Search.prototype.init = function () {
         this._onfieldSelect();
+        this._onFilterButtonsClick();
     };
 
     /**
@@ -64,7 +71,10 @@ var search = search || {};
                     return;
                 }
                 $.each(v, function (i, j) {
-                    that._generateField(k, that.fieldProperties[k], j.value, j.operator);
+                    // append to search form
+                    $(that.formId + ' fieldset').append(
+                        that._generateField(k, that.fieldProperties[k], j.value, j.operator)
+                    );
                 });
             });
         }
@@ -106,21 +116,41 @@ var search = search || {};
         var that = this;
         $(this.addFieldId).change(function () {
             if ('' !== this.value) {
-                that._generateField(this.value, that.fieldProperties[this.value]);
+                // append to search form
+                $(that.formId + ' fieldset').append(
+                    that._generateField(this.value, that.fieldProperties[this.value])
+                );
+
                 this.value = '';
             }
         });
     };
 
     /**
-     * Remove button click logic.
+     * Filter input buttons on-click logic.
      *
      * @return {undefined}
      */
-    Search.prototype._onRemoveBtnClick = function () {
-        $(this.formId).on('click', 'a.search-field-remover', function (event) {
+    Search.prototype._onFilterButtonsClick = function () {
+        var that = this;
+
+        $(this.formId).on('click', 'a[data-action="delete"]', function (event) {
             event.preventDefault();
+
             $(this).parents('.search-field-wrapper').remove();
+        });
+
+        $(this.formId).on('click', 'a[data-action="clone"]', function (event) {
+            event.preventDefault();
+
+            $(this).parents('.search-field-wrapper').after(
+                that._generateField(
+                    $(this).data('options').field,
+                    that.fieldProperties[$(this).data('options').field],
+                    $(this).data('options').value,
+                    $(this).data('options').operator
+                )
+            );
         });
     };
 
@@ -130,28 +160,42 @@ var search = search || {};
      * @param  {string}    field       field name
      * @param  {object}    properties  field properties
      * @param  {string}    value       field value
-     * @param  {string}    setOperator field set operator
+     * @param  {string}    operator    field operator
      * @return {undefined}
      */
-    Search.prototype._generateField = function (field, properties, value, setOperator) {
+    Search.prototype._generateField = function (field, properties, value, operator) {
         var timestamp = Math.round(1000000 * Math.random());
 
         var inputHtml = this.fieldInputHtml;
+
+        // add hidden input with field type as value
         inputHtml = inputHtml.replace('{{fieldType}}', this._generateFieldType(field, properties.type, timestamp));
+
+        // add label
         inputHtml = inputHtml.replace('{{fieldLabel}}', this._generateFieldLabel(field, properties.label));
+
+        // add operators
         inputHtml = inputHtml.replace(
             '{{fieldOperator}}',
-            this._generateSearchOperator(field, properties.operators, timestamp, setOperator)
+            this._generateSearchOperator(field, properties.operators, timestamp, operator)
         );
+
+        // add input
         inputHtml = inputHtml.replace(
             '{{fieldInput}}',
             this._generateFieldInput(field, properties.input, timestamp, value)
         );
-        inputHtml = inputHtml.replace('{{deleteButton}}', this._generateDeleteButton());
 
-        $(this.formId + ' fieldset').append(inputHtml);
+        // add buttons
+        inputHtml = inputHtml.replace(
+            '{{filterButtons}}',
+            this.filterButtonsHtml.replace(
+                '{{options}}',
+                "\'" + JSON.stringify({field, value, operator}) + "\'"
+            )
+        );
 
-        this._onRemoveBtnClick();
+        return inputHtml;
     };
 
     /**
@@ -304,17 +348,6 @@ var search = search || {};
         }
 
         return element;
-    };
-
-    /**
-     * Generates and returns field delete button html.
-     *
-     * @return {string}
-     */
-    Search.prototype._generateDeleteButton = function () {
-        var button = this.deleteBtnHtml;
-
-        return button;
     };
 
     search = new Search({
