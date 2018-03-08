@@ -144,12 +144,20 @@ var search = search || {};
         var timestamp = Math.round(1000000 * Math.random());
 
         var inputHtml = this.fieldInputHtml;
+
+        // add hidden input with field type as value
         inputHtml = inputHtml.replace('{{fieldType}}', this._generateFieldType(field, properties.type, timestamp));
+
+        // add label
         inputHtml = inputHtml.replace('{{fieldLabel}}', this._generateFieldLabel(field, properties.label));
+
+        // add operators
         inputHtml = inputHtml.replace(
             '{{fieldOperator}}',
             this._generateSearchOperator(field, properties.operators, timestamp, operator)
         );
+
+        // add input
         inputHtml = inputHtml.replace(
             '{{fieldInput}}',
             this._generateFieldInput(field, properties.input, timestamp, value)
