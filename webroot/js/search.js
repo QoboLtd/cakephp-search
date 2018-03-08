@@ -64,7 +64,10 @@ var search = search || {};
                     return;
                 }
                 $.each(v, function (i, j) {
-                    that._generateField(k, that.fieldProperties[k], j.value, j.operator);
+                    // append to search form
+                    $(that.formId + ' fieldset').append(
+                        that._generateField(k, that.fieldProperties[k], j.value, j.operator)
+                    );
                 });
             });
         }
@@ -106,7 +109,11 @@ var search = search || {};
         var that = this;
         $(this.addFieldId).change(function () {
             if ('' !== this.value) {
-                that._generateField(this.value, that.fieldProperties[this.value]);
+                // append to search form
+                $(that.formId + ' fieldset').append(
+                    that._generateField(this.value, that.fieldProperties[this.value])
+                );
+
                 this.value = '';
             }
         });
@@ -149,9 +156,10 @@ var search = search || {};
         );
         inputHtml = inputHtml.replace('{{deleteButton}}', this.deleteBtnHtml);
 
-        $(this.formId + ' fieldset').append(inputHtml);
 
         this._onRemoveBtnClick();
+
+        return inputHtml;
     };
 
     /**
