@@ -120,7 +120,7 @@ new Vue({
             let element = {
                 x: 0,
                 y: this.getLastRow(),
-                w: 2,
+                w: 6,
                 h: 2,
                 i: this.getUniqueId(),
                 draggable: true,
