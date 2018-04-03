@@ -35,5 +35,4 @@ class GridWidget extends ReportWidget
      * {@inheritDoc}
      */
     protected $color = 'primary';
-
 }
