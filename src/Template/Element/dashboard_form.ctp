@@ -25,7 +25,7 @@
                                    v-bind:class="getElementBackground(item)"
                         >
                             <div class='box-header with-border'>
-                                <h3 class="box-title"><i class="fa" v-bind:class="getElementIcon(item)"></i> {{item.data.model}}</h3>
+                                <h3 class="box-title"><i class="fa" v-bind:class="getElementIcon(item)"></i> {{item.title}}</h3>
                                 <div class="box-tools">
                                     <div class="btn btn-box-tool"><a href="#" @click="removeItem(item)"><i class='fa fa-minus-circle'></i></a></div>
                                 </div>

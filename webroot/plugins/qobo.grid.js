@@ -57,44 +57,27 @@ new Vue({
         }
     },
     methods: {
-        getElementBackground: function(item) {
-            let colorClass = 'box-info';
+        getElementBackground: function (item) {
+            let colorClass = 'info';
 
-            if (!item.hasOwnProperty('type')) {
-                return colorClass;
+            if (item.hasOwnProperty('color')) {
+                 colorClass = item.color;
             }
 
-            switch(item.type) {
-                case 'report':
-                    colorClass = 'box-success';
-                    break;
-                case 'app':
-                    colorClass = 'box-warning';
-                    break;
-                case 'saved_search':
-                    colorClass = 'box-info';
-                    break;
-            }
-
-            return colorClass;
+            return 'box-' + colorClass;
         },
-        getElementIcon: function(item) {
-            let className = 'fa-table';
-            
-            if (!item.hasOwnProperty('type')) {
-                return className;
+        getElementIcon: function (item) {
+            let className = 'cube';
+            if ('saved_search' === item.type) {
+                console.log(item.data.name);
+                console.log(item.icon);
             }
 
-            switch(item.type) {
-                case 'report':
-                    className = 'fa-pie-chart';
-                    break;
-                case 'app':
-                    className = 'fa-cube';
-                    break;
+            if (item.hasOwnProperty('icon')) {
+                 className = item.icon;
             }
 
-            return className;
+            return 'fa-' + className;
         },
         getLayoutElements: function() {
             let gridLayout = [];
