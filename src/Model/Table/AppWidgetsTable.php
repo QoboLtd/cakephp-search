@@ -142,12 +142,8 @@ class AppWidgetsTable extends Table
             $this->save($entity);
         }
 
-        if (empty($found)) {
-            return;
-        }
-
         // soft delete non-existing app widgets
-        $this->trashAll(['AppWidgets.name NOT IN' => $found]);
+        $this->trashAll(! empty($found) ? ['AppWidgets.name NOT IN' => $found] : []);
     }
 
     /**
