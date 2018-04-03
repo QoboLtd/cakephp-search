@@ -23,6 +23,7 @@ use Cake\Utility\Inflector;
 use Cake\Utility\Text;
 use Cake\Validation\Validator;
 use Search\Event\EventName;
+use Search\Widgets\WidgetFactory;
 
 /**
  * Widgets Model
@@ -130,23 +131,26 @@ class WidgetsTable extends Table
         $event = new Event((string)EventName::MODEL_DASHBOARDS_GET_WIDGETS(), $this);
         $this->eventManager()->dispatch($event);
 
-        $widgets = !empty($event->result) ? $event->result : [];
-
-        if (empty($widgets)) {
+        if (empty($event->result)) {
             return [];
         }
 
-        //assembling all widgets in one
+        // assembling all widgets in one
         $result = [];
-        foreach ($widgets as $k => $widgetsGroup) {
-            if (empty($widgetsGroup['data'])) {
+        foreach ((array)$event->result as $widget) {
+            if (empty($widget['data'])) {
                 continue;
             }
 
-            foreach ($widgetsGroup['data'] as $widget) {
+            $instance = WidgetFactory::create($widget['type']);
+
+            foreach ($widget['data'] as $data) {
                 array_push($result, [
-                    'type' => $widgetsGroup['type'],
-                    'data' => $widget
+                    'type' => $widget['type'],
+                    'title' => $instance->getTitle(),
+                    'icon' => $instance->getIcon(),
+                    'color' => $instance->getColor(),
+                    'data' => $data
                 ]);
             }
         }
