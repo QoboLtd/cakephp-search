@@ -169,25 +169,30 @@ class WidgetsTable extends Table
      */
     public function getWidgetOptions(Widget $entity, array $options = [])
     {
-        $result = [];
+        $widget = WidgetFactory::create($entity->get('widget_type'));
 
-        if (!empty($widget['widget_options'])) {
-            $result = json_decode($widget['widget_options'], true);
+        $defaults = [
+            'title' => $widget->getTitle(),
+            'icon' => $widget->getIcon(),
+            'color' => $widget->getColor()
+        ];
 
-            return $result;
+        if ($entity->get('widget_options')) {
+            return array_merge(
+                $defaults,
+                json_decode($entity->get('widget_options'), true)
+            );
         }
 
-        $sequence = !empty($options['sequence']) ? $options['sequence'] : 0;
-
-        $result['i'] = "$sequence";
-        $result['x'] = ($widget['row'] > 0) ? 6 : 0;
-        $result['y'] = $sequence;
-        $result['h'] = 3;
-        $result['w'] = 6;
-        $result['id'] = $widget['id'];
-        $result['type'] = !empty($widget['widget_type']) ? $widget['widget_type'] : $widget['data']['type'];
-
-        return $result;
+        return array_merge($defaults, [
+            'i' => (string)(empty($options['sequence']) ? 0 : $options['sequence']),
+            'x' => ($entity->get('row') > 0) ? 6 : 0,
+            'y' => empty($options['sequence']) ? 0 : $options['sequence'],
+            'h' => 3,
+            'w' => 6,
+            'id' => $entity->get('id'),
+            'type' => $entity->get('widget_type')
+        ]);
     }
 
     /**
