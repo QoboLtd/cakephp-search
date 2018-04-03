@@ -23,6 +23,7 @@ use Cake\Utility\Inflector;
 use Cake\Utility\Text;
 use Cake\Validation\Validator;
 use Search\Event\EventName;
+use Search\Model\Entity\Widget;
 use Search\Widgets\WidgetFactory;
 
 /**
@@ -159,14 +160,14 @@ class WidgetsTable extends Table
     }
 
     /**
-     * getWidgetPosition method
+     * getWidgetOptions method
      *
-     * @param mixed $widget array
-     * @param array $options with extra configs
+     * @param \Search\Model\Entity\Widget $entity Widget entity
+     * @param array $options Optional extra configuration
      *
      * @return array $options
      */
-    public function getWidgetPosition($widget = null, $options = [])
+    public function getWidgetOptions(Widget $entity, array $options = [])
     {
         $result = [];
 
