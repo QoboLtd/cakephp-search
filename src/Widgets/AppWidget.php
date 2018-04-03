@@ -37,6 +37,21 @@ class AppWidget extends BaseWidget
     public $errors = [];
 
     /**
+     * {@inheritDoc}
+     */
+    protected $title = 'App';
+
+    /**
+     * {@inheritDoc}
+     */
+    protected $icon = 'gears';
+
+    /**
+     * {@inheritDoc}
+     */
+    protected $color = 'danger';
+
+    /**
      * Constructor method.
      *
      * @param array $options containing widget entity.

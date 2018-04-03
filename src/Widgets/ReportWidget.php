@@ -26,6 +26,21 @@ class ReportWidget extends BaseWidget
     const WIDGET_REPORT_SUFFIX = 'ReportWidget';
 
     /**
+     * {@inheritDoc}
+     */
+    protected $title = 'Report';
+
+    /**
+     * {@inheritDoc}
+     */
+    protected $icon = 'area-chart';
+
+    /**
+     * {@inheritDoc}
+     */
+    protected $color = 'primary';
+
+    /**
      * @return array $report configuration.
      */
     public function getConfig()

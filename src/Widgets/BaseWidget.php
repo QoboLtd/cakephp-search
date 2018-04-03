@@ -22,6 +22,27 @@ abstract class BaseWidget implements WidgetInterface
     public $containerId = 'default-widget-container';
 
     /**
+     * Widget's title.
+     *
+     * @var string
+     */
+    protected $title = 'App';
+
+    /**
+     * Widget's icon.
+     *
+     * @var string
+     */
+    protected $icon = 'cube';
+
+    /**
+     * Widget's color.
+     *
+     * @var string
+     */
+    protected $color = 'warning';
+
+    /**
      * getType method
      *
      * Widget $type specifies the type of handler
@@ -54,5 +75,29 @@ abstract class BaseWidget implements WidgetInterface
     public function getContainerId()
     {
         return $this->containerId;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getIcon()
+    {
+        return $this->icon;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getColor()
+    {
+        return $this->color;
     }
 }
