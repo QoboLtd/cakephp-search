@@ -114,6 +114,9 @@ class WidgetsTableTest extends TestCase
 
         $data = [
             'type' => 'report',
+            'title' => 'Report',
+            'icon' => 'area-chart',
+            'color' => 'primary',
             'data' => [
                 'id' => '00000000-0000-0000-0000-000000000002',
                 'model' => 'Bar',
@@ -141,6 +144,9 @@ class WidgetsTableTest extends TestCase
 
         $data = [
             'type' => 'app',
+            'title' => 'App',
+            'icon' => 'gears',
+            'color' => 'danger',
             'data' => [
                 'id' => '00000000-0000-0000-0000-000000000001',
                 'model' => 'AppWidgets',
