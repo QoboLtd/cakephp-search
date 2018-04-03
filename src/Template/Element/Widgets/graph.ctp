@@ -15,8 +15,9 @@ $data = $widget->getData();
 $type = $widget->getType();
 ?>
 <div class='dashboard-widget-display_config'>
-    <div class="box box-default">
+    <div class="box box-<?= $widget->getColor() ?>">
         <div class="box-header with-border">
+            <i class="fa fa-<?= $widget->getIcon() ?>" aria-hidden="true"></i>
             <h3 class="box-title"><?= $config['info']['name'] ?></h3>
             <div class="box-tools pull-right">
                 <button type="button" class="btn btn-box-tool" data-widget="collapse">

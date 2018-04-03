@@ -11,6 +11,10 @@
  */
 
 use Cake\Utility\Inflector;
+use Qobo\Utils\ModuleConfig\ConfigType;
+use Qobo\Utils\ModuleConfig\ModuleConfig;
+
+$config = (new ModuleConfig(ConfigType::MODULE(), $viewOptions['url']['controller']))->parse();
 
 echo $cakeView->Html->css(
     [
@@ -73,7 +77,13 @@ echo $cakeView->Html->scriptBlock('new DataTablesInit(' . json_encode($dtOptions
             </li>
         <?php endforeach; ?>
     <?php endif; ?>
-        <li class="pull-left header"><?= $this->Html->link($viewOptions['title'], $viewOptions['url']) ?></li>
+        <li class="pull-left header">
+            <?= $this->Html->link(
+                sprintf('<i class="fa fa-%s"></i> %s', $config->table->icon, $viewOptions['title']),
+                $viewOptions['url'],
+                ['escape' => false, 'style' => 'padding:0;']
+            ) ?>
+        </li>
     </ul>
     <div class="tab-content">
         <div id="table_<?= $tableOptions['id'] ?>" class="tab-pane <?= ! $isGroup ? 'active' : '' ?>">
