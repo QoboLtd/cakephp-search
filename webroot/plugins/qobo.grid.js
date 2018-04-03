@@ -68,10 +68,6 @@ new Vue({
         },
         getElementIcon: function (item) {
             let className = 'cube';
-            if ('saved_search' === item.type) {
-                console.log(item.data.name);
-                console.log(item.icon);
-            }
 
             if (item.hasOwnProperty('icon')) {
                  className = item.icon;
