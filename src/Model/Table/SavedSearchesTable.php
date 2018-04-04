@@ -66,17 +66,8 @@ class SavedSearchesTable extends Table
             ->allowEmpty('name', 'create');
 
         $validator
-            ->requirePresence('type', 'create')
-            ->notEmpty('type', 'update')
-            ->allowEmpty('name', 'create');
-
-        $validator
             ->requirePresence('model', 'create')
             ->notEmpty('model');
-
-        $validator
-            ->requirePresence('shared', 'create')
-            ->notEmpty('shared');
 
         $validator
             ->requirePresence('content', 'create')

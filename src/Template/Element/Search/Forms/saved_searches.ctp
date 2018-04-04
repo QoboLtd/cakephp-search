@@ -14,9 +14,6 @@ echo $this->Html->script('Search.saved_searches', ['block' => 'scriptBottom']);
 
 $selectOptions = [];
 foreach ($savedSearches as $savedSearch) {
-    if ('criteria' !== $savedSearch->type) {
-        continue;
-    }
     // store select options
     $selectOptions[$savedSearch->id] = $savedSearch->name;
 

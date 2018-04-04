@@ -19,11 +19,6 @@ use Search\Event\EventName;
 class Options
 {
     /**
-     * Private shared status value
-     */
-    const SHARED_STATUS_PRIVATE = 'private';
-
-    /**
      * Default sql order by direction
      */
     const DEFAULT_SORT_BY_ORDER = 'desc';
