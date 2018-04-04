@@ -20,4 +20,19 @@ class GridWidget extends ReportWidget
 {
     public $renderElement = 'Search.Widgets/grid';
     public $options = [];
+
+    /**
+     * {@inheritDoc}
+     */
+    protected $title = 'Grid';
+
+    /**
+     * {@inheritDoc}
+     */
+    protected $icon = 'th';
+
+    /**
+     * {@inheritDoc}
+     */
+    protected $color = 'primary';
 }

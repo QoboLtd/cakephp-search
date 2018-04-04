@@ -23,6 +23,8 @@ use Cake\Utility\Inflector;
 use Cake\Utility\Text;
 use Cake\Validation\Validator;
 use Search\Event\EventName;
+use Search\Model\Entity\Widget;
+use Search\Widgets\WidgetFactory;
 
 /**
  * Widgets Model
@@ -130,23 +132,26 @@ class WidgetsTable extends Table
         $event = new Event((string)EventName::MODEL_DASHBOARDS_GET_WIDGETS(), $this);
         $this->eventManager()->dispatch($event);
 
-        $widgets = !empty($event->result) ? $event->result : [];
-
-        if (empty($widgets)) {
+        if (empty($event->result)) {
             return [];
         }
 
-        //assembling all widgets in one
+        // assembling all widgets in one
         $result = [];
-        foreach ($widgets as $k => $widgetsGroup) {
-            if (empty($widgetsGroup['data'])) {
+        foreach ((array)$event->result as $widget) {
+            if (empty($widget['data'])) {
                 continue;
             }
 
-            foreach ($widgetsGroup['data'] as $widget) {
+            $instance = WidgetFactory::create($widget['type']);
+
+            foreach ($widget['data'] as $data) {
                 array_push($result, [
-                    'type' => $widgetsGroup['type'],
-                    'data' => $widget
+                    'type' => $widget['type'],
+                    'title' => $instance->getTitle(),
+                    'icon' => $instance->getIcon(),
+                    'color' => $instance->getColor(),
+                    'data' => $data
                 ]);
             }
         }
@@ -155,34 +160,39 @@ class WidgetsTable extends Table
     }
 
     /**
-     * getWidgetPosition method
+     * getWidgetOptions method
      *
-     * @param mixed $widget array
-     * @param array $options with extra configs
+     * @param \Search\Model\Entity\Widget $entity Widget entity
+     * @param array $options Optional extra configuration
      *
      * @return array $options
      */
-    public function getWidgetPosition($widget = null, $options = [])
+    public function getWidgetOptions(Widget $entity, array $options = [])
     {
-        $result = [];
+        $widget = WidgetFactory::create($entity->get('widget_type'));
 
-        if (!empty($widget['widget_options'])) {
-            $result = json_decode($widget['widget_options'], true);
+        $defaults = [
+            'title' => $widget->getTitle(),
+            'icon' => $widget->getIcon(),
+            'color' => $widget->getColor()
+        ];
 
-            return $result;
+        if ($entity->get('widget_options')) {
+            return array_merge(
+                $defaults,
+                json_decode($entity->get('widget_options'), true)
+            );
         }
 
-        $sequence = !empty($options['sequence']) ? $options['sequence'] : 0;
-
-        $result['i'] = "$sequence";
-        $result['x'] = ($widget['row'] > 0) ? 6 : 0;
-        $result['y'] = $sequence;
-        $result['h'] = 3;
-        $result['w'] = 6;
-        $result['id'] = $widget['id'];
-        $result['type'] = !empty($widget['widget_type']) ? $widget['widget_type'] : $widget['data']['type'];
-
-        return $result;
+        return array_merge($defaults, [
+            'i' => (string)(empty($options['sequence']) ? 0 : $options['sequence']),
+            'x' => ($entity->get('row') > 0) ? 6 : 0,
+            'y' => empty($options['sequence']) ? 0 : $options['sequence'],
+            'h' => 3,
+            'w' => 6,
+            'id' => $entity->get('id'),
+            'type' => $entity->get('widget_type')
+        ]);
     }
 
     /**

@@ -40,40 +40,14 @@ class WidgetsListener implements EventListenerInterface
      */
     public function getWidgets(Event $event)
     {
-        $result = !empty($event->result) ? $event->result : [];
+        $result = array_merge(
+            (array)$event->result,
+            $this->getSavedSearchWidgets(),
+            $this->getReportWidgets(),
+            $this->getAppWidgets()
+        );
 
-        $savedSearches = $this->_getSavedSearches();
-        if (!empty($savedSearches)) {
-            array_push($result, ['type' => 'saved_search', 'data' => $savedSearches]);
-        }
-
-        $reports = $this->_getReports();
-        if (!empty($reports)) {
-            $graphs = [];
-            $grids = [];
-            foreach ($reports as $id => $info) {
-                if ($info['widget_type'] == 'grid') {
-                    $grids[$id] = $info;
-                } else {
-                    $graphs[$id] = $info;
-                }
-            }
-
-            if (!empty($grids)) {
-                array_push($result, ['type' => 'grid', 'data' => $grids]);
-            }
-
-            if (!empty($graphs)) {
-                array_push($result, ['type' => 'report', 'data' => $graphs]);
-            }
-        }
-
-        $appWidgets = $this->_getAppWidgets();
-        if (!empty($appWidgets)) {
-            array_push($result, ['type' => 'app', 'data' => $appWidgets]);
-        }
-
-        $event->result = $result;
+        $event->result = array_filter($result);
     }
 
     /**
@@ -81,7 +55,7 @@ class WidgetsListener implements EventListenerInterface
      *
      * @return array
      */
-    protected function _getSavedSearches()
+    private function getSavedSearchWidgets()
     {
         $table = TableRegistry::get('Search.SavedSearches');
 
@@ -94,16 +68,9 @@ class WidgetsListener implements EventListenerInterface
             return [];
         }
 
-        $result = $query->toArray();
-        foreach ($result as &$entity) {
-            $table = TableRegistry::get($entity['model']);
-            if (!method_exists($table, 'moduleAlias')) {
-                continue;
-            }
-            $entity['model'] = $table->moduleAlias();
-        }
-
-        return $result;
+        return [
+            ['type' => 'saved_search', 'data' => $query->toArray()]
+        ];
     }
 
     /**
@@ -111,7 +78,7 @@ class WidgetsListener implements EventListenerInterface
      *
      * @return array
      */
-    protected function _getReports()
+    private function getReportWidgets()
     {
         $event = new Event((string)EventName::MODEL_DASHBOARDS_GET_REPORTS(), $this);
         EventManager::instance()->dispatch($event);
@@ -121,13 +88,16 @@ class WidgetsListener implements EventListenerInterface
         }
 
         $result = [];
-        foreach ($event->result as $model => $reports) {
-            foreach ($reports as $reportSlug => $reportInfo) {
-                $result[$reportInfo['id']] = $reportInfo;
+        foreach ($event->result as $reports) {
+            foreach ($reports as $report) {
+                if (! isset($result[$report['widget_type']])) {
+                    $result[$report['widget_type']] = ['type' => $report['widget_type'], 'data' => []];
+                }
+                $result[$report['widget_type']]['data'][$report['id']] = $report;
             }
         }
 
-        return $result;
+        return array_values($result);
     }
 
     /**
@@ -135,26 +105,30 @@ class WidgetsListener implements EventListenerInterface
      *
      * @return array
      */
-    protected function _getAppWidgets()
+    private function getAppWidgets()
     {
         $table = TableRegistry::get('Search.AppWidgets');
 
-        $query = $table->find('all');
+        $query = $table->find('all')
+            ->select(['id', 'name', 'content']);
 
         if ($query->isEmpty()) {
             return [];
         }
 
-        $result = [];
-        foreach ($query->toArray() as $entity) {
-            $result[] = [
-                'id' => $entity->id,
-                'model' => $entity->content['model'],
-                'name' => $entity->name,
-                'path' => $entity->content['path']
+        $data = [];
+        // normalize app widget data
+        foreach ($query->all() as $entity) {
+            $data[] = [
+                'id' => $entity->get('id'),
+                'model' => $entity->get('content')['model'],
+                'name' => $entity->get('name'),
+                'path' => $entity->get('content')['path']
             ];
         }
 
-        return $result;
+        return [
+            ['type' => 'app', 'data' => $data]
+        ];
     }
 }

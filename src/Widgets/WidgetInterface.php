@@ -47,6 +47,27 @@ interface WidgetInterface
     public function getType();
 
     /**
+     * Widget's title getter.
+     *
+     * @return string
+     */
+    public function getTitle();
+
+    /**
+     * Widget's icon getter.
+     *
+     * @return string
+     */
+    public function getIcon();
+
+    /**
+     * Widget's color getter.
+     *
+     * @return string
+     */
+    public function getColor();
+
+    /**
      * getRenderElement
      * Returns the name of the render element
      * @return string $renderElement

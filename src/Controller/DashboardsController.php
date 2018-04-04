@@ -68,7 +68,7 @@ class DashboardsController extends AppController
         $widgets = [];
 
         foreach ($dashboard->widgets as $k => $item) {
-            $opts = $widgetsTable->getWidgetPosition($item); //, ['sequence' => $k]);
+            $opts = $widgetsTable->getWidgetOptions($item);
 
             $x = (int)$opts['x'];
             $y = (int)$opts['y'];
@@ -188,7 +188,7 @@ class DashboardsController extends AppController
                     continue;
                 }
 
-                $widgetOptions = $widgetsTable->getWidgetPosition($dw, ['sequence' => $sequence]);
+                $widgetOptions = $widgetsTable->getWidgetOptions($dw, ['sequence' => $sequence]);
 
                 $item = array_merge(
                     [

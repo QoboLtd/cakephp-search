@@ -17,28 +17,28 @@ new Vue({
         index:0,
         token: api_token // getting token from global variable into vue app.
     },
-    beforeMount: function() {
+    beforeMount: function () {
         this.getGridElements();
 
         this.getLayoutElements();
     },
-    mounted: function() {
+    mounted: function () {
         this.index = this.layout.length;
     },
-    beforeUpdate: function() {
-        this.$nextTick(function() {
+    beforeUpdate: function () {
+        this.$nextTick(function () {
             this.adjustBoxesHeight();
-        });     
+        });
     },
     watch: {
         // save all the visible options into dashboard var
         layout: {
-            handler: function() {
+            handler: function () {
                 var that = this;
                 this.dashboard = [];
 
-                if(this.layout.length > 0) {
-                    this.layout.forEach(function(element) {
+                if (this.layout.length > 0) {
+                    this.layout.forEach(function (element) {
                         that.dashboard.push({
                             i: element.i,
                             h: element.h,
@@ -57,46 +57,25 @@ new Vue({
         }
     },
     methods: {
-        getElementBackground: function(item) {
-            let colorClass = 'box-info';
+        getElementBackground: function (item) {
+            let colorClass = 'info';
 
-            if (!item.hasOwnProperty('type')) {
-                return colorClass;
+            if (item.hasOwnProperty('color')) {
+                 colorClass = item.color;
             }
 
-            switch(item.type) {
-                case 'report':
-                    colorClass = 'box-success';
-                    break;
-                case 'app':
-                    colorClass = 'box-warning';
-                    break;
-                case 'saved_search':
-                    colorClass = 'box-info';
-                    break;
-            }
-
-            return colorClass;
+            return 'box-' + colorClass;
         },
-        getElementIcon: function(item) {
-            let className = 'fa-table';
-            
-            if (!item.hasOwnProperty('type')) {
-                return className;
+        getElementIcon: function (item) {
+            let className = 'cube';
+
+            if (item.hasOwnProperty('icon')) {
+                 className = item.icon;
             }
 
-            switch(item.type) {
-                case 'report':
-                    className = 'fa-pie-chart';
-                    break;
-                case 'app':
-                    className = 'fa-cube';
-                    break;
-            }
-
-            return className;
+            return 'fa-' + className;
         },
-        getLayoutElements: function() {
+        getLayoutElements: function () {
             let gridLayout = [];
 
             if (typeof grid_layout !== undefined ) {
@@ -105,7 +84,7 @@ new Vue({
             }
 
         },
-        getGridElements: function() {
+        getGridElements: function () {
             var that = this;
             let types = [];
             let models = [];
@@ -116,28 +95,28 @@ new Vue({
                 headers: {
                     'Authorization': 'Bearer ' + this.token
                 }
-            }).then(function(response) {
+            }).then(function (response) {
                 that.elements = response;
-                
-                that.elements.forEach(function(element){
+
+                that.elements.forEach(function (element) {
                     if (!types.includes(element.type)) {
-                      types.push(element.type);
+                        types.push(element.type);
                     }
 
                     if (element.type == 'saved_search' && !models.includes(element.data.model)) {
                         models.push(element.data.model);
                     }
                 });
-                
+
                 that.widgetTypes = types.sort();
                 that.searchModules = models.sort();
             });
         },
-        addItem: function(item) {
+        addItem: function (item) {
             let element = {
                 x: 0,
                 y: this.getLastRow(),
-                w: 2,
+                w: 6,
                 h: 2,
                 i: this.getUniqueId(),
                 draggable: true,
@@ -147,22 +126,22 @@ new Vue({
             this.layout.push(layoutElement);
             this.index = this.layout.length;
         },
-        removeItem: function(item) {
+        removeItem: function (item) {
             this.layout.splice(this.layout.indexOf(item), 1);
             this.index = this.layout.index;
         },
-        getUniqueId: function() {
+        getUniqueId: function () {
             return '_' + Math.random().toString(36).substr(2, 9);
         },
-        getLastRow: function() {
+        getLastRow: function () {
             let last = 0;
 
             if (!this.layout.length) {
                 return last;
             }
 
-            this.layout.forEach(function(element) {
-                if(element.y >= last) {
+            this.layout.forEach(function (element) {
+                if (element.y >= last) {
                     last = element.y;
                 }
             });
@@ -171,23 +150,21 @@ new Vue({
 
             return last;
         },
-        camelize: function(str) {
-            str = str.replace(/(?:\_|\W)(.)/g, function(match, chr) {
+        camelize: function (str) {
+            str = str.replace(/(?:\_|\W)(.)/g, function (match, chr) {
                 return ' ' + chr.toUpperCase();
             });
-            
+
             return str.charAt(0).toUpperCase() + str.slice(1);
         },
-        getActiveTab: function(type, defaultValue, cssClass) {
+        getActiveTab: function (type, defaultValue, cssClass) {
             return cssClass + ' ' + (type == defaultValue ? 'active' : '');
         },
-        adjustBoxesHeight: function()
-        {
-            var maxHeight = Math.max.apply(null, $("div.available-widget").map(function ()
-            {
+        adjustBoxesHeight: function () {
+            var maxHeight = Math.max.apply(null, $("div.available-widget").map(function () {
                 return $(this).height();
             }).get());
-            
+
             $("div.available-widget").height(maxHeight + 5);
         }
     }

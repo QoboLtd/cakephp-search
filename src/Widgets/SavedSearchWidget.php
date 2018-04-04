@@ -39,6 +39,21 @@ class SavedSearchWidget extends BaseWidget
     public $errors = [];
 
     /**
+     * {@inheritDoc}
+     */
+    protected $title = 'Saved search';
+
+    /**
+     * {@inheritDoc}
+     */
+    protected $icon = 'table';
+
+    /**
+     * {@inheritDoc}
+     */
+    protected $color = 'info';
+
+    /**
      * construct method
      *
      * @param array $options containing widget entity.
