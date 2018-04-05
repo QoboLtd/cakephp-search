@@ -217,30 +217,35 @@ class ArticlesControllerTest extends IntegrationTestCase
     {
         $id = '00000000-0000-0000-0000-000000000003';
         $preId = '00000000-0000-0000-0000-000000000002';
-        $data = ['name' => 'foo'];
+        $data = ['name' => 'some reAlLy R@nd0m N@me'];
 
         $table = TableRegistry::get('Search.SavedSearches');
-        $expected = $table->get($id);
+        // before edit
+        $entityBefore = $table->get($id);
 
-        $this->post('/articles/edit-search/' . $preId . '/' . $id);
+        $this->post('/articles/edit-search/' . $preId . '/' . $id, $data);
         $this->assertRedirect();
         $this->assertRedirectContains('/articles/search');
 
-        $entity = $table->get($id);
-        $this->assertEquals($expected->type, $entity->type);
-        $this->assertEquals($expected->shared, $entity->shared);
-        $this->assertEquals($expected->user_id, $entity->user_id);
-        $this->assertNotEquals($expected->name, $entity->name);
-        $this->assertNotEquals($expected->model, $entity->model);
-        $this->assertNotEquals($expected->content, $entity->content);
+        // after edit
+        $entityAfter = $table->get($id);
+        $this->assertEquals($data['name'], $entityAfter->name);
+        $this->assertEquals($entityBefore->user_id, $entityAfter->user_id);
+        $this->assertEquals($entityBefore->model, $entityAfter->model);
+        $this->assertEquals($entityBefore->system, $entityAfter->system);
+        $this->assertEquals($entityBefore->trashed, $entityAfter->trashed);
+        $this->assertEquals($entityBefore->created, $entityAfter->created);
+        $this->assertNotEquals($entityBefore->name, $entityAfter->name);
+        $this->assertNotEquals($entityBefore->content, $entityAfter->content);
+        $this->assertNotEquals($entityBefore->modified, $entityAfter->modified);
 
-        $expected = $table->get($preId);
-        $this->assertEquals($expected->name, $entity->name);
-        $this->assertEquals($expected->type, $entity->type);
-        $this->assertEquals($expected->model, $entity->model);
-        $this->assertEquals($expected->shared, $entity->shared);
-        $this->assertEquals($expected->content, $entity->content);
-        $this->assertEquals($expected->user_id, $entity->user_id);
+        $preSaved = $table->get($preId);
+        $this->assertEquals($preSaved->content, $entityAfter->content);
+        $this->assertNotEquals($preSaved->user_id, $entityAfter->user_id);
+        $this->assertNotEquals($preSaved->model, $entityAfter->model);
+        $this->assertNotEquals($preSaved->system, $entityAfter->system);
+        $this->assertNotEquals($preSaved->created, $entityAfter->created);
+        $this->assertNotEquals($preSaved->modified, $entityAfter->modified);
     }
 
     public function testCopySearch()
