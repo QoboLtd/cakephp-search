@@ -115,16 +115,4 @@ class SavedSearchWidgetTest extends TestCase
             'user' => ['id' => '00000000-0000-0000-0000-000000000001']
         ]);
     }
-
-    public function testGetSavedSearchType()
-    {
-        $entity = $this->SavedSearches->get('00000000-0000-0000-0000-000000000001');
-
-        $result = $this->widget->getResults([
-            'entity' => $entity,
-            'user' => ['id' => '00000000-0000-0000-0000-000000000001']
-        ]);
-
-        $this->assertEquals('result', $this->widget->getSavedSearchType());
-    }
 }
