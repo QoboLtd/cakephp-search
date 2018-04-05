@@ -101,7 +101,8 @@ class SavedSearchesTable extends Table
     public function getSavedSearches(array $users = [], array $models = [])
     {
         $conditions = [
-            'SavedSearches.name IS NOT' => null
+            'SavedSearches.name IS NOT' => null,
+            'SavedSearches.system' => false
         ];
 
         if (!empty($users)) {
