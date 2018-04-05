@@ -17,17 +17,17 @@ echo $this->Html->script('Search.search_options', ['block' => 'scriptBottom']);
 $availableColumns = [];
 $displayColumns = [];
 $groupByColumns = [];
-// get display and available columns
+// get display, group and available columns
 foreach ($searchableFields as $k => $v) {
     $tableName = substr($k, 0, strpos($k, '.'));
-    $tableName = array_key_exists($tableName, $associationLabels) ?
-        $associationLabels[$tableName] :
-        $tableName;
+    $tableName = array_key_exists($tableName, $associationLabels) ? $associationLabels[$tableName] : $tableName;
     $suffix = $savedSearch->model === $tableName ? '' : ' (' . $tableName . ')';
 
     if (in_array($k, $searchData['display_columns'])) {
         $displayColumns[$k] = $v['label'] . $suffix;
-    } else {
+    }
+
+    if (! in_array($k, $searchData['display_columns'])) {
         $availableColumns[$k] = $v['label'] . $suffix;
     }
 

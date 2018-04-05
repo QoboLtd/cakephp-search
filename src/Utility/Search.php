@@ -74,7 +74,6 @@ class Search
      */
     public function __construct(Table $table, array $user)
     {
-        // $this->table = $table;
         if (empty($user)) {
             throw new InvalidArgumentException('Empty user info is not allowed.');
         }
@@ -208,7 +207,6 @@ class Search
     {
         $result = $request->getData();
 
-        //$result = $this->processSearchCriteria($result);
         $event = new Event((string)EventName::MODEL_SEARCH_CHILD_ITEMS(), $this, [
             'criteria' => $result
         ]);
