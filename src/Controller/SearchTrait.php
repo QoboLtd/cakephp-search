@@ -207,13 +207,11 @@ trait SearchTrait
 
         $table = TableRegistry::get($this->tableName);
 
-        // get pre-saved search
-        $preSaved = $table->get($preId);
-        // merge pre-saved search and request data
-        $data = array_merge($preSaved->toArray(), $this->request->data);
+        $search = $table->patchEntity($table->get($id), [
+            'name' => $this->request->getData('name'),
+            'content' => $table->get($preId)->get('content')
+        ]);
 
-        $search = $table->get($id);
-        $search = $table->patchEntity($search, $data);
         if ($table->save($search)) {
             $this->Flash->success(__('The search has been edited.'));
         } else {

@@ -78,14 +78,6 @@ class SavedSearchWidget extends BaseWidget
     }
 
     /**
-     * @return string $type of the widget.
-     */
-    public function getSavedSearchType()
-    {
-        return $this->getData()->type;
-    }
-
-    /**
      * @return array $_data of the widget.
      */
     public function getData()

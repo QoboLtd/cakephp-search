@@ -66,17 +66,8 @@ class SavedSearchesTable extends Table
             ->allowEmpty('name', 'create');
 
         $validator
-            ->requirePresence('type', 'create')
-            ->notEmpty('type', 'update')
-            ->allowEmpty('name', 'create');
-
-        $validator
             ->requirePresence('model', 'create')
             ->notEmpty('model');
-
-        $validator
-            ->requirePresence('shared', 'create')
-            ->notEmpty('shared');
 
         $validator
             ->requirePresence('content', 'create')
@@ -110,7 +101,8 @@ class SavedSearchesTable extends Table
     public function getSavedSearches(array $users = [], array $models = [])
     {
         $conditions = [
-            'SavedSearches.name IS NOT' => null
+            'SavedSearches.name IS NOT' => null,
+            'SavedSearches.system' => false
         ];
 
         if (!empty($users)) {

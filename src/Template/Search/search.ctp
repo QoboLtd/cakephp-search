@@ -27,6 +27,9 @@ echo $this->element('Search.Search/filters', [
 ]);
 echo $this->element('Search.Search/results', [
     'searchableFields' => $searchableFields,
+    'savedSearch' => $savedSearch,
+    'searchData' => $searchData,
+    'preSaveId' => $preSaveId,
     'associationLabels' => $associationLabels
 ]);
 ?>
