@@ -39,6 +39,7 @@ if ($isBatch) {
 echo $cakeView->Html->scriptBlock('new DataTablesInit(' . json_encode($dtOptions) . ');', ['block' => 'scriptBottom']);
 ?>
 <div class="box box-primary">
+<?php if (! $isSystem) : ?>
     <div class="box-header">
         <h3 class="box-title"><?= $this->Html->link($viewOptions['title'], $viewOptions['url']) ?></h3>
         <div class="box-tools pull-right">
@@ -47,6 +48,7 @@ echo $cakeView->Html->scriptBlock('new DataTablesInit(' . json_encode($dtOptions
             </button>
         </div>
     </div>
+<?php endif; ?>
     <div class="box-body">
         <div class="table-responsive">
             <table id="<?= $tableOptions['id'] ?>" class="table table-hover table-condensed table-vertical-align" width="100%">
