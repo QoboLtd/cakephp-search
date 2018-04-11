@@ -45,6 +45,7 @@ final class ResultCell extends Cell
         $this->setView($view);
         $this->setIsBatch();
         $this->setIsGroup();
+        $this->setIsSystem();
         $this->setIsExport();
         $this->setViewOptions();
         $this->setTableOptions();
@@ -114,6 +115,16 @@ final class ResultCell extends Cell
     private function setIsGroup()
     {
         $this->set('isGroup', (bool)$this->getGroupByField());
+    }
+
+    /**
+     * System search flag setter.
+     *
+     * @return void
+     */
+    private function setIsSystem()
+    {
+        $this->set('isSystem', (bool)$this->entity->get('system'));
     }
 
     /**
