@@ -55,17 +55,11 @@ $displayColumns = array_merge(array_flip($searchData['display_columns']), $displ
     </div>
     <div class="col-md-2">
         <?= $this->Form->label(false, '&nbsp;', ['escape' => false]) ?>
-        <button type="button" id="available-columns_rightAll" class="btn btn-block">
-            <i class="glyphicon glyphicon-forward"></i>
-        </button>
         <button type="button" id="available-columns_rightSelected" class="btn btn-block">
             <i class="glyphicon glyphicon-chevron-right"></i>
         </button>
         <button type="button" id="available-columns_leftSelected" class="btn btn-block">
             <i class="glyphicon glyphicon-chevron-left"></i>
-        </button>
-        <button type="button" id="available-columns_leftAll" class="btn btn-block">
-            <i class="glyphicon glyphicon-backward"></i>
         </button>
     </div>
     <div class="col-md-5 col-lg-4">
