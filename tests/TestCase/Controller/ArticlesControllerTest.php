@@ -64,8 +64,8 @@ class ArticlesControllerTest extends IntegrationTestCase
         // search options
         $this->assertResponseContains('<select name="fields" class="form-control input-sm" id="addFilter">');
         $this->assertResponseContains('<form method="post" class="save-search-form"');
-        $this->assertResponseContains('<ul id="availableColumns"');
-        $this->assertResponseContains('<ul id="displayColumns"');
+        $this->assertResponseContains('id="available-columns"');
+        $this->assertResponseContains('name="display_columns[]"');
         $this->assertResponseContains('<select name="sort_by_field"');
         $this->assertResponseContains('<select name="sort_by_order"');
         $this->assertResponseContains('<select name="group_by"');
