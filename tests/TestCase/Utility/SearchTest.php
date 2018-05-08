@@ -369,6 +369,23 @@ class SearchTest extends TestCase
         $this->assertEquals(1, $result->count());
     }
 
+    public function testExecuteWithRelatedValueArray()
+    {
+        $model = 'Dashboards';
+
+        $data = [
+            'criteria' => [
+                $model . '.role_id' => [
+                    10 => ['type' => 'related', 'operator' => 'is', 'value' => ['00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000002']]
+                ]
+            ]
+        ];
+
+        $result = $this->Search->execute($data);
+
+        $this->assertEquals(2, $result->count());
+    }
+
     public function testCreate()
     {
         $data = [
