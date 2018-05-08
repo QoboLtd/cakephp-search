@@ -12,6 +12,7 @@
 namespace Search\Utility;
 
 use Cake\I18n\Time;
+use InvalidArgumentException;
 
 /**
  * Class responsible for generating Magic values.
