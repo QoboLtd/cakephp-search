@@ -22,6 +22,7 @@ use Search\Event\EventName;
 use Search\Model\Entity\SavedSearch;
 use Search\Utility;
 use Search\Utility\BasicSearch;
+use Search\Utility\MagicValue;
 use Search\Utility\Options;
 use Search\Utility\Validator;
 
@@ -348,8 +349,8 @@ class Search
             return $this->getEmptyWhereCondition($field, $criteria);
         }
 
+        $value = $this->handleMagicValue($value);
         $operator = $this->searchFields[$field]['operators'][$criteria['operator']];
-
         $key = $field . ' ' . $operator['operator'];
 
         if (isset($operator['pattern'])) {
@@ -360,6 +361,29 @@ class Search
         $result = [$key => $value];
 
         return $result;
+    }
+
+    /**
+     * Magic value handler.
+     *
+     * @param mixed $value Field value
+     * @return mixed
+     */
+    protected function handleMagicValue($value)
+    {
+        switch (gettype($value)) {
+            case 'string':
+                $value = (new MagicValue($value, $this->user))->get();
+                break;
+
+            case 'array':
+                foreach ($value as $key => $val) {
+                    $value[$key] = (new MagicValue($val, $this->user))->get();
+                }
+                break;
+        }
+
+        return $value;
     }
 
     /**

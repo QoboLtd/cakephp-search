@@ -73,6 +73,16 @@ if (!empty($searchData['criteria'])) {
                 }
                 ksort($selectOptions);
 
+                // push current model fields to the top of the filters list
+                foreach ($selectOptions as $k => $v) {
+                    if ($k !== $this->name) {
+                        continue;
+                    }
+
+                    $selectOptions = array_merge($v, $selectOptions);
+                    unset($selectOptions[$k]);
+                }
+
                 echo $this->Form->select(
                     'fields',
                     array_merge(['' => __('-- Add filter --')], $selectOptions),
