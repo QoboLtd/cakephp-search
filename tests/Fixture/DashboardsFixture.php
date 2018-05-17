@@ -9,7 +9,7 @@ use Cake\TestSuite\Fixture\TestFixture;
  */
 class DashboardsFixture extends TestFixture
 {
-
+    public $table = 'qobo_search_dashboards';
     /**
      * Fields
      *

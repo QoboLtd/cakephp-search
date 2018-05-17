@@ -93,7 +93,7 @@ class UtilityTest extends TestCase
 
     public function testFormatter()
     {
-        $table = TableRegistry::get('Dashboards');
+        $table = TableRegistry::get('Search.Dashboards');
         $query = $table->find();
 
         $fields = ['Dashboards.name'];
@@ -141,7 +141,7 @@ class UtilityTest extends TestCase
 
     public function testToCsv()
     {
-        $table = TableRegistry::get('Dashboards');
+        $table = TableRegistry::get('Search.Dashboards');
         $query = $table->find();
 
         $fields = ['Dashboards.name', 'Dashboards.role_id', 'Dashboards.created'];

@@ -36,7 +36,7 @@ class DashboardsTable extends Table
     {
         parent::initialize($config);
 
-        $this->table('dashboards');
+        $this->table('qobo_search_dashboards');
         $this->displayField('name');
         $this->primaryKey('id');
 

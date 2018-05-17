@@ -50,11 +50,12 @@ class OptionsTest extends TestCase
 
     public function testGetListingFields()
     {
+        $plugin = 'Search';
         $model = 'Dashboards';
 
         $expected = [$model . '.name', $model . '.modified', $model . '.created'];
-
-        $result = Options::getListingFields(TableRegistry::get($model));
+        $table = TableRegistry::get($plugin . '.' . $model);
+        $result = Options::getListingFields($table);
         $this->assertEquals($result, $expected);
     }
 
@@ -73,9 +74,10 @@ class OptionsTest extends TestCase
 
     public function testGetListingFieldsDatabaseColumns()
     {
+        $plugin = 'Search';
         $model = 'Dashboards';
 
-        $table = TableRegistry::get($model);
+        $table = TableRegistry::get($plugin . '.' . $model);
         $table->setDisplayField('virtual_field');
 
         $result = Options::getListingFields($table);

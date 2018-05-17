@@ -33,7 +33,7 @@ class SearchTest extends TestCase
         parent::setUp();
 
         $this->user = ['id' => '00000000-0000-0000-0000-000000000001'];
-        $this->Search = new Search(TableRegistry::get('Dashboards'), $this->user);
+        $this->Search = new Search(TableRegistry::get('Search.Dashboards'), $this->user);
 
         EventManager::instance()->on('Search.Model.Search.searchabeFields', function ($event, $table) {
             $tableName = $table->getRegistryAlias();

@@ -30,7 +30,7 @@ class BasicSearchTest extends TestCase
 
             $result = [];
             switch ($tableName) {
-                case 'Dashboards':
+                case 'Search.Dashboards':
                     $result = [
                         'Dashboards.name' => ['type' => 'string', 'operators' => [
                             'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%', 'emptyCriteria' => [
@@ -96,7 +96,7 @@ class BasicSearchTest extends TestCase
         });
 
         $this->user = ['id' => '00000000-0000-0000-0000-000000000001'];
-        $this->BasicSearch = new BasicSearch(TableRegistry::get('Dashboards'), $this->user);
+        $this->BasicSearch = new BasicSearch(TableRegistry::get('Search.Dashboards'), $this->user);
     }
 
     /**

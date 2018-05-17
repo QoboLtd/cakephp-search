@@ -68,6 +68,7 @@ class ValidatorTest extends TestCase
 
     public function testValidateData()
     {
+        $plugin = 'Search';
         $model = 'Dashboards';
 
         $data = [
@@ -85,13 +86,13 @@ class ValidatorTest extends TestCase
 
         $user = ['id' => '00000000-0000-0000-0000-000000000001'];
 
-        $result = Validator::validateData(TableRegistry::get($model), $data, $user);
+        $result = Validator::validateData(TableRegistry::get($plugin . '.' . $model), $data, $user);
         $this->assertEquals($data, $result);
     }
 
     public function testValidateDataWrong()
     {
-        $table = TableRegistry::get('Dashboards');
+        $table = TableRegistry::get('Search.Dashboards');
 
         $data = [
             'criteria' => [
@@ -123,7 +124,7 @@ class ValidatorTest extends TestCase
 
     public function testValidatePrimaryKeyAsSortField()
     {
-        $table = TableRegistry::get('Dashboards');
+        $table = TableRegistry::get('Search.Dashboards');
 
         $data = [
             'criteria' => ['foo'],
@@ -143,7 +144,7 @@ class ValidatorTest extends TestCase
 
     public function testValidateDisplayColumnAsSortField()
     {
-        $table = TableRegistry::get('Dashboards');
+        $table = TableRegistry::get('Search.Dashboards');
 
         $expected = $table->aliasField('name');
 
