@@ -36,7 +36,7 @@ class SavedSearchesTable extends Table
     {
         parent::initialize($config);
 
-        $this->table('saved_searches');
+        $this->table('qobo_search_saved_searches');
         $this->displayField('name');
         $this->primaryKey('id');
         $this->addBehavior('Timestamp');
