@@ -50,7 +50,7 @@ class AppWidgetsTable extends Table
     {
         parent::initialize($config);
 
-        $this->setTable('app_widgets');
+        $this->setTable('qobo_search_app_widgets');
         $this->setDisplayField('name');
         $this->setPrimaryKey('id');
 

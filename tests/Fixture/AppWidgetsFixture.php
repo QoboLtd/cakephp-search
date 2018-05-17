@@ -9,7 +9,7 @@ use Cake\TestSuite\Fixture\TestFixture;
  */
 class AppWidgetsFixture extends TestFixture
 {
-
+    public $table = 'qobo_search_app_widgets';
     /**
      * Fields
      *
