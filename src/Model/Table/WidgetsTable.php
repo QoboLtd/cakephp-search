@@ -56,7 +56,7 @@ class WidgetsTable extends Table
     {
         parent::initialize($config);
 
-        $this->table('widgets');
+        $this->table('qobo_search_widgets');
         $this->displayField('id');
         $this->primaryKey('id');
 

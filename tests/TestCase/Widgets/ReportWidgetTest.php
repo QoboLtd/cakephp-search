@@ -345,8 +345,8 @@ class ReportWidgetTest extends TestCase
     public function getQueriesList()
     {
         return [
-            ['SELECT id,created FROM widgets LIMIT 10', 6],
-            ['SELECT id,created FROM widgets WHERE id = 1', 0],
+            ['SELECT id,created FROM qobo_search_widgets LIMIT 10', 6],
+            ['SELECT id,created FROM qobo_search_widgets WHERE id = 1', 0],
         ];
     }
 }
