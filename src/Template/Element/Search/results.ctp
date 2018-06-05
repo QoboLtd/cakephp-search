@@ -19,7 +19,8 @@ $args = [
         'searchableFields' => $searchableFields,
         'associationLabels' => $associationLabels,
         'batch' => (bool)Configure::read('Search.batch.active'),
-        'preSaveId' => $preSaveId
+        'preSaveId' => $preSaveId,
+        'action' => 'search'
     ],
     $this
 ];

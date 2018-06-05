@@ -23,7 +23,8 @@ $args = [
         'searchableFields' => $widgetOptions['fields'],
         'associationLabels' => $widgetOptions['associationLabels'],
         'batch' => false,
-        'preSaveId' => $savedSearch->get('id')
+        'preSaveId' => $savedSearch->get('id'),
+        'action' => 'search'
     ],
     $this
 ];
