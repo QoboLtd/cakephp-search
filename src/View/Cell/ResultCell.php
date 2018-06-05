@@ -24,8 +24,26 @@ use Search\Utility\Search;
 
 final class ResultCell extends Cell
 {
-    private $requiredOptions = ['entity', 'searchData', 'searchableFields', 'associationLabels', 'batch', 'preSaveId'];
+    /**
+     * Required Cell parameters.
+     *
+     * @var array
+     */
+    private $requiredOptions = [
+        'entity',
+        'searchData',
+        'searchableFields',
+        'associationLabels',
+        'batch',
+        'preSaveId',
+        'action'
+    ];
 
+    /**
+     * Charts list.
+     *
+     * @var array
+     */
     private $charts = [
         ['type' => 'funnelChart', 'icon' => 'filter'],
         ['type' => 'donutChart', 'icon' => 'pie-chart'],
@@ -253,7 +271,7 @@ final class ResultCell extends Cell
                 'url' => Router::url([
                     'plugin' => $plugin,
                     'controller' => $controller,
-                    'action' => 'search',
+                    'action' => $this->action,
                     $this->preSaveId
                 ]),
                 'columns' => $this->getDatatableColumns(),
