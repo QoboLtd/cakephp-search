@@ -81,65 +81,15 @@ class Utility
             return $this->searchableFields[$alias];
         }
 
-        $this->searchableFields[$alias] = array_merge(
-            $this->_getSearchableFields($table, $user),
-            $this->_getAssociatedSearchableFields($table, $user)
-        );
-
-        return $this->searchableFields[$alias];
-    }
-
-    /**
-     * Get and return searchable fields using Event.
-     *
-     * @param \Cake\ORM\Table $table Table instance
-     * @param array $user User info
-     * @return array
-     */
-    protected function _getSearchableFields(Table $table, array $user)
-    {
         $event = new Event((string)EventName::MODEL_SEARCH_SEARCHABLE_FIELDS(), $this, [
             'table' => $table,
             'user' => $user
         ]);
         EventManager::instance()->dispatch($event);
 
-        return $event->result ? $event->result : [];
-    }
+        $this->searchableFields[$alias] = $event->result ? $event->result : [];
 
-    /**
-     * Get associated tables searchable fields.
-     *
-     * @param \Cake\ORM\Table $table Table instance
-     * @param array $user User info
-     * @return array
-     */
-    protected function _getAssociatedSearchableFields(Table $table, array $user)
-    {
-        $result = [];
-        foreach ($table->associations() as $association) {
-            // skip non-supported associations
-            if (!in_array($association->type(), $this->searchableAssociations)) {
-                continue;
-            }
-
-            $targetTable = $association->getTarget();
-
-            // skip associations with itself
-            if ($targetTable->getTable() === $table->getTable()) {
-                continue;
-            }
-
-            // fetch associated model searchable fields
-            $searchableFields = $this->_getSearchableFields($targetTable, $user);
-            if (empty($searchableFields)) {
-                continue;
-            }
-
-            $result = array_merge($result, $searchableFields);
-        }
-
-        return $result;
+        return $this->searchableFields[$alias];
     }
 
     /**
