@@ -94,18 +94,16 @@ if (!empty($searchData['criteria'])) {
                 ); ?>
                 </div>
                 <div class="form-group">
-                <?php
-                    echo $this->Form->select(
-                        'aggregator',
-                        $searchOptions['aggregators'],
-                        [
-                            'default' => isset($searchData['aggregator']) ?
-                                $searchData['aggregator'] :
-                                key($searchOptions['aggregators']),
-                            'class' => 'form-control input-sm'
-                         ]
-                    );
-                ?>
+                <?= $this->Form->select(
+                    'aggregator',
+                    $searchOptions['aggregators'],
+                    [
+                        'default' => isset($searchData['aggregator']) ?
+                            $searchData['aggregator'] :
+                            key($searchOptions['aggregators']),
+                        'class' => 'form-control input-sm'
+                     ]
+                ) ?>
                 </div>
             </div>
             <hr class="visible-xs visible-sm visible-md" />
