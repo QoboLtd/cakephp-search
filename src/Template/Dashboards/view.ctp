@@ -35,10 +35,10 @@ $chartData = [];
     <?php foreach ($dashboardWidgets as $row => $column) : ?>
         <div class="row">
         <?php foreach ($column as $k => $dw) : ?>
-        <?php
+            <?php
             $options = json_decode($dw->widget_options, true);
             $width = (!empty($options['w'])) ? $options['w'] : '6';
-        ?>
+            ?>
             <div class="col-md-<?=$width;?>">
             <?php
             try {

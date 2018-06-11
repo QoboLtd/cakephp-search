@@ -47,7 +47,7 @@ class Options
      *
      * @var array
      */
-    protected static $basicFieldTypes = ['string', 'text', 'textarea', 'related', 'email', 'url', 'phone'];
+    protected static $basicFieldTypes = ['string', 'text', 'textarea', 'related', 'email', 'url', 'phone', 'integer'];
 
     /**
      * Search sort by order options.

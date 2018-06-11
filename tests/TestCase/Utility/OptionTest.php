@@ -36,7 +36,7 @@ class OptionsTest extends TestCase
     public function testGetBasicSearchFieldTypes()
     {
         $result = Options::getBasicSearchFieldTypes();
-        $this->assertEquals($result, ['string', 'text', 'textarea', 'related', 'email', 'url', 'phone']);
+        $this->assertEquals($result, ['string', 'text', 'textarea', 'related', 'email', 'url', 'phone', 'integer']);
     }
 
     public function testGet()
