@@ -138,12 +138,28 @@ class BasicSearchTest extends TestCase
         $expected = [
             'Dashboards.name' => [
                 ['type' => 'string', 'operator' => 'contains', 'value' => 'Lorem']
-            ],
-            'Dashboards.role_id' => [
-                ['type' => 'related', 'operator' => 'is', 'value' => '79928943-0016-4677-869a-e37728ff6564']
             ]
         ];
 
         $this->assertEquals($expected, $result);
+    }
+
+    public function testGetCriteriaWithDefaultFields()
+    {
+        EventManager::instance()->on('Search.Model.Search.basicSearchFields', function ($event, $table) {
+            return [
+                'Dashboards.virtual_field'
+            ];
+        });
+
+        $basicSearch = new BasicSearch(TableRegistry::get('Dashboards'), ['id' => '00000000-0000-0000-0000-000000000001']);
+
+        $expected = [
+            'Dashboards.name' => [
+                ['type' => 'string', 'operator' => 'contains', 'value' => 'Lorem']
+            ]
+        ];
+
+        $this->assertEquals($expected, $basicSearch->getCriteria('Lorem'));
     }
 }
