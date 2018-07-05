@@ -12,6 +12,11 @@
 
 use Cake\Core\Configure;
 
+$url = ['plugin' => $this->plugin, 'controller' => $this->name, 'action' => 'search'];
+echo $this->Html->link('<i class="fa fa-undo"></i> ' . __('Reset'), $url, [
+    'class' => 'btn btn-default', 'escape' => false
+]) . '&nbsp;';
+
 $url = ['plugin' => $this->plugin, 'controller' => $this->name, 'action' => 'exportSearch', $id, $name];
 echo $this->Html->link('<i class="fa fa-download"></i> ' . __('Export'), $url, [
     'class' => 'btn btn-default', 'escape' => false
