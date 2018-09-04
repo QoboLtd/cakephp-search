@@ -18,7 +18,7 @@ echo $this->Html->script('Search.dashboard', ['block' => 'scriptBottom']);
 echo $this->Html->script('Search./plugins/vue.min', ['block' => 'scriptBottom']);
 echo $this->Html->script('Search./plugins/vue-grid-layout.min', ['block' => 'scriptBottom']);
 echo $this->Html->scriptBlock('var api_token = "' . Configure::read('Search.api.token') . '";', ['block' => 'scriptBottom']);
-echo $this->Html->scriptBlock("var grid_layout = '" . json_encode($savedWidgetData) . "';", ['block' => 'scriptBottom']);
+echo $this->Html->scriptBlock("var grid_layout = '" . addslashes(json_encode($savedWidgetData)) . "';", ['block' => 'scriptBottom']);
 
 echo $this->Html->script('Search./plugins/qobo.grid', ['block' => 'scriptBottom']);
 ?>
