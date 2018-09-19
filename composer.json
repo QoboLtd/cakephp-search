@@ -13,7 +13,7 @@
 	],
     "require": {
         "qobo/cakephp-roles-capabilities": "^16.0",
-        "qobo/cakephp-utils": "^7.0"
+        "qobo/cakephp-utils": "^8.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^5.0",
