@@ -138,6 +138,9 @@ class BasicSearchTest extends TestCase
         $expected = [
             'Dashboards.name' => [
                 ['type' => 'string', 'operator' => 'contains', 'value' => 'Lorem']
+            ],
+            'Dashboards.role_id' => [
+                ['type' => 'related', 'operator' => 'is', 'value' => '79928943-0016-4677-869a-e37728ff6564']
             ]
         ];
 

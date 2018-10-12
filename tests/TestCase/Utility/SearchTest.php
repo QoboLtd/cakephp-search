@@ -210,8 +210,12 @@ class SearchTest extends TestCase
         $this->assertArrayHasKey('criteria', $result);
         $this->assertArrayHasKey('aggregator', $result);
 
-        $this->assertEmpty($result['criteria']);
-        $this->assertEquals('OR', $result['aggregator']);
+        $expected = [
+            'type' => 'related',
+            'operator' => 'is',
+            'value' => '79928943-0016-4677-869a-e37728ff6564'
+        ];
+        $this->assertContains($expected, $result['criteria']['Dashboards.role_id']);
     }
 
     public function testExecute()
