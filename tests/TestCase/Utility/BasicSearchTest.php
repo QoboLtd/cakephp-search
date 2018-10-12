@@ -30,7 +30,7 @@ class BasicSearchTest extends TestCase
 
             $result = [];
             switch ($tableName) {
-                case 'Dashboards':
+                case 'Search.Dashboards':
                     $result = [
                         'Dashboards.name' => ['type' => 'string', 'operators' => [
                             'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%', 'emptyCriteria' => [
@@ -42,7 +42,7 @@ class BasicSearchTest extends TestCase
                                 'aggregator' => 'OR', 'values' => ['IS NULL', '= ""']
                             ]],
                         ]],
-                        'Dashboards.role_id' => ['type' => 'related', 'source' => 'Roles', 'operators' => [
+                        'Dashboards.role_id' => ['type' => 'related', 'source' => 'RolesCapabilities.Roles', 'operators' => [
                             'is' => ['label' => 'is', 'operator' => 'IN', 'emptyCriteria' => [
                                 'aggregator' => 'OR', 'values' => ['IS NULL', '= ""']
                             ]],
@@ -69,7 +69,7 @@ class BasicSearchTest extends TestCase
                     ];
                     break;
 
-                case 'Roles':
+                case 'RolesCapabilities.Roles':
                     $result = [
                         'Roles.name' => ['type' => 'string', 'operators' => [
                             'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%', 'emptyCriteria' => [
@@ -84,19 +84,29 @@ class BasicSearchTest extends TestCase
         });
 
         EventManager::instance()->on('Search.Model.Search.basicSearchFields', function ($event, $table) {
-            $result = [
-                'Dashboards.name',
-                'Dashboards.image',
-                'Dashboards.role_id',
-                'Dashboards.modified',
-                'Dashboards.created'
-            ];
+            $tableName = $table->getRegistryAlias();
 
-            return $result;
+            if ('Search.Dashboards' === $tableName) {
+                return [
+                    'Dashboards.name',
+                    'Dashboards.image',
+                    'Dashboards.role_id',
+                    'Dashboards.modified',
+                    'Dashboards.created'
+                ];
+            }
+
+            if ('RolesCapabilities.Roles' === $tableName) {
+                return [
+                    'Roles.name'
+                ];
+            }
+
+            return [];
         });
 
         $this->user = ['id' => '00000000-0000-0000-0000-000000000001'];
-        $this->BasicSearch = new BasicSearch(TableRegistry::get('Dashboards'), $this->user);
+        $this->BasicSearch = new BasicSearch(TableRegistry::get('Search.Dashboards'), $this->user);
     }
 
     /**
@@ -124,7 +134,7 @@ class BasicSearchTest extends TestCase
 
     public function testGetCriteriaWithoutSearchableFields()
     {
-        $basicSearch = new BasicSearch(TableRegistry::get('SomeRandomModel'), $this->user);
+        $basicSearch = new BasicSearch(TableRegistry::get('NonExistingTable'), $this->user);
         $result = $basicSearch->getCriteria('foo');
 
         $this->assertInternalType('array', $result);
@@ -133,14 +143,15 @@ class BasicSearchTest extends TestCase
 
     public function testGetCriteriaWithRelatedField()
     {
-        $result = $this->BasicSearch->getCriteria('Lorem');
+        $value = 'Everyone';
+        $result = $this->BasicSearch->getCriteria($value);
 
         $expected = [
             'Dashboards.name' => [
-                ['type' => 'string', 'operator' => 'contains', 'value' => 'Lorem']
+                ['type' => 'string', 'operator' => 'contains', 'value' => $value]
             ],
             'Dashboards.role_id' => [
-                ['type' => 'related', 'operator' => 'is', 'value' => '79928943-0016-4677-869a-e37728ff6564']
+                ['type' => 'related', 'operator' => 'is', 'value' => '00000000-0000-0000-0000-000000000002']
             ]
         ];
 
@@ -151,18 +162,22 @@ class BasicSearchTest extends TestCase
     {
         EventManager::instance()->on('Search.Model.Search.basicSearchFields', function ($event, $table) {
             return [
-                'Dashboards.virtual_field'
+                'Dashboards.non_existing_field'
             ];
         });
 
-        $basicSearch = new BasicSearch(TableRegistry::get('Dashboards'), ['id' => '00000000-0000-0000-0000-000000000001']);
+        $basicSearch = new BasicSearch(TableRegistry::get('Search.Dashboards'), ['id' => '00000000-0000-0000-0000-000000000001']);
 
+        $value = 'Everyone';
         $expected = [
             'Dashboards.name' => [
-                ['type' => 'string', 'operator' => 'contains', 'value' => 'Lorem']
+                ['type' => 'string', 'operator' => 'contains', 'value' => $value]
+            ],
+            'Dashboards.role_id' => [
+                ['type' => 'related', 'operator' => 'is', 'value' => '00000000-0000-0000-0000-000000000002']
             ]
         ];
 
-        $this->assertEquals($expected, $basicSearch->getCriteria('Lorem'));
+        $this->assertEquals($expected, $basicSearch->getCriteria($value));
     }
 }
