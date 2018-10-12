@@ -186,6 +186,15 @@ class BasicSearch
             return [];
         }
 
+        if ('related' === $type) {
+            $sourceTable = TableRegistry::get($this->searchFields[$field]['source']);
+            $value = $this->getRelatedValues($sourceTable, $value);
+        }
+
+        if (empty($value)) {
+            return [];
+        }
+
         $result = [];
         foreach ((array)$value as $val) {
             $result[] = [
@@ -193,6 +202,46 @@ class BasicSearch
                 'operator' => key($this->searchFields[$field]['operators']),
                 'value' => $val
             ];
+        }
+
+        return $result;
+    }
+
+    /**
+     * Gets basic search values from Related module.
+     *
+     * This method is useful when you do a basic search on a related field,
+     * in which the values are always uuid's. What this method will do is
+     * run a search in the related module (recursively) to fetch and
+     * return the entities IDs matching the search string.
+     *
+     * @param \Cake\ORM\Table $table Related table instance
+     * @param string $value Search query value
+     * @return array
+     */
+    protected function getRelatedValues(Table $table, $value)
+    {
+        $search = new Search($table, $this->user);
+        $basicSearch = new BasicSearch($table, $this->user);
+
+        $criteria = $basicSearch->getCriteria($value);
+        if (empty($criteria)) {
+            return [];
+        }
+
+        $data = [
+            'aggregator' => 'OR',
+            'criteria' => $criteria
+        ];
+
+        $query = $search->execute($data);
+        if ($query->isEmpty()) {
+            return [];
+        }
+
+        $result = [];
+        foreach ($query->all() as $entity) {
+            $result[] = $entity->id;
         }
 
         return $result;
