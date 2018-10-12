@@ -177,18 +177,22 @@ class BasicSearch
      */
     protected function getFieldValue($field, $value)
     {
+        // not a searchable field
         if (!array_key_exists($field, $this->searchFields)) {
             return [];
         }
 
+        // unsupported field type for basic search
         $type = $this->searchFields[$field]['type'];
         if (!in_array($type, Options::getBasicSearchFieldTypes())) {
             return [];
         }
 
         if ('related' === $type) {
-            $sourceTable = TableRegistry::get($this->searchFields[$field]['source']);
-            $value = $this->getRelatedValues($sourceTable, $value);
+            $value = $this->getRelatedFieldValue(
+                TableRegistry::get($this->searchFields[$field]['source']),
+                $value
+            );
         }
 
         if (empty($value)) {
@@ -219,8 +223,13 @@ class BasicSearch
      * @param string $value Search query value
      * @return array
      */
-    protected function getRelatedValues(Table $table, $value)
+    protected function getRelatedFieldValue(Table $table, $value)
     {
+        // avoid infinite recursion
+        if ($this->table->getAlias() === $table->getAlias()) {
+            return [];
+        }
+
         $search = new Search($table, $this->user);
         $basicSearch = new BasicSearch($table, $this->user);
 
