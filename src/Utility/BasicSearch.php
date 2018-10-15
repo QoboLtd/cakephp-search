@@ -72,6 +72,10 @@ class BasicSearch
      */
     public function getCriteria($value)
     {
+        if ('' === trim($value)) {
+            return [];
+        }
+
         $fields = $this->getFields();
         if (empty($fields)) {
             return [];
@@ -79,11 +83,12 @@ class BasicSearch
 
         $result = [];
         foreach ($fields as $field) {
-            $val = $this->getFieldValue($field, $value);
-            if (empty($val)) {
+            $criteria = $this->getFieldCriteria($field, $value);
+            if (empty($criteria)) {
                 continue;
             }
-            $result[$field] = $val;
+
+            $result[$field][] = $criteria;
         }
 
         return $result;
@@ -169,14 +174,18 @@ class BasicSearch
     }
 
     /**
-     * Field value getter for basic search criteria.
+     * Field criteria getter for basic search field.
      *
      * @param string $field Field name
      * @param string $value Search query value
      * @return array
      */
-    protected function getFieldValue($field, $value)
+    protected function getFieldCriteria($field, $value)
     {
+        if (empty($value)) {
+            return [];
+        }
+
         // not a searchable field
         if (!array_key_exists($field, $this->searchFields)) {
             return [];
@@ -188,27 +197,34 @@ class BasicSearch
             return [];
         }
 
-        if ('related' === $type) {
-            $value = $this->getRelatedFieldValue(
-                TableRegistry::get($this->searchFields[$field]['source']),
-                $value
-            );
-        }
-
-        if (empty($value)) {
-            return [];
-        }
-
         $result = [];
-        foreach ((array)$value as $val) {
-            $result[] = [
-                'type' => $type,
-                'operator' => key($this->searchFields[$field]['operators']),
-                'value' => $val
-            ];
+        switch ($type) {
+            case 'related':
+                $result = $this->getRelatedFieldValue($field, $value);
+                break;
+
+            default:
+                $result = $this->getFieldValue($field, $value);
+                break;
         }
 
         return $result;
+    }
+
+    /**
+     * Field value getter for basic search criteria.
+     *
+     * @param string $field Field name
+     * @param string $value Search query value
+     * @return array
+     */
+    protected function getFieldValue($field, $value)
+    {
+        return [
+            'type' => $this->searchFields[$field]['type'],
+            'operator' => key($this->searchFields[$field]['operators']),
+            'value' => $value
+        ];
     }
 
     /**
@@ -219,12 +235,14 @@ class BasicSearch
      * run a search in the related module (recursively) to fetch and
      * return the entities IDs matching the search string.
      *
-     * @param \Cake\ORM\Table $table Related table instance
+     * @param string $field Field name
      * @param string $value Search query value
      * @return array
      */
-    protected function getRelatedFieldValue(Table $table, $value)
+    protected function getRelatedFieldValue($field, $value)
     {
+        $table = TableRegistry::get($this->searchFields[$field]['source']);
+
         // avoid infinite recursion
         if ($this->table->getAlias() === $table->getAlias()) {
             return [];
@@ -253,6 +271,10 @@ class BasicSearch
             $result[] = $entity->id;
         }
 
-        return $result;
+        return [
+            'type' => $this->searchFields[$field]['type'],
+            'operator' => key($this->searchFields[$field]['operators']),
+            'value' => $result
+        ];
     }
 }
