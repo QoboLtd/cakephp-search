@@ -155,7 +155,7 @@ class BasicSearchTest extends TestCase
                 ['type' => 'string', 'operator' => 'contains', 'value' => $value]
             ],
             'Dashboards.role_id' => [
-                ['type' => 'related', 'operator' => 'is', 'value' => '00000000-0000-0000-0000-000000000002']
+                ['type' => 'related', 'operator' => 'is', 'value' => ['00000000-0000-0000-0000-000000000002']]
             ]
         ];
 
@@ -178,7 +178,7 @@ class BasicSearchTest extends TestCase
                 ['type' => 'string', 'operator' => 'contains', 'value' => $value]
             ],
             'Dashboards.role_id' => [
-                ['type' => 'related', 'operator' => 'is', 'value' => '00000000-0000-0000-0000-000000000002']
+                ['type' => 'related', 'operator' => 'is', 'value' => ['00000000-0000-0000-0000-000000000002']]
             ]
         ];
 
