@@ -7,6 +7,7 @@ use Cake\ORM\Query;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use ReflectionClass;
+use Search\Event\EventName;
 use Search\Model\Entity\SavedSearch;
 use Search\Utility;
 use Search\Utility\Search;
@@ -37,7 +38,7 @@ class SearchTest extends TestCase
         $this->Search = new Search(TableRegistry::get('Dashboards'), $this->user);
 
         Utility::instance(new Utility());
-        EventManager::instance()->on('Search.Model.Search.searchabeFields', function ($event, $table) {
+        EventManager::instance()->on((string)EventName::MODEL_SEARCH_SEARCHABLE_FIELDS(), function ($event, $table) {
             $tableName = $table->getRegistryAlias();
 
             $result = [];

@@ -4,6 +4,7 @@ namespace Search\Utility;
 use Cake\Event\EventManager;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
+use Search\Event\EventName;
 use Search\Utility;
 use Search\Utility\BasicSearch;
 
@@ -26,7 +27,7 @@ class BasicSearchTest extends TestCase
     {
         parent::setUp();
 
-        EventManager::instance()->on('Search.Model.Search.searchabeFields', function ($event, $table) {
+        EventManager::instance()->on((string)EventName::MODEL_SEARCH_SEARCHABLE_FIELDS(), function ($event, $table) {
             $tableName = $table->getRegistryAlias();
 
             $result = [];
