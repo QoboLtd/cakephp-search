@@ -72,6 +72,10 @@ class BasicSearch
      */
     public function getCriteria($value)
     {
+        if ('' === trim($value)) {
+            return [];
+        }
+
         $fields = $this->getFields();
         if (empty($fields)) {
             return [];
@@ -79,11 +83,12 @@ class BasicSearch
 
         $result = [];
         foreach ($fields as $field) {
-            $val = $this->getFieldValue($field, $value);
-            if (empty($val)) {
+            $criteria = $this->getFieldCriteria($field, $value);
+            if (empty($criteria)) {
                 continue;
             }
-            $result[$field] = $val;
+
+            $result[$field][] = $criteria;
         }
 
         return $result;
@@ -169,6 +174,40 @@ class BasicSearch
     }
 
     /**
+     * Field criteria getter for basic search field.
+     *
+     * @param string $field Field name
+     * @param string $value Search query value
+     * @return array
+     */
+    protected function getFieldCriteria($field, $value)
+    {
+        // not a searchable field
+        if (!array_key_exists($field, $this->searchFields)) {
+            return [];
+        }
+
+        // unsupported field type for basic search
+        $type = $this->searchFields[$field]['type'];
+        if (!in_array($type, Options::getBasicSearchFieldTypes())) {
+            return [];
+        }
+
+        $result = [];
+        switch ($type) {
+            case 'related':
+                $result = $this->getRelatedFieldValue($field, $value);
+                break;
+
+            default:
+                $result = $this->getFieldValue($field, $value);
+                break;
+        }
+
+        return $result;
+    }
+
+    /**
      * Field value getter for basic search criteria.
      *
      * @param string $field Field name
@@ -177,24 +216,61 @@ class BasicSearch
      */
     protected function getFieldValue($field, $value)
     {
-        if (!array_key_exists($field, $this->searchFields)) {
+        return [
+            'type' => $this->searchFields[$field]['type'],
+            'operator' => key($this->searchFields[$field]['operators']),
+            'value' => $value
+        ];
+    }
+
+    /**
+     * Gets basic search values from Related module.
+     *
+     * This method is useful when you do a basic search on a related field,
+     * in which the values are always uuid's. What this method will do is
+     * run a search in the related module (recursively) to fetch and
+     * return the entities IDs matching the search string.
+     *
+     * @param string $field Field name
+     * @param string $value Search query value
+     * @return array
+     */
+    protected function getRelatedFieldValue($field, $value)
+    {
+        $table = TableRegistry::get($this->searchFields[$field]['source']);
+
+        // avoid infinite recursion
+        if ($this->table->getAlias() === $table->getAlias()) {
             return [];
         }
 
-        $type = $this->searchFields[$field]['type'];
-        if (!in_array($type, Options::getBasicSearchFieldTypes())) {
+        $search = new Search($table, $this->user);
+        $basicSearch = new BasicSearch($table, $this->user);
+
+        $criteria = $basicSearch->getCriteria($value);
+        if (empty($criteria)) {
+            return [];
+        }
+
+        $data = [
+            'aggregator' => 'OR',
+            'criteria' => $criteria
+        ];
+
+        $query = $search->execute($data);
+        if ($query->isEmpty()) {
             return [];
         }
 
         $result = [];
-        foreach ((array)$value as $val) {
-            $result[] = [
-                'type' => $type,
-                'operator' => key($this->searchFields[$field]['operators']),
-                'value' => $val
-            ];
+        foreach ($query->all() as $entity) {
+            $result[] = $entity->id;
         }
 
-        return $result;
+        return [
+            'type' => $this->searchFields[$field]['type'],
+            'operator' => key($this->searchFields[$field]['operators']),
+            'value' => $result
+        ];
     }
 }
