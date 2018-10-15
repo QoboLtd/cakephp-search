@@ -182,10 +182,6 @@ class BasicSearch
      */
     protected function getFieldCriteria($field, $value)
     {
-        if (empty($value)) {
-            return [];
-        }
-
         // not a searchable field
         if (!array_key_exists($field, $this->searchFields)) {
             return [];
