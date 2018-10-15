@@ -210,25 +210,27 @@ class SearchTest extends TestCase
 
     public function testPrepareDataBasicSearchWithRelatedField()
     {
-        EventManager::instance()->on('Search.Model.Search.basicSearchFields', function ($event, $table) {
+        EventManager::instance()->on((string)EventName::MODEL_SEARCH_BASIC_SEARCH_FIELDS(), function ($event, $table) {
             return ['Dashboards.role_id'];
         });
 
         $request = new ServerRequest(['post' => [
-            'criteria' => ['query' => 'Lorem']
+            'criteria' => ['query' => 'Everyone']
         ]]);
 
-        $result = $this->Search->prepareData($request);
-
-        $this->assertArrayHasKey('criteria', $result);
-        $this->assertArrayHasKey('aggregator', $result);
-
         $expected = [
-            'type' => 'related',
-            'operator' => 'is',
-            'value' => ['79928943-0016-4677-869a-e37728ff6564']
+            'criteria' => [
+                'Dashboards.role_id' => [
+                    [
+                        'type' => 'related',
+                        'operator' => 'is',
+                        'value' => ['00000000-0000-0000-0000-000000000002']
+                    ]
+                ]
+            ],
+            'aggregator' => 'OR'
         ];
-        $this->assertContains($expected, $result['criteria']['Dashboards.role_id']);
+        $this->assertEquals($expected, $this->Search->prepareData($request));
     }
 
     public function testExecute()
