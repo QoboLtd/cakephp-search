@@ -34,16 +34,34 @@ class SearchTest extends TestCase
     {
         parent::setUp();
 
+        $this->searchableFieldsListener();
         $this->user = ['id' => '00000000-0000-0000-0000-000000000001'];
-        $this->Search = new Search(TableRegistry::get('Dashboards'), $this->user);
+        $this->Search = new Search(TableRegistry::get('Search.Dashboards'), $this->user);
 
         Utility::instance(new Utility());
+    }
+
+    /**
+     * tearDown method
+     *
+     * @return void
+     */
+    public function tearDown()
+    {
+        unset($this->Search);
+        unset($this->user);
+
+        parent::tearDown();
+    }
+
+    private function searchableFieldsListener()
+    {
         EventManager::instance()->on((string)EventName::MODEL_SEARCH_SEARCHABLE_FIELDS(), function ($event, $table) {
             $tableName = $table->getRegistryAlias();
 
             $result = [];
             switch ($tableName) {
-                case 'Dashboards':
+                case 'Search.Dashboards':
                     $result = [
                         'Dashboards.name' => ['type' => 'string', 'operators' => [
                             'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%', 'emptyCriteria' => [
@@ -55,7 +73,7 @@ class SearchTest extends TestCase
                                 'aggregator' => 'OR', 'values' => ['IS NULL', '= ""']
                             ]],
                         ]],
-                        'Dashboards.role_id' => ['type' => 'related', 'source' => 'Roles', 'operators' => [
+                        'Dashboards.role_id' => ['type' => 'related', 'source' => 'RolesCapabilities.Roles', 'operators' => [
                             'is' => ['label' => 'is', 'operator' => 'IN', 'emptyCriteria' => [
                                 'aggregator' => 'OR', 'values' => ['IS NULL', '= ""']
                             ]],
@@ -82,7 +100,7 @@ class SearchTest extends TestCase
                     ];
                     break;
 
-                case 'Roles':
+                case 'RolesCapabilities.Roles':
                     $result = [
                         'Roles.name' => ['type' => 'string', 'operators' => [
                             'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%', 'emptyCriteria' => [
@@ -118,6 +136,11 @@ class SearchTest extends TestCase
                             'is' => ['label' => 'is', 'operator' => 'IN', 'emptyCriteria' => [
                                 'aggregator' => 'OR', 'values' => ['IS NULL', '= ""', '= "0000-00-00 00:00:00"']
                             ]]
+                        ]],
+                        'Authors.name' => ['type' => 'string', 'operators' => [
+                            'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%', 'emptyCriteria' => [
+                                'aggregator' => 'OR', 'values' => ['IS NULL', '= ""']
+                            ]]
                         ]]
                     ];
                     break;
@@ -138,25 +161,12 @@ class SearchTest extends TestCase
     }
 
     /**
-     * tearDown method
-     *
-     * @return void
-     */
-    public function tearDown()
-    {
-        unset($this->Search);
-        unset($this->user);
-
-        parent::tearDown();
-    }
-
-    /**
      * @expectedException InvalidArgumentException
      */
     public function testInstantiateWithEmptyUser()
     {
         $user = [];
-        new Search(TableRegistry::get('Dashboards'), $user);
+        new Search(TableRegistry::get('Search.Dashboards'), $user);
     }
 
     public function testPrepareData()
