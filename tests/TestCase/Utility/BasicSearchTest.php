@@ -4,6 +4,7 @@ namespace Search\Utility;
 use Cake\Event\EventManager;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
+use Search\Utility;
 use Search\Utility\BasicSearch;
 
 /**
@@ -107,6 +108,8 @@ class BasicSearchTest extends TestCase
 
         $this->user = ['id' => '00000000-0000-0000-0000-000000000001'];
         $this->BasicSearch = new BasicSearch(TableRegistry::get('Search.Dashboards'), $this->user);
+
+        Utility::instance(new Utility());
     }
 
     /**
