@@ -5,6 +5,11 @@ use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use Search\Widgets\AppWidget;
 
+/**
+ * @property \Search\Model\Table\AppWidgetsTable $AppWidgets
+ * @property \Search\Model\Table\WidgetsTable $Widgets
+ * @property \Search\Widgets\AppWidget $widget
+ */
 class AppWidgetTest extends TestCase
 {
     public $fixtures = [
@@ -23,11 +28,19 @@ class AppWidgetTest extends TestCase
     {
         $this->widget = new AppWidget(['foo' => 'bar']);
 
-        $config = TableRegistry::exists('AppWidgets') ? [] : ['className' => 'Search\Model\Table\AppWidgetsTable'];
-        $this->AppWidgets = TableRegistry::get('AppWidgets', $config);
+        $config = TableRegistry::exists('Search.AppWidgets') ? [] : ['className' => 'Search\Model\Table\AppWidgetsTable'];
+        /**
+         * @var \Search\Model\Table\AppWidgetsTable $table
+         */
+        $table = TableRegistry::get('Search.AppWidgets', $config);
+        $this->AppWidgets = $table;
 
-        $config = TableRegistry::exists('Widgets') ? [] : ['className' => 'Search\Model\Table\WidgetsTable'];
-        $this->Widgets = TableRegistry::get('Widgets', $config);
+        $config = TableRegistry::exists('Search.Widgets') ? [] : ['className' => 'Search\Model\Table\WidgetsTable'];
+        /**
+         * @var \Search\Model\Table\WidgetsTable $table
+         */
+        $table = TableRegistry::get('Search.Widgets', $config);
+        $this->Widgets = $table;
     }
 
     /**
@@ -44,17 +57,17 @@ class AppWidgetTest extends TestCase
         parent::tearDown();
     }
 
-    public function testGetType()
+    public function testGetType(): void
     {
         $this->assertEquals('app', $this->widget->getType());
     }
 
-    public function testGetOptions()
+    public function testGetOptions(): void
     {
         $this->assertEquals(['foo' => 'bar'], $this->widget->getOptions());
     }
 
-    public function testGetResults()
+    public function testGetResults(): void
     {
         $widget = $this->Widgets->get('00000000-0000-0000-0000-000000000003');
 
@@ -62,7 +75,7 @@ class AppWidgetTest extends TestCase
         $this->assertEquals('Plugin/Search/Widgets/hello_world', $this->widget->getRenderElement());
     }
 
-    public function testGetResultsWithDeletedWidget()
+    public function testGetResultsWithDeletedWidget(): void
     {
         $widget = $this->Widgets->get('00000000-0000-0000-0000-000000000004');
 
@@ -70,7 +83,7 @@ class AppWidgetTest extends TestCase
         $this->assertEquals('Plugin/Search/Widgets/foobar', $this->widget->getRenderElement());
     }
 
-    public function testGetRenderElement()
+    public function testGetRenderElement(): void
     {
         $widget = $this->Widgets->get('00000000-0000-0000-0000-000000000003');
 
@@ -78,7 +91,7 @@ class AppWidgetTest extends TestCase
         $this->assertEquals('Plugin/Search/Widgets/hello_world', $this->widget->getRenderElement());
     }
 
-    public function testGetErrors()
+    public function testGetErrors(): void
     {
         $widget = $this->Widgets->get('00000000-0000-0000-0000-000000000004');
 

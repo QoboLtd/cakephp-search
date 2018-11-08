@@ -56,7 +56,7 @@ class ArticlesControllerTest extends JsonIntegrationTestCase
         parent::tearDown();
     }
 
-    public function testSearch()
+    public function testSearch(): void
     {
         $this->get('/articles/search');
 
@@ -81,7 +81,7 @@ class ArticlesControllerTest extends JsonIntegrationTestCase
         $this->assertResponseContains('<th class="actions">Actions</th>');
     }
 
-    public function testSearchAjax()
+    public function testSearchAjax(): void
     {
         EventManager::instance()->on('Search.Model.Search.afterFind', function ($event, $entities, $table) {
             return $entities;
@@ -104,7 +104,7 @@ class ArticlesControllerTest extends JsonIntegrationTestCase
         $this->assertEquals(2, $response->pagination->count);
     }
 
-    public function testSearchAjaxWithPrimaryKey()
+    public function testSearchAjaxWithPrimaryKey(): void
     {
         EventManager::instance()->on('Search.Model.Search.afterFind', function ($event, $entities, $table) {
             return $entities;
@@ -124,7 +124,7 @@ class ArticlesControllerTest extends JsonIntegrationTestCase
         $this->assertEquals('00000000-0000-0000-0000-000000000002', $response->data[0]->{'Articles.id'});
     }
 
-    public function testSearchAjaxWithGroupBy()
+    public function testSearchAjaxWithGroupBy(): void
     {
         EventManager::instance()->on('Search.Model.Search.afterFind', function ($event, $entities, $table) {
             return $entities;
@@ -144,7 +144,7 @@ class ArticlesControllerTest extends JsonIntegrationTestCase
         $this->assertEquals(2, $response->pagination->count);
     }
 
-    public function testSearchPost()
+    public function testSearchPost(): void
     {
         $data = [
             'aggregator' => 'AND',
@@ -164,7 +164,7 @@ class ArticlesControllerTest extends JsonIntegrationTestCase
         $this->assertRedirectContains('/articles/search');
     }
 
-    public function testSearchPostExisting()
+    public function testSearchPostExisting(): void
     {
         $id = '00000000-0000-0000-0000-000000000003';
         $data = [
@@ -196,7 +196,7 @@ class ArticlesControllerTest extends JsonIntegrationTestCase
         $this->assertNotEquals($expected->content, $entity->content);
     }
 
-    public function testSaveSearch()
+    public function testSaveSearch(): void
     {
         $id = '00000000-0000-0000-0000-000000000003';
         $data = ['name' => 'foo'];
@@ -212,7 +212,7 @@ class ArticlesControllerTest extends JsonIntegrationTestCase
         $this->assertNotEquals($expected->name, $entity->name);
     }
 
-    public function testEditSearch()
+    public function testEditSearch(): void
     {
         $id = '00000000-0000-0000-0000-000000000003';
         $preId = '00000000-0000-0000-0000-000000000002';
@@ -247,7 +247,7 @@ class ArticlesControllerTest extends JsonIntegrationTestCase
         $this->assertNotEquals($preSaved->modified, $entityAfter->modified);
     }
 
-    public function testCopySearch()
+    public function testCopySearch(): void
     {
         $id = '00000000-0000-0000-0000-000000000003';
 
@@ -270,7 +270,7 @@ class ArticlesControllerTest extends JsonIntegrationTestCase
         $this->assertEquals($expected->user_id, $entity->user_id);
     }
 
-    public function testDeleteSearch()
+    public function testDeleteSearch(): void
     {
         $id = '00000000-0000-0000-0000-000000000003';
 
@@ -284,7 +284,7 @@ class ArticlesControllerTest extends JsonIntegrationTestCase
         $this->assertTrue($query->isEmpty());
     }
 
-    public function testExportSearch()
+    public function testExportSearch(): void
     {
         $id = '00000000-0000-0000-0000-000000000003';
 
@@ -295,7 +295,7 @@ class ArticlesControllerTest extends JsonIntegrationTestCase
         $this->assertEquals(2, $this->viewVariable('count'));
     }
 
-    public function testExportSearchAjax()
+    public function testExportSearchAjax(): void
     {
         $id = '00000000-0000-0000-0000-000000000003';
 

@@ -39,8 +39,12 @@ class WidgetsTableTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $config = TableRegistry::exists('Widgets') ? [] : ['className' => 'Search\Model\Table\WidgetsTable'];
-        $this->Widgets = TableRegistry::get('Widgets', $config);
+        $config = TableRegistry::exists('Search.Widgets') ? [] : ['className' => 'Search\Model\Table\WidgetsTable'];
+        /**
+         * @var \Search\Model\Table\WidgetsTable $table
+         */
+        $table = TableRegistry::get('Search.Widgets', $config);
+        $this->Widgets = $table;
     }
 
     /**
@@ -55,7 +59,7 @@ class WidgetsTableTest extends TestCase
         parent::tearDown();
     }
 
-    public function testValidationDefault()
+    public function testValidationDefault(): void
     {
         $validator = new \Cake\Validation\Validator();
         $result = $this->Widgets->validationDefault($validator);
@@ -63,7 +67,7 @@ class WidgetsTableTest extends TestCase
         $this->assertInstanceOf('\Cake\Validation\Validator', $result);
     }
 
-    public function testBuildRules()
+    public function testBuildRules(): void
     {
         $rules = new \Cake\ORM\RulesChecker();
         $result = $this->Widgets->buildRules($rules);
@@ -73,9 +77,8 @@ class WidgetsTableTest extends TestCase
 
     /**
      * testing find
-     * @return array $res containing array of saved_searches
      */
-    public function testGetWidgets()
+    public function testGetWidgets(): void
     {
         EventManager::instance()->on(new WidgetsListener());
 
@@ -84,7 +87,7 @@ class WidgetsTableTest extends TestCase
         $this->assertInternalType('array', $res);
     }
 
-    public function testGetWidgetsWithReports()
+    public function testGetWidgetsWithReports(): void
     {
         EventManager::instance()->on(new WidgetsListener());
         // anonymous event listener that passes some dummy reports
@@ -134,7 +137,7 @@ class WidgetsTableTest extends TestCase
         $this->assertContains($data, $result);
     }
 
-    public function testGetWidgetsWithAppWidgets()
+    public function testGetWidgetsWithAppWidgets(): void
     {
         EventManager::instance()->on(new WidgetsListener());
         $result = $this->Widgets->getWidgets();

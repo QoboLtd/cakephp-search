@@ -1,5 +1,5 @@
 <?php
-namespace Search\Utility;
+namespace Search\Test\TestCase\Utility;
 
 use Cake\Event\EventManager;
 use Cake\ORM\TableRegistry;
@@ -10,6 +10,9 @@ use Search\Utility\BasicSearch;
 
 /**
  * Search\Utility\BasicSearch Test Case
+ *
+ * @property array $user
+ * @property \Search\Utility\BasicSearch $BasicSearch
  */
 class BasicSearchTest extends TestCase
 {
@@ -126,7 +129,7 @@ class BasicSearchTest extends TestCase
         parent::tearDown();
     }
 
-    public function testGetCriteria()
+    public function testGetCriteria(): void
     {
         $result = $this->BasicSearch->getCriteria('foo');
 
@@ -136,7 +139,7 @@ class BasicSearchTest extends TestCase
         $this->assertEquals($result, $expected);
     }
 
-    public function testGetCriteriaWithoutSearchableFields()
+    public function testGetCriteriaWithoutSearchableFields(): void
     {
         $basicSearch = new BasicSearch(TableRegistry::get('NonExistingTable'), $this->user);
         $result = $basicSearch->getCriteria('foo');
@@ -145,7 +148,7 @@ class BasicSearchTest extends TestCase
         $this->assertEmpty($result);
     }
 
-    public function testGetCriteriaWithRelatedField()
+    public function testGetCriteriaWithRelatedField(): void
     {
         $value = 'Everyone';
         $result = $this->BasicSearch->getCriteria($value);
@@ -162,7 +165,7 @@ class BasicSearchTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
-    public function testGetCriteriaWithDefaultFields()
+    public function testGetCriteriaWithDefaultFields(): void
     {
         EventManager::instance()->on('Search.Model.Search.basicSearchFields', function ($event, $table) {
             return [

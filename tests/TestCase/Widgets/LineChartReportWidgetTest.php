@@ -20,12 +20,12 @@ class LineChartReportWidgetTest extends TestCase
         parent::tearDown();
     }
 
-    public function getType()
+    public function testGetType(): void
     {
         $this->assertEquals($this->widget->getType(), 'lineChart');
     }
 
-    public function testGetScripts()
+    public function testGetScripts(): void
     {
         $content = $this->widget->getScripts([]);
         $this->assertInternalType('array', $content);
@@ -35,7 +35,7 @@ class LineChartReportWidgetTest extends TestCase
         $this->assertArrayHasKey('javascript', $content['post']);
     }
 
-    public function testGetContainerId()
+    public function testGetContainerId(): void
     {
         $config = [
             'slug' => 'testLineChartGraph',
@@ -45,7 +45,7 @@ class LineChartReportWidgetTest extends TestCase
         $this->assertEquals($containerId, 'graph_' . 'testLineChartGraph');
     }
 
-    public function testGetChartColorsEmptyColorsConfig()
+    public function testGetChartColorsEmptyColorsConfig(): void
     {
         $config = [
             'modelName' => 'Reports',
@@ -73,9 +73,9 @@ class LineChartReportWidgetTest extends TestCase
     }
 
     /**
-     * @expectedException RuntimeException
+     * @expectedException \RuntimeException
      */
-    public function testGetChartColorsExpectionException()
+    public function testGetChartColorsExpectionException(): void
     {
         $config = [
             'modelName' => 'Reports',
@@ -102,7 +102,7 @@ class LineChartReportWidgetTest extends TestCase
         $this->assertEquals($result, ['#08c6ba', '#08c6bc']);
     }
 
-    public function testGetChartColors()
+    public function testGetChartColors(): void
     {
         $config = [
             'modelName' => 'Reports',
@@ -129,7 +129,7 @@ class LineChartReportWidgetTest extends TestCase
         $this->assertEquals($result, ['#08c6ba', '#08c6bc']);
     }
 
-    public function testGetChartData()
+    public function testGetChartData(): void
     {
         $data = ['name' => 'foo'];
 

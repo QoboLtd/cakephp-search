@@ -36,8 +36,12 @@ class AppWidgetsTableTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $config = TableRegistry::exists('AppWidgets') ? [] : ['className' => 'Search\Model\Table\AppWidgetsTable'];
-        $this->AppWidgets = TableRegistry::get('AppWidgets', $config);
+        $config = TableRegistry::exists('Search.AppWidgets') ? [] : ['className' => 'Search\Model\Table\AppWidgetsTable'];
+        /**
+         * @var \Search\Model\Table\AppWidgetsTable $table
+         */
+        $table = TableRegistry::get('Search.AppWidgets', $config);
+        $this->AppWidgets = $table;
     }
 
     /**
@@ -52,7 +56,7 @@ class AppWidgetsTableTest extends TestCase
         parent::tearDown();
     }
 
-    public function testInitialize()
+    public function testInitialize(): void
     {
         $result = $this->AppWidgets->find('list')->toArray();
 
@@ -60,7 +64,7 @@ class AppWidgetsTableTest extends TestCase
         $this->assertContains('Hello World', $result);
     }
 
-    public function testValidationDefault()
+    public function testValidationDefault(): void
     {
         $validator = new \Cake\Validation\Validator();
         $result = $this->AppWidgets->validationDefault($validator);
@@ -68,7 +72,7 @@ class AppWidgetsTableTest extends TestCase
         $this->assertInstanceOf('\Cake\Validation\Validator', $result);
     }
 
-    public function testBuildRules()
+    public function testBuildRules(): void
     {
         $rules = new \Cake\ORM\RulesChecker();
         $result = $this->AppWidgets->buildRules($rules);

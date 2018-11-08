@@ -37,8 +37,12 @@ class SavedSearchesTableTest extends TestCase
     {
         parent::setUp();
 
-        $config = TableRegistry::exists('SavedSearches') ? [] : ['className' => 'Search\Model\Table\SavedSearchesTable'];
-        $this->SavedSearches = TableRegistry::get('SavedSearches', $config);
+        $config = TableRegistry::exists('Search.SavedSearches') ? [] : ['className' => 'Search\Model\Table\SavedSearchesTable'];
+        /**
+         * @var \Search\Model\Table\SavedSearchesTable $table
+         */
+        $table = TableRegistry::get('Search.SavedSearches', $config);
+        $this->SavedSearches = $table;
     }
 
     /**
@@ -53,7 +57,7 @@ class SavedSearchesTableTest extends TestCase
         parent::tearDown();
     }
 
-    public function testValidationDefault()
+    public function testValidationDefault(): void
     {
         $validator = new Validator();
         $result = $this->SavedSearches->validationDefault($validator);
@@ -61,7 +65,7 @@ class SavedSearchesTableTest extends TestCase
         $this->assertInstanceOf(Validator::class, $result);
     }
 
-    public function testBuildRules()
+    public function testBuildRules(): void
     {
         $rules = new RulesChecker();
         $result = $this->SavedSearches->buildRules($rules);
@@ -69,7 +73,7 @@ class SavedSearchesTableTest extends TestCase
         $this->assertInstanceOf(RulesChecker::class, $result);
     }
 
-    public function testIsEditable()
+    public function testIsEditable(): void
     {
         $entity = $this->SavedSearches->get('00000000-0000-0000-0000-000000000001');
         $result = $this->SavedSearches->isEditable($entity);
@@ -84,14 +88,14 @@ class SavedSearchesTableTest extends TestCase
         ];
     }
 
-    public function testGetSavedSearchesFindAll()
+    public function testGetSavedSearchesFindAll(): void
     {
         $resultset = $this->SavedSearches->getSavedSearches();
         $this->assertInternalType('array', $resultset);
         $this->assertInstanceOf(SavedSearch::class, current($resultset));
     }
 
-    public function testGetSavedSearchesByUser()
+    public function testGetSavedSearchesByUser(): void
     {
         $records = $this->fixtureManager->loaded()['plugin.search.saved_searches']->records;
         $userId = current($records)['user_id'];
@@ -104,7 +108,7 @@ class SavedSearchesTableTest extends TestCase
         }
     }
 
-    public function testGetSavedSearchesByModel()
+    public function testGetSavedSearchesByModel(): void
     {
         $records = $this->fixtureManager->loaded()['plugin.search.saved_searches']->records;
         $model = current($records)['model'];

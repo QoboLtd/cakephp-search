@@ -44,8 +44,12 @@ class DashboardsTableTest extends TestCase
     {
         parent::setUp();
 
-        $config = TableRegistry::exists('Dashboards') ? [] : ['className' => 'Search\Model\Table\DashboardsTable'];
-        $this->Dashboards = TableRegistry::get('Dashboards', $config);
+        $config = TableRegistry::exists('Search.Dashboards') ? [] : ['className' => 'Search\Model\Table\DashboardsTable'];
+        /**
+         * @var \Search\Model\Table\DashboardsTable $table
+         */
+        $table = TableRegistry::get('Search.Dashboards', $config);
+        $this->Dashboards = $table;
     }
 
     /**
@@ -60,7 +64,7 @@ class DashboardsTableTest extends TestCase
         parent::tearDown();
     }
 
-    public function testValidationDefault()
+    public function testValidationDefault(): void
     {
         $validator = new \Cake\Validation\Validator();
         $result = $this->Dashboards->validationDefault($validator);
@@ -68,7 +72,7 @@ class DashboardsTableTest extends TestCase
         $this->assertInstanceOf(Validator::class, $result);
     }
 
-    public function testBuildRules()
+    public function testBuildRules(): void
     {
         $rules = new \Cake\ORM\RulesChecker();
         $result = $this->Dashboards->buildRules($rules);
@@ -76,7 +80,7 @@ class DashboardsTableTest extends TestCase
         $this->assertInstanceOf(RulesChecker::class, $result);
     }
 
-    public function testGetUserDashboards()
+    public function testGetUserDashboards(): void
     {
         $user = ['id' => '00000000-0000-0000-0000-000000000001'];
 
@@ -85,7 +89,7 @@ class DashboardsTableTest extends TestCase
         $this->assertEquals(1, $query->count());
     }
 
-    public function testGetUserDashboardsWithoutRolesAndGroups()
+    public function testGetUserDashboardsWithoutRolesAndGroups(): void
     {
         $user = ['id' => '00000000-0000-0000-0000-000000000003'];
 
@@ -94,7 +98,7 @@ class DashboardsTableTest extends TestCase
         $this->assertEquals(2, $query->count());
     }
 
-    public function testGetUserDashboardsSuperuser()
+    public function testGetUserDashboardsSuperuser(): void
     {
         $user = ['is_superuser' => true];
 

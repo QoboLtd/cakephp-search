@@ -1,5 +1,5 @@
 <?php
-namespace Search\Utility;
+namespace Search\Test\TestCase\Utility;
 
 use Cake\Event\EventManager;
 use Cake\TestSuite\TestCase;
@@ -7,6 +7,8 @@ use Search\Utility\Export;
 
 /**
  * Search\Utility\Export Test Case
+ *
+ * @property \Search\Utility\Export $Export
  */
 class ExportTest extends TestCase
 {
@@ -77,17 +79,17 @@ class ExportTest extends TestCase
         parent::tearDown();
     }
 
-    public function testCount()
+    public function testCount(): void
     {
         $this->assertEquals(2, $this->Export->count());
     }
 
-    public function testGetUrl()
+    public function testGetUrl(): void
     {
         $this->assertEquals('/uploads/export/Foobar.csv', $this->Export->getUrl());
     }
 
-    public function testExecute()
+    public function testExecute(): void
     {
         $count = $this->Export->count();
         $limit = 1;

@@ -20,12 +20,12 @@ class BarChartReportWidgetTest extends TestCase
         parent::tearDown();
     }
 
-    public function testGetType()
+    public function testGetType(): void
     {
         $this->assertEquals('barChart', $this->widget->getType());
     }
 
-    public function testGetScripts()
+    public function testGetScripts(): void
     {
         $content = $this->widget->getScripts([]);
         $this->assertInternalType('array', $content);
@@ -35,7 +35,7 @@ class BarChartReportWidgetTest extends TestCase
         $this->assertArrayHasKey('javascript', $content['post']);
     }
 
-    public function testGetContainerId()
+    public function testGetContainerId(): void
     {
         $config = [
             'slug' => 'TestGraph',
@@ -45,7 +45,7 @@ class BarChartReportWidgetTest extends TestCase
         $this->assertEquals($result, 'graph_' . 'TestGraph');
     }
 
-    public function testSetConfig()
+    public function testSetConfig(): void
     {
         $data = [
             'foo' => 'bar',
@@ -56,7 +56,7 @@ class BarChartReportWidgetTest extends TestCase
         $this->assertEquals($data, $this->widget->getConfig());
     }
 
-    public function testGetChartData()
+    public function testGetChartData(): void
     {
         $config = [
             'modelName' => 'Reports',
@@ -85,7 +85,7 @@ class BarChartReportWidgetTest extends TestCase
         $this->assertEquals([], $this->widget->getData());
     }
 
-    public function testGetChartDataWithData()
+    public function testGetChartDataWithData(): void
     {
         $config = [
             'modelName' => 'Reports',
