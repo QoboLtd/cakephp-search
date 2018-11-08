@@ -28,6 +28,9 @@ class WidgetsController extends AppController
      */
     public function index()
     {
+        /**
+         * @var \Search\Model\Table\WidgetsTable $table
+         */
         $table = TableRegistry::get('Search.Widgets');
 
         $widgets = $table->getWidgets();

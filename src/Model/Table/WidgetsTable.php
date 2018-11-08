@@ -198,12 +198,12 @@ class WidgetsTable extends Table
     /**
      * Save Dashboard Widgets
      *
-     * @param uuid $dashboardId of the instance
-     * @param array $widgets of the dashboard
+     * @param string $dashboardId of the instance
+     * @param mixed[] $widgets of the dashboard
      *
      * @return bool $result of the save operation.
      */
-    public function saveDashboardWidgets($dashboardId, $widgets = [])
+    public function saveDashboardWidgets(string $dashboardId, array $widgets = []): bool
     {
         $result = false;
 

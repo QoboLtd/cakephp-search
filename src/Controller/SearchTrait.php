@@ -45,7 +45,7 @@ trait SearchTrait
      * @param  string $id Saved search id
      * @return \Cake\Http\Response|void|null
      */
-    public function search($id = null)
+    public function search(string $id = null)
     {
         $model = $this->modelClass;
 
@@ -111,12 +111,12 @@ trait SearchTrait
     /**
      * Get AJAX response view variables
      *
-     * @param array $searchData Search data
+     * @param mixed[] $searchData Search data
      * @param \Cake\ORM\Table $table Table instance
      * @param \Search\Utility\Search $search Search instance
-     * @return array Variables and values for AJAX response
+     * @return mixed[] Variables and values for AJAX response
      */
-    protected function getAjaxViewVars(array $searchData, Table $table, Search $search)
+    protected function getAjaxViewVars(array $searchData, Table $table, Search $search): array
     {
         $displayColumns = [];
 
@@ -175,7 +175,7 @@ trait SearchTrait
      * @param string|null $id Search id.
      * @return \Cake\Http\Response|void|null
      */
-    public function saveSearch($id = null)
+    public function saveSearch(string $id = null)
     {
         $this->request->allowMethod(['patch', 'post', 'put']);
 
@@ -184,9 +184,9 @@ trait SearchTrait
         $search = $table->get($id);
         $search = $table->patchEntity($search, $this->request->getData());
         if ($table->save($search)) {
-            $this->Flash->success(__('The search has been saved.'));
+            $this->Flash->success((string)__('The search has been saved.'));
         } else {
-            $this->Flash->error(__('The search could not be saved. Please, try again.'));
+            $this->Flash->error((string)__('The search could not be saved. Please, try again.'));
         }
 
         return $this->redirect(['action' => 'search', $id]);
@@ -199,7 +199,7 @@ trait SearchTrait
      * @param string|null $id Search id.
      * @return \Cake\Http\Response|void|null
      */
-    public function editSearch($preId = null, $id = null)
+    public function editSearch(string $preId = null, string $id = null)
     {
         $this->request->allowMethod(['patch', 'post', 'put']);
 
@@ -211,9 +211,9 @@ trait SearchTrait
         ]);
 
         if ($table->save($search)) {
-            $this->Flash->success(__('The search has been edited.'));
+            $this->Flash->success((string)__('The search has been edited.'));
         } else {
-            $this->Flash->error(__('The search could not be edited. Please, try again.'));
+            $this->Flash->error((string)__('The search could not be edited. Please, try again.'));
         }
 
         return $this->redirect(['action' => 'search', $id]);
@@ -224,7 +224,7 @@ trait SearchTrait
      * @param string|null $id Search id.
      * @return \Cake\Http\Response|void|null
      */
-    public function copySearch($id = null)
+    public function copySearch(string $id = null)
     {
         $this->request->allowMethod(['patch', 'post', 'put']);
 
@@ -239,9 +239,9 @@ trait SearchTrait
         // patch new entity with saved search data
         $entity = $table->patchEntity($entity, $data);
         if ($table->save($entity)) {
-            $this->Flash->success(__('The search has been copied.'));
+            $this->Flash->success((string)__('The search has been copied.'));
         } else {
-            $this->Flash->error(__('The search could not be copied. Please, try again.'));
+            $this->Flash->error((string)__('The search could not be copied. Please, try again.'));
         }
 
         return $this->redirect(['action' => 'search', $entity->id]);
@@ -253,16 +253,16 @@ trait SearchTrait
      * @param string|null $id Saved search id.
      * @return \Cake\Http\Response|void|null Redirects to referer.
      */
-    public function deleteSearch($id = null)
+    public function deleteSearch(string $id = null)
     {
         $this->request->allowMethod(['post', 'delete']);
 
         $table = TableRegistry::get($this->tableName);
         $entity = $table->get($id);
         if ($table->delete($entity)) {
-            $this->Flash->success(__('The saved search has been deleted.'));
+            $this->Flash->success((string)__('The saved search has been deleted.'));
         } else {
-            $this->Flash->error(__('The saved search could not be deleted. Please, try again.'));
+            $this->Flash->error((string)__('The saved search could not be deleted. Please, try again.'));
         }
 
         return $this->redirect(['action' => 'search']);
@@ -278,7 +278,7 @@ trait SearchTrait
      * @param string $filename Export filename
      * @return \Cake\Http\Response|void
      */
-    public function exportSearch($id, $filename = null)
+    public function exportSearch(string $id, string $filename = null)
     {
         $filename = is_null($filename) ? $this->name : $filename;
         $export = new Export($id, $filename, $this->Auth->user());

@@ -47,7 +47,7 @@ class DashboardsController extends AppController
      * @return \Cake\Http\Response|void|null
      * @throws \Cake\Http\Exception\ForbiddenException
      */
-    public function view($id = null)
+    public function view(string $id = null)
     {
         $dashboard = $this->Dashboards->get($id, [
             'contain' => [
@@ -57,6 +57,9 @@ class DashboardsController extends AppController
         ]);
 
         $query = $this->Dashboards->getUserDashboards($this->Auth->user());
+        /**
+         * @var \Search\Model\Table\WidgetsTable $widgetsTable
+         */
         $widgetsTable = TableRegistry::get('Search.Widgets');
 
         $userDashboards = $query->find('list')->toArray();
@@ -119,6 +122,9 @@ class DashboardsController extends AppController
     {
         $dashboard = $this->Dashboards->newEntity();
 
+        /**
+         * @var \Search\Model\Table\WidgetsTable $widgetsTable
+         */
         $widgetsTable = TableRegistry::get('Search.Widgets');
         $widgets = $widgetsTable->getWidgets();
 
@@ -135,7 +141,7 @@ class DashboardsController extends AppController
             $resultedDashboard = $this->Dashboards->save($dashboard);
 
             if ($resultedDashboard) {
-                $this->Flash->success(__('The dashboard has been saved.'));
+                $this->Flash->success((string)__('The dashboard has been saved.'));
 
                 $dashboardId = $resultedDashboard->id;
 
@@ -147,7 +153,7 @@ class DashboardsController extends AppController
 
                 return $this->redirect(['action' => 'view', $dashboard->id]);
             } else {
-                $this->Flash->error(__('The dashboard could not be saved. Please, try again.'));
+                $this->Flash->error((string)__('The dashboard could not be saved. Please, try again.'));
             }
         }
 
@@ -165,7 +171,7 @@ class DashboardsController extends AppController
      * @param string|null $id Dashboard id.
      * @return \Cake\Http\Response|void|null Redirects on successful edit, renders view otherwise.
      */
-    public function edit($id = null)
+    public function edit(string $id = null)
     {
         $savedWidgetData = [];
         $dashboard = $this->Dashboards->get($id, [
@@ -175,6 +181,9 @@ class DashboardsController extends AppController
         $dashboardWidgets = $dashboard->widgets;
         unset($dashboard->widgets);
 
+        /**
+         * @var \Search\Model\Table\WidgetsTable $widgetsTable
+         */
         $widgetsTable = TableRegistry::get('Search.Widgets');
         $widgets = $widgetsTable->getWidgets();
 
@@ -218,8 +227,10 @@ class DashboardsController extends AppController
             ]);
 
             if ($this->Dashboards->save($dashboard)) {
-                $this->Flash->success(__('The dashboard has been saved.'));
-
+                $this->Flash->success((string)__('The dashboard has been saved.'));
+                /**
+                 * @var \Search\Model\Table\WidgetsTable $widgetsTable
+                 */
                 $widgetTable = TableRegistry::get('Search.Widgets');
                 $widgetTable->trashAll([
                     'dashboard_id' => $dashboard->id
@@ -232,7 +243,7 @@ class DashboardsController extends AppController
 
                 return $this->redirect(['action' => 'view', $id]);
             } else {
-                $this->Flash->error(__('The dashboard could not be saved. Please, try again.'));
+                $this->Flash->error((string)__('The dashboard could not be saved. Please, try again.'));
             }
         }
 
@@ -249,20 +260,23 @@ class DashboardsController extends AppController
      * @param string|null $id Dashboard id.
      * @return \Cake\Http\Response|void|null Redirects to index.
      */
-    public function delete($id = null)
+    public function delete(string $id = null)
     {
         $this->request->allowMethod(['post', 'delete']);
         $dashboard = $this->Dashboards->get($id);
 
         if ($this->Dashboards->delete($dashboard)) {
+            /**
+             * @var \Search\Model\Table\WidgetsTable $widgetsTable
+             */
             $widgetTable = TableRegistry::get('Search.Widgets');
             $widgetTable->trashAll([
                 'dashboard_id' => $id
             ]);
 
-            $this->Flash->success(__('The dashboard has been deleted.'));
+            $this->Flash->success((string)__('The dashboard has been deleted.'));
         } else {
-            $this->Flash->error(__('The dashboard could not be deleted. Please, try again.'));
+            $this->Flash->error((string)__('The dashboard could not be deleted. Please, try again.'));
         }
 
         return $this->redirect(['action' => 'index']);

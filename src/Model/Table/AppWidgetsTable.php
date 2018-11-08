@@ -124,7 +124,7 @@ class AppWidgetsTable extends Table
      *
      * @return void
      */
-    protected function _saveAppWidgets()
+    protected function _saveAppWidgets(): void
     {
         $widgets = $this->_getAppWidgets();
 
@@ -149,9 +149,9 @@ class AppWidgetsTable extends Table
     /**
      * Get widgets defined in the Application level (src/Template/Plugin/Search/AppWidgets).
      *
-     * @return array
+     * @return mixed[]
      */
-    protected function _getAppWidgets()
+    protected function _getAppWidgets(): array
     {
         $result = [];
 

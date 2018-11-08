@@ -20,8 +20,8 @@ use Cake\Validation\Validator;
 /**
  * Dashboards Model
  *
- * @property \Cake\ORM\Association\BelongsTo $Roles
- * @property \Cake\ORM\Association\BelongsToMany $SavedSearches
+ * @property \RolesCapabilities\Model\Table\RolesTable $Roles
+ * @property \Search\Model\Table\SavedSearches $SavedSearches
  */
 class DashboardsTable extends Table
 {

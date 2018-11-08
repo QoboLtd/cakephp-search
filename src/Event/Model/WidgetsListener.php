@@ -38,7 +38,7 @@ class WidgetsListener implements EventListenerInterface
      * @param \Cake\Event\Event $event Event instance
      * @return void
      */
-    public function getWidgets(Event $event)
+    public function getWidgets(Event $event): void
     {
         $result = array_merge(
             (array)$event->result,
@@ -53,9 +53,9 @@ class WidgetsListener implements EventListenerInterface
     /**
      * Fetch all saved searches from the database.
      *
-     * @return array
+     * @return mixed[]
      */
-    private function getSavedSearchWidgets()
+    private function getSavedSearchWidgets(): array
     {
         $table = TableRegistry::get('Search.SavedSearches');
 
@@ -76,9 +76,9 @@ class WidgetsListener implements EventListenerInterface
     /**
      * Fetch all reports through Event broadcast.
      *
-     * @return array
+     * @return mixed[]
      */
-    private function getReportWidgets()
+    private function getReportWidgets(): array
     {
         $event = new Event((string)EventName::MODEL_DASHBOARDS_GET_REPORTS(), $this);
         EventManager::instance()->dispatch($event);
@@ -103,9 +103,9 @@ class WidgetsListener implements EventListenerInterface
     /**
      * Returns list of widgets defined in the application scope.
      *
-     * @return array
+     * @return mixed[]
      */
-    private function getAppWidgets()
+    private function getAppWidgets(): array
     {
         $table = TableRegistry::get('Search.AppWidgets');
 
