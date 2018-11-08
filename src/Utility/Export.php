@@ -95,6 +95,7 @@ class Export
     public function execute($page, $limit)
     {
         $page = (int)$page;
+        $page = $page <= 1 ? 1 : $page;
         $limit = (int)$limit;
         $rows = $this->getRows($page, $limit);
 

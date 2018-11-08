@@ -12,7 +12,7 @@
 namespace Search\Controller;
 
 use Cake\Event\Event;
-use Cake\Network\Exception\BadRequestException;
+use Cake\Http\Exception\BadRequestException;
 use Cake\ORM\ResultSet;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -43,7 +43,7 @@ trait SearchTrait
      * Search action
      *
      * @param  string $id Saved search id
-     * @return \Cake\Network\Response|void
+     * @return \Cake\Http\Response|void|null
      */
     public function search($id = null)
     {
@@ -80,7 +80,7 @@ trait SearchTrait
 
         // return json response and skip any further processing.
         if ($this->request->is('ajax') && $this->request->accepts('application/json')) {
-            $this->viewBuilder()->className('Json');
+            $this->viewBuilder()->setClassName('Json');
             $response = $this->getAjaxViewVars($searchData['latest'], $table, $search);
             $this->set($response);
 
@@ -130,9 +130,9 @@ trait SearchTrait
             $displayColumns[] = $prefix . '.' . Search::GROUP_BY_FIELD;
         }
 
-        $searchData['sort_by_field'] = $this->request->query('sort');
+        $searchData['sort_by_field'] = $this->request->getQueryParams('sort');
 
-        $searchData['sort_by_order'] = $this->request->query('direction') ?: SearchOptions::DEFAULT_SORT_BY_ORDER;
+        $searchData['sort_by_order'] = $this->request->getQueryParams('direction') ?: SearchOptions::DEFAULT_SORT_BY_ORDER;
 
         $query = $search->execute($searchData);
 
@@ -142,10 +142,10 @@ trait SearchTrait
             'entities' => $resultSet,
             'table' => $table
         ]);
-        $this->eventManager()->dispatch($event);
+        $this->getEventManager()->dispatch($event);
 
         // overwrite result-set with event result, if a registered listener is found.
-        if (!empty($this->eventManager()->listeners($eventName))) {
+        if (!empty($this->getEventManager()->listeners($eventName))) {
             $resultSet = $event->result;
         }
 
@@ -173,8 +173,7 @@ trait SearchTrait
      * Save action
      *
      * @param string|null $id Search id.
-     * @return \Cake\Network\Response|null
-     * @throws \Cake\Network\Exception\NotFoundException When record not found.
+     * @return \Cake\Http\Response|void|null
      */
     public function saveSearch($id = null)
     {
@@ -183,7 +182,7 @@ trait SearchTrait
         $table = TableRegistry::get($this->tableName);
 
         $search = $table->get($id);
-        $search = $table->patchEntity($search, $this->request->data);
+        $search = $table->patchEntity($search, $this->request->getData());
         if ($table->save($search)) {
             $this->Flash->success(__('The search has been saved.'));
         } else {
@@ -198,8 +197,7 @@ trait SearchTrait
      *
      * @param string|null $preId Presaved Search id.
      * @param string|null $id Search id.
-     * @return \Cake\Network\Response|null
-     * @throws \Cake\Network\Exception\NotFoundException When record not found.
+     * @return \Cake\Http\Response|void|null
      */
     public function editSearch($preId = null, $id = null)
     {
@@ -224,8 +222,7 @@ trait SearchTrait
      * Copy action
      *
      * @param string|null $id Search id.
-     * @return \Cake\Network\Response|null
-     * @throws \Cake\Network\Exception\NotFoundException When record not found.
+     * @return \Cake\Http\Response|void|null
      */
     public function copySearch($id = null)
     {
@@ -254,8 +251,7 @@ trait SearchTrait
      * Delete method
      *
      * @param string|null $id Saved search id.
-     * @return \Cake\Network\Response|null Redirects to referer.
-     * @throws \Cake\Network\Exception\NotFoundException When record not found.
+     * @return \Cake\Http\Response|void|null Redirects to referer.
      */
     public function deleteSearch($id = null)
     {
@@ -288,8 +284,8 @@ trait SearchTrait
         $export = new Export($id, $filename, $this->Auth->user());
 
         if ($this->request->is('ajax') && $this->request->accepts('application/json')) {
-            $page = (int)$this->request->query('page');
-            $limit = (int)$this->request->query('limit');
+            $page = (int)$this->request->getQueryParams('page');
+            $limit = (int)$this->request->getQueryParams('limit');
 
             $export->execute($page, $limit);
 

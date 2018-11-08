@@ -13,7 +13,7 @@ namespace Search\Controller;
 
 use Cake\Core\Configure;
 use Cake\Event\Event;
-use Cake\Network\Exception\ForbiddenException;
+use Cake\Http\Exception\ForbiddenException;
 use Cake\ORM\TableRegistry;
 use Search\Controller\AppController;
 use Search\Model\Entity\Widget;
@@ -29,7 +29,7 @@ class DashboardsController extends AppController
     /**
      * Index method
      *
-     * @return \Cake\Network\Response|null
+     * @return \Cake\Http\Response|void|null
      */
     public function index()
     {
@@ -44,9 +44,8 @@ class DashboardsController extends AppController
      * View method
      *
      * @param string|null $id Dashboard id.
-     * @return void
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     * @throws \Cake\Network\Exception\ForbiddenException
+     * @return \Cake\Http\Response|void|null
+     * @throws \Cake\Http\Exception\ForbiddenException
      */
     public function view($id = null)
     {
@@ -114,7 +113,7 @@ class DashboardsController extends AppController
      *
      * @TODO: refactor the code. Eyez bleeedzz
      *
-     * @return \Cake\Network\Response|void Redirects on successful add, renders view otherwise.
+     * @return \Cake\Http\Response|void|null Redirects on successful add, renders view otherwise.
      */
     public function add()
     {
@@ -164,8 +163,7 @@ class DashboardsController extends AppController
      * Edit method
      *
      * @param string|null $id Dashboard id.
-     * @return \Cake\Network\Response|void Redirects on successful edit, renders view otherwise.
-     * @throws \Cake\Network\Exception\NotFoundException When record not found.
+     * @return \Cake\Http\Response|void|null Redirects on successful edit, renders view otherwise.
      */
     public function edit($id = null)
     {
@@ -249,8 +247,7 @@ class DashboardsController extends AppController
      * Delete method
      *
      * @param string|null $id Dashboard id.
-     * @return \Cake\Network\Response|null Redirects to index.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     * @return \Cake\Http\Response|void|null Redirects to index.
      */
     public function delete($id = null)
     {

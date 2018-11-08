@@ -35,10 +35,10 @@ echo $this->Html->script('Search./plugins/qobo.grid', ['block' => 'scriptBottom'
         <div class="box-body">
             <div class="row">
                 <div class="col-xs-12 col-md-6">
-                    <?= $this->Form->input('name'); ?>
+                    <?= $this->Form->control('name'); ?>
                 </div>
                 <div class="col-xs-12 col-md-6">
-                    <?= $this->Form->input('role_id', ['options' => $roles, 'empty' => true]); ?>
+                    <?= $this->Form->control('role_id', ['options' => $roles, 'empty' => true]); ?>
                 </div>
             </div>
         </div>
