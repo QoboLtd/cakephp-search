@@ -114,7 +114,7 @@ class AppWidgetsTable extends Table
      */
     protected function _initializeSchema(TableSchema $schema)
     {
-        $schema->columnType('content', 'json');
+        $schema->setColumnType('content', 'json');
 
         return $schema;
     }
@@ -175,7 +175,7 @@ class AppWidgetsTable extends Table
                     'name' => $name,
                     'type' => static::WIDGET_TYPE,
                     'content' => [
-                        'model' => $this->alias(),
+                        'model' => $this->getAlias(),
                         'path' => $path . $file,
                         'element' => $element
                     ]

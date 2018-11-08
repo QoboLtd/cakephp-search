@@ -112,7 +112,7 @@ class Validator
         $data = $table->getDisplayField();
 
         // check if display field exists in the database table
-        if ($table->getSchema()->column($data)) {
+        if ($table->getSchema()->getColumn($data)) {
             return $table->aliasField($data);
         }
 
@@ -120,7 +120,7 @@ class Validator
         foreach ($displayColumns as $displayColumn) {
             // remove table prefix
             list(, $displayColumn) = explode('.', $displayColumn);
-            if (!$table->getSchema()->column($displayColumn)) {
+            if (!$table->getSchema()->getColumn($displayColumn)) {
                 continue;
             }
 

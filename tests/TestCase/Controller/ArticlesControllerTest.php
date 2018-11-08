@@ -4,12 +4,12 @@ namespace Search\Test\TestCase\Controller;
 use Cake\Core\Configure;
 use Cake\Event\EventManager;
 use Cake\ORM\TableRegistry;
-use Cake\TestSuite\IntegrationTestCase;
+use Qobo\Utils\TestSuite\JsonIntegrationTestCase;
 
 /**
  * Search\Test\App\Controller\ArticlesController Test Case
  */
-class ArticlesControllerTest extends IntegrationTestCase
+class ArticlesControllerTest extends JsonIntegrationTestCase
 {
 
     /**
@@ -95,14 +95,12 @@ class ArticlesControllerTest extends IntegrationTestCase
         ]);
 
         $this->get('/articles/search/00000000-0000-0000-0000-000000000003');
-        $this->assertResponseOk();
+        $this->assertJsonResponseOk();
 
-        $this->assertResponseContains('data');
         $this->assertResponseContains('pagination');
         $this->assertResponseContains('First article title');
 
-        $response = json_decode($this->_getBodyAsString());
-        $this->assertTrue($response->success);
+        $response = $this->getParsedResponse();
         $this->assertEquals(2, $response->pagination->count);
     }
 
@@ -120,8 +118,9 @@ class ArticlesControllerTest extends IntegrationTestCase
         ]);
 
         $this->get('/articles/search/00000000-0000-0000-0000-000000000003');
+        $this->assertJsonResponseOk();
 
-        $response = json_decode($this->_getBodyAsString());
+        $response = $this->getParsedResponse();
         $this->assertEquals('00000000-0000-0000-0000-000000000002', $response->data[0]->{'Articles.id'});
     }
 
@@ -139,9 +138,9 @@ class ArticlesControllerTest extends IntegrationTestCase
         ]);
 
         $this->get('/articles/search/00000000-0000-0000-0000-000000000005');
+        $this->assertJsonResponseOk();
 
-        $response = json_decode($this->_getBodyAsString());
-        $this->assertTrue($response->success);
+        $response = $this->getParsedResponse();
         $this->assertEquals(2, $response->pagination->count);
     }
 

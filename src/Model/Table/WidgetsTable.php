@@ -56,9 +56,9 @@ class WidgetsTable extends Table
     {
         parent::initialize($config);
 
-        $this->table('widgets');
-        $this->displayField('id');
-        $this->primaryKey('id');
+        $this->setTable('widgets');
+        $this->setDisplayField('id');
+        $this->setPrimaryKey('id');
 
         $this->addBehavior('Timestamp');
         $this->addBehavior('Muffin/Trash.Trash');
@@ -130,7 +130,7 @@ class WidgetsTable extends Table
     {
         // get widgets through Event broadcast
         $event = new Event((string)EventName::MODEL_DASHBOARDS_GET_WIDGETS(), $this);
-        $this->eventManager()->dispatch($event);
+        $this->getEventManager()->dispatch($event);
 
         if (empty($event->result)) {
             return [];

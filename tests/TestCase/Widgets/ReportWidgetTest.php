@@ -2,7 +2,6 @@
 namespace Search\Test\TestCase\Widgets;
 
 use Cake\Event\EventList;
-use Cake\Event\EventManager;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\Fixture\FixtureManager;
 use Cake\TestSuite\TestCase;
@@ -30,8 +29,8 @@ class ReportWidgetTest extends TestCase
 
         $this->appView = new \Cake\View\View();
 
-        $this->appView->EventManager()->trackEvents(true);
-        $this->appView->EventManager()->setEventList(new EventList());
+        $this->appView->getEventManager()->trackEvents(true);
+        $this->appView->getEventManager()->setEventList(new EventList());
 
         $this->fixtureManager = new FixtureManager();
         $this->fixtureManager->fixturize($this);
@@ -126,9 +125,9 @@ class ReportWidgetTest extends TestCase
 
         $result = $this->widget->getReport(['rootView' => $this->appView, 'entity' => $entity]);
 
-        $events = $this->appView->EventManager()->getEventList();
+        $events = $this->appView->getEventManager()->getEventList();
         $events[0]->result = ['foo' => 'bar'];
-        $this->assertEventFired('Search.Report.getReports', $this->appView->EventManager());
+        $this->assertEventFired('Search.Report.getReports', $this->appView->getEventManager());
     }
 
     public function testValidatesWithoutRequiredFields()

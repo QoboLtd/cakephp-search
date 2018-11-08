@@ -111,7 +111,7 @@ class ReportWidget extends BaseWidget
         }
 
         $event = new Event((string)EventName::MODEL_DASHBOARDS_GET_REPORTS(), $options['rootView']->request);
-        $options['rootView']->EventManager()->dispatch($event);
+        $options['rootView']->getEventManager()->dispatch($event);
 
         $result = $event->result;
 

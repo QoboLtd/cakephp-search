@@ -116,7 +116,7 @@ class BasicSearch
         $result = (array)$event->result;
 
         if (empty($result)) {
-            $result = (array)$this->table->aliasField($this->table->displayField());
+            $result = (array)$this->table->aliasField($this->table->getDisplayField());
         }
 
         $result = $this->filterFields($result);
@@ -139,7 +139,7 @@ class BasicSearch
     protected function filterFields(array $fields)
     {
         // get table columns, aliased
-        $columns = $this->table->schema()->columns();
+        $columns = $this->table->getSchema()->columns();
         foreach ($columns as $index => $column) {
             $columns[$index] = $this->table->aliasField($column);
         }

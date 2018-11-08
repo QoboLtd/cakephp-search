@@ -75,7 +75,7 @@ class Utility
      */
     public function getSearchableFields(Table $table, array $user)
     {
-        $alias = $table->alias();
+        $alias = $table->getAlias();
 
         if (!empty($this->searchableFields[$alias])) {
             return $this->searchableFields[$alias];

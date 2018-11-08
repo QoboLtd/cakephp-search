@@ -36,9 +36,9 @@ class SavedSearchesTable extends Table
     {
         parent::initialize($config);
 
-        $this->table('saved_searches');
-        $this->displayField('name');
-        $this->primaryKey('id');
+        $this->setTable('saved_searches');
+        $this->setDisplayField('name');
+        $this->setPrimaryKey('id');
         $this->addBehavior('Timestamp');
         $this->addBehavior('Muffin/Trash.Trash');
 

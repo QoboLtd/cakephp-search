@@ -36,9 +36,9 @@ class DashboardsTable extends Table
     {
         parent::initialize($config);
 
-        $this->table('dashboards');
-        $this->displayField('name');
-        $this->primaryKey('id');
+        $this->setTable('dashboards');
+        $this->setDisplayField('name');
+        $this->setPrimaryKey('id');
 
         $this->addBehavior('Timestamp');
         $this->addBehavior('Muffin/Trash.Trash');
