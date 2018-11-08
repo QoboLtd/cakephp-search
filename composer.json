@@ -1,40 +1,64 @@
 {
     "name": "qobo/cakephp-search",
     "description": "Search plugin for CakePHP",
+    "keywords": ["cakephp", "search"],
     "type": "cakephp-plugin",
-	"license": "MIT",
-	"authors": [
-		{
-			"name": "Qobo Ltd",
-			"email": "info@qobo.biz",
-			"homepage": "https://www.qobo.biz",
-			"role": "Developer"
-		}
-	],
+    "license": "MIT",
+    "homepage": "https://www.qobo.biz",
+    "authors": [
+        {
+            "name": "Qobo Ltd",
+            "email": "support@qobo.biz",
+            "homepage": "https://www.qobo.biz",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/QoboLtd/cakephp-utils/issues",
+        "source": "https://github.com/QoboLtd/cakephp-utils"
+    },
+    "config": {
+        "sort-packages": true,
+        "optimize-autoloader": true,
+        "platform": {
+            "php": "7.1"
+        }
+    },
     "require": {
-        "qobo/cakephp-roles-capabilities": "^17.0",
-        "qobo/cakephp-utils": "^9.0"
+        "qobo/cakephp-roles-capabilities": "^18.0",
+        "qobo/cakephp-utils": "^10.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^6.0",
-        "cakephp/cakephp-codesniffer": "^3.0"
+        "qobo/cakephp-composer-dev": "^v1.0"
     },
     "autoload": {
         "psr-4": {
-            "Search\\": "src",
-            "Search\\Test\\Fixture\\": "tests\\Fixture",
-            "Groups\\Test\\Fixture\\": "tests\\Fixture",
-            "RolesCapabilities\\Test\\Fixture\\": "tests\\Fixture",
-            "CakeDC\\Users\\Test\\Fixture\\": "tests"
+            "Search\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Search\\Test\\": "tests",
-            "Groups\\Test\\": "./vendor/qobo/cakephp-groups/tests",
-            "RolesCapabilities\\Test\\": "./vendor/qobo/cakephp-roles-capabilities/tests",
-            "CakeDC\\Users\\Test\\": "./vendor/cakedc/users/tests",
-            "Cake\\Test\\": "./vendor/cakephp/cakephp/tests"
+            "Search\\Test\\": "tests/",
+            "Groups\\Test\\": "vendor/qobo/cakephp-groups/tests/",
+            "RolesCapabilities\\Test\\": "vendor/qobo/cakephp-roles-capabilities/tests/",
+            "CakeDC\\Users\\Test\\": "vendor/cakedc/users/tests/",
+            "Cake\\Test\\": "vendor/cakephp/cakephp/tests/"
         }
-    }
+    },
+    "scripts": {
+        "test": [
+            "phpcs",
+            "phpunit --no-coverage"
+        ],
+        "test-coverage": [
+            "phpcs",
+            "phpunit"
+        ],
+        "post-autoload-dump": "Cake\\Composer\\Installer\\PluginInstaller::postAutoloadDump"
+    },
+    "scripts-descriptions": {
+        "test": "Runs phpcs and phpunit without coverage",
+        "test-coverage": "Runs phpcs and phpunit with coverage enabled"
+    },
+    "prefer-stable": true
 }
