@@ -124,9 +124,9 @@ class WidgetsTable extends Table
     /**
      * getWidgets method.
      *
-     * @return array $result containing all widgets
+     * @return mixed[] $result containing all widgets
      */
-    public function getWidgets()
+    public function getWidgets(): array
     {
         // get widgets through Event broadcast
         $event = new Event((string)EventName::MODEL_DASHBOARDS_GET_WIDGETS(), $this);
@@ -163,11 +163,11 @@ class WidgetsTable extends Table
      * getWidgetOptions method
      *
      * @param \Search\Model\Entity\Widget $entity Widget entity
-     * @param array $options Optional extra configuration
+     * @param mixed[] $options Optional extra configuration
      *
-     * @return array $options
+     * @return mixed[] $options
      */
-    public function getWidgetOptions(Widget $entity, array $options = [])
+    public function getWidgetOptions(Widget $entity, array $options = []): array
     {
         $widget = WidgetFactory::create($entity->get('widget_type'));
 

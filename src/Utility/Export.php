@@ -22,49 +22,55 @@ use Search\Utility\Search;
 
 class Export
 {
+    /**
+     * @var string $id
+     */
     protected $id;
 
     /**
-     * Filename.
-     *
-     * @var string
+     * @var array $displayColumns
+     */
+    protected $displayColumns = [];
+
+    /**
+     * @var string $filename
      */
     protected $filename;
 
     /**
-     * Search query.
-     *
-     * @var \Cake\ORM\Query|null
+     * @var \Cake\ORM\Query|null $query Search query
      */
     protected $query = null;
 
+    /**
+     * @var array $data
+     */
     protected $data = [];
 
     /**
-     * Search entity.
-     *
-     * @var \Search\Model\Entity\SavedSearch
+     * @var \Search\Model\Entity\SavedSearch $search Search entity
      */
     protected $search;
 
     /**
-     * Current logged in user.
-     *
-     * @var array
+     * @var array $user Current user
      */
     protected $user = [];
 
-    protected $path = null;
+    /**
+     * @var string $path
+     */
+    protected $path;
 
     /**
      * Constructor.
      *
      * @param string $id Saved search id
      * @param string $filename Search name
-     * @param array $user Current user
-     * @param string|null $extension Extension name
+     * @param mixed[] $user Current user
+     * @param string $extension Extension name
      */
-    public function __construct($id, $filename, $user, $extension = 'csv')
+    public function __construct(string $id, string $filename, array $user, string $extension = 'csv')
     {
         $this->setSearch($id);
         $this->setFilename($filename, $extension);
@@ -80,7 +86,7 @@ class Export
      *
      * @return int
      */
-    public function count()
+    public function count(): int
     {
         return $this->query->count();
     }
@@ -92,16 +98,14 @@ class Export
      * @param int $limit Pagination limit
      * @return void
      */
-    public function execute($page, $limit)
+    public function execute(int $page, int $limit): void
     {
-        $page = (int)$page;
         $page = $page <= 1 ? 1 : $page;
-        $limit = (int)$limit;
         $rows = $this->getRows($page, $limit);
 
         $headers = [];
         $mode = 'a';
-        if (1 === (int)$page) {
+        if (1 === $page) {
             $headers = $this->getHeaders();
             $mode = 'w';
         }
@@ -115,11 +119,11 @@ class Export
     }
 
     /**
-     * Get export path.
+     * Get export URL.
      *
      * @return string
      */
-    public function getUrl()
+    public function getUrl(): string
     {
         return $this->url;
     }
@@ -130,7 +134,7 @@ class Export
      * @param string $id Saved search id
      * @return void
      */
-    protected function setSearch($id)
+    protected function setSearch(string $id): void
     {
         $table = TableRegistry::get('Search.SavedSearches');
 
@@ -144,7 +148,7 @@ class Export
      * @param string $extension File extension
      * @return void
      */
-    protected function setFilename($filename, $extension = 'csv')
+    protected function setFilename(string $filename, string $extension = 'csv'): void
     {
         $this->filename = $filename . '.' . $extension;
     }
@@ -154,7 +158,7 @@ class Export
      *
      * @return void
      */
-    protected function setData()
+    protected function setData(): void
     {
         $data = json_decode($this->search->content, true);
         $this->data = $data['latest'];
@@ -163,10 +167,10 @@ class Export
     /**
      * Set current user.
      *
-     * @param array $user Current user
+     * @param mixed[] $user Current user
      * @return void
      */
-    protected function setUser($user)
+    protected function setUser(array $user): void
     {
         $this->user = $user;
     }
@@ -176,7 +180,7 @@ class Export
      *
      * @return void
      */
-    protected function setQuery()
+    protected function setQuery(): void
     {
         $table = TableRegistry::get($this->search->get('model'));
         $search = new Search($table, $this->user);
@@ -188,7 +192,7 @@ class Export
      *
      * @return void
      */
-    protected function setUrl()
+    protected function setUrl(): void
     {
         $url = trim(Configure::read('Search.export.url'), '/');
 
@@ -200,7 +204,7 @@ class Export
      *
      * @return void
      */
-    protected function setPath()
+    protected function setPath(): void
     {
         $path = trim(Configure::read('Search.export.url'), DS);
 
@@ -212,9 +216,9 @@ class Export
      *
      * @param int $page Pagination page
      * @param int $limit Pagination limit
-     * @return array
+     * @return mixed[]
      */
-    protected function getRows($page, $limit)
+    protected function getRows(int $page, int $limit): array
     {
         $displayColumns = $this->getDisplayColumns();
         if (empty($displayColumns)) {
@@ -261,9 +265,9 @@ class Export
     /**
      * Get export headers.
      *
-     * @return array
+     * @return mixed[]
      */
-    protected function getHeaders()
+    protected function getHeaders(): array
     {
         $displayColumns = $this->getDisplayColumns();
 
@@ -297,9 +301,9 @@ class Export
     /**
      * Display columns getter.
      *
-     * @return array
+     * @return mixed[]
      */
-    protected function getDisplayColumns()
+    protected function getDisplayColumns(): array
     {
         if (property_exists($this, 'displayColumns')) {
             return $this->displayColumns;
@@ -322,11 +326,12 @@ class Export
     /**
      * Create export file.
      *
-     * @param array $data CSV data
+     * @todo Implement error handling
+     * @param mixed[] $data CSV data
      * @param string $mode File mode
      * @return void
      */
-    protected function create(array $data, $mode = 'a')
+    protected function create(array $data, string $mode = 'a'): void
     {
         // create file path
         $file = new File($this->path, true);

@@ -99,9 +99,9 @@ class AppWidget extends BaseWidget
     /**
      * Widget loading errors.
      *
-     * @return array $errors
+     * @return mixed[] $errors
      */
-    public function getErrors()
+    public function getErrors(): array
     {
         return $this->errors;
     }

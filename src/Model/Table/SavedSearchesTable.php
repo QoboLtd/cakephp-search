@@ -29,7 +29,7 @@ class SavedSearchesTable extends Table
     /**
      * Initialize method
      *
-     * @param array $config The configuration for the Table.
+     * @param mixed[] $config The configuration for the Table.
      * @return void
      */
     public function initialize(array $config)
@@ -94,11 +94,11 @@ class SavedSearchesTable extends Table
     /**
      * Returns saved searches filtered by users and models.
      *
-     * @param  array  $users  users ids
-     * @param  array  $models models names
-     * @return \Cake\ORM\ResultSet
+     * @param  mixed[]  $users  users ids
+     * @param  mixed[]  $models models names
+     * @return mixed[]
      */
-    public function getSavedSearches(array $users = [], array $models = [])
+    public function getSavedSearches(array $users = [], array $models = []): array
     {
         $conditions = [
             'SavedSearches.name IS NOT' => null,
@@ -126,7 +126,7 @@ class SavedSearchesTable extends Table
      * @param \Search\Model\Entity\SavedSearch $entity Search entity
      * @return bool
      */
-    public function isEditable(SavedSearch $entity)
+    public function isEditable(SavedSearch $entity): bool
     {
         return (bool)$entity->get('name');
     }
@@ -137,7 +137,7 @@ class SavedSearchesTable extends Table
      * @param  string $tableName Table name.
      * @return bool
      */
-    public function isSearchable($tableName)
+    public function isSearchable(string $tableName): bool
     {
         if (!is_string($tableName)) {
             throw new InvalidArgumentException('Provided variable [tableName] must be a string.');

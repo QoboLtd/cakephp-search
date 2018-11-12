@@ -29,7 +29,7 @@ class DashboardsTable extends Table
     /**
      * Initialize method
      *
-     * @param array $config The configuration for the Table.
+     * @param mixed[] $config The configuration for the Table.
      * @return void
      */
     public function initialize(array $config)
@@ -89,10 +89,10 @@ class DashboardsTable extends Table
     /**
      * Get specified user accessible dashboards.
      *
-     * @param  array $user user details
+     * @param  mixed[] $user user details
      * @return \Cake\ORM\Query
      */
-    public function getUserDashboards(array $user)
+    public function getUserDashboards(array $user): \Cake\ORM\Query
     {
         // get all dashboards
         $query = $this->find('all')->order('name');

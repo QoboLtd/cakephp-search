@@ -42,10 +42,10 @@ final class MagicValue
      * Constructor method.
      *
      * @param string $value Field value
-     * @param array $user User info
+     * @param mixed[] $user User info
      * @return void
      */
-    public function __construct($value, array $user)
+    public function __construct(string $value, array $user)
     {
         if (empty($user)) {
             throw new InvalidArgumentException('User info are required.');
@@ -80,7 +80,7 @@ final class MagicValue
      *
      * @return string
      */
-    private function me()
+    private function me(): string
     {
         return $this->user['id'];
     }
@@ -90,7 +90,7 @@ final class MagicValue
      *
      * @return \Cake\I18n\Time
      */
-    private function today()
+    private function today(): \Cake\I18n\Time
     {
         return new Time('today');
     }
@@ -100,7 +100,7 @@ final class MagicValue
      *
      * @return \Cake\I18n\Time
      */
-    private function yesterday()
+    private function yesterday(): \Cake\I18n\Time
     {
         return new Time('yesterday');
     }
@@ -109,7 +109,7 @@ final class MagicValue
      *
      * @return \Cake\I18n\Time
      */
-    private function tomorrow()
+    private function tomorrow(): \Cake\I18n\Time
     {
         return new Time('tomorrow');
     }

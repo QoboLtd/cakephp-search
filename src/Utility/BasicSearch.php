@@ -48,7 +48,7 @@ class BasicSearch
      * Constructor.
      *
      * @param \Cake\ORM\Table $table Searchable table
-     * @param array $user User info
+     * @param mixed[] $user User info
      * @return void
      */
     public function __construct(Table $table, array $user)
@@ -68,9 +68,9 @@ class BasicSearch
      * Prepare basic search query's where statement
      *
      * @param string $value Search query value
-     * @return array
+     * @return mixed[]
      */
-    public function getCriteria($value)
+    public function getCriteria(string $value): array
     {
         if ('' === trim($value)) {
             return [];
@@ -100,9 +100,9 @@ class BasicSearch
      * If the display field is a virtual one then if falls back to searchable fields,
      * using the ones that their type matches the basicSearchFieldTypes list.
      *
-     * @return array
+     * @return mixed[]
      */
-    protected function getFields()
+    protected function getFields(): array
     {
         if (empty($this->searchFields)) {
             return [];
@@ -133,10 +133,10 @@ class BasicSearch
     /**
      * Filters basic search fields by removing virtual ones.
      *
-     * @param array $fields Basic search fields
-     * @return array
+     * @param mixed[] $fields Basic search fields
+     * @return mixed[]
      */
-    protected function filterFields(array $fields)
+    protected function filterFields(array $fields): array
     {
         // get table columns, aliased
         $columns = $this->table->getSchema()->columns();
@@ -157,9 +157,9 @@ class BasicSearch
     /**
      * Default basic search fields getter.
      *
-     * @return array
+     * @return mixed[]
      */
-    protected function getDefaultFields()
+    protected function getDefaultFields(): array
     {
         $result = [];
         $types = Options::getBasicSearchFieldTypes();
@@ -178,9 +178,9 @@ class BasicSearch
      *
      * @param string $field Field name
      * @param string $value Search query value
-     * @return array
+     * @return mixed[]
      */
-    protected function getFieldCriteria($field, $value)
+    protected function getFieldCriteria(string $field, string $value): array
     {
         // not a searchable field
         if (!array_key_exists($field, $this->searchFields)) {
@@ -212,9 +212,9 @@ class BasicSearch
      *
      * @param string $field Field name
      * @param string $value Search query value
-     * @return array
+     * @return mixed[]
      */
-    protected function getFieldValue($field, $value)
+    protected function getFieldValue(string $field, string $value): array
     {
         return [
             'type' => $this->searchFields[$field]['type'],
@@ -233,9 +233,9 @@ class BasicSearch
      *
      * @param string $field Field name
      * @param string $value Search query value
-     * @return array
+     * @return mixed[]
      */
-    protected function getRelatedFieldValue($field, $value)
+    protected function getRelatedFieldValue(string $field, string $value): array
     {
         $table = TableRegistry::get($this->searchFields[$field]['source']);
 
