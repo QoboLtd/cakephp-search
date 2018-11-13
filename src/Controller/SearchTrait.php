@@ -50,7 +50,7 @@ trait SearchTrait
         $model = $this->modelClass;
 
         $searchTable = TableRegistry::get($this->tableName);
-        $table = $this->{$this->name};
+        $table = $this->loadModel();
         $search = new Search($table, $this->Auth->user());
 
         if (!$searchTable->isSearchable($model)) {
