@@ -281,11 +281,18 @@ class SearchTest extends TestCase
             'limit' => '10'
         ];
 
+        /**
+         * @var \Cake\ORM\Query
+         */
         $result = $this->Search->execute($data);
 
         $this->assertInstanceOf(Query::class, $result);
         $this->assertEquals(1, $result->count());
-        $this->assertNull($result->first()->get($field));
+        /**
+         * @var \Cake\Datasource\EntityInterface
+         */
+        $entity = $result->firstOrFail();
+        $this->assertNull($entity->get($field));
     }
 
     public function testExecuteWithAssociated(): void
@@ -311,8 +318,15 @@ class SearchTest extends TestCase
         ];
 
         $search = new Search(TableRegistry::get($model), $this->user);
+        /**
+         * @var \Cake\ORM\Query
+         */
         $result = $search->execute($data);
-        $entity = $result->first();
+
+        /**
+         * @var \Cake\Datasource\EntityInterface
+         */
+        $entity = $result->firstOrFail();
 
         $this->assertInstanceOf(Query::class, $result);
         $this->assertEquals(1, $result->count());
@@ -443,11 +457,14 @@ class SearchTest extends TestCase
             'limit' => '10'
         ];
 
+        /**
+         * @var \Cake\Datasource\EntityInterface
+         */
         $result = $this->Search->update($data, $id);
         $this->assertInstanceOf(SavedSearch::class, $result);
-        $this->assertNotEmpty($result->content);
+        $this->assertNotEmpty($result->get('content'));
 
-        $content = json_decode($result->content, true);
+        $content = json_decode($result->get('content'), true);
         $this->assertArrayHasKey('latest', $content);
         $this->assertEquals($data, $content['latest']);
     }
@@ -458,9 +475,9 @@ class SearchTest extends TestCase
 
         $result = $this->Search->get($id);
         $this->assertInstanceOf(SavedSearch::class, $result);
-        $this->assertNotEmpty($result->content);
+        $this->assertNotEmpty($result->get('content'));
 
-        $result = json_decode($result->content, true);
+        $result = json_decode($result->get('content'), true);
 
         $this->assertArrayHasKey('saved', $result);
         $this->assertArrayHasKey('display_columns', $result['saved']);

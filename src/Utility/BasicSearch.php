@@ -257,13 +257,13 @@ class BasicSearch
             'criteria' => $criteria
         ];
 
-        $query = $search->execute($data);
-        if ($query->isEmpty()) {
+        $resultSet = $search->execute($data)->all();
+        if ($resultSet->isEmpty()) {
             return [];
         }
 
         $result = [];
-        foreach ($query->all() as $entity) {
+        foreach ($resultSet as $entity) {
             $result[] = $entity->id;
         }
 

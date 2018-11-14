@@ -15,32 +15,33 @@ use Cake\Core\Configure;
 use Cake\Event\Event;
 use Cake\Event\EventManager;
 use Cake\Filesystem\File;
+use Cake\Log\LogTrait;
 use Cake\ORM\TableRegistry;
+use Psr\Log\LogLevel;
 use Search\Event\EventName;
 use Search\Utility;
 use Search\Utility\Search;
 
 class Export
 {
+    use LogTrait;
+
     /**
-     * @var string $id
+     * @var string
      */
     protected $id;
 
     /**
-     * @var array $displayColumns
+     * @var array
      */
     protected $displayColumns = [];
 
     /**
-     * @var string $filename
+     * Search query
+     *
+     * @var \Cake\Datasource\QueryInterface
      */
-    protected $filename;
-
-    /**
-     * @var \Cake\ORM\Query|null $query Search query
-     */
-    protected $query = null;
+    protected $query;
 
     /**
      * @var array $data
@@ -48,19 +49,28 @@ class Export
     protected $data = [];
 
     /**
-     * @var \Search\Model\Entity\SavedSearch $search Search entity
+     * Search entity
+     *
+     * @var \Search\Model\Entity\SavedSearch
      */
     protected $search;
 
     /**
-     * @var array $user Current user
+     * Current user
+     *
+     * @var array
      */
     protected $user = [];
 
     /**
-     * @var string $path
+     * @var string
      */
     protected $path;
+
+    /**
+     * @var string
+     */
+    protected $url;
 
     /**
      * Constructor.
@@ -72,13 +82,27 @@ class Export
      */
     public function __construct(string $id, string $filename, array $user, string $extension = 'csv')
     {
-        $this->setSearch($id);
-        $this->setFilename($filename, $extension);
-        $this->setData();
-        $this->setUser($user);
-        $this->setQuery();
-        $this->setUrl();
-        $this->setPath();
+        $exportUrl = Configure::read('Search.export.url');
+
+        /**
+         * @var \Search\Model\Entity\SavedSearch
+         */
+        $savedSearch = TableRegistry::get('Search.SavedSearches')->get($id);
+
+        $data = json_decode($savedSearch->get('content'), true);
+        $data = isset($data['latest']) ? $data['latest'] : [];
+
+        $search = new Search(
+            TableRegistry::get($savedSearch->get('model')),
+            $user
+        );
+
+        $this->query = $search->execute($data);
+        $this->data = $data;
+        $this->search = $savedSearch;
+        $this->user = $user;
+        $this->url = sprintf('/%s/%s.%s', trim($exportUrl, '/'), $filename, $extension);
+        $this->path = WWW_ROOT . trim($exportUrl, DS) . DS . $filename . '.' . $extension;
     }
 
     /**
@@ -129,89 +153,6 @@ class Export
     }
 
     /**
-     * Set search entity.
-     *
-     * @param string $id Saved search id
-     * @return void
-     */
-    protected function setSearch(string $id): void
-    {
-        $table = TableRegistry::get('Search.SavedSearches');
-
-        $this->search = $table->get($id);
-    }
-
-    /**
-     * Set filename.
-     *
-     * @param string $filename Filename
-     * @param string $extension File extension
-     * @return void
-     */
-    protected function setFilename(string $filename, string $extension = 'csv'): void
-    {
-        $this->filename = $filename . '.' . $extension;
-    }
-
-    /**
-     * Set search data.
-     *
-     * @return void
-     */
-    protected function setData(): void
-    {
-        $data = json_decode($this->search->content, true);
-        $this->data = $data['latest'];
-    }
-
-    /**
-     * Set current user.
-     *
-     * @param mixed[] $user Current user
-     * @return void
-     */
-    protected function setUser(array $user): void
-    {
-        $this->user = $user;
-    }
-
-    /**
-     * Set search query.
-     *
-     * @return void
-     */
-    protected function setQuery(): void
-    {
-        $table = TableRegistry::get($this->search->get('model'));
-        $search = new Search($table, $this->user);
-        $this->query = $search->execute($this->data);
-    }
-
-    /**
-     * Set export url.
-     *
-     * @return void
-     */
-    protected function setUrl(): void
-    {
-        $url = trim(Configure::read('Search.export.url'), '/');
-
-        $this->url = '/' . $url . '/' . $this->filename;
-    }
-
-    /**
-     * Set export path.
-     *
-     * @return void
-     */
-    protected function setPath(): void
-    {
-        $path = trim(Configure::read('Search.export.url'), DS);
-
-        $this->path = WWW_ROOT . $path . DS . $this->filename;
-    }
-
-    /**
      * Get export rows.
      *
      * @param int $page Pagination page
@@ -226,12 +167,12 @@ class Export
         }
 
         $query = $this->query->page($page, $limit);
-        if ($query->isEmpty()) {
+        $entities = $query->all();
+        if ($entities->isEmpty()) {
             return [];
         }
 
-        $entities = $query->all();
-        $table = TableRegistry::get($this->search->model);
+        $table = TableRegistry::get($this->search->get('model'));
 
         $event = new Event((string)EventName::MODEL_SEARCH_AFTER_FIND(), $this, [
             'entities' => $entities,
@@ -275,7 +216,7 @@ class Export
             return [];
         }
 
-        $table = TableRegistry::get($this->search->model);
+        $table = TableRegistry::get($this->search->get('model'));
 
         $associationLabels = Utility::instance()->getAssociationLabels($table);
         $searchableFields = Utility::instance()->getSearchableFields($table, $this->user);
@@ -305,19 +246,19 @@ class Export
      */
     protected function getDisplayColumns(): array
     {
-        if (property_exists($this, 'displayColumns')) {
+        if (! empty($this->displayColumns)) {
             return $this->displayColumns;
         }
 
-        $this->displayColumns = !empty($this->data['display_columns']) ? $this->data['display_columns'] : [];
+        if (! empty($this->data['display_columns'])) {
+            $this->displayColumns = $this->data['display_columns'];
+        }
 
-        $groupByField = !empty($this->data['group_by']) ? $this->data['group_by'] : '';
-
-        if ($groupByField) {
-            list($prefix, ) = pluginSplit($groupByField);
+        if (! empty($this->data['group_by'])) {
+            list($prefix, ) = pluginSplit($this->data['group_by']);
             $countField = $prefix . '.' . Search::GROUP_BY_FIELD;
 
-            $this->displayColumns = [$groupByField, $countField];
+            $this->displayColumns = [$this->data['group_by'], $countField];
         }
 
         return $this->displayColumns;
@@ -326,7 +267,6 @@ class Export
     /**
      * Create export file.
      *
-     * @todo Implement error handling
      * @param mixed[] $data CSV data
      * @param string $mode File mode
      * @return void
@@ -336,11 +276,29 @@ class Export
         // create file path
         $file = new File($this->path, true);
 
-        // write to file
-        $handler = fopen($file->path, $mode);
-        foreach ($data as $row) {
-            fputcsv($handler, $row);
+        // skip if file is not writable
+        if (! $file->writable()) {
+            $this->log(sprintf('Export file is not writable: %s', $file->pwd()), LogLevel::ERROR);
+
+            return;
         }
+
+        /**
+         * @var resource
+         */
+        $handler = fopen($file->pwd(), $mode);
+        if (! is_resource($handler)) {
+            $this->log(sprintf('Export interrupted: failed to bind resource to a stream'), LogLevel::ERROR);
+        }
+
+        foreach ($data as $row) {
+            if (false === fputcsv($handler, $row)) {
+                $this->log(sprintf('Export interrupted: failed to write data into the file'), LogLevel::ERROR);
+
+                return;
+            }
+        }
+
         fclose($handler);
     }
 }

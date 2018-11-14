@@ -40,6 +40,7 @@ use Search\Widgets\WidgetFactory;
  * @method \Search\Model\Entity\Widget patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
  * @method \Search\Model\Entity\Widget[] patchEntities($entities, array $data, array $options = [])
  * @method \Search\Model\Entity\Widget findOrCreate($search, callable $callback = null)
+ * @method \Muffin\Trash\Model\Behavior\TrashBehavior trashAll($conditions)
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
@@ -132,13 +133,13 @@ class WidgetsTable extends Table
         $event = new Event((string)EventName::MODEL_DASHBOARDS_GET_WIDGETS(), $this);
         $this->getEventManager()->dispatch($event);
 
-        if (empty($event->result)) {
+        if (empty($event->getResult())) {
             return [];
         }
 
         // assembling all widgets in one
         $result = [];
-        foreach ((array)$event->result as $widget) {
+        foreach ((array)$event->getResult() as $widget) {
             if (empty($widget['data'])) {
                 continue;
             }

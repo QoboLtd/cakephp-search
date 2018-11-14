@@ -28,7 +28,7 @@ class BarChartReportWidget extends BaseReportGraphs
      * @param array $data containing report configs and data.
      * @return array $chartData with defined chart information.
      */
-    public function getChartData(array $data = [])
+    public function getChartData(array $data = []) : array
     {
         $labels = [];
         $report = $this->config;
@@ -70,10 +70,10 @@ class BarChartReportWidget extends BaseReportGraphs
      *
      * Specifies JS/CSS libs for the content loading
      *
-     * @param array $data passed from the widgetHandler.
-     * @return array $content with the libs.
+     * @param mixed[] $data passed from the widgetHandler.
+     * @return mixed[] $content with the libs.
      */
-    public function getScripts(array $data = [])
+    public function getScripts(array $data = []) : array
     {
         return [
             'post' => [

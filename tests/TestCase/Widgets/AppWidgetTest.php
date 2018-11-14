@@ -80,7 +80,7 @@ class AppWidgetTest extends TestCase
         $widget = $this->Widgets->get('00000000-0000-0000-0000-000000000004');
 
         $this->assertEquals([], $this->widget->getResults(['entity' => $widget]));
-        $this->assertEquals('Plugin/Search/Widgets/foobar', $this->widget->getRenderElement());
+        $this->assertEquals('', $this->widget->getRenderElement());
     }
 
     public function testGetRenderElement(): void
@@ -99,6 +99,6 @@ class AppWidgetTest extends TestCase
 
         $this->widget->getResults(['entity' => $widget]);
 
-        $this->assertEquals(['Widget "Foobar" has been deleted.'], $this->widget->getErrors());
+        $this->assertEquals(['Widget not found.'], $this->widget->getErrors());
     }
 }

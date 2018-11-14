@@ -4,6 +4,7 @@ namespace Search\Test\TestCase\Widgets;
 use Cake\Event\EventManager;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
+use Search\Model\Entity\SavedSearch;
 use Search\Widgets\SavedSearchWidget;
 
 /**
@@ -18,8 +19,9 @@ class SavedSearchWidgetTest extends TestCase
     public $Widgets;
 
     public $fixtures = [
-        'plugin.search.widgets',
-        'plugin.search.saved_searches',
+        'plugin.Search.dashboards',
+        'plugin.Search.saved_searches',
+        'plugin.Search.widgets',
         'plugin.CakeDC/Users.users',
     ];
 
@@ -41,8 +43,7 @@ class SavedSearchWidgetTest extends TestCase
         $table = TableRegistry::get('Search.Widgets', $config);
         $this->Widgets = $table;
 
-        $widget = $this->Widgets->get('00000000-0000-0000-0000-000000000002');
-        $this->widget = new SavedSearchWidget(['entity' => $widget]);
+        $this->widget = new SavedSearchWidget(['entity' => $this->Widgets->get('00000000-0000-0000-0000-000000000002')]);
 
         // anonymous event listener that passes some dummy searchable fields
         EventManager::instance()->on(
@@ -88,7 +89,7 @@ class SavedSearchWidgetTest extends TestCase
 
     public function testGetData(): void
     {
-        $this->assertEquals([], $this->widget->getData());
+        $this->assertEquals(null, $this->widget->getData());
     }
 
     public function testGetErrors(): void
@@ -116,6 +117,8 @@ class SavedSearchWidgetTest extends TestCase
             'entity' => $this->SavedSearches->get('00000000-0000-0000-0000-000000000001'),
             'user' => ['id' => '00000000-0000-0000-0000-000000000001']
         ]);
+
+        $this->assertInstanceOf(SavedSearch::class, $result);
     }
 
     public function testGetResultsSavedCriteria(): void
@@ -127,5 +130,7 @@ class SavedSearchWidgetTest extends TestCase
             'entity' => $this->SavedSearches->get('00000000-0000-0000-0000-000000000002'),
             'user' => ['id' => '00000000-0000-0000-0000-000000000001']
         ]);
+
+        $this->assertInstanceOf(SavedSearch::class, $result);
     }
 }

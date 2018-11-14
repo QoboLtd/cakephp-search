@@ -11,6 +11,8 @@
  */
 namespace Search\Utility;
 
+use Cake\Datasource\QueryInterface;
+use Cake\Datasource\RepositoryInterface;
 use Cake\Event\Event;
 use Cake\Event\EventManager;
 use Cake\Http\ServerRequest;
@@ -63,19 +65,21 @@ class Search
     /**
      * Saved searches table.
      *
-     * @var \Search\Model\Table\SavedSearchesTable
+     * @var \Cake\Datasource\RepositoryInterface
      */
     protected $searchTable;
 
     /**
      * Constructor.
      *
-     * @param \Cake\ORM\Table $table Searchable table
+     * @param \Cake\Datasource\RepositoryInterface $table Searchable table
      * @param mixed[] $user User info
      * @return void
      */
-    public function __construct(Table $table, array $user)
+    public function __construct(RepositoryInterface $table, array $user)
     {
+        /** @var \Cake\ORM\Table */
+        $table = $table;
         if (empty($user)) {
             throw new InvalidArgumentException('Empty user info is not allowed.');
         }
@@ -91,9 +95,9 @@ class Search
      * Search method.
      *
      * @param mixed[] $data Request data
-     * @return null|\Cake\ORM\Query
+     * @return \Cake\Datasource\QueryInterface
      */
-    public function execute(array $data)
+    public function execute(array $data) : QueryInterface
     {
         $data = Validator::validateData($this->table, $data, $this->user);
 
@@ -150,15 +154,18 @@ class Search
      *
      * @param mixed[] $searchData Request data
      * @param string $id Existing search id
-     * @return bool
+     * @return \Cake\Datasource\EntityInterface|false
      */
-    public function update(array $searchData, string $id): bool
+    public function update(array $searchData, string $id)
     {
+        /**
+         * @var \Search\Model\Entity\SavedSearch
+         */
         $entity = $this->searchTable->get($id);
-        $content = json_decode($entity->content, true);
+        $content = json_decode($entity->get('content'), true);
         $entity = $this->normalize($entity, $content, $searchData);
 
-        return $this->searchTable->save($entity) ? true : false;
+        return $this->searchTable->save($entity);
     }
 
     /**
@@ -167,11 +174,14 @@ class Search
      * @param string $id Existing search id
      * @return \Search\Model\Entity\SavedSearch
      */
-    public function get(string $id): \Search\Model\Entity\SavedSearch
+    public function get(string $id): SavedSearch
     {
         $id = !empty($id) ? $id : $this->create([]);
+        /**
+         * @var \Search\Model\Entity\SavedSearch
+         */
         $entity = $this->searchTable->get($id);
-        $content = json_decode($entity->content, true);
+        $content = json_decode($entity->get('content'), true);
         $entity = $this->normalize($entity, $content, $content);
 
         return $entity;
@@ -181,22 +191,17 @@ class Search
      * Reset search.
      *
      * @param \Search\Model\Entity\SavedSearch $entity Search entity
-     * @return bool
+     * @return \Search\Model\Entity\SavedSearch|null
      */
-    public function reset(SavedSearch $entity): bool
+    public function reset(SavedSearch $entity) : ?SavedSearch
     {
-        $content = json_decode($entity->content, true);
-
-        // skip reset on non-saved searches as it is unnecessary and for performance reasons.
-        if (!$entity->get('name')) {
-            return false;
-        }
+        $content = json_decode($entity->get('content'), true);
 
         // for backward compatibility
         $saved = isset($content['saved']) ? $content['saved'] : $content;
         $entity = $this->normalize($entity, $saved, $saved);
 
-        return $this->searchTable->save($entity) ? true : false;
+        return $this->searchTable->save($entity) ? $entity : null;
     }
 
     /**
@@ -253,12 +258,15 @@ class Search
                 continue;
             }
 
-            $primaryKey = $targetTable->aliasField($targetTable->getPrimaryKey());
+            $primaryKeys = [];
+            foreach ((array)$targetTable->getPrimaryKey() as $primaryKey) {
+                $primaryKeys[] = $targetTable->aliasField($primaryKey);
+            }
 
             // instantiate Search on related table
             $search = new Search($targetTable, $this->user);
 
-            $select = array_diff($search->getSelectClause($data), [$primaryKey]);
+            $select = array_diff($search->getSelectClause($data), $primaryKeys);
             if (!empty($select)) {
                 $result[$association->getName()]['select'] = $select;
             }
@@ -398,6 +406,7 @@ class Search
     {
         $emptyCriteria = $this->searchFields[$field]['operators'][$criteria['operator']]['emptyCriteria'];
 
+        $result = [];
         foreach ($emptyCriteria['values'] as $value) {
             $result[$emptyCriteria['aggregator']][] = $field . ' ' . trim($value);
         }
@@ -409,24 +418,20 @@ class Search
      * Get fields for Query's select statement.
      *
      * @param  mixed[] $data request data
-     * @return mixed[]
+     * @return string[]
      */
     public function getSelectClause(array $data): array
     {
-        $result = [];
         if (empty($data['display_columns'])) {
-            return $result;
+            return [];
         }
 
-        $result = $data['display_columns'];
-
-        if (!is_array($result)) {
-            $result = (array)$result;
-        }
-
-        $primaryKey = $this->table->aliasField($this->table->getPrimaryKey());
-        if (!in_array($primaryKey, $result)) {
-            array_unshift($result, $primaryKey);
+        $result = (array)$data['display_columns'];
+        foreach ((array)$this->table->getPrimaryKey() as $primaryKey) {
+            $primaryKey = $this->table->aliasField($primaryKey);
+            if (! in_array($primaryKey, $result)) {
+                array_unshift($result, $primaryKey);
+            }
         }
 
         $result = $this->filterFields($result);
@@ -456,6 +461,9 @@ class Search
         // delete old pre-saved searches
         $this->deletePreSaved();
 
+        /**
+         * @var \Search\Model\Entity\SavedSearch
+         */
         $entity = $this->searchTable->newEntity();
 
         $entity = $this->normalize($entity, $data, $data);
@@ -472,7 +480,7 @@ class Search
      * @param mixed[] $latest Latest search data
      * @return \Search\Model\Entity\SavedSearch
      */
-    protected function normalize(SavedSearch $entity, array $saved, array $latest)
+    protected function normalize(SavedSearch $entity, array $saved, array $latest) : SavedSearch
     {
         // Backward compatibility: search content must always contain 'saved' and 'latest' keys.
         $saved = isset($saved['saved']) ? $saved['saved'] : $saved;
@@ -506,9 +514,9 @@ class Search
         $saved = $filterFunc($saved);
         $latest = $filterFunc($latest);
 
-        $entity->user_id = $this->user['id'];
-        $entity->model = $this->table->getRegistryAlias();
-        $entity->content = json_encode(['saved' => $saved, 'latest' => $latest]);
+        $entity->set('user_id', $this->user['id']);
+        $entity->set('model', $this->table->getRegistryAlias());
+        $entity->set('content', json_encode(['saved' => $saved, 'latest' => $latest]));
 
         return $entity;
     }

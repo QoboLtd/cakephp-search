@@ -12,6 +12,7 @@
 namespace Search\Widgets;
 
 use Cake\Utility\Inflector;
+use RuntimeException;
 
 class WidgetFactory
 {
@@ -26,37 +27,33 @@ class WidgetFactory
      * base on the widget type field.
      *
      * @param string $type containing the widget handler type.
-     * @param array $options containing entity and view data.
+     * @param mixed[] $options containing entity and view data.
      * @return mixed $className of the widgetHandler.
      */
-    public static function create($type, array $options = [])
+    public static function create(string $type, array $options = [])
     {
-        $widget = null;
-        $handlerName = Inflector::camelize($type);
+        $type = Inflector::camelize($type);
 
         $interface = __NAMESPACE__ . '\\' . self::WIDGET_INTERFACE;
 
-        $namespaces = [static::APP_NAMESPACE, __NAMESPACE__];
-        foreach ($namespaces as $namespace) {
-            $className = $namespace . '\\' . $handlerName . self::WIDGET_SUFFIX;
-            if (!class_exists($className)) {
-                $className = null;
-                continue;
+        $className = '';
+        foreach ([static::APP_NAMESPACE, __NAMESPACE__] as $namespace) {
+            $className = $namespace . '\\' . $type . self::WIDGET_SUFFIX;
+            if (class_exists($className)) {
+                break;
             }
 
-            break;
+            $className = '';
         }
 
-        if (!$className) {
-            throw new \RuntimeException("Class [$type] doesn't exist");
+        if ('' === $className) {
+            throw new RuntimeException("Class [$type] doesn't exist");
         }
 
         if (!in_array($interface, class_implements($className))) {
-            throw new \RuntimeException("Class [$type] doesn't implement " . self::WIDGET_INTERFACE);
+            throw new RuntimeException("Class [$type] doesn't implement " . self::WIDGET_INTERFACE);
         }
 
-        $widget = new $className($options);
-
-        return $widget;
+        return new $className($options);
     }
 }

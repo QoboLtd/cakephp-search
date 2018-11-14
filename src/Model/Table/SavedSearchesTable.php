@@ -145,10 +145,15 @@ class SavedSearchesTable extends Table
 
         list(, $tableName) = pluginSplit($tableName);
 
-        $config = new ModuleConfig(ConfigType::MODULE(), $tableName);
+        $config = (new ModuleConfig(ConfigType::MODULE(), $tableName))->parse();
+        if (! property_exists($config, 'table')) {
+            return false;
+        }
 
-        $result = (bool)$config->parse()->table->searchable;
+        if (! property_exists($config->table, 'searchable')) {
+            return false;
+        }
 
-        return $result;
+        return (bool)$config->table->searchable;
     }
 }

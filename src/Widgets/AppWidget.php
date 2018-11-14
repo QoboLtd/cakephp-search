@@ -54,10 +54,10 @@ class AppWidget extends BaseWidget
     /**
      * Constructor method.
      *
-     * @param array $options containing widget entity.
+     * @param mixed[] $options containing widget entity.
      * @return void
      */
-    public function __construct($options = [])
+    public function __construct(array $options = [])
     {
         $this->options = $options;
     }
@@ -67,7 +67,7 @@ class AppWidget extends BaseWidget
      *
      * @return array
      */
-    public function getOptions()
+    public function getOptions() : array
     {
         return $this->options;
     }
@@ -78,20 +78,22 @@ class AppWidget extends BaseWidget
     public function getResults(array $options = [])
     {
         $table = TableRegistry::get('Search.AppWidgets');
-        $entity = $table->findById($options['entity']->widget_id)->first();
 
-        if ($entity) {
-            $this->renderElement = $entity->content['element'];
+        /**
+         * @var \Cake\Datasource\EntityInterface|null
+         */
+        $entity = $table->find()
+            ->where(['id' => $options['entity']->widget_id])
+            ->enableHydration()
+            ->first();
+
+        if (null === $entity) {
+            $this->errors[] = 'Widget not found.';
 
             return [];
         }
 
-        // get trashed record to display appropriate error message
-        $entity = $table->find('withTrashed')
-            ->where([$table->aliasField($table->getPrimaryKey()) => $options['entity']->widget_id])
-            ->first();
-        $this->renderElement = $entity->content['element'];
-        $this->errors[] = 'Widget "' . $entity->name . '" has been deleted.';
+        $this->renderElement = $entity->get('content')['element'];
 
         return [];
     }

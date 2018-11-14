@@ -188,12 +188,12 @@ class ArticlesControllerTest extends JsonIntegrationTestCase
 
         $entity = $table->get($id);
         $this->assertEquals($expected->id, $entity->id);
-        $this->assertEquals($expected->name, $entity->name);
-        $this->assertEquals($expected->type, $entity->type);
-        $this->assertEquals($expected->user_id, $entity->user_id);
-        $this->assertEquals($expected->model, $entity->model);
-        $this->assertEquals($expected->shared, $entity->shared);
-        $this->assertNotEquals($expected->content, $entity->content);
+        $this->assertEquals($expected->get('name'), $entity->get('name'));
+        $this->assertEquals($expected->get('type'), $entity->get('type'));
+        $this->assertEquals($expected->get('user_id'), $entity->get('user_id'));
+        $this->assertEquals($expected->get('model'), $entity->get('model'));
+        $this->assertEquals($expected->get('shared'), $entity->get('shared'));
+        $this->assertNotEquals($expected->get('content'), $entity->get('content'));
     }
 
     public function testSaveSearch(): void
@@ -209,7 +209,7 @@ class ArticlesControllerTest extends JsonIntegrationTestCase
         $this->assertRedirectContains('/articles/search');
 
         $entity = $table->get($id);
-        $this->assertNotEquals($expected->name, $entity->name);
+        $this->assertNotEquals($expected->get('name'), $entity->get('name'));
     }
 
     public function testEditSearch(): void
@@ -228,23 +228,23 @@ class ArticlesControllerTest extends JsonIntegrationTestCase
 
         // after edit
         $entityAfter = $table->get($id);
-        $this->assertEquals($data['name'], $entityAfter->name);
-        $this->assertEquals($entityBefore->user_id, $entityAfter->user_id);
-        $this->assertEquals($entityBefore->model, $entityAfter->model);
-        $this->assertEquals($entityBefore->system, $entityAfter->system);
-        $this->assertEquals($entityBefore->trashed, $entityAfter->trashed);
-        $this->assertEquals($entityBefore->created, $entityAfter->created);
-        $this->assertNotEquals($entityBefore->name, $entityAfter->name);
-        $this->assertNotEquals($entityBefore->content, $entityAfter->content);
-        $this->assertNotEquals($entityBefore->modified, $entityAfter->modified);
+        $this->assertEquals($data['name'], $entityAfter->get('name'));
+        $this->assertEquals($entityBefore->get('user_id'), $entityAfter->get('user_id'));
+        $this->assertEquals($entityBefore->get('model'), $entityAfter->get('model'));
+        $this->assertEquals($entityBefore->get('system'), $entityAfter->get('system'));
+        $this->assertEquals($entityBefore->get('trashed'), $entityAfter->get('trashed'));
+        $this->assertEquals($entityBefore->get('created'), $entityAfter->get('created'));
+        $this->assertNotEquals($entityBefore->get('name'), $entityAfter->get('name'));
+        $this->assertNotEquals($entityBefore->get('content'), $entityAfter->get('content'));
+        $this->assertNotEquals($entityBefore->get('modified'), $entityAfter->get('modified'));
 
         $preSaved = $table->get($preId);
-        $this->assertEquals($preSaved->content, $entityAfter->content);
-        $this->assertNotEquals($preSaved->user_id, $entityAfter->user_id);
-        $this->assertNotEquals($preSaved->model, $entityAfter->model);
-        $this->assertNotEquals($preSaved->system, $entityAfter->system);
-        $this->assertNotEquals($preSaved->created, $entityAfter->created);
-        $this->assertNotEquals($preSaved->modified, $entityAfter->modified);
+        $this->assertEquals($preSaved->get('content'), $entityAfter->get('content'));
+        $this->assertNotEquals($preSaved->get('user_id'), $entityAfter->get('user_id'));
+        $this->assertNotEquals($preSaved->get('model'), $entityAfter->get('model'));
+        $this->assertNotEquals($preSaved->get('system'), $entityAfter->get('system'));
+        $this->assertNotEquals($preSaved->get('created'), $entityAfter->get('created'));
+        $this->assertNotEquals($preSaved->get('modified'), $entityAfter->get('modified'));
     }
 
     public function testCopySearch(): void
@@ -258,16 +258,20 @@ class ArticlesControllerTest extends JsonIntegrationTestCase
         $this->assertRedirect();
         $this->assertRedirectContains('/articles/search');
 
-        $location = explode('/', $this->_response->getHeaderLine('Location'));
+        /**
+         * @var \Cake\Http\Response
+         */
+        $response = $this->_response;
+        $location = explode('/', $response->getHeaderLine('Location'));
         $id = array_pop($location);
         $entity = $table->get($id);
 
-        $this->assertEquals($expected->name, $entity->name);
-        $this->assertEquals($expected->type, $entity->type);
-        $this->assertEquals($expected->model, $entity->model);
-        $this->assertEquals($expected->shared, $entity->shared);
-        $this->assertEquals($expected->content, $entity->content);
-        $this->assertEquals($expected->user_id, $entity->user_id);
+        $this->assertEquals($expected->get('name'), $entity->get('name'));
+        $this->assertEquals($expected->get('type'), $entity->get('type'));
+        $this->assertEquals($expected->get('model'), $entity->get('model'));
+        $this->assertEquals($expected->get('shared'), $entity->get('shared'));
+        $this->assertEquals($expected->get('content'), $entity->get('content'));
+        $this->assertEquals($expected->get('user_id'), $entity->get('user_id'));
     }
 
     public function testDeleteSearch(): void

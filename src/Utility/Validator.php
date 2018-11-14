@@ -11,6 +11,7 @@
  */
 namespace Search\Utility;
 
+use Cake\Datasource\RepositoryInterface;
 use Cake\ORM\Table;
 use Search\Utility;
 use Search\Utility\Options;
@@ -24,12 +25,12 @@ class Validator
      * and sort by field against them. Then validates sort by order againt available options
      * and sets it to the default option if they fail validation.
      *
-     * @param \Cake\ORM\Table $table Table instace
+     * @param \Cake\Datasource\RepositoryInterface $table Table instace
      * @param mixed[] $data Search data
      * @param mixed[] $user User info
      * @return mixed[]
      */
-    public static function validateData(Table $table, array $data, array $user): array
+    public static function validateData(RepositoryInterface $table, array $data, array $user): array
     {
         $fields = Utility::instance()->getSearchableFields($table, $user);
         $fields = array_keys($fields);
@@ -98,11 +99,13 @@ class Validator
      * @param string $data Sort by field value
      * @param mixed[] $fields Searchable fields
      * @param mixed[] $displayColumns Display columns
-     * @param \Cake\ORM\Table $table Table instance
+     * @param \Cake\Datasource\RepositoryInterface $table Table instance
      * @return string
      */
-    protected static function validateSortByField(string $data, array $fields, array $displayColumns, Table $table): string
+    protected static function validateSortByField(string $data, array $fields, array $displayColumns, RepositoryInterface $table): string
     {
+        /** @var \Cake\ORM\Table */
+        $table = $table;
         // use sort field if is searchable
         if (in_array($data, $fields)) {
             return $data;
@@ -128,7 +131,7 @@ class Validator
         }
 
         // use primary key as a last resort
-        return $table->aliasField($table->getPrimaryKey());
+        return $table->aliasField(current((array)$table->getPrimaryKey()));
     }
 
     /**

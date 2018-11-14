@@ -12,6 +12,7 @@
 namespace Search\Model\Table;
 
 use Cake\Core\Configure;
+use Cake\Datasource\QueryInterface;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -90,9 +91,9 @@ class DashboardsTable extends Table
      * Get specified user accessible dashboards.
      *
      * @param  mixed[] $user user details
-     * @return \Cake\ORM\Query
+     * @return \Cake\Datasource\QueryInterface
      */
-    public function getUserDashboards(array $user): \Cake\ORM\Query
+    public function getUserDashboards(array $user): QueryInterface
     {
         // get all dashboards
         $query = $this->find('all')->order('name');
@@ -103,7 +104,9 @@ class DashboardsTable extends Table
         }
 
         $roles = [];
-        $groups = $this->Roles->Groups->getUserGroups($user['id']);
+        /** @var \Groups\Model\Table\GroupsTable */
+        $table = $this->Roles->Groups->getTarget();
+        $groups = $table->getUserGroups($user['id']);
         // get group(s) roles
         if (!empty($groups)) {
             $roles = $this->Roles->Capabilities->getGroupsRoles($groups);

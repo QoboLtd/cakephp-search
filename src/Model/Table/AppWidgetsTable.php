@@ -30,6 +30,7 @@ use Cake\Validation\Validator;
  * @method \Search\Model\Entity\AppWidget patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
  * @method \Search\Model\Entity\AppWidget[] patchEntities($entities, array $data, array $options = [])
  * @method \Search\Model\Entity\AppWidget findOrCreate($search, callable $callback = null, $options = [])
+ * @method \Muffin\Trash\Model\Behavior\TrashBehavior trashAll($conditions)
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */

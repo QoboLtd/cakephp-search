@@ -41,8 +41,8 @@ class LineChartReportWidgetTest extends TestCase
             'slug' => 'testLineChartGraph',
         ];
 
-        $containerId = $this->widget->setContainerId($config);
-        $this->assertEquals($containerId, 'graph_' . 'testLineChartGraph');
+        $this->widget->setContainerId($config);
+        $this->assertEquals('graph_testLineChartGraph', $this->widget->getContainerId());
     }
 
     public function testGetChartColorsEmptyColorsConfig(): void

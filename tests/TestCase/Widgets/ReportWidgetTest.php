@@ -2,9 +2,15 @@
 namespace Search\Test\TestCase\Widgets;
 
 use Cake\Event\EventList;
+use Cake\Event\EventManager;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\Fixture\FixtureManager;
 use Cake\TestSuite\TestCase;
+use Cake\View\View;
+use Search\Widgets\Reports\BarChartReportWidget;
+use Search\Widgets\Reports\DonutChartReportWidget;
+use Search\Widgets\Reports\KnobChartReportWidget;
+use Search\Widgets\Reports\LineChartReportWidget;
 use Search\Widgets\ReportWidget;
 
 class ReportWidgetTest extends TestCase
@@ -27,10 +33,12 @@ class ReportWidgetTest extends TestCase
     {
         parent::setUp();
 
-        $this->appView = new \Cake\View\View();
+        $this->appView = new View();
 
         $this->appView->getEventManager()->trackEvents(true);
         $this->appView->getEventManager()->setEventList(new EventList());
+        EventManager::instance()->trackEvents(true);
+        EventManager::instance()->setEventList(new EventList());
 
         $this->fixtureManager = new FixtureManager();
         $this->fixtureManager->fixturize($this);
@@ -80,23 +88,21 @@ class ReportWidgetTest extends TestCase
         $instance = $this->widget->getReportInstance($config);
         $this->assertInstanceOf($expectedClass, $instance);
 
-        $this->widget->_instance = $instance;
+        $instance->setContainerId($config['config']);
 
-        $this->widget->setContainerId($config['config']);
+        $this->assertEquals($config['config']['info']['renderAs'], $instance->getType());
+        $this->assertEquals('graph_' . $config['config']['slug'], $instance->getContainerId());
+        $this->assertEquals([], $instance->getOptions());
+        $this->assertEquals([], $instance->getData());
 
-        $this->assertEquals($config['config']['info']['renderAs'], $this->widget->getType());
-        $this->assertEquals('graph_' . $config['config']['slug'], $this->widget->getContainerId());
-        $this->assertEquals([], $this->widget->getOptions());
-        $this->assertEquals([], $this->widget->getData());
-
-        $this->widget->setConfig($config['config']);
-        $this->assertEquals($this->widget->getConfig(), $config['config']);
+        $instance->setConfig($config['config']);
+        $this->assertEquals($instance->getConfig(), $config['config']);
 
         $dummyData = ['foo' => 'bar'];
 
-        $this->widget->setData($dummyData);
-        $this->assertEquals($dummyData, $this->widget->getData());
-        $this->assertEquals([], $this->widget->getErrors());
+        $instance->setData($dummyData);
+        $this->assertEquals($dummyData, $instance->getData());
+        $this->assertEquals([], $instance->getErrors());
     }
 
     /**
@@ -105,10 +111,10 @@ class ReportWidgetTest extends TestCase
     public function getInstancesList(): array
     {
         $configs = [
-           [['config' => ['slug' => 'barChartTest', 'info' => ['renderAs' => 'barChart']]], '\Search\Widgets\Reports\BarChartReportWidget'],
-           [['config' => ['slug' => 'lineChartTest', 'info' => ['renderAs' => 'lineChart']]], '\Search\Widgets\Reports\LineChartReportWidget'],
-           [['config' => ['slug' => 'donutChartTest', 'info' => ['renderAs' => 'donutChart']]], '\Search\Widgets\Reports\DonutChartReportWidget'],
-           [['config' => ['slug' => 'knobChartTest', 'info' => ['renderAs' => 'knobChart']]], '\Search\Widgets\Reports\KnobChartReportWidget'],
+           [['config' => ['slug' => 'barChartTest', 'info' => ['renderAs' => 'barChart']]], BarChartReportWidget::class],
+           [['config' => ['slug' => 'lineChartTest', 'info' => ['renderAs' => 'lineChart']]], LineChartReportWidget::class],
+           [['config' => ['slug' => 'donutChartTest', 'info' => ['renderAs' => 'donutChart']]], DonutChartReportWidget::class],
+           [['config' => ['slug' => 'knobChartTest', 'info' => ['renderAs' => 'knobChart']]], KnobChartReportWidget::class],
         ];
 
         return $configs;
@@ -128,13 +134,9 @@ class ReportWidgetTest extends TestCase
         $instance = $this->widget->getReportInstance($config);
         $this->assertInstanceOf($expectedClass, $instance);
 
-        $this->widget->_instance = $instance;
+        $result = $this->widget->getReport(['entity' => $entity]);
 
-        $result = $this->widget->getReport(['rootView' => $this->appView, 'entity' => $entity]);
-
-        $events = $this->appView->getEventManager()->getEventList();
-        $events[0]->result = ['foo' => 'bar'];
-        $this->assertEventFired('Search.Report.getReports', $this->appView->getEventManager());
+        $this->assertEventFired('Search.Report.getReports');
     }
 
     public function testValidatesWithoutRequiredFields(): void
@@ -142,8 +144,6 @@ class ReportWidgetTest extends TestCase
         $config = ['config' => ['slug' => 'barChartTest', 'info' => ['renderAs' => 'barChart']]];
 
         $instance = $this->widget->getReportInstance($config);
-
-        $this->widget->_instance = $instance;
 
         $expectedReport = [
             'modelName' => 'Reports',
@@ -161,9 +161,9 @@ class ReportWidgetTest extends TestCase
             ]
         ];
 
-        $this->widget->_instance->requiredFields = [];
+        $instance->requiredFields = [];
 
-        $validated = $this->widget->validate($expectedReport);
+        $validated = $instance->validate($expectedReport);
         $this->assertEquals($validated['status'], false);
     }
 
@@ -173,8 +173,6 @@ class ReportWidgetTest extends TestCase
 
         $instance = $this->widget->getReportInstance($config);
 
-        $this->widget->_instance = $instance;
-
         $expectedReport = [
             'modelName' => 'Reports',
             'slug' => 'bar_assigned_by_year',
@@ -191,7 +189,7 @@ class ReportWidgetTest extends TestCase
             ]
         ];
 
-        $validated = $this->widget->validate($expectedReport);
+        $validated = $instance->validate($expectedReport);
         $this->assertEquals($validated['status'], true);
 
         $expectedReport = [
@@ -209,7 +207,7 @@ class ReportWidgetTest extends TestCase
             ]
         ];
 
-        $validated = $this->widget->validate($expectedReport);
+        $validated = $instance->validate($expectedReport);
 
         $this->assertEquals($validated['status'], false);
         $this->assertContains('Required Field [y_axis] cannot be empty', array_keys(array_flip($validated['messages'])));
@@ -220,8 +218,6 @@ class ReportWidgetTest extends TestCase
         $config = ['config' => ['slug' => 'barChartTest', 'info' => ['renderAs' => 'barChart']]];
 
         $instance = $this->widget->getReportInstance($config);
-
-        $this->widget->_instance = $instance;
 
         $expectedReport = [
             'modelName' => 'Reports',
@@ -239,10 +235,10 @@ class ReportWidgetTest extends TestCase
             ]
         ];
 
-        $validated = $this->widget->validate($expectedReport);
-        $this->widget->setConfig($expectedReport);
+        $validated = $instance->validate($expectedReport);
+        $instance->setConfig($expectedReport);
         $this->assertEquals($validated['status'], true);
-        $chartData = $this->widget->getChartData([]);
+        $chartData = $instance->getChartData([]);
         $this->assertEquals(['A', 'B'], $chartData['options']['labels']);
     }
 
@@ -301,14 +297,14 @@ class ReportWidgetTest extends TestCase
             'widget_id' => '00000000-0000-0000-0000-000000000002',
         ];
 
+        /** @var \Search\Widgets\ReportWidget&\PHPUnit\Framework\MockObject\MockObject */
         $widget = $this->getMockBuilder('Search\Widgets\ReportWidget')->getMock();
 
         $widget->expects($this->any())
             ->method('getReports')
-            ->with(['rootView' => $this->appView])
             ->will($this->returnValue($dummyReports));
 
-        $reports = $widget->getReports(['rootView' => $this->appView]);
+        $reports = $widget->getReports();
 
         $report = $this->widget->getReport(['entity' => $entity, 'reports' => $reports]);
 

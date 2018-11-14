@@ -28,7 +28,7 @@ class LineChartReportWidget extends BaseReportGraphs
      * @param array $data with report config and data.
      * @return array $chartData.
      */
-    public function getChartData(array $data = [])
+    public function getChartData(array $data = []) : array
     {
         $labels = [];
         $report = $this->config;
@@ -69,10 +69,10 @@ class LineChartReportWidget extends BaseReportGraphs
      *
      * Specifies required JS/CSS libs for given chart
      *
-     * @param array $data passed in the method.
-     * @return array $content with JS/CSS libs.
+     * @param mixed[] $data passed in the method.
+     * @return mixed[] $content with JS/CSS libs.
      */
-    public function getScripts(array $data = [])
+    public function getScripts(array $data = []) : array
     {
         return [
             'post' => [

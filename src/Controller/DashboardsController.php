@@ -34,9 +34,10 @@ class DashboardsController extends AppController
     public function index()
     {
         $query = $this->Dashboards->getUserDashboards($this->Auth->user());
+        $entity = $query->first();
 
-        if (!$query->isEmpty()) {
-            return $this->redirect(['action' => 'view', $query->first()->id]);
+        if (null !== $entity) {
+            return $this->redirect(['action' => 'view', $entity->get('id')]);
         }
     }
 
@@ -69,7 +70,7 @@ class DashboardsController extends AppController
 
         $widgets = [];
 
-        foreach ($dashboard->widgets as $k => $item) {
+        foreach ($dashboard->get('widgets') as $k => $item) {
             $opts = $widgetsTable->getWidgetOptions($item);
 
             $x = (int)$opts['x'];
@@ -168,18 +169,18 @@ class DashboardsController extends AppController
     /**
      * Edit method
      *
-     * @param string|null $id Dashboard id.
+     * @param string $id Dashboard id.
      * @return \Cake\Http\Response|void|null Redirects on successful edit, renders view otherwise.
      */
-    public function edit(string $id = null)
+    public function edit(string $id)
     {
         $savedWidgetData = [];
         $dashboard = $this->Dashboards->get($id, [
             'contain' => ['Widgets']
         ]);
 
-        $dashboardWidgets = $dashboard->widgets;
-        unset($dashboard->widgets);
+        $dashboardWidgets = $dashboard->get('widgets');
+        $dashboard->unsetProperty('widgets');
 
         /**
          * @var \Search\Model\Table\WidgetsTable $widgetsTable
@@ -219,7 +220,7 @@ class DashboardsController extends AppController
         if ($this->request->is(['patch', 'post', 'put'])) {
             $data = $this->request->getData();
 
-            unset($dashboard->widgets);
+            $dashboard->unsetProperty('widgets');
 
             $dashboard = $this->Dashboards->patchEntity($dashboard, [
                 'name' => $data['name'],
@@ -228,9 +229,7 @@ class DashboardsController extends AppController
 
             if ($this->Dashboards->save($dashboard)) {
                 $this->Flash->success((string)__('The dashboard has been saved.'));
-                /**
-                 * @var \Search\Model\Table\WidgetsTable $widgetsTable
-                 */
+                /** @var \Search\Model\Table\WidgetsTable */
                 $widgetTable = TableRegistry::get('Search.Widgets');
                 $widgetTable->trashAll([
                     'dashboard_id' => $dashboard->id
@@ -266,9 +265,7 @@ class DashboardsController extends AppController
         $dashboard = $this->Dashboards->get($id);
 
         if ($this->Dashboards->delete($dashboard)) {
-            /**
-             * @var \Search\Model\Table\WidgetsTable $widgetsTable
-             */
+            /** @var \Search\Model\Table\WidgetsTable */
             $widgetTable = TableRegistry::get('Search.Widgets');
             $widgetTable->trashAll([
                 'dashboard_id' => $id

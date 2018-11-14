@@ -32,14 +32,6 @@ class MagicValueTest extends TestCase
         new MagicValue('foo', $this->user);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
-    public function testConstructorExceptionInvalidValue(): void
-    {
-        new MagicValue([], $this->user);
-    }
-
     public function testConstructorExceptionInvalidUserInfo(): void
     {
         $this->expectException(InvalidArgumentException::class);

@@ -11,9 +11,10 @@
  */
 namespace Search;
 
+use Cake\Datasource\RepositoryInterface;
+use Cake\Datasource\ResultSetInterface;
 use Cake\Event\Event;
 use Cake\Event\EventManager;
-use Cake\ORM\ResultSet;
 use Cake\ORM\Table;
 use Cake\Utility\Inflector;
 use Cake\View\View;
@@ -29,7 +30,7 @@ class Utility
     /**
      * The globally available instance of Search Utility.
      *
-     * @var \Cake\Event\EventManager
+     * @var \Search\Utility
      */
     protected static $instance;
 
@@ -69,11 +70,11 @@ class Utility
     /**
      * Return Table's searchable fields.
      *
-     * @param \Cake\ORM\Table $table Table object
-     * @param array $user User info
-     * @return array
+     * @param \Cake\Datasource\RepositoryInterface $table Table object
+     * @param mixed[] $user User info
+     * @return mixed[]
      */
-    public function getSearchableFields(Table $table, array $user)
+    public function getSearchableFields(RepositoryInterface $table, array $user) : array
     {
         $alias = $table->getAlias();
 
@@ -95,13 +96,13 @@ class Utility
     /**
      * Method that formats resultset.
      *
-     * @param \Cake\ORM\ResultSet $resultSet ResultSet
-     * @param array $fields Display fields
-     * @param \Cake\ORM\Table $table Table instance
-     * @param array $user User info
-     * @return array
+     * @param \Cake\Datasource\ResultSetInterface $resultSet ResultSet
+     * @param string[] $fields Display fields
+     * @param \Cake\Datasource\RepositoryInterface $table Table instance
+     * @param mixed[] $user User info
+     * @return mixed[]
      */
-    public function formatter(ResultSet $resultSet, array $fields, Table $table, array $user)
+    public function formatter(ResultSetInterface $resultSet, array $fields, RepositoryInterface $table, array $user) : array
     {
         $result = [];
 
@@ -146,22 +147,21 @@ class Utility
     /**
      * Method that re-formats entities to Datatables supported format.
      *
-     * @param \Cake\ORM\ResultSet $resultSet ResultSet
-     * @param array $fields Display fields
+     * @param \Cake\Datasource\ResultSetInterface $resultSet ResultSet
+     * @param string[] $fields Display fields
      * @param \Cake\ORM\Table $table Table instance
-     * @return array
+     * @return mixed[]
      */
-    public function toCsv(ResultSet $resultSet, array $fields, Table $table)
+    public function toCsv(ResultSetInterface $resultSet, array $fields, Table $table) : array
     {
-        $result = [];
-
         if ($resultSet->isEmpty()) {
-            return $result;
+            return [];
         }
 
         $registryAlias = $table->getRegistryAlias();
         $alias = $table->getAlias();
 
+        $result = [];
         foreach ($resultSet as $key => $entity) {
             foreach ($fields as $field) {
                 list($tableName, $fieldName) = explode('.', $field);
@@ -189,18 +189,21 @@ class Utility
     /**
      * Associations labels getter.
      *
-     * @param \Cake\ORM\Table $table Table instance
-     * @return array
+     * @param \Cake\Datasource\RepositoryInterface $table Table instance
+     * @return mixed[]
      */
-    public function getAssociationLabels(Table $table)
+    public function getAssociationLabels(RepositoryInterface $table) : array
     {
+        /** @var \Cake\ORM\Table */
+        $table = $table;
+
         $result = [];
         foreach ($table->associations() as $association) {
             if (!in_array($association->type(), $this->searchableAssociations)) {
                 continue;
             }
 
-            $result[$association->getName()] = Inflector::humanize($association->getForeignKey());
+            $result[$association->getName()] = Inflector::humanize(current((array)$association->getForeignKey()));
         }
 
         return $result;

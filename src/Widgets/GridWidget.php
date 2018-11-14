@@ -19,7 +19,6 @@ use Search\Widgets\BaseWidget;
 class GridWidget extends ReportWidget
 {
     public $renderElement = 'Search.Widgets/grid';
-    public $options = [];
 
     /**
      * {@inheritDoc}

@@ -11,6 +11,7 @@
  */
 namespace Search\Utility;
 
+use Cake\Datasource\RepositoryInterface;
 use Cake\Event\Event;
 use Cake\Event\EventManager;
 use Cake\ORM\Table;
@@ -134,10 +135,10 @@ class Options
     /**
      * Default search options.
      *
-     * @param \Cake\ORM\Table $table Table instance
+     * @param \Cake\Datasource\RepositoryInterface $table Table instance
      * @return mixed[]
      */
-    public static function getDefaults(Table $table): array
+    public static function getDefaults(RepositoryInterface $table): array
     {
         $result['display_columns'] = static::getListingFields($table);
         $result['sort_by_field'] = current($result['display_columns']);
@@ -150,13 +151,13 @@ class Options
     /**
      * Current table display fields getter.
      *
-     * @param \Cake\ORM\Table $table Table instance
+     * @param \Cake\Datasource\RepositoryInterface $table Table instance
      * @return mixed[]
      */
-    public static function getListingFields(Table $table): array
+    public static function getListingFields(RepositoryInterface $table): array
     {
         // broadcast event to fetch display fields
-        $event = new Event((string)EventName::MODEL_SEARCH_DISPLAY_FIELDS(), Validator::class, [
+        $event = new Event((string)EventName::MODEL_SEARCH_DISPLAY_FIELDS(), null, [
             'table' => $table
         ]);
         EventManager::instance()->dispatch($event);
@@ -176,14 +177,15 @@ class Options
     /**
      * Default display fields getter.
      *
-     * @param \Cake\ORM\Table $table Table instance
+     * @param \Cake\Datasource\RepositoryInterface $table Table instance
      * @return mixed[]
      */
-    protected static function getDefaultDisplayFields(Table $table): array
+    protected static function getDefaultDisplayFields(RepositoryInterface $table): array
     {
-        $result = [];
+        /** @var \Cake\ORM\Table */
+        $table = $table;
 
-        array_push($result, $table->getPrimaryKey());
+        $result = (array)$table->getPrimaryKey();
         array_push($result, $table->getDisplayField());
 
         $result = array_merge($result, static::$defaultDisplayFields);
@@ -209,16 +211,15 @@ class Options
      * to true and pass the table instance.
      *
      * @param bool $aliased Alias flag
-     * @param \Cake\ORM\Table $table Table instance
+     * @param \Cake\Datasource\RepositoryInterface $table Table instance
      * @return mixed[]
      */
-    protected static function getSkippedDisplayFields(bool $aliased = false, Table $table = null): array
+    protected static function getSkippedDisplayFields(bool $aliased = false, RepositoryInterface $table): array
     {
-        if (!$aliased) {
-            return static::$skipDisplayFields;
-        }
+        /** @var \Cake\ORM\Table */
+        $table = $table;
 
-        if (!$table instanceof Table) {
+        if (! $aliased) {
             return static::$skipDisplayFields;
         }
 

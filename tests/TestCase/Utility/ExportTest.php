@@ -103,6 +103,9 @@ class ExportTest extends TestCase
         $this->assertTrue(file_exists($path));
         $this->assertTrue(is_readable($path));
 
+        /**
+         * @var resource
+         */
         $fh = fopen($path, 'r');
         $data = [];
         while (!feof($fh)) {

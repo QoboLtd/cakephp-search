@@ -41,8 +41,9 @@ class BarChartReportWidgetTest extends TestCase
             'slug' => 'TestGraph',
         ];
 
-        $result = $this->widget->setContainerId($config);
-        $this->assertEquals($result, 'graph_' . 'TestGraph');
+        $this->widget->setContainerId($config);
+
+        $this->assertEquals('graph_TestGraph', $this->widget->getContainerId());
     }
 
     public function testSetConfig(): void

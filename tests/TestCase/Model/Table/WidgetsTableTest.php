@@ -2,8 +2,10 @@
 namespace Search\Test\TestCase\Model\Table;
 
 use Cake\Event\EventManager;
+use Cake\ORM\RulesChecker;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
+use Cake\Validation\Validator;
 use Search\Event\Model\WidgetsListener;
 use Search\Model\Table\WidgetsTable;
 
@@ -61,18 +63,18 @@ class WidgetsTableTest extends TestCase
 
     public function testValidationDefault(): void
     {
-        $validator = new \Cake\Validation\Validator();
+        $validator = new Validator();
         $result = $this->Widgets->validationDefault($validator);
 
-        $this->assertInstanceOf('\Cake\Validation\Validator', $result);
+        $this->assertInstanceOf(Validator::class, $result);
     }
 
     public function testBuildRules(): void
     {
-        $rules = new \Cake\ORM\RulesChecker();
+        $rules = new RulesChecker();
         $result = $this->Widgets->buildRules($rules);
 
-        $this->assertInstanceOf('\Cake\ORM\RulesChecker', $result);
+        $this->assertInstanceOf(RulesChecker::class, $result);
     }
 
     /**

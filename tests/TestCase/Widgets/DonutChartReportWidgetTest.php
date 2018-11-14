@@ -35,14 +35,14 @@ class DonutChartReportWidgetTest extends TestCase
         $this->assertArrayHasKey('javascript', $content['post']);
     }
 
-    public function testSetContainerId(): void
+    public function testGetContainerId(): void
     {
         $config = [
             'slug' => 'barChart',
         ];
 
-        $containerId = $this->widget->setContainerId($config);
-        $this->assertEquals($containerId, 'graph_' . $config['slug']);
+        $this->widget->setContainerId($config);
+        $this->assertEquals('graph_barChart', $this->widget->getContainerId());
     }
 
     public function testGetChartData(): void

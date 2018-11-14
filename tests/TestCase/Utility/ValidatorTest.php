@@ -143,7 +143,11 @@ class ValidatorTest extends TestCase
 
         $result = Validator::validateData($table, $data, $user);
 
-        $expected = $table->aliasField($table->aliasField($table->getPrimaryKey()));
+        /**
+         * @var string
+         */
+        $primaryKey = $table->getPrimaryKey();
+        $expected = $table->aliasField($table->aliasField($primaryKey));
         $this->assertEquals($expected, $result['sort_by_field']);
     }
 
