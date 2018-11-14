@@ -12,7 +12,6 @@
 namespace Search\Controller;
 
 use Cake\ORM\TableRegistry;
-use Search\Controller\AppController;
 
 /**
  * Widgets Controller

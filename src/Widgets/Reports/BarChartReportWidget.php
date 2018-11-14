@@ -12,7 +12,6 @@
 namespace Search\Widgets\Reports;
 
 use Cake\Utility\Inflector;
-use Search\Widgets\Reports\BaseReportGraphs;
 
 class BarChartReportWidget extends BaseReportGraphs
 {

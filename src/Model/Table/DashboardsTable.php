@@ -15,7 +15,6 @@ use Cake\Core\Configure;
 use Cake\Datasource\QueryInterface;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
-use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
 
 /**

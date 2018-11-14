@@ -16,7 +16,6 @@ use Cake\Datasource\RepositoryInterface;
 use Cake\Datasource\ResultSetInterface;
 use Cake\Event\Event;
 use Cake\Http\Exception\BadRequestException;
-use Cake\ORM\ResultSet;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;

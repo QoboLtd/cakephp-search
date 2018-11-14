@@ -17,7 +17,6 @@ use Cake\Event\EventManager;
 use Cake\Utility\Inflector;
 use RuntimeException;
 use Search\Event\EventName;
-use Search\Widgets\BaseWidget;
 use Search\Widgets\Reports\ReportGraphsInterface;
 
 class ReportWidget extends BaseWidget

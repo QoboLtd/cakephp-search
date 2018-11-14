@@ -24,10 +24,6 @@ use InvalidArgumentException;
 use Search\Event\EventName;
 use Search\Model\Entity\SavedSearch;
 use Search\Utility;
-use Search\Utility\BasicSearch;
-use Search\Utility\MagicValue;
-use Search\Utility\Options;
-use Search\Utility\Validator;
 
 class Search
 {

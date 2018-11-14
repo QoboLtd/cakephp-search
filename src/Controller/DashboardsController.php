@@ -12,11 +12,8 @@
 namespace Search\Controller;
 
 use Cake\Core\Configure;
-use Cake\Event\Event;
 use Cake\Http\Exception\ForbiddenException;
 use Cake\ORM\TableRegistry;
-use Search\Controller\AppController;
-use Search\Model\Entity\Widget;
 
 /**
  * Dashboards Controller

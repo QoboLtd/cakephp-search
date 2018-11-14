@@ -14,7 +14,6 @@ namespace Search\Model\Table;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
-use InvalidArgumentException;
 use Qobo\Utils\ModuleConfig\ConfigType;
 use Qobo\Utils\ModuleConfig\ModuleConfig;
 use Search\Model\Entity\SavedSearch;

@@ -11,8 +11,6 @@
  */
 namespace Search\Widgets;
 
-use Search\Widgets\WidgetInterface;
-
 abstract class BaseWidget implements WidgetInterface
 {
     const WIDGET_INTERFACE = 'WidgetInterface';

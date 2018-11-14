@@ -14,7 +14,6 @@ namespace Search\Model\Table;
 use Cake\Core\App;
 use Cake\Database\Schema\TableSchema;
 use Cake\Filesystem\Folder;
-use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Utility\Inflector;

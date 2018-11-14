@@ -12,7 +12,6 @@
 namespace Search\Widgets\Reports;
 
 use RuntimeException;
-use Search\Widgets\Reports\ReportGraphsInterface;
 
 abstract class BaseReportGraphs implements ReportGraphsInterface
 {

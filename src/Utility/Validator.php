@@ -14,7 +14,6 @@ namespace Search\Utility;
 use Cake\Datasource\RepositoryInterface;
 use Cake\ORM\Table;
 use Search\Utility;
-use Search\Utility\Options;
 
 class Validator
 {

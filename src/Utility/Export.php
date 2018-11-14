@@ -20,7 +20,6 @@ use Cake\ORM\TableRegistry;
 use Psr\Log\LogLevel;
 use Search\Event\EventName;
 use Search\Utility;
-use Search\Utility\Search;
 
 class Export
 {

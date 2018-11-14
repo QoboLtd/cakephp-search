@@ -11,16 +11,9 @@
  */
 namespace Search\Model\Table;
 
-use Cake\Core\App;
-use Cake\Core\Configure;
 use Cake\Event\Event;
-use Cake\Filesystem\Folder;
-use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
-use Cake\ORM\TableRegistry;
-use Cake\Utility\Inflector;
-use Cake\Utility\Text;
 use Cake\Validation\Validator;
 use Search\Event\EventName;
 use Search\Model\Entity\Widget;

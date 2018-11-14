@@ -18,8 +18,6 @@ use Cake\ORM\TableRegistry;
 use InvalidArgumentException;
 use Search\Event\EventName;
 use Search\Utility;
-use Search\Utility\Options;
-use Search\Utility\Search;
 
 class BasicSearch
 {
