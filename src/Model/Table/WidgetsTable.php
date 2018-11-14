@@ -212,7 +212,7 @@ class WidgetsTable extends Table
             return $result;
         }
 
-        foreach ($widgets as $k => $item) {
+        foreach ($widgets as $item) {
             $widget = [
                 'dashboard_id' => $dashboardId,
                 'widget_id' => $item['id'],

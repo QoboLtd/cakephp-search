@@ -33,9 +33,6 @@ class TableReportWidget extends BaseReportGraphs
      */
     public function getChartData(array $data = []) : array
     {
-        $labels = [];
-        $report = $this->config;
-
         $chartData = [
             'chart' => $this->type,
             'options' => [

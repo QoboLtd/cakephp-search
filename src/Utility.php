@@ -158,7 +158,6 @@ class Utility
             return [];
         }
 
-        $registryAlias = $table->getRegistryAlias();
         $alias = $table->getAlias();
 
         $result = [];

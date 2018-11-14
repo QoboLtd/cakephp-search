@@ -149,7 +149,7 @@ class DashboardsController extends AppController
                 $data['widgets'] = !empty($data['options']) ? json_decode($data['options'], true) : [];
 
                 if (!empty($data['widgets'])) {
-                    $saved = $widgetsTable->saveDashboardWidgets($dashboardId, $data['widgets']);
+                    $widgetsTable->saveDashboardWidgets($dashboardId, $data['widgets']);
                 }
 
                 return $this->redirect(['action' => 'view', $dashboard->id]);
@@ -191,7 +191,7 @@ class DashboardsController extends AppController
         $sequence = 0;
 
         foreach ($dashboardWidgets as $dw) {
-            foreach ($widgets as $k => $widget) {
+            foreach ($widgets as $widget) {
                 if ($dw->widget_id !== $widget['data']['id']) {
                     continue;
                 }
@@ -237,7 +237,7 @@ class DashboardsController extends AppController
 
                 $data['widgets'] = !empty($data['options']) ? json_decode($data['options'], true) : [];
                 if (!empty($data['widgets'])) {
-                    $saved = $widgetsTable->saveDashboardWidgets($id, $data['widgets']);
+                    $widgetsTable->saveDashboardWidgets($id, $data['widgets']);
                 }
 
                 return $this->redirect(['action' => 'view', $id]);
