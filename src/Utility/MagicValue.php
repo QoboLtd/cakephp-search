@@ -51,10 +51,6 @@ final class MagicValue
             throw new InvalidArgumentException('User info are required.');
         }
 
-        if (! is_string($value)) {
-            throw new InvalidArgumentException('Value must be a string.');
-        }
-
         $this->user = $user;
         $this->value = $value;
     }

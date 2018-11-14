@@ -139,10 +139,6 @@ class SavedSearchesTable extends Table
      */
     public function isSearchable(string $tableName): bool
     {
-        if (!is_string($tableName)) {
-            throw new InvalidArgumentException('Provided variable [tableName] must be a string.');
-        }
-
         list(, $tableName) = pluginSplit($tableName);
 
         $config = (new ModuleConfig(ConfigType::MODULE(), $tableName))->parse();
