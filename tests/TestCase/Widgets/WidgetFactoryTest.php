@@ -4,6 +4,8 @@ namespace Search\Test\TestCase\Widgets;
 use Cake\TestSuite\TestCase;
 use Cake\View\View;
 use RuntimeException;
+use Search\Widgets\ReportWidget;
+use Search\Widgets\SavedSearchWidget;
 use Search\Widgets\WidgetFactory;
 
 /**
@@ -59,6 +61,7 @@ class WidgetFactoryTest extends TestCase
 
         $widget = WidgetFactory::create($widgetConfig['widget_type'], ['entity' => $entity]);
 
+        $this->assertInstanceOf($expectedClass, $widget);
         $this->assertEquals($widgetConfig['widget_type'], $widget->getType());
     }
 
@@ -68,8 +71,8 @@ class WidgetFactoryTest extends TestCase
     public function dataProviderWidgets(): array
     {
         return [
-            [['widget_type' => 'saved_search'], 'Search\Widgets\SavedSearchWidget'],
-            [['widget_type' => 'report'], 'Search\Widgets\ReportWidget'],
+            [['widget_type' => 'saved_search'], SavedSearchWidget::class],
+            [['widget_type' => 'report'], ReportWidget::class],
         ];
     }
 
@@ -79,7 +82,7 @@ class WidgetFactoryTest extends TestCase
     public function dataProviderWidgetTypes(): array
     {
         return [
-            [['widget_type' => 'saved_search'], 'Search\Widgets\SavedSearchWidget'],
+            [['widget_type' => 'saved_search'], SavedSearchWidget::class],
         ];
     }
 }
