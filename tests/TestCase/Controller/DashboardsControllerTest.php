@@ -63,9 +63,6 @@ class DashboardsControllerTest extends IntegrationTestCase
         parent::tearDown();
     }
 
-    /**
-     * @todo find out why this test fails: https://travis-ci.org/QoboLtd/cakephp-search/jobs/167079767
-     */
     public function testSearchNonSearchableModel(): void
     {
         $this->post('/search/dashboards/search');
