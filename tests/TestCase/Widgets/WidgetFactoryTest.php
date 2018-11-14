@@ -43,7 +43,7 @@ class WidgetFactoryTest extends TestCase
             'widget_type' => $config['widget_type'],
         ];
 
-        $widget = WidgetFactory::create($config['widget_type'], ['entity' => $entity]);
+        WidgetFactory::create($config['widget_type'], ['entity' => $entity]);
     }
 
     /**

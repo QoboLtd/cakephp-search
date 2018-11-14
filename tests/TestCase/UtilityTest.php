@@ -95,7 +95,7 @@ class UtilityTest extends TestCase
     {
         EventManager::instance()->setEventList(new EventList());
 
-        $result = $this->Utility->getSearchableFields(TableRegistry::get('Widgets'), $this->user);
+        $this->Utility->getSearchableFields(TableRegistry::get('Widgets'), $this->user);
 
         $this->assertEventFired('Search.Model.Search.searchabeFields', EventManager::instance());
     }

@@ -134,7 +134,7 @@ class ReportWidgetTest extends TestCase
         $instance = $this->widget->getReportInstance($config);
         $this->assertInstanceOf($expectedClass, $instance);
 
-        $result = $this->widget->getReport(['entity' => $entity]);
+        $this->widget->getReport(['entity' => $entity]);
 
         $this->assertEventFired('Search.Report.getReports');
     }
