@@ -168,7 +168,7 @@ class Options
             $result = static::getDefaultDisplayFields($table);
         }
 
-        $result = array_diff($result, static::getSkippedDisplayFields(true, $table));
+        $result = array_diff($result, static::getSkippedDisplayFields($table, true));
 
         // reset numeric indexes
         return array_values($result);
@@ -210,11 +210,11 @@ class Options
      * To alias the fields you need to set $aliased flag
      * to true and pass the table instance.
      *
-     * @param bool $aliased Alias flag
      * @param \Cake\Datasource\RepositoryInterface $table Table instance
+     * @param bool $aliased Alias flag
      * @return mixed[]
      */
-    protected static function getSkippedDisplayFields(bool $aliased = false, RepositoryInterface $table): array
+    protected static function getSkippedDisplayFields(RepositoryInterface $table, bool $aliased = false): array
     {
         /** @var \Cake\ORM\Table */
         $table = $table;
