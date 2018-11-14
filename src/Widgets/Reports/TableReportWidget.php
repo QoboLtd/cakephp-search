@@ -12,8 +12,6 @@
 namespace Search\Widgets\Reports;
 
 use Cake\Log\LogTrait;
-use Cake\Utility\Inflector;
-use Search\Widgets\Reports\BaseReportGraphs;
 
 class TableReportWidget extends BaseReportGraphs
 {

@@ -11,8 +11,6 @@
  */
 namespace Search\Widgets\Reports;
 
-use Search\Widgets\Reports\BaseReportGraphs;
-
 class KnobChartReportWidget extends BaseReportGraphs
 {
     public $type = 'knobChart';

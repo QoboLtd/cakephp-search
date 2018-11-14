@@ -11,16 +11,13 @@
  */
 namespace Search\Widgets;
 
-use Cake\Core\Configure;
 use Cake\Datasource\EntityInterface;
 use Cake\ORM\TableRegistry;
-use Cake\Routing\Router;
 use Search\Model\Entity\SavedSearch;
 use Search\Model\Entity\Widget;
 use Search\Utility;
 use Search\Utility\Search;
 use Search\Utility\Validator;
-use Search\Widgets\BaseWidget;
 
 final class SavedSearchWidget extends BaseWidget
 {

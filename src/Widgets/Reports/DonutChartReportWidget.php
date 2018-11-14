@@ -11,9 +11,6 @@
  */
 namespace Search\Widgets\Reports;
 
-use Cake\Utility\Inflector;
-use Search\Widgets\Reports\BaseReportGraphs;
-
 class DonutChartReportWidget extends BaseReportGraphs
 {
     public $type = 'donutChart';
