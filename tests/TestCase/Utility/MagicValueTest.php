@@ -29,7 +29,7 @@ class MagicValueTest extends TestCase
 
     public function testConstructor(): void
     {
-        new MagicValue('foo', $this->user);
+        $this->assertInstanceOf(MagicValue::class, new MagicValue('foo', $this->user));
     }
 
     public function testConstructorExceptionInvalidUserInfo(): void

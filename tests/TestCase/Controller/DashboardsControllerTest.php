@@ -68,9 +68,9 @@ class DashboardsControllerTest extends IntegrationTestCase
      */
     public function testSearchNonSearchableModel(): void
     {
-        // $this->post('/search/dashboards/search');
+        $this->post('/search/dashboards/search');
 
-        // $this->assertResponseError();
+        $this->assertResponseError();
     }
 
     public function testIndex(): void
