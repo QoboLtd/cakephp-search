@@ -86,7 +86,7 @@ final class MagicValue
      *
      * @return \Cake\I18n\Time
      */
-    private function today(): \Cake\I18n\Time
+    private function today(): Time
     {
         return new Time('today');
     }
@@ -96,7 +96,7 @@ final class MagicValue
      *
      * @return \Cake\I18n\Time
      */
-    private function yesterday(): \Cake\I18n\Time
+    private function yesterday(): Time
     {
         return new Time('yesterday');
     }
@@ -105,7 +105,7 @@ final class MagicValue
      *
      * @return \Cake\I18n\Time
      */
-    private function tomorrow(): \Cake\I18n\Time
+    private function tomorrow(): Time
     {
         return new Time('tomorrow');
     }
