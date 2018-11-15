@@ -165,10 +165,10 @@ trait SearchTrait
     /**
      * Save action
      *
-     * @param string|null $id Search id.
+     * @param string $id Search id.
      * @return \Cake\Http\Response|void|null
      */
-    public function saveSearch(string $id = null)
+    public function saveSearch(string $id)
     {
         $this->request->allowMethod(['patch', 'post', 'put']);
 
@@ -188,11 +188,11 @@ trait SearchTrait
     /**
      * Edit action
      *
-     * @param string|null $preId Presaved Search id.
-     * @param string|null $id Search id.
+     * @param string $preId Presaved Search id.
+     * @param string $id Search id.
      * @return \Cake\Http\Response|void|null
      */
-    public function editSearch(string $preId = null, string $id = null)
+    public function editSearch(string $preId, string $id)
     {
         $this->request->allowMethod(['patch', 'post', 'put']);
 
@@ -214,10 +214,10 @@ trait SearchTrait
     /**
      * Copy action
      *
-     * @param string|null $id Search id.
+     * @param string $id Search id.
      * @return \Cake\Http\Response|void|null
      */
-    public function copySearch(string $id = null)
+    public function copySearch(string $id)
     {
         $this->request->allowMethod(['patch', 'post', 'put']);
 
@@ -243,10 +243,10 @@ trait SearchTrait
     /**
      * Delete method
      *
-     * @param string|null $id Saved search id.
+     * @param string $id Saved search id.
      * @return \Cake\Http\Response|void|null Redirects to referer.
      */
-    public function deleteSearch(string $id = null)
+    public function deleteSearch(string $id)
     {
         $this->request->allowMethod(['post', 'delete']);
 
@@ -271,9 +271,9 @@ trait SearchTrait
      * @param string $filename Export filename
      * @return \Cake\Http\Response|void
      */
-    public function exportSearch(string $id, string $filename = null)
+    public function exportSearch(string $id, string $filename)
     {
-        $filename = is_null($filename) ? $this->name : $filename;
+        $filename = '' === trim($filename) ? $this->name : $filename;
         $export = new Export($id, $filename, $this->Auth->user());
 
         if ($this->request->is('ajax') && $this->request->accepts('application/json')) {

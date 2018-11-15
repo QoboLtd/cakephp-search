@@ -41,11 +41,11 @@ class DashboardsController extends AppController
     /**
      * View method
      *
-     * @param string|null $id Dashboard id.
+     * @param string $id Dashboard id.
      * @return \Cake\Http\Response|void|null
      * @throws \Cake\Http\Exception\ForbiddenException
      */
-    public function view(string $id = null)
+    public function view(string $id)
     {
         $dashboard = $this->Dashboards->get($id, [
             'contain' => [
@@ -253,10 +253,10 @@ class DashboardsController extends AppController
     /**
      * Delete method
      *
-     * @param string|null $id Dashboard id.
+     * @param string $id Dashboard id.
      * @return \Cake\Http\Response|void|null Redirects to index.
      */
-    public function delete(string $id = null)
+    public function delete(string $id)
     {
         $this->request->allowMethod(['post', 'delete']);
         $dashboard = $this->Dashboards->get($id);
