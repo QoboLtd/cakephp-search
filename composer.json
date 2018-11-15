@@ -14,8 +14,8 @@
         }
     ],
     "support": {
-        "issues": "https://github.com/QoboLtd/cakephp-utils/issues",
-        "source": "https://github.com/QoboLtd/cakephp-utils"
+        "issues": "https://github.com/QoboLtd/cakephp-search/issues",
+        "source": "https://github.com/QoboLtd/cakephp-search"
     },
     "config": {
         "sort-packages": true,
