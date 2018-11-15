@@ -41,7 +41,7 @@ foreach ($savedSearches as $savedSearch) {
 <div class="input-group">
     <?= $this->Form->select('criterias', $selectOptions, [
         'id' => 'savedCriteriasSelect',
-        'default' => $this->request->param('pass.0'),
+        'default' => $this->request->getParam('pass.0'),
         'class' => 'form-control input-sm'
     ]) ?>
     <span class="input-group-btn">

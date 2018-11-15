@@ -12,16 +12,16 @@
 namespace Search\Model\Table;
 
 use Cake\Core\Configure;
+use Cake\Datasource\QueryInterface;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
-use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
 
 /**
  * Dashboards Model
  *
- * @property \Cake\ORM\Association\BelongsTo $Roles
- * @property \Cake\ORM\Association\BelongsToMany $SavedSearches
+ * @property \RolesCapabilities\Model\Table\RolesTable $Roles
+ * @property \Search\Model\Table\SavedSearches $SavedSearches
  */
 class DashboardsTable extends Table
 {
@@ -29,16 +29,16 @@ class DashboardsTable extends Table
     /**
      * Initialize method
      *
-     * @param array $config The configuration for the Table.
+     * @param mixed[] $config The configuration for the Table.
      * @return void
      */
     public function initialize(array $config)
     {
         parent::initialize($config);
 
-        $this->table('dashboards');
-        $this->displayField('name');
-        $this->primaryKey('id');
+        $this->setTable('dashboards');
+        $this->setDisplayField('name');
+        $this->setPrimaryKey('id');
 
         $this->addBehavior('Timestamp');
         $this->addBehavior('Muffin/Trash.Trash');
@@ -89,10 +89,10 @@ class DashboardsTable extends Table
     /**
      * Get specified user accessible dashboards.
      *
-     * @param  array $user user details
-     * @return \Cake\ORM\Query
+     * @param  mixed[] $user user details
+     * @return \Cake\Datasource\QueryInterface
      */
-    public function getUserDashboards(array $user)
+    public function getUserDashboards(array $user): QueryInterface
     {
         // get all dashboards
         $query = $this->find('all')->order('name');
@@ -103,7 +103,9 @@ class DashboardsTable extends Table
         }
 
         $roles = [];
-        $groups = $this->Roles->Groups->getUserGroups($user['id']);
+        /** @var \Groups\Model\Table\GroupsTable */
+        $table = $this->Roles->Groups->getTarget();
+        $groups = $table->getUserGroups($user['id']);
         // get group(s) roles
         if (!empty($groups)) {
             $roles = $this->Roles->Capabilities->getGroupsRoles($groups);

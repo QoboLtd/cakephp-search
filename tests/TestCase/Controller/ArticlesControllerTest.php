@@ -4,12 +4,12 @@ namespace Search\Test\TestCase\Controller;
 use Cake\Core\Configure;
 use Cake\Event\EventManager;
 use Cake\ORM\TableRegistry;
-use Cake\TestSuite\IntegrationTestCase;
+use Qobo\Utils\TestSuite\JsonIntegrationTestCase;
 
 /**
  * Search\Test\App\Controller\ArticlesController Test Case
  */
-class ArticlesControllerTest extends IntegrationTestCase
+class ArticlesControllerTest extends JsonIntegrationTestCase
 {
 
     /**
@@ -56,7 +56,7 @@ class ArticlesControllerTest extends IntegrationTestCase
         parent::tearDown();
     }
 
-    public function testSearch()
+    public function testSearch(): void
     {
         $this->get('/articles/search');
 
@@ -81,7 +81,7 @@ class ArticlesControllerTest extends IntegrationTestCase
         $this->assertResponseContains('<th class="actions">Actions</th>');
     }
 
-    public function testSearchAjax()
+    public function testSearchAjax(): void
     {
         EventManager::instance()->on('Search.Model.Search.afterFind', function ($event, $entities, $table) {
             return $entities;
@@ -95,18 +95,16 @@ class ArticlesControllerTest extends IntegrationTestCase
         ]);
 
         $this->get('/articles/search/00000000-0000-0000-0000-000000000003');
-        $this->assertResponseOk();
+        $this->assertJsonResponseOk();
 
-        $this->assertResponseContains('data');
         $this->assertResponseContains('pagination');
         $this->assertResponseContains('First article title');
 
-        $response = json_decode($this->_getBodyAsString());
-        $this->assertTrue($response->success);
+        $response = $this->getParsedResponse();
         $this->assertEquals(2, $response->pagination->count);
     }
 
-    public function testSearchAjaxWithPrimaryKey()
+    public function testSearchAjaxWithPrimaryKey(): void
     {
         EventManager::instance()->on('Search.Model.Search.afterFind', function ($event, $entities, $table) {
             return $entities;
@@ -120,12 +118,13 @@ class ArticlesControllerTest extends IntegrationTestCase
         ]);
 
         $this->get('/articles/search/00000000-0000-0000-0000-000000000003');
+        $this->assertJsonResponseOk();
 
-        $response = json_decode($this->_getBodyAsString());
+        $response = $this->getParsedResponse();
         $this->assertEquals('00000000-0000-0000-0000-000000000002', $response->data[0]->{'Articles.id'});
     }
 
-    public function testSearchAjaxWithGroupBy()
+    public function testSearchAjaxWithGroupBy(): void
     {
         EventManager::instance()->on('Search.Model.Search.afterFind', function ($event, $entities, $table) {
             return $entities;
@@ -139,13 +138,13 @@ class ArticlesControllerTest extends IntegrationTestCase
         ]);
 
         $this->get('/articles/search/00000000-0000-0000-0000-000000000005');
+        $this->assertJsonResponseOk();
 
-        $response = json_decode($this->_getBodyAsString());
-        $this->assertTrue($response->success);
+        $response = $this->getParsedResponse();
         $this->assertEquals(2, $response->pagination->count);
     }
 
-    public function testSearchPost()
+    public function testSearchPost(): void
     {
         $data = [
             'aggregator' => 'AND',
@@ -165,7 +164,7 @@ class ArticlesControllerTest extends IntegrationTestCase
         $this->assertRedirectContains('/articles/search');
     }
 
-    public function testSearchPostExisting()
+    public function testSearchPostExisting(): void
     {
         $id = '00000000-0000-0000-0000-000000000003';
         $data = [
@@ -189,15 +188,15 @@ class ArticlesControllerTest extends IntegrationTestCase
 
         $entity = $table->get($id);
         $this->assertEquals($expected->id, $entity->id);
-        $this->assertEquals($expected->name, $entity->name);
-        $this->assertEquals($expected->type, $entity->type);
-        $this->assertEquals($expected->user_id, $entity->user_id);
-        $this->assertEquals($expected->model, $entity->model);
-        $this->assertEquals($expected->shared, $entity->shared);
-        $this->assertNotEquals($expected->content, $entity->content);
+        $this->assertEquals($expected->get('name'), $entity->get('name'));
+        $this->assertEquals($expected->get('type'), $entity->get('type'));
+        $this->assertEquals($expected->get('user_id'), $entity->get('user_id'));
+        $this->assertEquals($expected->get('model'), $entity->get('model'));
+        $this->assertEquals($expected->get('shared'), $entity->get('shared'));
+        $this->assertNotEquals($expected->get('content'), $entity->get('content'));
     }
 
-    public function testSaveSearch()
+    public function testSaveSearch(): void
     {
         $id = '00000000-0000-0000-0000-000000000003';
         $data = ['name' => 'foo'];
@@ -210,10 +209,10 @@ class ArticlesControllerTest extends IntegrationTestCase
         $this->assertRedirectContains('/articles/search');
 
         $entity = $table->get($id);
-        $this->assertNotEquals($expected->name, $entity->name);
+        $this->assertNotEquals($expected->get('name'), $entity->get('name'));
     }
 
-    public function testEditSearch()
+    public function testEditSearch(): void
     {
         $id = '00000000-0000-0000-0000-000000000003';
         $preId = '00000000-0000-0000-0000-000000000002';
@@ -229,26 +228,26 @@ class ArticlesControllerTest extends IntegrationTestCase
 
         // after edit
         $entityAfter = $table->get($id);
-        $this->assertEquals($data['name'], $entityAfter->name);
-        $this->assertEquals($entityBefore->user_id, $entityAfter->user_id);
-        $this->assertEquals($entityBefore->model, $entityAfter->model);
-        $this->assertEquals($entityBefore->system, $entityAfter->system);
-        $this->assertEquals($entityBefore->trashed, $entityAfter->trashed);
-        $this->assertEquals($entityBefore->created, $entityAfter->created);
-        $this->assertNotEquals($entityBefore->name, $entityAfter->name);
-        $this->assertNotEquals($entityBefore->content, $entityAfter->content);
-        $this->assertNotEquals($entityBefore->modified, $entityAfter->modified);
+        $this->assertEquals($data['name'], $entityAfter->get('name'));
+        $this->assertEquals($entityBefore->get('user_id'), $entityAfter->get('user_id'));
+        $this->assertEquals($entityBefore->get('model'), $entityAfter->get('model'));
+        $this->assertEquals($entityBefore->get('system'), $entityAfter->get('system'));
+        $this->assertEquals($entityBefore->get('trashed'), $entityAfter->get('trashed'));
+        $this->assertEquals($entityBefore->get('created'), $entityAfter->get('created'));
+        $this->assertNotEquals($entityBefore->get('name'), $entityAfter->get('name'));
+        $this->assertNotEquals($entityBefore->get('content'), $entityAfter->get('content'));
+        $this->assertNotEquals($entityBefore->get('modified'), $entityAfter->get('modified'));
 
         $preSaved = $table->get($preId);
-        $this->assertEquals($preSaved->content, $entityAfter->content);
-        $this->assertNotEquals($preSaved->user_id, $entityAfter->user_id);
-        $this->assertNotEquals($preSaved->model, $entityAfter->model);
-        $this->assertNotEquals($preSaved->system, $entityAfter->system);
-        $this->assertNotEquals($preSaved->created, $entityAfter->created);
-        $this->assertNotEquals($preSaved->modified, $entityAfter->modified);
+        $this->assertEquals($preSaved->get('content'), $entityAfter->get('content'));
+        $this->assertNotEquals($preSaved->get('user_id'), $entityAfter->get('user_id'));
+        $this->assertNotEquals($preSaved->get('model'), $entityAfter->get('model'));
+        $this->assertNotEquals($preSaved->get('system'), $entityAfter->get('system'));
+        $this->assertNotEquals($preSaved->get('created'), $entityAfter->get('created'));
+        $this->assertNotEquals($preSaved->get('modified'), $entityAfter->get('modified'));
     }
 
-    public function testCopySearch()
+    public function testCopySearch(): void
     {
         $id = '00000000-0000-0000-0000-000000000003';
 
@@ -259,19 +258,23 @@ class ArticlesControllerTest extends IntegrationTestCase
         $this->assertRedirect();
         $this->assertRedirectContains('/articles/search');
 
-        $location = explode('/', $this->_response->getHeaderLine('Location'));
+        /**
+         * @var \Cake\Http\Response
+         */
+        $response = $this->_response;
+        $location = explode('/', $response->getHeaderLine('Location'));
         $id = array_pop($location);
         $entity = $table->get($id);
 
-        $this->assertEquals($expected->name, $entity->name);
-        $this->assertEquals($expected->type, $entity->type);
-        $this->assertEquals($expected->model, $entity->model);
-        $this->assertEquals($expected->shared, $entity->shared);
-        $this->assertEquals($expected->content, $entity->content);
-        $this->assertEquals($expected->user_id, $entity->user_id);
+        $this->assertEquals($expected->get('name'), $entity->get('name'));
+        $this->assertEquals($expected->get('type'), $entity->get('type'));
+        $this->assertEquals($expected->get('model'), $entity->get('model'));
+        $this->assertEquals($expected->get('shared'), $entity->get('shared'));
+        $this->assertEquals($expected->get('content'), $entity->get('content'));
+        $this->assertEquals($expected->get('user_id'), $entity->get('user_id'));
     }
 
-    public function testDeleteSearch()
+    public function testDeleteSearch(): void
     {
         $id = '00000000-0000-0000-0000-000000000003';
 
@@ -285,7 +288,7 @@ class ArticlesControllerTest extends IntegrationTestCase
         $this->assertTrue($query->isEmpty());
     }
 
-    public function testExportSearch()
+    public function testExportSearch(): void
     {
         $id = '00000000-0000-0000-0000-000000000003';
 
@@ -296,7 +299,7 @@ class ArticlesControllerTest extends IntegrationTestCase
         $this->assertEquals(2, $this->viewVariable('count'));
     }
 
-    public function testExportSearchAjax()
+    public function testExportSearchAjax(): void
     {
         $id = '00000000-0000-0000-0000-000000000003';
 

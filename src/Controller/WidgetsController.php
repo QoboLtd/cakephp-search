@@ -11,12 +11,7 @@
  */
 namespace Search\Controller;
 
-use Cake\Core\Configure;
-use Cake\Event\Event;
-use Cake\Network\Exception\ForbiddenException;
 use Cake\ORM\TableRegistry;
-use Search\Controller\AppController;
-use Search\Model\Entity\Widget;
 
 /**
  * Widgets Controller
@@ -28,10 +23,13 @@ class WidgetsController extends AppController
     /**
      * Index Method
      *
-     * @return \Cake\Network\Response|null
+     * @return \Cake\Http\Response|void|null
      */
     public function index()
     {
+        /**
+         * @var \Search\Model\Table\WidgetsTable $table
+         */
         $table = TableRegistry::get('Search.Widgets');
 
         $widgets = $table->getWidgets();

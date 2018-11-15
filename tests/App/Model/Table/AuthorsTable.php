@@ -9,9 +9,9 @@ class AuthorsTable extends Table
     {
         parent::initialize($config);
 
-        $this->table('authors');
-        $this->primaryKey('id');
-        $this->displayField('name');
+        $this->setTable('authors');
+        $this->setPrimaryKey('id');
+        $this->setDisplayField('name');
 
         $this->addBehavior('Muffin/Trash.Trash');
 

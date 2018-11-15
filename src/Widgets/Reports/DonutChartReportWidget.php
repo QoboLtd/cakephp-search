@@ -11,9 +11,6 @@
  */
 namespace Search\Widgets\Reports;
 
-use Cake\Utility\Inflector;
-use Search\Widgets\Reports\BaseReportGraphs;
-
 class DonutChartReportWidget extends BaseReportGraphs
 {
     public $type = 'donutChart';
@@ -28,7 +25,7 @@ class DonutChartReportWidget extends BaseReportGraphs
      * @param array $data containing configs.
      * @return array $chartData for graph rendering.
      */
-    public function getChartData(array $data = [])
+    public function getChartData(array $data = []) : array
     {
         $report = $this->config;
 
@@ -65,10 +62,10 @@ class DonutChartReportWidget extends BaseReportGraphs
      *
      * Assembles JS/CSS libs for the graph rendering.
      *
-     * @param array $data containing widgetHandler info.
-     * @return array $content with the scripts.
+     * @param mixed[] $data containing widgetHandler info.
+     * @return mixed[] $content with the scripts.
      */
-    public function getScripts(array $data = [])
+    public function getScripts(array $data = []) : array
     {
         return [
             'post' => [

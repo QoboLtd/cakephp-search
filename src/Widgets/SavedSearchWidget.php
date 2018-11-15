@@ -11,29 +11,33 @@
  */
 namespace Search\Widgets;
 
-use Cake\Core\Configure;
+use Cake\Datasource\EntityInterface;
 use Cake\ORM\TableRegistry;
-use Cake\Routing\Router;
+use Search\Model\Entity\SavedSearch;
+use Search\Model\Entity\Widget;
 use Search\Utility;
 use Search\Utility\Search;
 use Search\Utility\Validator;
-use Search\Widgets\BaseWidget;
 
-class SavedSearchWidget extends BaseWidget
+final class SavedSearchWidget extends BaseWidget
 {
     const TABLE_PREFIX = 'table-datatable-';
 
-    protected $_entity = null;
+    /**
+     * Widget entity.
+     *
+     * @var \Search\Model\Entity\Widget
+     */
+    private $widget;
 
-    protected $_tableName = 'Search.SavedSearches';
-
-    protected $_tableInstance = null;
-
-    protected $_data = [];
+    /**
+     * Saved search entity.
+     *
+     * @var \Search\Model\Entity\SavedSearch|null
+     */
+    private $data = null;
 
     public $renderElement = 'Search.Widgets/table';
-
-    public $options = [];
 
     public $type = 'saved_search';
     public $errors = [];
@@ -56,72 +60,69 @@ class SavedSearchWidget extends BaseWidget
     /**
      * construct method
      *
-     * @param array $options containing widget entity.
+     * @param mixed[] $options containing widget entity.
      * @return void.
      */
-    public function __construct($options = [])
+    public function __construct(array $options)
     {
-        if (!empty($options['entity'])) {
-            $this->_entity = $options['entity'];
+        if (! empty($options['entity'])) {
+            $this->widget = $options['entity'];
         }
-        $this->_tableInstance = TableRegistry::get($this->_tableName);
     }
 
     /**
-     * getOptions method.
-     *
-     * @return array $options of the widget.
+     * @return \Search\Model\Entity\SavedSearch|null
      */
-    public function getOptions()
+    public function getData() : ?SavedSearch
     {
-        return $this->options;
-    }
-
-    /**
-     * @return array $_data of the widget.
-     */
-    public function getData()
-    {
-        return $this->_data;
+        return $this->data;
     }
 
     /**
      * Retrieve SavedSearch results for the widget
      *
      * @param array $options containing entity and view params.
-     * @return array $results from $this->_data.
+     * @return \Search\Model\Entity\SavedSearch|null
      */
-    public function getResults(array $options = [])
+    public function getResults(array $options = []) : ?SavedSearch
     {
         $this->setContainerId($options['entity']);
 
-        $savedSearch = [];
-        try {
-            $query = $this->_tableInstance->findById($this->_entity->widget_id);
-            if ($query->isEmpty()) {
-                $this->errors[] = 'No data found for this entity';
+        $table = TableRegistry::get('Search.SavedSearches');
 
-                return $savedSearch;
-            }
-            $savedSearch = $query->first();
-        } catch (\Exception $e) {
-            echo $e->getMessage();
+        /** @var \Search\Model\Entity\SavedSearch|null */
+        $savedSearch = $table->find()
+            ->where(['id' => $this->widget->get('widget_id')])
+            ->enableHydration(true)
+            ->first();
+
+        if (null === $savedSearch) {
+            $this->errors[] = 'No data found for this entity';
+
+            return null;
         }
 
-        $table = TableRegistry::get($savedSearch->model);
+        /** @var \Cake\Datasource\RepositoryInterface */
+        $table = TableRegistry::get($savedSearch->get('model'));
 
         $search = new Search($table, $options['user']);
         // keeps backward compatibility
-        $entity = $search->reset($savedSearch, $options['user']);
-        $entity->content = json_decode($entity->content, true);
-        $entity->content['saved'] = Validator::validateData($table, $entity->content['saved'], $options['user']);
+        $entity = $search->reset($savedSearch);
+        if (null === $entity) {
+            $this->errors[] = 'Failed to reset entity';
+
+            return null;
+        }
+        $content = json_decode($entity->get('content'), true);
+        $content['saved'] = Validator::validateData($table, $content['saved'], $options['user']);
+        $entity->set('content', $content);
 
         $this->options['fields'] = Utility::instance()->getSearchableFields($table, $options['user']);
         $this->options['associationLabels'] = Utility::instance()->getAssociationLabels($table);
 
-        $this->_data = $entity;
+        $this->data = $entity;
 
-        return $this->getData();
+        return $this->data;
     }
 
     /**
@@ -129,20 +130,18 @@ class SavedSearchWidget extends BaseWidget
      *
      * Setting unique identifier of the widget.
      *
-     * @param array $entity used for setting id of widget.
-     * @return string $containerId of the widget.
+     * @param \Cake\Datasource\EntityInterface $entity used for setting id of widget.
+     * @return void
      */
-    public function setContainerId($entity = null)
+    public function setContainerId(EntityInterface $entity) : void
     {
         $this->containerId = self::TABLE_PREFIX . md5($entity->id);
-
-        return $this->containerId;
     }
 
     /**
-     * @return array $errors in case of validation
+     * @return string[] $errors in case of validation
      */
-    public function getErrors()
+    public function getErrors() : array
     {
         return $this->errors;
     }

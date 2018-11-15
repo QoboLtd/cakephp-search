@@ -14,7 +14,6 @@ namespace Search\Model\Table;
 use Cake\Core\App;
 use Cake\Database\Schema\TableSchema;
 use Cake\Filesystem\Folder;
-use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Utility\Inflector;
@@ -30,6 +29,7 @@ use Cake\Validation\Validator;
  * @method \Search\Model\Entity\AppWidget patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
  * @method \Search\Model\Entity\AppWidget[] patchEntities($entities, array $data, array $options = [])
  * @method \Search\Model\Entity\AppWidget findOrCreate($search, callable $callback = null, $options = [])
+ * @method \Muffin\Trash\Model\Behavior\TrashBehavior trashAll($conditions)
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
@@ -114,7 +114,7 @@ class AppWidgetsTable extends Table
      */
     protected function _initializeSchema(TableSchema $schema)
     {
-        $schema->columnType('content', 'json');
+        $schema->setColumnType('content', 'json');
 
         return $schema;
     }
@@ -124,7 +124,7 @@ class AppWidgetsTable extends Table
      *
      * @return void
      */
-    protected function _saveAppWidgets()
+    protected function _saveAppWidgets(): void
     {
         $widgets = $this->_getAppWidgets();
 
@@ -149,9 +149,9 @@ class AppWidgetsTable extends Table
     /**
      * Get widgets defined in the Application level (src/Template/Plugin/Search/AppWidgets).
      *
-     * @return array
+     * @return mixed[]
      */
-    protected function _getAppWidgets()
+    protected function _getAppWidgets(): array
     {
         $result = [];
 
@@ -175,7 +175,7 @@ class AppWidgetsTable extends Table
                     'name' => $name,
                     'type' => static::WIDGET_TYPE,
                     'content' => [
-                        'model' => $this->alias(),
+                        'model' => $this->getAlias(),
                         'path' => $path . $file,
                         'element' => $element
                     ]

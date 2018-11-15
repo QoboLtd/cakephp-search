@@ -1,5 +1,5 @@
 <?php
-namespace Search\Utility;
+namespace Search\Test\TestCase\Utility;
 
 use Cake\Event\EventManager;
 use Cake\ORM\TableRegistry;
@@ -9,6 +9,8 @@ use Search\Utility\Validator;
 
 /**
  * Search\Utility\Validator Test Case
+ *
+ * @property \Search\Model\Table\SavedSearchesTable $SavedSearches
  */
 class ValidatorTest extends TestCase
 {
@@ -25,8 +27,12 @@ class ValidatorTest extends TestCase
     {
         parent::setUp();
 
-        $config = TableRegistry::exists('SavedSearches') ? [] : ['className' => 'Search\Model\Table\SavedSearchesTable'];
-        $this->SavedSearches = TableRegistry::get('SavedSearches', $config);
+        $config = TableRegistry::exists('Search.SavedSearches') ? [] : ['className' => 'Search\Model\Table\SavedSearchesTable'];
+        /**
+         * @var \Search\Model\Table\SavedSearchesTable $table
+         */
+        $table = TableRegistry::get('Search.SavedSearches', $config);
+        $this->SavedSearches = $table;
 
         EventManager::instance()->on('Search.Model.Search.searchabeFields', function ($event, $table) {
             $result = [
@@ -66,7 +72,7 @@ class ValidatorTest extends TestCase
         parent::tearDown();
     }
 
-    public function testValidateData()
+    public function testValidateData(): void
     {
         $model = 'Dashboards';
 
@@ -89,7 +95,7 @@ class ValidatorTest extends TestCase
         $this->assertEquals($data, $result);
     }
 
-    public function testValidateDataWrong()
+    public function testValidateDataWrong(): void
     {
         $table = TableRegistry::get('Dashboards');
 
@@ -121,7 +127,7 @@ class ValidatorTest extends TestCase
         $this->assertEquals(Options::DEFAULT_AGGREGATOR, $result['aggregator']);
     }
 
-    public function testValidatePrimaryKeyAsSortField()
+    public function testValidatePrimaryKeyAsSortField(): void
     {
         $table = TableRegistry::get('Dashboards');
 
@@ -137,11 +143,15 @@ class ValidatorTest extends TestCase
 
         $result = Validator::validateData($table, $data, $user);
 
-        $expected = $table->aliasField($table->aliasField($table->getPrimaryKey()));
+        /**
+         * @var string
+         */
+        $primaryKey = $table->getPrimaryKey();
+        $expected = $table->aliasField($table->aliasField($primaryKey));
         $this->assertEquals($expected, $result['sort_by_field']);
     }
 
-    public function testValidateDisplayColumnAsSortField()
+    public function testValidateDisplayColumnAsSortField(): void
     {
         $table = TableRegistry::get('Dashboards');
 

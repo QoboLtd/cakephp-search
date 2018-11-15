@@ -20,12 +20,12 @@ class DonutChartReportWidgetTest extends TestCase
         parent::tearDown();
     }
 
-    public function testGetType()
+    public function testGetType(): void
     {
         $this->assertEquals('donutChart', $this->widget->getType());
     }
 
-    public function testGetScripts()
+    public function testGetScripts(): void
     {
         $content = $this->widget->getScripts([]);
         $this->assertInternalType('array', $content);
@@ -35,17 +35,17 @@ class DonutChartReportWidgetTest extends TestCase
         $this->assertArrayHasKey('javascript', $content['post']);
     }
 
-    public function testSetContainerId()
+    public function testGetContainerId(): void
     {
         $config = [
             'slug' => 'barChart',
         ];
 
-        $containerId = $this->widget->setContainerId($config);
-        $this->assertEquals($containerId, 'graph_' . $config['slug']);
+        $this->widget->setContainerId($config);
+        $this->assertEquals('graph_barChart', $this->widget->getContainerId());
     }
 
-    public function testGetChartData()
+    public function testGetChartData(): void
     {
         $data = [
             [

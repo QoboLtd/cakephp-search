@@ -1,5 +1,5 @@
 <?php
-namespace Search\Utility;
+namespace Search\Test\TestCase\Utility;
 
 use Cake\Event\EventManager;
 use Cake\Http\ServerRequest;
@@ -14,6 +14,9 @@ use Search\Utility\Search;
 
 /**
  * Search\Utility\Search Test Case
+ *
+ * @property array $user
+ * @property \Search\Utility\Search $Search
  */
 class SearchTest extends TestCase
 {
@@ -54,7 +57,7 @@ class SearchTest extends TestCase
         parent::tearDown();
     }
 
-    private function searchableFieldsListener()
+    private function searchableFieldsListener(): void
     {
         EventManager::instance()->on((string)EventName::MODEL_SEARCH_SEARCHABLE_FIELDS(), function ($event, $table) {
             $tableName = $table->getRegistryAlias();
@@ -163,13 +166,13 @@ class SearchTest extends TestCase
     /**
      * @expectedException InvalidArgumentException
      */
-    public function testInstantiateWithEmptyUser()
+    public function testInstantiateWithEmptyUser(): void
     {
         $user = [];
         new Search(TableRegistry::get('Search.Dashboards'), $user);
     }
 
-    public function testPrepareData()
+    public function testPrepareData(): void
     {
         $request = new ServerRequest(['post' => [
             'criteria' => ['name' => 'foo']
@@ -182,7 +185,7 @@ class SearchTest extends TestCase
         $this->assertArrayHasKey('criteria', $result);
     }
 
-    public function testPrepareDataBasicSearch()
+    public function testPrepareDataBasicSearch(): void
     {
         $request = new ServerRequest(['post' => [
             'criteria' => ['query' => 'foo']
@@ -194,7 +197,7 @@ class SearchTest extends TestCase
         $this->assertArrayHasKey('aggregator', $result);
     }
 
-    public function testPrepareDataBasicSearchWithoutSearchableFields()
+    public function testPrepareDataBasicSearchWithoutSearchableFields(): void
     {
         $model = 'SomeRandomModel';
 
@@ -208,7 +211,7 @@ class SearchTest extends TestCase
         $this->assertEmpty($result['criteria']);
     }
 
-    public function testPrepareDataBasicSearchWithRelatedField()
+    public function testPrepareDataBasicSearchWithRelatedField(): void
     {
         EventManager::instance()->on((string)EventName::MODEL_SEARCH_BASIC_SEARCH_FIELDS(), function ($event, $table) {
             return ['Dashboards.role_id'];
@@ -233,7 +236,7 @@ class SearchTest extends TestCase
         $this->assertEquals($expected, $this->Search->prepareData($request));
     }
 
-    public function testExecute()
+    public function testExecute(): void
     {
         $model = 'Dashboards';
 
@@ -259,7 +262,7 @@ class SearchTest extends TestCase
         $this->assertGreaterThan(0, $result->count());
     }
 
-    public function testExecuteEmptyCriteria()
+    public function testExecuteEmptyCriteria(): void
     {
         $model = 'Dashboards';
         $field = 'role_id';
@@ -278,14 +281,21 @@ class SearchTest extends TestCase
             'limit' => '10'
         ];
 
+        /**
+         * @var \Cake\ORM\Query
+         */
         $result = $this->Search->execute($data);
 
         $this->assertInstanceOf(Query::class, $result);
         $this->assertEquals(1, $result->count());
-        $this->assertNull($result->first()->get($field));
+        /**
+         * @var \Cake\Datasource\EntityInterface
+         */
+        $entity = $result->firstOrFail();
+        $this->assertNull($entity->get($field));
     }
 
-    public function testExecuteWithAssociated()
+    public function testExecuteWithAssociated(): void
     {
         $model = 'Articles';
         $relatedModel = 'Authors';
@@ -308,8 +318,15 @@ class SearchTest extends TestCase
         ];
 
         $search = new Search(TableRegistry::get($model), $this->user);
+        /**
+         * @var \Cake\ORM\Query
+         */
         $result = $search->execute($data);
-        $entity = $result->first();
+
+        /**
+         * @var \Cake\Datasource\EntityInterface
+         */
+        $entity = $result->firstOrFail();
 
         $this->assertInstanceOf(Query::class, $result);
         $this->assertEquals(1, $result->count());
@@ -324,7 +341,7 @@ class SearchTest extends TestCase
         $this->assertNotEmpty($associated[$relatedModel]->get('name'));
     }
 
-    public function testExecuteWithDatetimeIs()
+    public function testExecuteWithDatetimeIs(): void
     {
         $model = 'Dashboards';
 
@@ -344,7 +361,7 @@ class SearchTest extends TestCase
         $this->assertEquals(2, $result->count());
     }
 
-    public function testExecuteWithAndAggregator()
+    public function testExecuteWithAndAggregator(): void
     {
         $model = 'Dashboards';
 
@@ -365,7 +382,7 @@ class SearchTest extends TestCase
         $this->assertEquals(1, $result->count());
     }
 
-    public function testExecuteWithRelatedIsNot()
+    public function testExecuteWithRelatedIsNot(): void
     {
         $model = 'Dashboards';
 
@@ -384,7 +401,7 @@ class SearchTest extends TestCase
         $this->assertEquals(1, $result->count());
     }
 
-    public function testExecuteWithRelatedValueArray()
+    public function testExecuteWithRelatedValueArray(): void
     {
         $model = 'Dashboards';
 
@@ -401,7 +418,7 @@ class SearchTest extends TestCase
         $this->assertEquals(2, $result->count());
     }
 
-    public function testCreate()
+    public function testCreate(): void
     {
         $data = [
             'criteria' => [
@@ -422,7 +439,7 @@ class SearchTest extends TestCase
         $this->assertEquals(36, strlen($result));
     }
 
-    public function testUpdate()
+    public function testUpdate(): void
     {
         $model = 'Dashboards';
 
@@ -440,24 +457,27 @@ class SearchTest extends TestCase
             'limit' => '10'
         ];
 
+        /**
+         * @var \Cake\Datasource\EntityInterface
+         */
         $result = $this->Search->update($data, $id);
         $this->assertInstanceOf(SavedSearch::class, $result);
-        $this->assertNotEmpty($result->content);
+        $this->assertNotEmpty($result->get('content'));
 
-        $content = json_decode($result->content, true);
+        $content = json_decode($result->get('content'), true);
         $this->assertArrayHasKey('latest', $content);
         $this->assertEquals($data, $content['latest']);
     }
 
-    public function testGet()
+    public function testGet(): void
     {
         $id = '00000000-0000-0000-0000-000000000001';
 
         $result = $this->Search->get($id);
         $this->assertInstanceOf(SavedSearch::class, $result);
-        $this->assertNotEmpty($result->content);
+        $this->assertNotEmpty($result->get('content'));
 
-        $result = json_decode($result->content, true);
+        $result = json_decode($result->get('content'), true);
 
         $this->assertArrayHasKey('saved', $result);
         $this->assertArrayHasKey('display_columns', $result['saved']);
@@ -474,7 +494,7 @@ class SearchTest extends TestCase
         $this->assertArrayHasKey('limit', $result['latest']);
     }
 
-    public function testGetWhereClause()
+    public function testGetWhereClause(): void
     {
         $class = new ReflectionClass(Search::class);
         $method = $class->getMethod('getWhereClause');

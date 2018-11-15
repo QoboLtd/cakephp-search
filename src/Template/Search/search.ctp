@@ -11,7 +11,7 @@
  */
 ?>
 <section class="content-header">
-    <h4>Search</h4>
+    <h4><?= __('Search') ?></h4>
 </section>
 <section class="content">
 <?php
@@ -23,7 +23,6 @@ echo $this->element('Search.Search/filters', [
     'isEditable' => $isEditable,
     'preSaveId' => $preSaveId,
     'associationLabels' => $associationLabels
-
 ]);
 echo $this->element('Search.Search/results', [
     'searchableFields' => $searchableFields,

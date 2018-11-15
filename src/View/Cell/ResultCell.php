@@ -51,33 +51,84 @@ final class ResultCell extends Cell
     ];
 
     /**
+     * @var string[] $displayColumns
+     */
+    private $displayColumns = [];
+
+    /**
+     * @var array
+     */
+    private $searchableFields = [];
+
+    /**
+     * @var \Search\Model\Entity\SavedSearch
+     */
+    private $entity;
+
+    /**
+     * @var array
+     */
+    private $searchData = [];
+
+    /**
+     * @var string
+     */
+    private $tableId = '';
+
+    /**
+     * @var bool
+     */
+    private $batch = false;
+
+    /**
+     * @var bool
+     */
+    private $export = false;
+
+    /**
+     * @var string
+     */
+    private $groupByField = '';
+
+    /**
+     * @var array
+     */
+    private $associationLabels = [];
+
+    private $preSaveId = '';
+
+    /**
      * Cell display method.
      *
-     * @param array $options Search options
+     * @param mixed[] $options Search options
      * @param \Cake\View\View $view View instance
      * @return void
      */
-    public function display(array $options, View $view)
+    public function display(array $options, View $view): void
     {
         $this->validateOptions($options);
-        $this->setView($view);
-        $this->setIsBatch();
-        $this->setIsGroup();
-        $this->setIsSystem();
-        $this->setIsExport();
-        $this->setViewOptions();
-        $this->setTableOptions();
-        $this->setDatatableOptions();
-        $this->setChartOptions();
+
+        $this->set('cakeView', $view);
+        $this->set('isBatch', $this->batch);
+        $this->set('isGroup', (bool)$this->getGroupByField());
+        $this->set('isSystem', (bool)$this->entity->get('system'));
+        $this->set('isExport', $this->getExport());
+        $this->set('viewOptions', $this->getViewOptions());
+        $this->set('tableOptions', [
+            'id' => $this->getTableId(),
+            'headers' => $this->getTableHeaders()
+        ]);
+        $this->set('dtOptions', $this->getDatatableOptions());
+        $this->set('chartOptions', $this->getChartOptions());
     }
 
     /**
      * Validates required options and sets them as class properties.
      *
-     * @param array $options Search options
+     * @param mixed[] $options Search options
      * @return void
      */
-    private function validateOptions(array $options)
+    private function validateOptions(array $options): void
     {
         foreach ($this->requiredOptions as $name) {
             if (!array_key_exists($name, $options)) {
@@ -89,60 +140,17 @@ final class ResultCell extends Cell
     }
 
     /**
-     * View instance setter.
-     *
-     * @param \Cake\View\View $view View instance
-     * @return void
-     */
-    private function setView(View $view)
-    {
-        $this->set('cakeView', $view);
-    }
-
-    /**
      * Html table id getter.
      *
      * @return string
      */
-    private function getTableId()
+    private function getTableId(): string
     {
-        if (property_exists($this, 'tableId')) {
-            return $this->tableId;
+        if ('' === $this->tableId) {
+            $this->tableId = 'table-datatable-' . uniqid();
         }
 
-        $this->tableId = 'table-datatable-' . uniqid();
-
         return $this->tableId;
-    }
-
-    /**
-     * Batch flag setter.
-     *
-     * @return void
-     */
-    private function setIsBatch()
-    {
-        $this->set('isBatch', (bool)$this->batch);
-    }
-
-    /**
-     * Group flag setter.
-     *
-     * @return void
-     */
-    private function setIsGroup()
-    {
-        $this->set('isGroup', (bool)$this->getGroupByField());
-    }
-
-    /**
-     * System search flag setter.
-     *
-     * @return void
-     */
-    private function setIsSystem()
-    {
-        $this->set('isSystem', (bool)$this->entity->get('system'));
     }
 
     /**
@@ -150,25 +158,13 @@ final class ResultCell extends Cell
      *
      * @return string
      */
-    private function getGroupByField()
+    private function getGroupByField(): string
     {
-        if (property_exists($this, 'groupByField')) {
-            return $this->groupByField;
+        if ('' === $this->groupByField) {
+            $this->groupByField = ! empty($this->searchData['group_by']) ? $this->searchData['group_by'] : '';
         }
 
-        $this->groupByField = !empty($this->searchData['group_by']) ? $this->searchData['group_by'] : '';
-
         return $this->groupByField;
-    }
-
-    /**
-     * Export flag setter.
-     *
-     * @return void
-     */
-    private function setIsExport()
-    {
-        $this->set('isExport', (bool)$this->getExport());
     }
 
     /**
@@ -176,23 +172,21 @@ final class ResultCell extends Cell
      *
      * @return bool
      */
-    private function getExport()
+    private function getExport(): bool
     {
-        if (property_exists($this, 'export')) {
-            return $this->export;
+        if (false === $this->export) {
+            $this->export = (bool)Configure::read('Search.dashboardExport');
         }
-
-        $this->export = (bool)Configure::read('Search.dashboardExport');
 
         return $this->export;
     }
 
     /**
-     * View options setter.
+     * View options getter.
      *
-     * @return void
+     * @return mixed[]
      */
-    private function setViewOptions()
+    private function getViewOptions(): array
     {
         // search url if is a saved one
         list($plugin, $controller) = pluginSplit($this->entity->get('model'));
@@ -212,30 +206,15 @@ final class ResultCell extends Cell
             ]);
         }
 
-        $this->set('viewOptions', $result);
-    }
-
-    /**
-     * Html table options setter.
-     *
-     * @return void
-     */
-    private function setTableOptions()
-    {
-        $result = [
-            'id' => $this->getTableId(),
-            'headers' => $this->getTableHeaders()
-        ];
-
-        $this->set('tableOptions', $result);
+        return $result;
     }
 
     /**
      * Html table headers getter.
      *
-     * @return array
+     * @return mixed[]
      */
-    private function getTableHeaders()
+    private function getTableHeaders(): array
     {
         $result = [];
         foreach ($this->getDisplayColumns() as $column) {
@@ -256,11 +235,11 @@ final class ResultCell extends Cell
     }
 
     /**
-     * DataTable options setter.
+     * DataTable options getter.
      *
-     * @return void
+     * @return mixed[]
      */
-    private function setDatatableOptions()
+    private function getDatatableOptions(): array
     {
         list($plugin, $controller) = pluginSplit($this->entity->get('model'));
 
@@ -279,23 +258,23 @@ final class ResultCell extends Cell
             ],
         ];
 
-        if (!$this->getGroupByField() && $this->batch) {
+        if (! $this->getGroupByField() && $this->batch) {
             $result['batch'] = ['id' => Configure::read('Search.batch.button_id')];
         }
 
-        $this->set('dtOptions', $result);
+        return $result;
     }
 
     /**
-     * Chart options setter.
+     * Chart options getter.
      *
-     * @return void
+     * @return mixed[]
      */
-    private function setChartOptions()
+    private function getChartOptions(): array
     {
         $groupByField = $this->getGroupByField();
         if (!$groupByField) {
-            return;
+            return [];
         }
 
         list($plugin, $controller) = pluginSplit($this->entity->get('model'));
@@ -329,7 +308,7 @@ final class ResultCell extends Cell
             ];
         }
 
-        $this->set('chartOptions', $result);
+        return $result;
     }
 
     /**
@@ -337,7 +316,7 @@ final class ResultCell extends Cell
      *
      * @return int
      */
-    private function getOrderField()
+    private function getOrderField(): int
     {
         $result = (int)array_search($this->searchData['sort_by_field'], $this->getDisplayColumns());
 
@@ -353,7 +332,7 @@ final class ResultCell extends Cell
      *
      * @return string
      */
-    private function getOrderDirection()
+    private function getOrderDirection(): string
     {
         $result = !empty($this->searchData['sort_by_order']) ?
             $this->searchData['sort_by_order'] :
@@ -365,9 +344,9 @@ final class ResultCell extends Cell
     /**
      * DataTable columns getter.
      *
-     * @return array
+     * @return mixed[]
      */
-    private function getDatatableColumns()
+    private function getDatatableColumns(): array
     {
         $result = $this->getDisplayColumns();
 
@@ -378,7 +357,9 @@ final class ResultCell extends Cell
         if (!$this->getGroupByField() && $this->batch) {
             $table = TableRegistry::get($this->entity->get('model'));
             // add primary key in FIRST position
-            array_unshift($result, $table->aliasField($table->getPrimaryKey()));
+            foreach ((array)$table->getPrimaryKey() as $primaryKey) {
+                array_unshift($result, $table->aliasField($primaryKey));
+            }
         }
 
         return $result;
@@ -387,11 +368,11 @@ final class ResultCell extends Cell
     /**
      * Display columns getter.
      *
-     * @return array
+     * @return string[]
      */
-    private function getDisplayColumns()
+    private function getDisplayColumns(): array
     {
-        if (property_exists($this, 'displayColumns')) {
+        if (! empty($this->displayColumns)) {
             return $this->displayColumns;
         }
 

@@ -11,11 +11,14 @@
  */
 namespace Search\Controller;
 
+use Cake\Core\Configure;
+use Cake\Datasource\RepositoryInterface;
+use Cake\Datasource\ResultSetInterface;
 use Cake\Event\Event;
-use Cake\Network\Exception\BadRequestException;
-use Cake\ORM\ResultSet;
+use Cake\Http\Exception\BadRequestException;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use Search\Event\EventName as SearchEventName;
 use Search\Utility;
 use Search\Utility\Export;
@@ -43,12 +46,13 @@ trait SearchTrait
      * Search action
      *
      * @param  string $id Saved search id
-     * @return \Cake\Network\Response|void
+     * @return \Cake\Http\Response|void|null
      */
-    public function search($id = null)
+    public function search(string $id = '')
     {
         $model = $this->modelClass;
 
+        /** @var \Search\Model\Table\SavedSearchesTable */
         $searchTable = TableRegistry::get($this->tableName);
         $table = $this->loadModel();
         $search = new Search($table, $this->Auth->user());
@@ -61,11 +65,11 @@ trait SearchTrait
         if ($this->request->is('post')) {
             $searchData = $search->prepareData($this->request);
 
-            if ($id) {
+            if ('' !== $id) {
                 $search->update($searchData, $id);
             }
 
-            if (!$id) {
+            if ('' === $id) {
                 $id = $search->create($searchData);
             }
 
@@ -76,11 +80,11 @@ trait SearchTrait
 
         $entity = $search->get($id);
 
-        $searchData = json_decode($entity->content, true);
+        $searchData = json_decode($entity->get('content'), true);
 
         // return json response and skip any further processing.
         if ($this->request->is('ajax') && $this->request->accepts('application/json')) {
-            $this->viewBuilder()->className('Json');
+            $this->viewBuilder()->setClassName('Json');
             $response = $this->getAjaxViewVars($searchData['latest'], $table, $search);
             $this->set($response);
 
@@ -111,83 +115,71 @@ trait SearchTrait
     /**
      * Get AJAX response view variables
      *
-     * @param array $searchData Search data
-     * @param \Cake\ORM\Table $table Table instance
+     * @param mixed[] $searchData Search data
+     * @param \Cake\Datasource\RepositoryInterface $table Table instance
      * @param \Search\Utility\Search $search Search instance
-     * @return array Variables and values for AJAX response
+     * @return mixed[] Variables and values for AJAX response
      */
-    protected function getAjaxViewVars(array $searchData, Table $table, Search $search)
+    protected function getAjaxViewVars(array $searchData, RepositoryInterface $table, Search $search): array
     {
-        $displayColumns = [];
+        /** @var \Cake\ORM\Table */
+        $table = $table;
 
-        if (empty($searchData['group_by'])) {
-            $displayColumns = $searchData['display_columns'];
-        }
+        $searchData['sort_by_field'] = Hash::get($this->request->getQueryParams(), 'sort', '');
+        $searchData['sort_by_order'] = Hash::get(
+            $this->request->getQueryParams(),
+            'direction',
+            SearchOptions::DEFAULT_SORT_BY_ORDER
+        );
 
-        if (!empty($searchData['group_by'])) {
-            list($prefix, ) = pluginSplit($searchData['group_by']);
-            $displayColumns = array_merge($displayColumns, (array)$searchData['group_by']);
-            $displayColumns[] = $prefix . '.' . Search::GROUP_BY_FIELD;
-        }
-
-        $searchData['sort_by_field'] = $this->request->query('sort');
-
-        $searchData['sort_by_order'] = $this->request->query('direction') ?: SearchOptions::DEFAULT_SORT_BY_ORDER;
-
+        /** @var \Cake\ORM\Query */
         $query = $search->execute($searchData);
-
         $resultSet = $this->paginate($query);
-        $eventName = (string)SearchEventName::MODEL_SEARCH_AFTER_FIND();
-        $event = new Event($eventName, $this, [
-            'entities' => $resultSet,
-            'table' => $table
-        ]);
-        $this->eventManager()->dispatch($event);
 
-        // overwrite result-set with event result, if a registered listener is found.
-        if (!empty($this->eventManager()->listeners($eventName))) {
-            $resultSet = $event->result;
+        $event = new Event(
+            (string)SearchEventName::MODEL_SEARCH_AFTER_FIND(),
+            $this,
+            ['entities' => $resultSet, 'table' => $table]
+        );
+        $this->getEventManager()->dispatch($event);
+        $resultSet = $event->getResult() instanceof ResultSetInterface ? $event->getResult() : $resultSet;
+
+        $primaryKeys = [];
+        foreach ((array)$table->getPrimaryKey() as $primaryKey) {
+            $primaryKeys[] = $table->aliasField($primaryKey);
         }
 
-        $data = [];
-        if ($resultSet instanceof ResultSet) {
-            array_unshift($displayColumns, $table->aliasField($table->getPrimaryKey()));
-            $data = Utility::instance()->formatter($resultSet, $displayColumns, $table, $this->Auth->user());
-        }
+        $displayColumns = empty($searchData['group_by']) ?
+            $searchData['display_columns'] :
+            [$searchData['group_by'], pluginSplit($searchData['group_by'])[0] . '.' . Search::GROUP_BY_FIELD];
+        $displayColumns = array_merge($primaryKeys, $displayColumns);
 
-        $pagination = [
-            'count' => $query->count()
-        ];
-
-        $result = [
+        return [
             'success' => true,
-            'data' => $data,
-            'pagination' => $pagination,
+            'data' => Utility::instance()->formatter($resultSet, $displayColumns, $table, $this->Auth->user()),
+            'pagination' => ['count' => $resultSet->count()],
             '_serialize' => ['success', 'data', 'pagination']
         ];
-
-        return $result;
     }
 
     /**
      * Save action
      *
-     * @param string|null $id Search id.
-     * @return \Cake\Network\Response|null
-     * @throws \Cake\Network\Exception\NotFoundException When record not found.
+     * @param string $id Search id.
+     * @return \Cake\Http\Response|void|null
      */
-    public function saveSearch($id = null)
+    public function saveSearch(string $id)
     {
         $this->request->allowMethod(['patch', 'post', 'put']);
 
         $table = TableRegistry::get($this->tableName);
 
         $search = $table->get($id);
-        $search = $table->patchEntity($search, $this->request->data);
+        $search = $table->patchEntity($search, (array)$this->request->getData());
         if ($table->save($search)) {
-            $this->Flash->success(__('The search has been saved.'));
+            $this->Flash->success((string)__('The search has been saved.'));
         } else {
-            $this->Flash->error(__('The search could not be saved. Please, try again.'));
+            $this->Flash->error((string)__('The search could not be saved. Please, try again.'));
         }
 
         return $this->redirect(['action' => 'search', $id]);
@@ -196,12 +188,11 @@ trait SearchTrait
     /**
      * Edit action
      *
-     * @param string|null $preId Presaved Search id.
-     * @param string|null $id Search id.
-     * @return \Cake\Network\Response|null
-     * @throws \Cake\Network\Exception\NotFoundException When record not found.
+     * @param string $preId Presaved Search id.
+     * @param string $id Search id.
+     * @return \Cake\Http\Response|void|null
      */
-    public function editSearch($preId = null, $id = null)
+    public function editSearch(string $preId, string $id)
     {
         $this->request->allowMethod(['patch', 'post', 'put']);
 
@@ -213,9 +204,9 @@ trait SearchTrait
         ]);
 
         if ($table->save($search)) {
-            $this->Flash->success(__('The search has been edited.'));
+            $this->Flash->success((string)__('The search has been edited.'));
         } else {
-            $this->Flash->error(__('The search could not be edited. Please, try again.'));
+            $this->Flash->error((string)__('The search could not be edited. Please, try again.'));
         }
 
         return $this->redirect(['action' => 'search', $id]);
@@ -223,11 +214,10 @@ trait SearchTrait
     /**
      * Copy action
      *
-     * @param string|null $id Search id.
-     * @return \Cake\Network\Response|null
-     * @throws \Cake\Network\Exception\NotFoundException When record not found.
+     * @param string $id Search id.
+     * @return \Cake\Http\Response|void|null
      */
-    public function copySearch($id = null)
+    public function copySearch(string $id)
     {
         $this->request->allowMethod(['patch', 'post', 'put']);
 
@@ -242,9 +232,9 @@ trait SearchTrait
         // patch new entity with saved search data
         $entity = $table->patchEntity($entity, $data);
         if ($table->save($entity)) {
-            $this->Flash->success(__('The search has been copied.'));
+            $this->Flash->success((string)__('The search has been copied.'));
         } else {
-            $this->Flash->error(__('The search could not be copied. Please, try again.'));
+            $this->Flash->error((string)__('The search could not be copied. Please, try again.'));
         }
 
         return $this->redirect(['action' => 'search', $entity->id]);
@@ -253,20 +243,19 @@ trait SearchTrait
     /**
      * Delete method
      *
-     * @param string|null $id Saved search id.
-     * @return \Cake\Network\Response|null Redirects to referer.
-     * @throws \Cake\Network\Exception\NotFoundException When record not found.
+     * @param string $id Saved search id.
+     * @return \Cake\Http\Response|void|null Redirects to referer.
      */
-    public function deleteSearch($id = null)
+    public function deleteSearch(string $id)
     {
         $this->request->allowMethod(['post', 'delete']);
 
         $table = TableRegistry::get($this->tableName);
         $entity = $table->get($id);
         if ($table->delete($entity)) {
-            $this->Flash->success(__('The saved search has been deleted.'));
+            $this->Flash->success((string)__('The saved search has been deleted.'));
         } else {
-            $this->Flash->error(__('The saved search could not be deleted. Please, try again.'));
+            $this->Flash->error((string)__('The saved search could not be deleted. Please, try again.'));
         }
 
         return $this->redirect(['action' => 'search']);
@@ -282,14 +271,14 @@ trait SearchTrait
      * @param string $filename Export filename
      * @return \Cake\Http\Response|void
      */
-    public function exportSearch($id, $filename = null)
+    public function exportSearch(string $id, string $filename)
     {
-        $filename = is_null($filename) ? $this->name : $filename;
+        $filename = '' === trim($filename) ? $this->name : $filename;
         $export = new Export($id, $filename, $this->Auth->user());
 
         if ($this->request->is('ajax') && $this->request->accepts('application/json')) {
-            $page = (int)$this->request->query('page');
-            $limit = (int)$this->request->query('limit');
+            $page = (int)Hash::get($this->request->getQueryParams(), 'page', 1);
+            $limit = (int)Hash::get($this->request->getQueryParams(), 'limit', Configure::read('Search.export.limit'));
 
             $export->execute($page, $limit);
 

@@ -37,10 +37,10 @@ if (!empty($searchData['criteria'])) {
             'class' => 'search-form',
             'novalidate' => 'novalidate',
             'url' => [
-                'plugin' => $this->request->plugin,
-                'controller' => $this->request->controller,
+                'plugin' => $this->request->getParam('plugin'),
+                'controller' => $this->request->getParam('controller'),
                 'action' => 'search',
-                $this->request->param('pass.0')
+                $this->request->getParam('pass.0')
             ]
         ]); ?>
         <div class="row">

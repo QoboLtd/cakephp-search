@@ -10,6 +10,11 @@ use Search\Utility\Search;
 
 /**
  * Search\Utility Test Case
+ *
+ * @property array $user
+ * @property \Search\Utility $Utility
+ * @property \Search\Utility\Search $Search
+ * @property \Search\Model\Table\SavedSearchesTable $SavedSearches
  */
 class UtilityTest extends TestCase
 {
@@ -54,8 +59,12 @@ class UtilityTest extends TestCase
         $this->Utility = Utility::instance();
         $this->Search = new Search(TableRegistry::get('Articles'), $this->user);
 
-        $config = TableRegistry::exists('SavedSearches') ? [] : ['className' => 'Search\Model\Table\SavedSearchesTable'];
-        $this->SavedSearches = TableRegistry::get('SavedSearches', $config);
+        $config = TableRegistry::exists('Search.SavedSearches') ? [] : ['className' => 'Search\Model\Table\SavedSearchesTable'];
+        /**
+         * @var \Search\Model\Table\SavedSearchesTable $table
+         */
+        $table = TableRegistry::get('Search.SavedSearches', $config);
+        $this->SavedSearches = $table;
     }
 
     /**
@@ -73,7 +82,7 @@ class UtilityTest extends TestCase
         parent::tearDown();
     }
 
-    public function testGetAssociationLabels()
+    public function testGetAssociationLabels(): void
     {
         $table = TableRegistry::get('Articles');
         $result = $this->Utility->getAssociationLabels($table);
@@ -82,18 +91,18 @@ class UtilityTest extends TestCase
         $this->assertContains('Author Id', $result);
     }
 
-    public function testGetSearchableFieldsEventFired()
+    public function testGetSearchableFieldsEventFired(): void
     {
         EventManager::instance()->setEventList(new EventList());
 
-        $result = $this->Utility->getSearchableFields(TableRegistry::get('Widgets'), $this->user);
+        $this->Utility->getSearchableFields(TableRegistry::get('Widgets'), $this->user);
 
         $this->assertEventFired('Search.Model.Search.searchabeFields', EventManager::instance());
     }
 
-    public function testFormatter()
+    public function testFormatter(): void
     {
-        $table = TableRegistry::get('Dashboards');
+        $table = TableRegistry::get('Search.Dashboards');
         $query = $table->find();
 
         $fields = ['Dashboards.name'];
@@ -107,7 +116,7 @@ class UtilityTest extends TestCase
         }
     }
 
-    public function testFormatterWithAssociated()
+    public function testFormatterWithAssociated(): void
     {
         $data = [
             'aggregator' => 'AND',
@@ -139,7 +148,7 @@ class UtilityTest extends TestCase
         }
     }
 
-    public function testToCsv()
+    public function testToCsv(): void
     {
         $table = TableRegistry::get('Dashboards');
         $query = $table->find();
@@ -155,7 +164,7 @@ class UtilityTest extends TestCase
         }
     }
 
-    public function testToCsvWithAssociated()
+    public function testToCsvWithAssociated(): void
     {
         $data = [
             'aggregator' => 'AND',

@@ -20,12 +20,12 @@ class TableReportWidgetTest extends TestCase
         parent::tearDown();
     }
 
-    public function testGetType()
+    public function testGetType(): void
     {
         $this->assertEquals('table', $this->widget->getType());
     }
 
-    public function testGetScripts()
+    public function testGetScripts(): void
     {
         $content = $this->widget->getScripts([]);
         $this->assertInternalType('array', $content);
@@ -35,7 +35,7 @@ class TableReportWidgetTest extends TestCase
         $this->assertArrayHasKey('javascript', $content['post']);
     }
 
-    public function testGetChartData()
+    public function testGetChartData(): void
     {
         $config = [
             'modelName' => 'Reports',

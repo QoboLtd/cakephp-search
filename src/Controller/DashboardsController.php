@@ -12,11 +12,8 @@
 namespace Search\Controller;
 
 use Cake\Core\Configure;
-use Cake\Event\Event;
-use Cake\Network\Exception\ForbiddenException;
+use Cake\Http\Exception\ForbiddenException;
 use Cake\ORM\TableRegistry;
-use Search\Controller\AppController;
-use Search\Model\Entity\Widget;
 
 /**
  * Dashboards Controller
@@ -29,26 +26,26 @@ class DashboardsController extends AppController
     /**
      * Index method
      *
-     * @return \Cake\Network\Response|null
+     * @return \Cake\Http\Response|void|null
      */
     public function index()
     {
         $query = $this->Dashboards->getUserDashboards($this->Auth->user());
+        $entity = $query->first();
 
-        if (!$query->isEmpty()) {
-            return $this->redirect(['action' => 'view', $query->first()->id]);
+        if (null !== $entity) {
+            return $this->redirect(['action' => 'view', $entity->get('id')]);
         }
     }
 
     /**
      * View method
      *
-     * @param string|null $id Dashboard id.
-     * @return void
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     * @throws \Cake\Network\Exception\ForbiddenException
+     * @param string $id Dashboard id.
+     * @return \Cake\Http\Response|void|null
+     * @throws \Cake\Http\Exception\ForbiddenException
      */
-    public function view($id = null)
+    public function view(string $id)
     {
         $dashboard = $this->Dashboards->get($id, [
             'contain' => [
@@ -58,6 +55,9 @@ class DashboardsController extends AppController
         ]);
 
         $query = $this->Dashboards->getUserDashboards($this->Auth->user());
+        /**
+         * @var \Search\Model\Table\WidgetsTable $widgetsTable
+         */
         $widgetsTable = TableRegistry::get('Search.Widgets');
 
         $userDashboards = $query->find('list')->toArray();
@@ -67,7 +67,7 @@ class DashboardsController extends AppController
 
         $widgets = [];
 
-        foreach ($dashboard->widgets as $k => $item) {
+        foreach ($dashboard->get('widgets') as $k => $item) {
             $opts = $widgetsTable->getWidgetOptions($item);
 
             $x = (int)$opts['x'];
@@ -114,12 +114,15 @@ class DashboardsController extends AppController
      *
      * @TODO: refactor the code. Eyez bleeedzz
      *
-     * @return \Cake\Network\Response|void Redirects on successful add, renders view otherwise.
+     * @return \Cake\Http\Response|void|null Redirects on successful add, renders view otherwise.
      */
     public function add()
     {
         $dashboard = $this->Dashboards->newEntity();
 
+        /**
+         * @var \Search\Model\Table\WidgetsTable $widgetsTable
+         */
         $widgetsTable = TableRegistry::get('Search.Widgets');
         $widgets = $widgetsTable->getWidgets();
 
@@ -136,19 +139,19 @@ class DashboardsController extends AppController
             $resultedDashboard = $this->Dashboards->save($dashboard);
 
             if ($resultedDashboard) {
-                $this->Flash->success(__('The dashboard has been saved.'));
+                $this->Flash->success((string)__('The dashboard has been saved.'));
 
                 $dashboardId = $resultedDashboard->id;
 
                 $data['widgets'] = !empty($data['options']) ? json_decode($data['options'], true) : [];
 
                 if (!empty($data['widgets'])) {
-                    $saved = $widgetsTable->saveDashboardWidgets($dashboardId, $data['widgets']);
+                    $widgetsTable->saveDashboardWidgets($dashboardId, $data['widgets']);
                 }
 
                 return $this->redirect(['action' => 'view', $dashboard->id]);
             } else {
-                $this->Flash->error(__('The dashboard could not be saved. Please, try again.'));
+                $this->Flash->error((string)__('The dashboard could not be saved. Please, try again.'));
             }
         }
 
@@ -163,27 +166,29 @@ class DashboardsController extends AppController
     /**
      * Edit method
      *
-     * @param string|null $id Dashboard id.
-     * @return \Cake\Network\Response|void Redirects on successful edit, renders view otherwise.
-     * @throws \Cake\Network\Exception\NotFoundException When record not found.
+     * @param string $id Dashboard id.
+     * @return \Cake\Http\Response|void|null Redirects on successful edit, renders view otherwise.
      */
-    public function edit($id = null)
+    public function edit(string $id)
     {
         $savedWidgetData = [];
         $dashboard = $this->Dashboards->get($id, [
             'contain' => ['Widgets']
         ]);
 
-        $dashboardWidgets = $dashboard->widgets;
-        unset($dashboard->widgets);
+        $dashboardWidgets = $dashboard->get('widgets');
+        $dashboard->unsetProperty('widgets');
 
+        /**
+         * @var \Search\Model\Table\WidgetsTable $widgetsTable
+         */
         $widgetsTable = TableRegistry::get('Search.Widgets');
         $widgets = $widgetsTable->getWidgets();
 
         $sequence = 0;
 
         foreach ($dashboardWidgets as $dw) {
-            foreach ($widgets as $k => $widget) {
+            foreach ($widgets as $widget) {
                 if ($dw->widget_id !== $widget['data']['id']) {
                     continue;
                 }
@@ -212,7 +217,7 @@ class DashboardsController extends AppController
         if ($this->request->is(['patch', 'post', 'put'])) {
             $data = $this->request->getData();
 
-            unset($dashboard->widgets);
+            $dashboard->unsetProperty('widgets');
 
             $dashboard = $this->Dashboards->patchEntity($dashboard, [
                 'name' => $data['name'],
@@ -220,8 +225,8 @@ class DashboardsController extends AppController
             ]);
 
             if ($this->Dashboards->save($dashboard)) {
-                $this->Flash->success(__('The dashboard has been saved.'));
-
+                $this->Flash->success((string)__('The dashboard has been saved.'));
+                /** @var \Search\Model\Table\WidgetsTable */
                 $widgetTable = TableRegistry::get('Search.Widgets');
                 $widgetTable->trashAll([
                     'dashboard_id' => $dashboard->id
@@ -229,12 +234,12 @@ class DashboardsController extends AppController
 
                 $data['widgets'] = !empty($data['options']) ? json_decode($data['options'], true) : [];
                 if (!empty($data['widgets'])) {
-                    $saved = $widgetsTable->saveDashboardWidgets($id, $data['widgets']);
+                    $widgetsTable->saveDashboardWidgets($id, $data['widgets']);
                 }
 
                 return $this->redirect(['action' => 'view', $id]);
             } else {
-                $this->Flash->error(__('The dashboard could not be saved. Please, try again.'));
+                $this->Flash->error((string)__('The dashboard could not be saved. Please, try again.'));
             }
         }
 
@@ -248,24 +253,24 @@ class DashboardsController extends AppController
     /**
      * Delete method
      *
-     * @param string|null $id Dashboard id.
-     * @return \Cake\Network\Response|null Redirects to index.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     * @param string $id Dashboard id.
+     * @return \Cake\Http\Response|void|null Redirects to index.
      */
-    public function delete($id = null)
+    public function delete(string $id)
     {
         $this->request->allowMethod(['post', 'delete']);
         $dashboard = $this->Dashboards->get($id);
 
         if ($this->Dashboards->delete($dashboard)) {
+            /** @var \Search\Model\Table\WidgetsTable */
             $widgetTable = TableRegistry::get('Search.Widgets');
             $widgetTable->trashAll([
                 'dashboard_id' => $id
             ]);
 
-            $this->Flash->success(__('The dashboard has been deleted.'));
+            $this->Flash->success((string)__('The dashboard has been deleted.'));
         } else {
-            $this->Flash->error(__('The dashboard could not be deleted. Please, try again.'));
+            $this->Flash->error((string)__('The dashboard could not be deleted. Please, try again.'));
         }
 
         return $this->redirect(['action' => 'index']);

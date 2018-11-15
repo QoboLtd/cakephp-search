@@ -13,10 +13,10 @@
 use Cake\Core\Configure;
 
 $url = $this->Url->build([
-    'plugin' => $this->request->param('plugin'),
-    'controller' => $this->request->param('controller'),
-    'action' => $this->request->param('action'),
-    $this->request->param('pass.0'),
+    'plugin' => $this->request->getParam('plugin'),
+    'controller' => $this->request->getParam('controller'),
+    'action' => $this->request->getParam('action'),
+    $this->request->getParam('pass.0'),
     $filename
 ]);
 
@@ -42,7 +42,7 @@ echo $this->Html->scriptBlock(
 ?>
 <section class="content-header">
     <h4>Export &raquo; <?= $this->Html->link($filename, [
-        'plugin' => $this->plugin, 'controller' => $this->name, 'action' => 'search', $this->request->param('pass.0')
+        'plugin' => $this->plugin, 'controller' => $this->name, 'action' => 'search', $this->request->getParam('pass.0')
     ]) ?></h4>
 </section>
 <section class="content">

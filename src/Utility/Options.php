@@ -11,6 +11,7 @@
  */
 namespace Search\Utility;
 
+use Cake\Datasource\RepositoryInterface;
 use Cake\Event\Event;
 use Cake\Event\EventManager;
 use Cake\ORM\Table;
@@ -79,9 +80,9 @@ class Options
     /**
      * Searchable associations getter.
      *
-     * @return array
+     * @return mixed[]
      */
-    public static function getSearchableAssociations()
+    public static function getSearchableAssociations(): array
     {
         return static::$associations;
     }
@@ -89,9 +90,9 @@ class Options
     /**
      * Getter method for sql sort by order options.
      *
-     * @return string
+     * @return mixed[]
      */
-    public static function getSortByOrders()
+    public static function getSortByOrders(): array
     {
         return static::$sortByOrders;
     }
@@ -99,9 +100,9 @@ class Options
     /**
      * Getter method for sql aggregator options.
      *
-     * @return string
+     * @return mixed[]
      */
-    public static function getAggregators()
+    public static function getAggregators(): array
     {
         return static::$aggregators;
     }
@@ -109,9 +110,9 @@ class Options
     /**
      * Basic search allowed field types getter.
      *
-     * @return array
+     * @return mixed[]
      */
-    public static function getBasicSearchFieldTypes()
+    public static function getBasicSearchFieldTypes(): array
     {
         return static::$basicFieldTypes;
     }
@@ -119,9 +120,9 @@ class Options
     /**
      * Search options getter.
      *
-     * @return array
+     * @return mixed[]
      */
-    public static function get()
+    public static function get(): array
     {
         $result = [
             'sortByOrder' => static::$sortByOrders,
@@ -134,10 +135,10 @@ class Options
     /**
      * Default search options.
      *
-     * @param \Cake\ORM\Table $table Table instance
-     * @return array
+     * @param \Cake\Datasource\RepositoryInterface $table Table instance
+     * @return mixed[]
      */
-    public static function getDefaults(Table $table)
+    public static function getDefaults(RepositoryInterface $table): array
     {
         $result['display_columns'] = static::getListingFields($table);
         $result['sort_by_field'] = current($result['display_columns']);
@@ -150,13 +151,13 @@ class Options
     /**
      * Current table display fields getter.
      *
-     * @param \Cake\ORM\Table $table Table instance
-     * @return array
+     * @param \Cake\Datasource\RepositoryInterface $table Table instance
+     * @return mixed[]
      */
-    public static function getListingFields(Table $table)
+    public static function getListingFields(RepositoryInterface $table): array
     {
         // broadcast event to fetch display fields
-        $event = new Event((string)EventName::MODEL_SEARCH_DISPLAY_FIELDS(), Validator::class, [
+        $event = new Event((string)EventName::MODEL_SEARCH_DISPLAY_FIELDS(), null, [
             'table' => $table
         ]);
         EventManager::instance()->dispatch($event);
@@ -167,7 +168,7 @@ class Options
             $result = static::getDefaultDisplayFields($table);
         }
 
-        $result = array_diff($result, static::getSkippedDisplayFields(true, $table));
+        $result = array_diff($result, static::getSkippedDisplayFields($table, true));
 
         // reset numeric indexes
         return array_values($result);
@@ -176,14 +177,15 @@ class Options
     /**
      * Default display fields getter.
      *
-     * @param \Cake\ORM\Table $table Table instance
-     * @return array
+     * @param \Cake\Datasource\RepositoryInterface $table Table instance
+     * @return mixed[]
      */
-    protected static function getDefaultDisplayFields(Table $table)
+    protected static function getDefaultDisplayFields(RepositoryInterface $table): array
     {
-        $result = [];
+        /** @var \Cake\ORM\Table */
+        $table = $table;
 
-        array_push($result, $table->getPrimaryKey());
+        $result = (array)$table->getPrimaryKey();
         array_push($result, $table->getDisplayField());
 
         $result = array_merge($result, static::$defaultDisplayFields);
@@ -208,19 +210,16 @@ class Options
      * To alias the fields you need to set $aliased flag
      * to true and pass the table instance.
      *
+     * @param \Cake\Datasource\RepositoryInterface $table Table instance
      * @param bool $aliased Alias flag
-     * @param \Cake\ORM\Table $table Table instance
-     * @return array
+     * @return mixed[]
      */
-    protected static function getSkippedDisplayFields($aliased = false, $table = null)
+    protected static function getSkippedDisplayFields(RepositoryInterface $table, bool $aliased = false): array
     {
-        $aliased = (bool)$aliased;
+        /** @var \Cake\ORM\Table */
+        $table = $table;
 
-        if (!$aliased) {
-            return static::$skipDisplayFields;
-        }
-
-        if (!$table instanceof Table) {
+        if (! $aliased) {
             return static::$skipDisplayFields;
         }
 

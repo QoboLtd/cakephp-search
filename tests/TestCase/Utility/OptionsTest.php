@@ -1,5 +1,5 @@
 <?php
-namespace Search\Utility;
+namespace Search\Test\TestCase\Utility;
 
 use Cake\Event\EventManager;
 use Cake\ORM\TableRegistry;
@@ -15,31 +15,31 @@ class OptionsTest extends TestCase
         'plugin.search.dashboards'
     ];
 
-    public function testGetSearchableAssociations()
+    public function testGetSearchableAssociations(): void
     {
         $result = Options::getSearchableAssociations();
         $this->assertEquals($result, ['manyToOne']);
     }
 
-    public function testGetSortByOrders()
+    public function testGetSortByOrders(): void
     {
         $result = Options::getSortByOrders();
         $this->assertEquals($result, ['asc' => 'Ascending', 'desc' => 'Descending']);
     }
 
-    public function testGetAggregators()
+    public function testGetAggregators(): void
     {
         $result = Options::getAggregators();
         $this->assertEquals($result, ['AND' => 'Match all filters', 'OR' => 'Match any filter']);
     }
 
-    public function testGetBasicSearchFieldTypes()
+    public function testGetBasicSearchFieldTypes(): void
     {
         $result = Options::getBasicSearchFieldTypes();
         $this->assertEquals($result, ['string', 'text', 'textarea', 'related', 'email', 'url', 'phone', 'integer']);
     }
 
-    public function testGet()
+    public function testGet(): void
     {
         $result = Options::get();
         $this->assertEquals($result, [
@@ -48,7 +48,7 @@ class OptionsTest extends TestCase
         ]);
     }
 
-    public function testGetListingFields()
+    public function testGetListingFields(): void
     {
         $model = 'Dashboards';
 
@@ -58,7 +58,7 @@ class OptionsTest extends TestCase
         $this->assertEquals($result, $expected);
     }
 
-    public function testGetListingFieldsFromEvent()
+    public function testGetListingFieldsFromEvent(): void
     {
         $model = 'Dashboards';
         $expected = [$model . '.foobar'];
@@ -71,7 +71,7 @@ class OptionsTest extends TestCase
         $this->assertEquals($result, $expected);
     }
 
-    public function testGetListingFieldsDatabaseColumns()
+    public function testGetListingFieldsDatabaseColumns(): void
     {
         $model = 'Dashboards';
 

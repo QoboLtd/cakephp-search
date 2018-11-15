@@ -37,8 +37,12 @@ class SavedSearchesTableTest extends TestCase
     {
         parent::setUp();
 
-        $config = TableRegistry::exists('SavedSearches') ? [] : ['className' => 'Search\Model\Table\SavedSearchesTable'];
-        $this->SavedSearches = TableRegistry::get('SavedSearches', $config);
+        $config = TableRegistry::exists('Search.SavedSearches') ? [] : ['className' => 'Search\Model\Table\SavedSearchesTable'];
+        /**
+         * @var \Search\Model\Table\SavedSearchesTable $table
+         */
+        $table = TableRegistry::get('Search.SavedSearches', $config);
+        $this->SavedSearches = $table;
     }
 
     /**
@@ -53,7 +57,7 @@ class SavedSearchesTableTest extends TestCase
         parent::tearDown();
     }
 
-    public function testValidationDefault()
+    public function testValidationDefault(): void
     {
         $validator = new Validator();
         $result = $this->SavedSearches->validationDefault($validator);
@@ -61,7 +65,7 @@ class SavedSearchesTableTest extends TestCase
         $this->assertInstanceOf(Validator::class, $result);
     }
 
-    public function testBuildRules()
+    public function testBuildRules(): void
     {
         $rules = new RulesChecker();
         $result = $this->SavedSearches->buildRules($rules);
@@ -69,51 +73,61 @@ class SavedSearchesTableTest extends TestCase
         $this->assertInstanceOf(RulesChecker::class, $result);
     }
 
-    public function testIsEditable()
+    public function testIsEditable(): void
     {
+        /**
+         * @var \Search\Model\Entity\SavedSearch
+         */
         $entity = $this->SavedSearches->get('00000000-0000-0000-0000-000000000001');
         $result = $this->SavedSearches->isEditable($entity);
 
         $this->assertTrue($result);
     }
 
-    public function dataProviderGetBasicSearchCriteria()
+    /**
+     * @return mixed[]
+     */
+    public function dataProviderGetBasicSearchCriteria() : array
     {
         return [
             [['query' => 'SELECT id,created FROM dashboards LIMIT 2', 'table' => 'Dashboards']],
         ];
     }
 
-    public function testGetSavedSearchesFindAll()
+    public function testGetSavedSearchesFindAll(): void
     {
         $resultset = $this->SavedSearches->getSavedSearches();
         $this->assertInternalType('array', $resultset);
         $this->assertInstanceOf(SavedSearch::class, current($resultset));
     }
 
-    public function testGetSavedSearchesByUser()
+    public function testGetSavedSearchesByUser(): void
     {
-        $records = $this->fixtureManager->loaded()['plugin.search.saved_searches']->records;
-        $userId = current($records)['user_id'];
-        $resultset = $this->SavedSearches->getSavedSearches([$userId]);
+        /**
+         * @var \Cake\Datasource\EntityInterface
+         */
+        $entity = $this->SavedSearches->find()->firstOrFail();
+        $resultset = $this->SavedSearches->getSavedSearches([$entity->get('user_id')]);
         $this->assertInternalType('array', $resultset);
         $this->assertInstanceOf(SavedSearch::class, current($resultset));
 
-        foreach ($resultset as $entity) {
-            $this->assertEquals($userId, $entity->user_id);
+        foreach ($resultset as $record) {
+            $this->assertEquals($entity->get('user_id'), $record->user_id);
         }
     }
 
-    public function testGetSavedSearchesByModel()
+    public function testGetSavedSearchesByModel(): void
     {
-        $records = $this->fixtureManager->loaded()['plugin.search.saved_searches']->records;
-        $model = current($records)['model'];
-        $resultset = $this->SavedSearches->getSavedSearches([], [$model]);
+        /**
+         * @var \Cake\Datasource\EntityInterface
+         */
+        $entity = $this->SavedSearches->find()->firstOrFail();
+        $resultset = $this->SavedSearches->getSavedSearches([], [$entity->get('model')]);
         $this->assertInternalType('array', $resultset);
         $this->assertInstanceOf(SavedSearch::class, current($resultset));
 
-        foreach ($resultset as $entity) {
-            $this->assertEquals($model, $entity->model);
+        foreach ($resultset as $record) {
+            $this->assertEquals($entity->get('model'), $record->model);
         }
     }
 }

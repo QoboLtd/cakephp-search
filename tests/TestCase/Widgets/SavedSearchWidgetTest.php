@@ -4,8 +4,14 @@ namespace Search\Test\TestCase\Widgets;
 use Cake\Event\EventManager;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
+use Search\Model\Entity\SavedSearch;
 use Search\Widgets\SavedSearchWidget;
 
+/**
+ * @property \Search\Model\Table\SavedSearchesTable $SavedSearches
+ * @property \Search\Model\Table\Widgets $Widgets
+ * @property \Search\Widgets\SavedSearchWidget $widget
+ */
 class SavedSearchWidgetTest extends TestCase
 {
     protected $widget;
@@ -13,8 +19,9 @@ class SavedSearchWidgetTest extends TestCase
     public $Widgets;
 
     public $fixtures = [
-        'plugin.search.widgets',
-        'plugin.search.saved_searches',
+        'plugin.Search.dashboards',
+        'plugin.Search.saved_searches',
+        'plugin.Search.widgets',
         'plugin.CakeDC/Users.users',
     ];
 
@@ -22,14 +29,21 @@ class SavedSearchWidgetTest extends TestCase
     {
         parent::setUp();
 
-        $config = TableRegistry::exists('SavedSearches') ? [] : ['className' => 'Search\Model\Table\SavedSearchesTable'];
-        $this->SavedSearches = TableRegistry::get('SavedSearches', $config);
+        $config = TableRegistry::exists('Search.SavedSearches') ? [] : ['className' => 'Search\Model\Table\SavedSearchesTable'];
+        /**
+         * @var \Search\Model\Table\SavedSearchesTable $table
+         */
+        $table = TableRegistry::get('Search.SavedSearches', $config);
+        $this->SavedSearches = $table;
 
-        $config = TableRegistry::exists('Widgets') ? [] : ['className' => 'Search\Model\Table\WidgetsTable'];
-        $this->Widgets = TableRegistry::get('Widgets', $config);
+        $config = TableRegistry::exists('Search.Widgets') ? [] : ['className' => 'Search\Model\Table\WidgetsTable'];
+        /**
+         * @var \Search\Model\Table\WidgetsTable $table
+         */
+        $table = TableRegistry::get('Search.Widgets', $config);
+        $this->Widgets = $table;
 
-        $widget = $this->Widgets->get('00000000-0000-0000-0000-000000000002');
-        $this->widget = new SavedSearchWidget(['entity' => $widget]);
+        $this->widget = new SavedSearchWidget(['entity' => $this->Widgets->get('00000000-0000-0000-0000-000000000002')]);
 
         // anonymous event listener that passes some dummy searchable fields
         EventManager::instance()->on(
@@ -63,27 +77,27 @@ class SavedSearchWidgetTest extends TestCase
         parent::tearDown();
     }
 
-    public function testGetType()
+    public function testGetType(): void
     {
         $this->assertEquals('saved_search', $this->widget->getType());
     }
 
-    public function testGetOptions()
+    public function testGetOptions(): void
     {
         $this->assertEquals([], $this->widget->getOptions());
     }
 
-    public function testGetData()
+    public function testGetData(): void
     {
-        $this->assertEquals([], $this->widget->getData());
+        $this->assertEquals(null, $this->widget->getData());
     }
 
-    public function testGetErrors()
+    public function testGetErrors(): void
     {
         $this->assertEquals([], $this->widget->getErrors());
     }
 
-    public function testGetRenderElement()
+    public function testGetRenderElement(): void
     {
         $entity = $this->SavedSearches->get('00000000-0000-0000-0000-000000000001');
 
@@ -97,15 +111,17 @@ class SavedSearchWidgetTest extends TestCase
         $this->assertEquals($result, $expected);
     }
 
-    public function testGetResultsSavedResult()
+    public function testGetResultsSavedResult(): void
     {
         $result = $this->widget->getResults([
             'entity' => $this->SavedSearches->get('00000000-0000-0000-0000-000000000001'),
             'user' => ['id' => '00000000-0000-0000-0000-000000000001']
         ]);
+
+        $this->assertInstanceOf(SavedSearch::class, $result);
     }
 
-    public function testGetResultsSavedCriteria()
+    public function testGetResultsSavedCriteria(): void
     {
         $entity = $this->Widgets->get('00000000-0000-0000-0000-000000000005');
         $widget = new SavedSearchWidget(['entity' => $entity]);
@@ -114,5 +130,7 @@ class SavedSearchWidgetTest extends TestCase
             'entity' => $this->SavedSearches->get('00000000-0000-0000-0000-000000000002'),
             'user' => ['id' => '00000000-0000-0000-0000-000000000001']
         ]);
+
+        $this->assertInstanceOf(SavedSearch::class, $result);
     }
 }

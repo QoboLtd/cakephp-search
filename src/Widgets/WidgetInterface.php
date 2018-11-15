@@ -24,7 +24,7 @@ interface WidgetInterface
      * widgetHandlers for being used for tables/graphs
      * rendering.
      *
-     * @param array $options passed into the WidgetHandler.
+     * @param mixed[] $options passed into the WidgetHandler.
      * @return mixed $result with $_data param.
      */
     public function getResults(array $options = []);
@@ -36,7 +36,7 @@ interface WidgetInterface
      * is applied.
      * @return string $containerId of the widget.
      */
-    public function getContainerId();
+    public function getContainerId() : string;
 
     /**
      * getType method
@@ -44,40 +44,40 @@ interface WidgetInterface
      * to each instance.
      * @return string $type of the current widgetHandler.
      */
-    public function getType();
+    public function getType() : string;
 
     /**
      * Widget's title getter.
      *
      * @return string
      */
-    public function getTitle();
+    public function getTitle() : string;
 
     /**
      * Widget's icon getter.
      *
      * @return string
      */
-    public function getIcon();
+    public function getIcon() : string;
 
     /**
      * Widget's color getter.
      *
      * @return string
      */
-    public function getColor();
+    public function getColor() : string;
 
     /**
      * getRenderElement
      * Returns the name of the render element
      * @return string $renderElement
      */
-    public function getRenderElement();
+    public function getRenderElement() : string;
 
     /**
      * getOptions method.
      *
-     * @return array $content of all widget scripts listed with scriptBlocks.
+     * @return mixed[] $content of all widget scripts listed with scriptBlocks.
      */
-    public function getOptions();
+    public function getOptions() : array;
 }

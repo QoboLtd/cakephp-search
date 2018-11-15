@@ -1,5 +1,5 @@
 <?php
-namespace Search\Utility;
+namespace Search\Test\TestCase\Utility;
 
 use Cake\I18n\Time;
 use Cake\TestSuite\TestCase;
@@ -8,6 +8,8 @@ use Search\Utility\MagicValue;
 
 /**
  * Search\Utility\MagicValue Test Case
+ *
+ * @property array $user
  */
 class MagicValueTest extends TestCase
 {
@@ -25,31 +27,24 @@ class MagicValueTest extends TestCase
         parent::tearDown();
     }
 
-    public function testConstructor()
+    public function testConstructor(): void
     {
-        new MagicValue('foo', $this->user);
+        $this->assertInstanceOf(MagicValue::class, new MagicValue('foo', $this->user));
     }
 
-    public function testConstructorExceptionInvalidValue()
-    {
-        $this->expectException(InvalidArgumentException::class);
-
-        new MagicValue([], $this->user);
-    }
-
-    public function testConstructorExceptionInvalidUserInfo()
+    public function testConstructorExceptionInvalidUserInfo(): void
     {
         $this->expectException(InvalidArgumentException::class);
 
         new MagicValue('foo', []);
     }
 
-    public function testGetWithoutMagicValue()
+    public function testGetWithoutMagicValue(): void
     {
         $this->assertEquals('%%foo%%', (new MagicValue('%%foo%%', $this->user))->get());
     }
 
-    public function testGetWithMagicValue()
+    public function testGetWithMagicValue(): void
     {
         $this->assertEquals('00000000-0000-0000-0000-000000000002', (new MagicValue('%%me%%', $this->user))->get());
         $this->assertInstanceOf(Time::class, (new MagicValue('%%today%%', $this->user))->get());

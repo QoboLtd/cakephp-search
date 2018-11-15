@@ -63,20 +63,19 @@ class DashboardsControllerTest extends IntegrationTestCase
         parent::tearDown();
     }
 
-    /**
-     * @todo find out why this test fails: https://travis-ci.org/QoboLtd/cakephp-search/jobs/167079767
-     */
-    public function testSearchNonSearchableModel()
+    public function testSearchNonSearchableModel(): void
     {
-        // $this->post('/search/dashboards/search');
+        $this->post('/search/dashboards/search');
 
-        // $this->assertResponseError();
+        $this->assertResponseError();
     }
 
-    public function testIndex()
+    public function testIndex(): void
     {
         // remove dashboards fixtures
-        $this->fixtureManager->unload($this);
+        if (!empty($this->fixtureManager) && is_object($this->fixtureManager)) {
+            $this->fixtureManager->unload($this);
+        }
 
         $this->get('/search/dashboards');
 
@@ -86,7 +85,7 @@ class DashboardsControllerTest extends IntegrationTestCase
         );
     }
 
-    public function testIndexRedirect()
+    public function testIndexRedirect(): void
     {
         $this->get('/search/dashboards');
 
@@ -94,7 +93,7 @@ class DashboardsControllerTest extends IntegrationTestCase
         $this->assertRedirectContains('/search/dashboards/view');
     }
 
-    public function testView()
+    public function testView(): void
     {
         $this->get('/search/dashboards/view/00000000-0000-0000-0000-000000000002');
 
@@ -103,14 +102,14 @@ class DashboardsControllerTest extends IntegrationTestCase
         $this->assertResponseContains('<h4>Lorem ipsum dolor sit amet</h4>');
     }
 
-    public function testViewNonAdminUser()
+    public function testViewNonAdminUser(): void
     {
         $this->get('/search/dashboards/view/00000000-0000-0000-0000-000000000003');
 
         $this->assertResponseCode(403);
     }
 
-    public function testViewAdminUser()
+    public function testViewAdminUser(): void
     {
         // admin user
         $this->session(['Auth.User.id' => '00000000-0000-0000-0000-000000000002']);
@@ -122,7 +121,7 @@ class DashboardsControllerTest extends IntegrationTestCase
         $this->assertResponseContains('<h4>Everyone Dashboard</h4>');
     }
 
-    public function testViewWithSavedSearch()
+    public function testViewWithSavedSearch(): void
     {
         // admin user
         $this->session(['Auth.User.id' => '00000000-0000-0000-0000-000000000002']);
@@ -139,7 +138,7 @@ class DashboardsControllerTest extends IntegrationTestCase
         $this->assertResponseContains('<li class="active"');
     }
 
-    public function testViewWithGroupBySavedSearch()
+    public function testViewWithGroupBySavedSearch(): void
     {
         // admin user
         $this->session(['Auth.User.id' => '00000000-0000-0000-0000-000000000002']);
@@ -155,7 +154,7 @@ class DashboardsControllerTest extends IntegrationTestCase
         $this->assertResponseContains('class="tab-pane active"');
     }
 
-    public function testAdd()
+    public function testAdd(): void
     {
         $this->get('/search/dashboards/add');
 
@@ -164,7 +163,7 @@ class DashboardsControllerTest extends IntegrationTestCase
         $this->assertResponseContains('Submit');
     }
 
-    public function testAddPost()
+    public function testAddPost(): void
     {
         $data = [
             'name' => 'Test Dashboard',
@@ -184,7 +183,7 @@ class DashboardsControllerTest extends IntegrationTestCase
         $this->assertRedirectContains('/search/dashboards/view');
     }
 
-    public function testEdit()
+    public function testEdit(): void
     {
         $this->get('/search/dashboards/edit/00000000-0000-0000-0000-000000000001');
 
@@ -193,7 +192,7 @@ class DashboardsControllerTest extends IntegrationTestCase
         $this->assertResponseContains('Submit');
     }
 
-    public function testEditPost()
+    public function testEditPost(): void
     {
         EventManager::instance()->on('Search.Dashboards.getWidgets', function ($event) {
             return [
@@ -248,7 +247,7 @@ class DashboardsControllerTest extends IntegrationTestCase
         $this->assertNull($entity->get('role_id'));
     }
 
-    public function testDelete()
+    public function testDelete(): void
     {
         $this->delete('/search/dashboards/delete/00000000-0000-0000-0000-000000000001');
 

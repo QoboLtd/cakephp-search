@@ -1,5 +1,5 @@
  <div id="grid-app">
-        <?= $this->Form->input('options', ['type' => 'hidden', 'id' => 'dashboard-options', 'value' => null]);?>
+        <?= $this->Form->control('options', ['type' => 'hidden', 'id' => 'dashboard-options', 'value' => null]);?>
         <div class="box box-primary">
             <div class="box-body">
                 <div class="box-header">
