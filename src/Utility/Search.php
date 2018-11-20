@@ -11,6 +11,8 @@
  */
 namespace Search\Utility;
 
+use Cake\Database\Expression\Comparison;
+use Cake\Database\Expression\IdentifierExpression;
 use Cake\Datasource\QueryInterface;
 use Cake\Datasource\RepositoryInterface;
 use Cake\Event\Event;
@@ -363,9 +365,7 @@ class Search
             $value = str_replace('{{value}}', $value, $pattern);
         }
 
-        $result = [$key => $value];
-
-        return $result;
+        return [ new Comparison(new IdentifierExpression($field), $value, 'string', $operator['operator']) ];
     }
 
     /**
