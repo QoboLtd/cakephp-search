@@ -358,15 +358,15 @@ class Search
 
         $value = $this->handleMagicValue($value);
         $operator = $this->searchFields[$field]['operators'][$criteria['operator']];
-        $type = empty($this->searchFields[$field]['type']) ? 'string' : $this->searchFields[$field]['type'];
 
         if (isset($operator['pattern'])) {
             $pattern = $operator['pattern'];
             $value = str_replace('{{value}}', $value, $pattern);
         }
 
-        if ($type === 'related') {
-            $type = 'string';
+        $type = 'string';
+        if (!empty($this->searchFields[$field]['type']) && $this->searchFields[$field]['type'] !== 'related') {
+            $type = $this->searchFields[$field]['type'];
         }
 
         if (in_array($operator['operator'], ['IN', 'NOT IN'])) {
