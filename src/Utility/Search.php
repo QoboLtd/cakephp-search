@@ -11,6 +11,8 @@
  */
 namespace Search\Utility;
 
+use Cake\Database\Expression\Comparison;
+use Cake\Database\Expression\IdentifierExpression;
 use Cake\Datasource\QueryInterface;
 use Cake\Datasource\RepositoryInterface;
 use Cake\Event\Event;
@@ -356,16 +358,23 @@ class Search
 
         $value = $this->handleMagicValue($value);
         $operator = $this->searchFields[$field]['operators'][$criteria['operator']];
-        $key = $field . ' ' . $operator['operator'];
 
         if (isset($operator['pattern'])) {
             $pattern = $operator['pattern'];
             $value = str_replace('{{value}}', $value, $pattern);
         }
 
-        $result = [$key => $value];
+        $type = 'string';
+        if (!empty($this->searchFields[$field]['type']) && $this->searchFields[$field]['type'] !== 'related') {
+            $type = $this->searchFields[$field]['type'];
+        }
 
-        return $result;
+        if (in_array($operator['operator'], ['IN', 'NOT IN'])) {
+            $type .= '[]';
+            $value = (array)$value;
+        }
+
+        return [ new Comparison(new IdentifierExpression($field), $value, $type, $operator['operator']) ];
     }
 
     /**
