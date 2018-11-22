@@ -357,7 +357,7 @@ class SearchTest extends TestCase
         ];
 
         $result = $this->Search->execute($data);
-
+// ($result->sql());
         $this->assertEquals(2, $result->count());
     }
 
