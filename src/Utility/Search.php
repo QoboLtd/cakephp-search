@@ -432,6 +432,12 @@ class Search
 
         $result = $this->filterFields($result);
 
+        $model = $this->table->getRegistryAlias();
+        $result[] = $model . '.' . $this->table->getDisplayField();
+        if ($this->table->behaviors()->has('Trash')) {
+            $result[] = $model . '.trashed';
+        }
+
         return $result;
     }
 
