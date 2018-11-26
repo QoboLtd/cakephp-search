@@ -122,7 +122,10 @@ class SavedSearchesTableTest extends TestCase
         $data = [
             'name' => 'withName',
             'model' => 'Foobar',
-            'content' => 'Lorem ipsum',
+            'content' => [
+                'saved' => 'foo',
+                'latest' => 'bar'
+            ],
             'user_id' => '00000000-0000-0000-0000-000000000001'
         ];
 

@@ -98,6 +98,24 @@ class SavedSearchesFixture extends TestFixture
                     "sort_by_field": "Dashboards.name",
                     "sort_by_order": "desc",
                     "limit": 10
+                },
+                "latest": {
+                    "criteria": {
+                        "Dashboards.name": [
+                            {
+                                "type": "string",
+                                "operator": "contains",
+                                "value": "foo"
+                            }
+                        ]
+                    },
+                    "aggregator": "OR",
+                    "display_columns": [
+                        "Dashboards.name"
+                    ],
+                    "sort_by_field": "Dashboards.name",
+                    "sort_by_order": "desc",
+                    "limit": 10
                 }
             }',
             'created' => '2016-07-01 10:39:22',
