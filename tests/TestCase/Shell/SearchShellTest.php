@@ -12,9 +12,6 @@ class SearchShellTest extends ConsoleIntegrationTestCase
 {
     public $fixtures = ['plugin.Search.saved_searches'];
 
-    /**
-     * @var \Search\Model\Table\SavedSearchesTable
-     */
     private $table;
 
     public function setUp() : void
