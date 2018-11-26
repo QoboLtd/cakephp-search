@@ -21,7 +21,6 @@ use Cake\Http\ServerRequest;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
-use DateTime;
 use InvalidArgumentException;
 use Search\Event\EventName;
 use Search\Model\Entity\SavedSearch;
@@ -29,11 +28,6 @@ use Search\Utility;
 
 class Search
 {
-    /**
-     * Delete older than value
-     */
-    const DELETE_OLDER_THAN = '-3 hours';
-
     /**
      * Group by count field
      */
@@ -463,9 +457,6 @@ class Search
      */
     protected function preSave(array $data): string
     {
-        // delete old pre-saved searches
-        $this->deletePreSaved();
-
         /**
          * @var \Search\Model\Entity\SavedSearch
          */
@@ -524,18 +515,5 @@ class Search
         $entity->set('content', json_encode(['saved' => $saved, 'latest' => $latest]));
 
         return $entity;
-    }
-
-    /**
-     * Method that deletes old pre-save search records.
-     *
-     * @return void
-     */
-    protected function deletePreSaved(): void
-    {
-        $this->searchTable->deleteAll([
-            'modified <' => new DateTime(static::DELETE_OLDER_THAN),
-            'name IS' => null
-        ]);
     }
 }
