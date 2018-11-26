@@ -20,7 +20,6 @@ echo $this->element('Search.Search/filters', [
     'searchableFields' => $searchableFields,
     'savedSearch' => $savedSearch,
     'searchData' => $searchData,
-    'isEditable' => $isEditable,
     'preSaveId' => $preSaveId,
     'associationLabels' => $associationLabels
 ]);

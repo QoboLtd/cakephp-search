@@ -120,17 +120,6 @@ class SavedSearchesTable extends Table
     }
 
     /**
-     * Validate if search is editable.
-     *
-     * @param \Search\Model\Entity\SavedSearch $entity Search entity
-     * @return bool
-     */
-    public function isEditable(SavedSearch $entity): bool
-    {
-        return (bool)$entity->get('name');
-    }
-
-    /**
      * Returns true if table is searchable, false otherwise.
      *
      * @param  string $tableName Table name.

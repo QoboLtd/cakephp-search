@@ -105,7 +105,6 @@ trait SearchTrait
         $this->set('savedSearch', $entity);
         $this->set('preSaveId', $search->create($searchData));
         // INFO: this is valid when a saved search was modified and the form was re-submitted
-        $this->set('isEditable', $searchTable->isEditable($entity));
         $this->set('searchOptions', SearchOptions::get());
         $this->set('associationLabels', Utility::instance()->getAssociationLabels($table));
 

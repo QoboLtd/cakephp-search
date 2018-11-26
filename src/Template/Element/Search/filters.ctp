@@ -142,8 +142,7 @@ if (!empty($searchData['criteria'])) {
                 <div class="form-group">
                 <?= $this->element('Search.Search/Forms/save_search', [
                     'preSaveId' => $preSaveId,
-                    'savedSearch' => $savedSearch,
-                    'isEditable' => $isEditable
+                    'savedSearch' => $savedSearch
                 ]) ?>
                 </div>
             </div>

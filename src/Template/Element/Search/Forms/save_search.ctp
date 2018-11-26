@@ -17,9 +17,9 @@ echo $this->Form->create(null, [
     'url' => [
         'plugin' => $this->request->getParam('plugin'),
         'controller' => $this->request->getParam('controller'),
-        'action' => ($isEditable ? 'edit': 'save') . '-search',
+        'action' => ($savedSearch->get('is_editable') ? 'edit': 'save') . '-search',
         $preSaveId,
-        $isEditable ? $savedSearch->id : null
+        $savedSearch->get('is_editable') ? $savedSearch->get('id') : null
     ]
 ]); ?>
 <div class="input-group">
@@ -28,7 +28,7 @@ echo $this->Form->create(null, [
         'class' => 'form-control input-sm',
         'placeholder' => 'Save criteria name',
         'required' => true,
-        'value' => $isEditable ? $savedSearch->name : ''
+        'value' => $savedSearch->get('is_editable') ? $savedSearch->get('name') : ''
     ]); ?>
     <span class="input-group-btn">
         <?= $this->Form->button(

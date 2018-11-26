@@ -75,13 +75,22 @@ class SavedSearchesTableTest extends TestCase
 
     public function testIsEditable(): void
     {
-        /**
-         * @var \Search\Model\Entity\SavedSearch
-         */
-        $entity = $this->SavedSearches->get('00000000-0000-0000-0000-000000000001');
-        $result = $this->SavedSearches->isEditable($entity);
+        $data = [
+            'name' => 'withName',
+            'model' => 'Foobar',
+            'content' => 'Lorem ipsum',
+            'user_id' => '00000000-0000-0000-0000-000000000001'
+        ];
 
-        $this->assertTrue($result);
+        $entity = $this->SavedSearches->newEntity($data);
+
+        $this->assertTrue($entity->get('is_editable'));
+
+        // reset name
+        $data['name'] = null;
+        $entity = $this->SavedSearches->newEntity($data);
+
+        $this->assertFalse($entity->get('is_editable'));
     }
 
     /**
