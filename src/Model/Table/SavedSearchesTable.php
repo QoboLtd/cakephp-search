@@ -91,35 +91,6 @@ class SavedSearchesTable extends Table
     }
 
     /**
-     * Returns saved searches filtered by users and models.
-     *
-     * @param  mixed[]  $users  users ids
-     * @param  mixed[]  $models models names
-     * @return mixed[]
-     */
-    public function getSavedSearches(array $users = [], array $models = []): array
-    {
-        $conditions = [
-            'SavedSearches.name IS NOT' => null,
-            'SavedSearches.system' => false
-        ];
-
-        if (!empty($users)) {
-            $conditions['SavedSearches.user_id IN'] = $users;
-        }
-
-        if (!empty($models)) {
-            $conditions['SavedSearches.model IN'] = $models;
-        }
-
-        $query = $this->find('all', [
-            'conditions' => $conditions
-        ]);
-
-        return $query->toArray();
-    }
-
-    /**
      * Returns true if table is searchable, false otherwise.
      *
      * @param  string $tableName Table name.

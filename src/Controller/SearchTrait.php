@@ -99,7 +99,17 @@ trait SearchTrait
         $search->reset($entity);
 
         $this->set('searchableFields', Utility::instance()->getSearchableFields($table, $this->Auth->user()));
-        $this->set('savedSearches', $searchTable->getSavedSearches([$this->Auth->user('id')], [$model]));
+
+        $savedSearches = $searchTable->find('all')
+            ->where([
+                'SavedSearches.name IS NOT' => null,
+                'SavedSearches.system' => false,
+                'SavedSearches.user_id' => $this->Auth->user('id'),
+                'SavedSearches.model' => $model
+            ])
+            ->toArray();
+
+        $this->set('savedSearches', $savedSearches);
         $this->set('model', $model);
         $this->set('searchData', $searchData);
         $this->set('savedSearch', $entity);

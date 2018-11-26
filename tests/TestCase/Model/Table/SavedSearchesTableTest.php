@@ -102,41 +102,4 @@ class SavedSearchesTableTest extends TestCase
             [['query' => 'SELECT id,created FROM dashboards LIMIT 2', 'table' => 'Dashboards']],
         ];
     }
-
-    public function testGetSavedSearchesFindAll(): void
-    {
-        $resultset = $this->SavedSearches->getSavedSearches();
-        $this->assertInternalType('array', $resultset);
-        $this->assertInstanceOf(SavedSearch::class, current($resultset));
-    }
-
-    public function testGetSavedSearchesByUser(): void
-    {
-        /**
-         * @var \Cake\Datasource\EntityInterface
-         */
-        $entity = $this->SavedSearches->find()->firstOrFail();
-        $resultset = $this->SavedSearches->getSavedSearches([$entity->get('user_id')]);
-        $this->assertInternalType('array', $resultset);
-        $this->assertInstanceOf(SavedSearch::class, current($resultset));
-
-        foreach ($resultset as $record) {
-            $this->assertEquals($entity->get('user_id'), $record->user_id);
-        }
-    }
-
-    public function testGetSavedSearchesByModel(): void
-    {
-        /**
-         * @var \Cake\Datasource\EntityInterface
-         */
-        $entity = $this->SavedSearches->find()->firstOrFail();
-        $resultset = $this->SavedSearches->getSavedSearches([], [$entity->get('model')]);
-        $this->assertInternalType('array', $resultset);
-        $this->assertInstanceOf(SavedSearch::class, current($resultset));
-
-        foreach ($resultset as $record) {
-            $this->assertEquals($entity->get('model'), $record->model);
-        }
-    }
 }
