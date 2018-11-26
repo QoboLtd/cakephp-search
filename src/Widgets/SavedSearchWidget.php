@@ -113,7 +113,7 @@ final class SavedSearchWidget extends BaseWidget
 
             return null;
         }
-        $content = json_decode($entity->get('content'), true);
+        $content = $entity->get('content');
         $content['saved'] = Validator::validateData($table, $content['saved'], $options['user']);
         $entity->set('content', $content);
 
