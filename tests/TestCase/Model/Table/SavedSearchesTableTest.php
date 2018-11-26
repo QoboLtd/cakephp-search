@@ -89,7 +89,7 @@ class SavedSearchesTableTest extends TestCase
 
         $saved = $this->SavedSearches->save($entity);
 
-        $this->assertInstanceOf(SavedSearch::class, $this->SavedSearches->get($saved->get('id')));
+        $this->assertInstanceOf(SavedSearch::class, $saved);
     }
 
     public function testSaveWithInvalidDataStructure(): void
@@ -103,7 +103,7 @@ class SavedSearchesTableTest extends TestCase
 
         $entity = $this->SavedSearches->newEntity($data);
 
-        $saved = $this->SavedSearches->save($entity);
+        $saved = (bool)$this->SavedSearches->save($entity);
         $this->assertFalse($saved);
 
         $expected = [
