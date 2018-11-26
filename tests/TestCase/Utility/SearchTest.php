@@ -461,9 +461,8 @@ class SearchTest extends TestCase
          */
         $result = $this->Search->update($data, $id);
         $this->assertInstanceOf(SavedSearch::class, $result);
-        $this->assertNotEmpty($result->get('content'));
 
-        $content = json_decode($result->get('content'), true);
+        $content = $result->get('content');
         $this->assertArrayHasKey('latest', $content);
         $this->assertEquals($data, $content['latest']);
     }
@@ -474,9 +473,8 @@ class SearchTest extends TestCase
 
         $result = $this->Search->get($id);
         $this->assertInstanceOf(SavedSearch::class, $result);
-        $this->assertNotEmpty($result->get('content'));
 
-        $result = json_decode($result->get('content'), true);
+        $result = $result->get('content');
 
         $this->assertArrayHasKey('saved', $result);
         $this->assertArrayHasKey('display_columns', $result['saved']);
