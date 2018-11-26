@@ -154,8 +154,7 @@ class Search
          * @var \Search\Model\Entity\SavedSearch
          */
         $entity = $this->searchTable->get($id);
-        $content = json_decode($entity->get('content'), true);
-        $entity = $this->normalize($entity, $content, $searchData);
+        $entity = $this->normalize($entity, $entity->get('content'), $searchData);
 
         return $this->searchTable->save($entity);
     }
@@ -173,8 +172,7 @@ class Search
          * @var \Search\Model\Entity\SavedSearch
          */
         $entity = $this->searchTable->get($id);
-        $content = json_decode($entity->get('content'), true);
-        $entity = $this->normalize($entity, $content, $content);
+        $entity = $this->normalize($entity, $entity->get('content'), $entity->get('content'));
 
         return $entity;
     }
@@ -187,7 +185,7 @@ class Search
      */
     public function reset(SavedSearch $entity) : ?SavedSearch
     {
-        $content = json_decode($entity->get('content'), true);
+        $content = $entity->get('content');
 
         // for backward compatibility
         $saved = isset($content['saved']) ? $content['saved'] : $content;
@@ -512,7 +510,7 @@ class Search
 
         $entity->set('user_id', $this->user['id']);
         $entity->set('model', $this->table->getRegistryAlias());
-        $entity->set('content', json_encode(['saved' => $saved, 'latest' => $latest]));
+        $entity->set('content', ['saved' => $saved, 'latest' => $latest]);
 
         return $entity;
     }

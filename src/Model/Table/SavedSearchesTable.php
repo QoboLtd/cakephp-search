@@ -11,6 +11,7 @@
  */
 namespace Search\Model\Table;
 
+use Cake\Database\Schema\TableSchema;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
@@ -45,6 +46,16 @@ class SavedSearchesTable extends Table
             'foreignKey' => 'user_id',
             'className' => 'Search.Users'
         ]);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function _initializeSchema(TableSchema $schema) : TableSchema
+    {
+        $schema->setColumnType('content', 'json');
+
+        return $schema;
     }
 
     /**
