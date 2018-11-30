@@ -81,7 +81,21 @@ class SavedSearchesTable extends Table
 
         $validator
             ->requirePresence('content', 'create')
-            ->notEmpty('content');
+            ->notEmpty('content')
+            ->isArray('content')
+            ->add('content', 'validateSaved', [
+                'rule' => function ($value, $context) {
+                    return is_array($value) ? array_key_exists('saved', $value) : false;
+                },
+                'message' => 'Missing required key "saved"'
+            ])
+            ->add('content', 'validateLatest', [
+                'rule' => function ($value, $context) {
+
+                    return is_array($value) ? array_key_exists('latest', $value) : false;
+                },
+                'message' => 'Missing required key "latest"'
+            ]);
 
         return $validator;
     }

@@ -73,12 +73,59 @@ class SavedSearchesTableTest extends TestCase
         $this->assertInstanceOf(RulesChecker::class, $result);
     }
 
+    public function testSave(): void
+    {
+        $data = [
+            'name' => 'withName',
+            'model' => 'Foobar',
+            'content' => [
+                'saved' => 'foo',
+                'latest' => 'bar'
+            ],
+            'user_id' => '00000000-0000-0000-0000-000000000001'
+        ];
+
+        $entity = $this->SavedSearches->newEntity($data);
+
+        $saved = $this->SavedSearches->save($entity);
+
+        $this->assertInstanceOf(SavedSearch::class, $saved);
+    }
+
+    public function testSaveWithInvalidDataStructure(): void
+    {
+        $data = [
+            'name' => 'withName',
+            'model' => 'Foobar',
+            'content' => 'foo', // invalid content strucutre
+            'user_id' => '00000000-0000-0000-0000-000000000001'
+        ];
+
+        $entity = $this->SavedSearches->newEntity($data);
+
+        $saved = (bool)$this->SavedSearches->save($entity);
+        $this->assertFalse($saved);
+
+        $expected = [
+            'content' => [
+                'isArray' => 'The provided value is invalid',
+                'validateSaved' => 'Missing required key "saved"',
+                'validateLatest' => 'Missing required key "latest"'
+            ]
+        ];
+
+        $this->assertEquals($expected, $entity->getErrors());
+    }
+
     public function testIsEditable(): void
     {
         $data = [
             'name' => 'withName',
             'model' => 'Foobar',
-            'content' => 'Lorem ipsum',
+            'content' => [
+                'saved' => 'foo',
+                'latest' => 'bar'
+            ],
             'user_id' => '00000000-0000-0000-0000-000000000001'
         ];
 
