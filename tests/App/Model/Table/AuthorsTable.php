@@ -13,6 +13,8 @@ class AuthorsTable extends Table
         $this->setPrimaryKey('id');
         $this->setDisplayField('name');
 
+        $this->addBehavior('Timestamp');
+
         $this->hasMany('Articles');
     }
 }

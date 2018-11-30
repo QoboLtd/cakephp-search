@@ -13,6 +13,7 @@ class ArticlesTable extends Table
         $this->setPrimaryKey('id');
         $this->setDisplayField('title');
 
+        $this->addBehavior('Timestamp');
 
         $this->belongsTo('Authors');
     }
