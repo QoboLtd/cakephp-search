@@ -51,5 +51,10 @@ class LessOrEqualTest extends TestCase
             ['foo'],
             Hash::extract($result->getValueBinder()->bindings(), '{s}.value')
         );
+
+        $this->assertEquals(
+            ['string'],
+            Hash::extract($result->getValueBinder()->bindings(), '{s}.type')
+        );
     }
 }

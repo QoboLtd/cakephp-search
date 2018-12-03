@@ -68,5 +68,10 @@ class EqualTest extends TestCase
             ['foo', 'bar'],
             Hash::extract($result->getValueBinder()->bindings(), '{s}.value')
         );
+
+        $this->assertEquals(
+            ['string', 'string'],
+            Hash::extract($result->getValueBinder()->bindings(), '{s}.type')
+        );
     }
 }
