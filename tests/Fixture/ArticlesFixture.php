@@ -23,6 +23,7 @@ class ArticlesFixture extends TestFixture
         'content' => ['type' => 'text', 'length' => null, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null],
         'created' => ['type' => 'datetime', 'length' => null, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null],
         'modified' => ['type' => 'datetime', 'length' => null, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null],
+        'published' => ['type' => 'boolean', 'length' => null, 'null' => false, 'default' => false, 'comment' => '', 'precision' => null],
         '_constraints' => [
             'primary' => ['type' => 'primary', 'columns' => ['id'], 'length' => []],
         ],
@@ -46,6 +47,7 @@ class ArticlesFixture extends TestFixture
             'content' => 'First article content.',
             'created' => '2016-12-27 12:25:30',
             'modified' => '2017-05-22 08:21:50',
+            'published' => 1,
         ],
         [
             'id' => '00000000-0000-0000-0000-000000000002',
@@ -54,6 +56,7 @@ class ArticlesFixture extends TestFixture
             'content' => 'Second article content.',
             'created' => '2016-04-27 08:21:54',
             'modified' => '2016-04-27 08:21:54',
+            'published' => 0,
         ],
     ];
 }
