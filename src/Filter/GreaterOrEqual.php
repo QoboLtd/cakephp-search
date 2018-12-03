@@ -25,7 +25,11 @@ final class GreaterOrEqual extends AbstractFilter
     public function apply(QueryInterface $query) : QueryInterface
     {
         return $query->where(
-            (new QueryExpression())->gte($this->getField(), $this->getValue())
+            (new QueryExpression())->gte(
+                $this->getField(),
+                $this->getValue(),
+                $query->getTypeMap()->type($this->getField())
+            )
         );
     }
 }

@@ -25,7 +25,11 @@ final class Greater extends AbstractFilter
     public function apply(QueryInterface $query) : QueryInterface
     {
         return $query->where(
-            (new QueryExpression())->gt($this->getField(), $this->getValue())
+            (new QueryExpression())->gt(
+                $this->getField(),
+                $this->getValue(),
+                $query->getTypeMap()->type($this->getField())
+            )
         );
     }
 }

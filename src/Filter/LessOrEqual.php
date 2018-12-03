@@ -25,7 +25,11 @@ final class LessOrEqual extends AbstractFilter
     public function apply(QueryInterface $query) : QueryInterface
     {
         return $query->where(
-            (new QueryExpression())->lte($this->getField(), $this->getValue())
+            (new QueryExpression())->lte(
+                $this->getField(),
+                $this->getValue(),
+                $query->getTypeMap()->type($this->getField())
+            )
         );
     }
 }

@@ -25,7 +25,11 @@ final class Less extends AbstractFilter
     public function apply(QueryInterface $query) : QueryInterface
     {
         return $query->where(
-            (new QueryExpression())->lt($this->getField(), $this->getValue())
+            (new QueryExpression())->lt(
+                $this->getField(),
+                $this->getValue(),
+                $query->getTypeMap()->type($this->getField())
+            )
         );
     }
 }

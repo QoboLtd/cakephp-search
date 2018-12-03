@@ -25,7 +25,11 @@ final class Contains extends AbstractFilter
     public function apply(QueryInterface $query) : QueryInterface
     {
         return $query->where(
-            (new QueryExpression())->like($this->getField(), '%' . $this->getValue() . '%')
+            (new QueryExpression())->like(
+                $this->getField(),
+                '%' . $this->getValue() . '%',
+                $query->getTypeMap()->type($this->getField())
+            )
         );
     }
 }
