@@ -26,9 +26,9 @@ final class Less extends AbstractFilter
     {
         return $query->where(
             (new QueryExpression())->lt(
-                $this->getField(),
-                $this->getValue(),
-                $query->getTypeMap()->type($this->getField())
+                $this->field,
+                $this->value,
+                $query->getTypeMap()->type($this->field)
             )
         );
     }

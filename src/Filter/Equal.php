@@ -24,15 +24,13 @@ final class Equal extends AbstractFilter
      */
     public function apply(Query $query) : Query
     {
-        $value = $this->getValue();
-
-        $method = is_array($value) ? 'in' : 'eq';
+        $method = is_array($this->value) ? 'in' : 'eq';
 
         return $query->where(
             (new QueryExpression())->{$method}(
-                $this->getField(),
-                $value,
-                $query->getTypeMap()->type($this->getField())
+                $this->field,
+                $this->value,
+                $query->getTypeMap()->type($this->field)
             )
         );
     }

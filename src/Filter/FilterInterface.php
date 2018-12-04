@@ -22,18 +22,4 @@ interface FilterInterface
      * @return \Cake\ORM\Query
      */
     public function apply(Query $query) : Query;
-
-    /**
-     * Field name getter.
-     *
-     * @return string
-     */
-    public function getField() : string;
-
-    /**
-     * Search value getter.
-     *
-     * @return mixed
-     */
-    public function getValue();
 }

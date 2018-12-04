@@ -18,14 +18,14 @@ abstract class AbstractFilter implements FilterInterface
      *
      * @var string
      */
-    private $field;
+    protected $field;
 
     /**
      * Search value.
      *
      * @var mixed
      */
-    private $value;
+    protected $value;
 
     /**
      * Constructor method.
@@ -43,25 +43,5 @@ abstract class AbstractFilter implements FilterInterface
 
         $this->field = $field;
         $this->value = $value;
-    }
-
-    /**
-     * Field name getter.
-     *
-     * @return string
-     */
-    final public function getField() : string
-    {
-        return $this->field;
-    }
-
-    /**
-     * Search value getter.
-     *
-     * @return mixed
-     */
-    final public function getValue()
-    {
-        return $this->value;
     }
 }
