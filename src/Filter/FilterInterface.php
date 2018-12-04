@@ -11,17 +11,17 @@
  */
 namespace Search\Filter;
 
-use Cake\Datasource\QueryInterface;
+use Cake\ORM\Query;
 
 interface FilterInterface
 {
     /**
      * Apply provided search value to the Query instance.
      *
-     * @param \Cake\Datasource\QueryInterface $query Query instance
-     * @return \Cake\Datasource\QueryInterface
+     * @param \Cake\ORM\Query $query Query instance
+     * @return \Cake\ORM\Query
      */
-    public function apply(QueryInterface $query) : QueryInterface;
+    public function apply(Query $query) : Query;
 
     /**
      * Field name getter.
