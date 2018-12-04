@@ -57,4 +57,27 @@ class ContainsTest extends TestCase
             Hash::extract($result->getValueBinder()->bindings(), '{s}.type')
         );
     }
+
+    /**
+     * @dataProvider nonScalarProvider
+     * @param mixed $value
+     */
+    public function testApplyWithNonScalar($value) : void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $filter = new Contains('title', $value);
+    }
+
+    /**
+     * @return mixed[]
+     */
+    public function nonScalarProvider() : array
+    {
+        return [
+            [new \DateTime],
+            [new \stdClass],
+            [\stream_context_create()]
+        ];
+    }
 }

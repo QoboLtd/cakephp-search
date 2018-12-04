@@ -35,6 +35,12 @@ abstract class AbstractFilter implements FilterInterface
      */
     public function __construct(string $field, $value)
     {
+        if (! is_scalar($value) && ! is_array($value)) {
+            throw new \InvalidArgumentException(
+                sprintf('Filter value must be a scalar or an array, %s provided', gettype($value))
+            );
+        }
+
         $this->field = $field;
         $this->value = $value;
     }
