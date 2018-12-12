@@ -361,18 +361,21 @@ var search = search || {};
 
     search.init();
 
-    $(document).ready(function(){
+    $(document).ready(function () {
         realoadSelect2()
     })
 })(jQuery);
 
 
 /**
- * Reload the select2
+ * Reload the select2s
  */
-function realoadSelect2(){
+function realoadSelect2()
+{
     $('[data-class=select2]').select2({
-        escapeMarkup: function (text) { return text; },
+        escapeMarkup: function (text) {
+            return text;
+        },
         theme: "bootstrap"
     })
 }
