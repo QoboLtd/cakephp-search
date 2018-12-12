@@ -11,6 +11,11 @@
  */
 namespace Search\Utility;
 
+deprecationWarning(
+    '"Search\Utility\Options" class is deprecated. To continue using it copy the ' .
+    'file to your application and use it from there instead'
+);
+
 use Cake\Datasource\RepositoryInterface;
 use Cake\Event\Event;
 use Cake\Event\EventManager;

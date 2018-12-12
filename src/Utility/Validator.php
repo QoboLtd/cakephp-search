@@ -11,10 +11,18 @@
  */
 namespace Search\Utility;
 
+deprecationWarning(
+    '"Search\Utility\Validator" class is deprecated. To continue using it copy the ' .
+    'file to your application and use it from there instead'
+);
+
 use Cake\Datasource\RepositoryInterface;
 use Cake\ORM\Table;
 use Search\Utility;
 
+/**
+ * @deprecated 20.0.0 Search data validation should be handled by the application/business logic
+ */
 class Validator
 {
     /**

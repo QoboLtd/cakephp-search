@@ -11,6 +11,10 @@
  */
 namespace Search\Utility;
 
+deprecationWarning(
+    '"Search\Utility\Search" class is deprecated. Use "Search\Model\Behavior\SearchableBehavior" instead'
+);
+
 use Cake\Database\Expression\Comparison;
 use Cake\Database\Expression\IdentifierExpression;
 use Cake\Datasource\QueryInterface;

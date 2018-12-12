@@ -11,6 +11,11 @@
  */
 namespace Search\Utility;
 
+deprecationWarning(
+    '"Search\Utility\BasicSearch" class is deprecated. To continue using it copy the ' .
+    'file to your application and use it from there instead'
+);
+
 use Cake\Event\Event;
 use Cake\Event\EventManager;
 use Cake\ORM\Table;

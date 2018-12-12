@@ -11,6 +11,11 @@
  */
 namespace Search\Controller;
 
+deprecationWarning(
+    '"Search\Controller\SearchTrait" trait is deprecated. To continue using it copy the ' .
+    'file to your application and use it from there instead'
+);
+
 use Cake\Core\Configure;
 use Cake\Datasource\RepositoryInterface;
 use Cake\Datasource\ResultSetInterface;

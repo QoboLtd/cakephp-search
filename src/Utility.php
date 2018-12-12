@@ -11,6 +11,11 @@
  */
 namespace Search;
 
+deprecationWarning(
+    '"Search\Utility" class is deprecated. To continue using it copy the ' .
+    'file to your application and use it from there instead'
+);
+
 use Cake\Datasource\RepositoryInterface;
 use Cake\Datasource\ResultSetInterface;
 use Cake\Event\Event;

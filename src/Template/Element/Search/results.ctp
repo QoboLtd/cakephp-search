@@ -9,6 +9,10 @@
  * @copyright     Copyright (c) Qobo Ltd. (https://www.qobo.biz)
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
+deprecationWarning(
+    '"Search.Search/results" element is deprecated. To continue using it copy the ' .
+    'file to your application and render it from there instead'
+);
 
 use Cake\Core\Configure;
 

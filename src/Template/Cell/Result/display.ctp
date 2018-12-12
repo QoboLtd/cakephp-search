@@ -10,6 +10,11 @@
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
 
+deprecationWarning(
+    '"Search.Result/display" cell is deprecated. To continue using it copy the ' .
+    'file to your application and render it from there instead'
+);
+
 echo $cakeView->Html->css('Qobo/Utils./plugins/datatables/css/dataTables.bootstrap.min', ['block' => 'css']);
 
 echo $cakeView->Html->script(

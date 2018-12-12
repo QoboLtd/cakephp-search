@@ -9,6 +9,10 @@
  * @copyright     Copyright (c) Qobo Ltd. (https://www.qobo.biz)
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
+deprecationWarning(
+    '"Search.Search/search" template is deprecated. To continue using it copy the ' .
+    'file to your application and render it from there instead'
+);
 ?>
 <section class="content-header">
     <h4><?= __('Search') ?></h4>
