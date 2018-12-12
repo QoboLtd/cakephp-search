@@ -123,6 +123,8 @@ var search = search || {};
 
                 this.value = '';
             }
+
+            realoadSelect2()
         });
     };
 
@@ -151,6 +153,8 @@ var search = search || {};
                     $(this).data('options').operator
                 )
             );
+
+            realoadSelect2();
         });
     };
 
@@ -357,4 +361,18 @@ var search = search || {};
 
     search.init();
 
+    $(document).ready(function(){
+        realoadSelect2()
+    })
 })(jQuery);
+
+
+/**
+ * Reload the select2
+ */
+function realoadSelect2(){
+    $('[data-class=select2]').select2({
+        escapeMarkup: function (text) { return text; },
+        theme: "bootstrap"
+    })
+}
