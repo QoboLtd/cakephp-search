@@ -367,7 +367,7 @@ class Search
 
         $type = 'string';
         if (! empty($this->searchFields[$field]['type']) &&
-            array_key_exists($this->searchFields[$field]['type'], Type::getMap())
+            array_key_exists($this->searchFields[$field]['type'], (array)Type::getMap())
         ) {
             $type = $this->searchFields[$field]['type'];
         }
