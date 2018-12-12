@@ -13,6 +13,7 @@ namespace Search\Utility;
 
 use Cake\Database\Expression\Comparison;
 use Cake\Database\Expression\IdentifierExpression;
+use Cake\Database\Type;
 use Cake\Datasource\QueryInterface;
 use Cake\Datasource\RepositoryInterface;
 use Cake\Event\Event;
@@ -365,7 +366,9 @@ class Search
         }
 
         $type = 'string';
-        if (!empty($this->searchFields[$field]['type']) && $this->searchFields[$field]['type'] !== 'related') {
+        if (! empty($this->searchFields[$field]['type']) &&
+            array_key_exists($this->searchFields[$field]['type'], (array)Type::getMap())
+        ) {
             $type = $this->searchFields[$field]['type'];
         }
 
