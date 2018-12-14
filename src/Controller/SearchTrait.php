@@ -57,7 +57,7 @@ trait SearchTrait
         $table = $this->loadModel();
         $search = new Search($table, $this->Auth->user());
 
-        if (!$searchTable->isSearchable($model) && !$this->Auth->user('is_superuser')) {
+        if (!$searchTable->isSearchable($model) && !$this->Auth->user('is_admin')) {
             throw new BadRequestException('You cannot search in ' . implode(' - ', pluginSplit($model)) . '.');
         }
 
