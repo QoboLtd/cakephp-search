@@ -32,12 +32,12 @@ echo $cakeView->Html->script(
 if ($isGroup) {
     $chartsCount = count($chartOptions);
 
-    echo $cakeView->Html->css('AdminLTE./plugins/morris/morris', ['block' => 'css']);
+    echo $cakeView->Html->css('AdminLTE./bower_components/morris.js/morris', ['block' => 'css']);
 
     echo $cakeView->Html->script(
         [
             'https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js',
-            'AdminLTE./plugins/morris/morris.min',
+            'AdminLTE./bower_components/morris.js/morris.min',
             'Qobo/Utils./plugins/d3/d3.min',
             'Qobo/Utils./plugins/d3/extensions/d3-funnel.min',
             'Search.reportGraphs'

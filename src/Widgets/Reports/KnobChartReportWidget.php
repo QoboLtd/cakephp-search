@@ -74,7 +74,7 @@ class KnobChartReportWidget extends BaseReportGraphs
                 'css' => [
                     'type' => 'css',
                     'content' => [
-                        'AdminLTE./plugins/morris/morris',
+                        'AdminLTE./bower_components/morris.js/morris',
                     ],
                     'block' => 'css',
                 ],
@@ -82,7 +82,7 @@ class KnobChartReportWidget extends BaseReportGraphs
                     'type' => 'script',
                     'content' => [
                         'https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js',
-                        'AdminLTE./plugins/knob/jquery.knob',
+                        'AdminLTE./bower_components/jquery-knob/dist/jquery.knob.min',
                     ],
                     'block' => 'scriptBottom',
                 ],
