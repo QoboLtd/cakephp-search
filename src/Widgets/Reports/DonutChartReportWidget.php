@@ -72,7 +72,7 @@ class DonutChartReportWidget extends BaseReportGraphs
                 'css' => [
                     'type' => 'css',
                     'content' => [
-                        'AdminLTE./plugins/morris/morris',
+                        'AdminLTE./bower_components/morris.js/morris',
                     ],
                     'block' => 'css',
                 ],
@@ -80,7 +80,7 @@ class DonutChartReportWidget extends BaseReportGraphs
                     'type' => 'script',
                     'content' => [
                         'https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js',
-                        'AdminLTE./plugins/morris/morris.min',
+                        'AdminLTE./bower_components/morris.js/morris.min',
                     ],
                     'block' => 'scriptBottom',
                 ],

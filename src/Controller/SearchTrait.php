@@ -171,7 +171,7 @@ trait SearchTrait
         return [
             'success' => true,
             'data' => Utility::instance()->formatter($resultSet, $displayColumns, $table, $this->Auth->user()),
-            'pagination' => ['count' => $resultSet->count()],
+            'pagination' => ['count' => $query->count()],
             '_serialize' => ['success', 'data', 'pagination']
         ];
     }
