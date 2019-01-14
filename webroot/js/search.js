@@ -372,6 +372,10 @@ var search = search || {};
  */
 function realoadSelect2()
 {
+    if (! $('[data-class=select2]').length) {
+        return
+    }
+
     $('[data-class=select2]').select2({
         escapeMarkup: function (text) {
             return text;
