@@ -193,7 +193,7 @@ class Export
             $result[$k] = [];
             foreach ($displayColumns as $column) {
                 // @todo this is temporary fix to stripping out html tags from results columns
-                $value = preg_replace("/(&#?[a-z0-9]+;)*/", "", trim(strip_tags($entity[$column])));
+                $value = trim(strip_tags(html_entity_decode($entity[$column])), " \t\n\r\0\x0B\xC2\xA0");
                 // end of temporary fix
                 $result[$k][] = $value;
             }
