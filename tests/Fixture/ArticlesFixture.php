@@ -53,7 +53,7 @@ class ArticlesFixture extends TestFixture
             'id' => '00000000-0000-0000-0000-000000000002',
             'author_id' => '00000000-0000-0000-0000-000000000001',
             'title' => 'Second article title',
-            'content' => 'Second article content.',
+            'content' => '&nbsp; &nbsp;&#39;&quot;<a>Fovi&#269;</a>&quot;&#39; &euro;&#8364; &nbsp;  ',
             'created' => '2016-04-27 08:21:54',
             'modified' => '2016-04-27 08:21:54',
             'trashed' => null,

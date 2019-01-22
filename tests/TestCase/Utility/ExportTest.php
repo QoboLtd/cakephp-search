@@ -36,6 +36,13 @@ class ExportTest extends TestCase
                         'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%']
                     ]
                 ],
+                'Articles.content' => [
+                    'type' => 'string',
+                    'label' => 'Content',
+                    'operators' => [
+                        'contains' => ['label' => 'is', 'operator' => 'IN']
+                    ]
+                ],
                 'Articles.created' => [
                     'type' => 'datetime',
                     'label' => 'Created',
@@ -61,7 +68,7 @@ class ExportTest extends TestCase
         });
 
         $this->Export = new Export(
-            '00000000-0000-0000-0000-000000000003',
+            '00000000-0000-0000-0000-000000000006',
             'Foobar',
             ['id' => '00000000-0000-0000-0000-000000000001']
         );
@@ -119,5 +126,9 @@ class ExportTest extends TestCase
 
         // csv rows must be equal to search records count, +1 for the headers row
         $this->assertEquals($count + 1, count($data));
+
+        // test value with no html entities, no html tags, no spaces at begin and end string.
+        $content = $data[1][1];
+        $this->assertEquals('\'"Fovič"\' €€', $content);
     }
 }
