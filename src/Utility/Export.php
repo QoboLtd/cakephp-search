@@ -192,9 +192,7 @@ class Export
         foreach ($entities as $k => $entity) {
             $result[$k] = [];
             foreach ($displayColumns as $column) {
-                // @todo this is temporary fix to stripping out html tags from results columns
-                $value = trim(strip_tags($entity[$column]));
-                // end of temporary fix
+                $value = trim(strip_tags(html_entity_decode($entity[$column], ENT_QUOTES)), " \t\n\r\0\x0B\xC2\xA0");
                 $result[$k][] = $value;
             }
         }
