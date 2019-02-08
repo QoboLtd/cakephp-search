@@ -288,16 +288,20 @@ class Search
     private function getAssociationsBySearchData(array $data) : array
     {
         $fields = [];
-        foreach (array_keys($data['criteria']) as $field) {
-            $field = $this->table->aliasField((string)$field);
-            if (! in_array($field, $fields)) {
-                $fields[] = $field;
+        if (array_key_exists('criteria', $data)) {
+            foreach (array_keys($data['criteria']) as $field) {
+                $field = $this->table->aliasField((string)$field);
+                if (! in_array($field, $fields)) {
+                    $fields[] = $field;
+                }
             }
         }
 
-        foreach ($data['display_columns'] as $field) {
-            if (is_string($field) && ! in_array($field, $fields)) {
-                $fields[] = $field;
+        if (array_key_exists('display_columns', $data)) {
+            foreach ($data['display_columns'] as $field) {
+                if (is_string($field) && ! in_array($field, $fields)) {
+                    $fields[] = $field;
+                }
             }
         }
 
