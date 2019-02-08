@@ -289,7 +289,7 @@ class Search
     {
         $fields = [];
         foreach (array_keys($data['criteria']) as $field) {
-            $field = $this->table->aliasField($field);
+            $field = $this->table->aliasField((string)$field);
             if (! in_array($field, $fields)) {
                 $fields[] = $field;
             }
