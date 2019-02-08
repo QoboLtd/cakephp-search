@@ -279,6 +279,12 @@ class Search
         return $result;
     }
 
+    /**
+     * Retrieves search-required associations based on the provided search data.
+     *
+     * @param mixed[] $data Search data
+     * @return mixed[]
+     */
     private function getAssociationsBySearchData(array $data) : array
     {
         $fields = [];
