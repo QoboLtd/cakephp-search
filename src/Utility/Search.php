@@ -427,6 +427,10 @@ class Search
             $value = (array)$value;
         }
 
+        if ($operator['operator'] === 'NOT IN') {
+            return [ 'OR' => [ $field . ' IS NULL', new Comparison(new IdentifierExpression($field), $value, $type, $operator['operator']) ]];
+        }
+
         return [ new Comparison(new IdentifierExpression($field), $value, $type, $operator['operator']) ];
     }
 
