@@ -240,7 +240,7 @@ class Search
     protected function byAssociations(array $data): array
     {
         $result = [];
-        foreach ($this->table->associations() as $association) {
+        foreach ($this->getAssociationsBySearchData($data) as $association) {
             // skip non-supported associations
             if (!in_array($association->type(), Options::getSearchableAssociations())) {
                 continue;
@@ -270,6 +270,56 @@ class Search
             if (!empty($where)) {
                 $result[$association->getName()]['where'] = $where;
             }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Retrieves search-required associations based on the provided search data.
+     *
+     * @param mixed[] $data Search data
+     * @return mixed[]
+     */
+    private function getAssociationsBySearchData(array $data) : array
+    {
+        $fields = [];
+        if (array_key_exists('criteria', $data)) {
+            foreach (array_keys($data['criteria']) as $field) {
+                $field = $this->table->aliasField((string)$field);
+                if (! in_array($field, $fields)) {
+                    $fields[] = $field;
+                }
+            }
+        }
+
+        if (array_key_exists('display_columns', $data)) {
+            foreach ($data['display_columns'] as $field) {
+                if (is_string($field) && ! in_array($field, $fields)) {
+                    $fields[] = $field;
+                }
+            }
+        }
+
+        $result = [];
+        foreach ($fields as $field) {
+            list($name) = explode('.', $this->table->aliasField($field), 2);
+
+            if ($name === $this->table->getAlias()) {
+                continue;
+            }
+
+            if (! $this->table->hasAssociation($name)) {
+                throw new \RuntimeException(sprintf('Table "%s" does not have association "%s"', $this->table->getAlias(), $name));
+            }
+
+            $association = $this->table->getAssociation($name);
+
+            if (array_key_exists($association->getName(), $result)) {
+                continue;
+            }
+
+            $result[$association->getName()] = $association;
         }
 
         return $result;
@@ -371,6 +421,10 @@ class Search
         if (in_array($operator['operator'], ['IN', 'NOT IN'])) {
             $type .= '[]';
             $value = (array)$value;
+        }
+
+        if ($operator['operator'] === 'NOT IN') {
+            return [ 'OR' => [ $field . ' IS NULL', new Comparison(new IdentifierExpression($field), $value, $type, $operator['operator']) ]];
         }
 
         return [ new Comparison(new IdentifierExpression($field), $value, $type, $operator['operator']) ];

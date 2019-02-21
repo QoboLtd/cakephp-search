@@ -397,7 +397,7 @@ class SearchTest extends TestCase
 
         $result = $this->Search->execute($data);
 
-        $this->assertEquals(1, $result->count());
+        $this->assertEquals(2, $result->count());
     }
 
     public function testExecuteWithRelatedValueArray(): void
