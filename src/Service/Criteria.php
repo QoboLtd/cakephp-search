@@ -84,9 +84,7 @@ final class Criteria
         }
 
         if (! is_scalar($data['value']) && ! is_array($data['value'])) {
-            throw new \InvalidArgumentException(
-                sprintf('Filter value must be a scalar or an array, %s provided', gettype($data['value']))
-            );
+            throw new \InvalidArgumentException(sprintf('Unsupported value type provided: %s', gettype($data['value'])));
         }
     }
 
