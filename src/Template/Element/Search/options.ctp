@@ -46,12 +46,14 @@ $displayColumns = array_merge(array_flip($searchData['display_columns']), $displ
 <div class="row">
     <div class="col-md-5 col-lg-4">
         <?= $this->Form->label(__('Available Columns')) ?>
-        <?= $this->Form->select('', $availableColumns, [
+        <?php $html = $this->Form->select('', $availableColumns, [
             'id' => 'available-columns',
             'class' => 'form-control',
             'size' => '8',
             'multiple' => 'multiple'
-            ]) ?>
+        ]);
+        // remove input name to avoid hitting PHP's max_input_vars limit
+        echo str_replace('name="[]"', '', $html) ?>
     </div>
     <div class="col-md-2">
         <?= $this->Form->label(false, '&nbsp;', ['escape' => false]) ?>
