@@ -73,15 +73,71 @@ class SavedSearchesTableTest extends TestCase
         $this->assertInstanceOf(RulesChecker::class, $result);
     }
 
+    public function testSave(): void
+    {
+        $data = [
+            'name' => 'withName',
+            'model' => 'Foobar',
+            'content' => [
+                'saved' => 'foo',
+                'latest' => 'bar'
+            ],
+            'user_id' => '00000000-0000-0000-0000-000000000001'
+        ];
+
+        $entity = $this->SavedSearches->newEntity($data);
+
+        $saved = $this->SavedSearches->save($entity);
+
+        $this->assertInstanceOf(SavedSearch::class, $saved);
+    }
+
+    public function testSaveWithInvalidDataStructure(): void
+    {
+        $data = [
+            'name' => 'withName',
+            'model' => 'Foobar',
+            'content' => 'foo', // invalid content strucutre
+            'user_id' => '00000000-0000-0000-0000-000000000001'
+        ];
+
+        $entity = $this->SavedSearches->newEntity($data);
+
+        $saved = (bool)$this->SavedSearches->save($entity);
+        $this->assertFalse($saved);
+
+        $expected = [
+            'content' => [
+                'isArray' => 'The provided value is invalid',
+                'validateSaved' => 'Missing required key "saved"',
+                'validateLatest' => 'Missing required key "latest"'
+            ]
+        ];
+
+        $this->assertEquals($expected, $entity->getErrors());
+    }
+
     public function testIsEditable(): void
     {
-        /**
-         * @var \Search\Model\Entity\SavedSearch
-         */
-        $entity = $this->SavedSearches->get('00000000-0000-0000-0000-000000000001');
-        $result = $this->SavedSearches->isEditable($entity);
+        $data = [
+            'name' => 'withName',
+            'model' => 'Foobar',
+            'content' => [
+                'saved' => 'foo',
+                'latest' => 'bar'
+            ],
+            'user_id' => '00000000-0000-0000-0000-000000000001'
+        ];
 
-        $this->assertTrue($result);
+        $entity = $this->SavedSearches->newEntity($data);
+
+        $this->assertTrue($entity->get('is_editable'));
+
+        // reset name
+        $data['name'] = null;
+        $entity = $this->SavedSearches->newEntity($data);
+
+        $this->assertFalse($entity->get('is_editable'));
     }
 
     /**
@@ -92,42 +148,5 @@ class SavedSearchesTableTest extends TestCase
         return [
             [['query' => 'SELECT id,created FROM dashboards LIMIT 2', 'table' => 'Dashboards']],
         ];
-    }
-
-    public function testGetSavedSearchesFindAll(): void
-    {
-        $resultset = $this->SavedSearches->getSavedSearches();
-        $this->assertInternalType('array', $resultset);
-        $this->assertInstanceOf(SavedSearch::class, current($resultset));
-    }
-
-    public function testGetSavedSearchesByUser(): void
-    {
-        /**
-         * @var \Cake\Datasource\EntityInterface
-         */
-        $entity = $this->SavedSearches->find()->firstOrFail();
-        $resultset = $this->SavedSearches->getSavedSearches([$entity->get('user_id')]);
-        $this->assertInternalType('array', $resultset);
-        $this->assertInstanceOf(SavedSearch::class, current($resultset));
-
-        foreach ($resultset as $record) {
-            $this->assertEquals($entity->get('user_id'), $record->user_id);
-        }
-    }
-
-    public function testGetSavedSearchesByModel(): void
-    {
-        /**
-         * @var \Cake\Datasource\EntityInterface
-         */
-        $entity = $this->SavedSearches->find()->firstOrFail();
-        $resultset = $this->SavedSearches->getSavedSearches([], [$entity->get('model')]);
-        $this->assertInternalType('array', $resultset);
-        $this->assertInstanceOf(SavedSearch::class, current($resultset));
-
-        foreach ($resultset as $record) {
-            $this->assertEquals($entity->get('model'), $record->model);
-        }
     }
 }

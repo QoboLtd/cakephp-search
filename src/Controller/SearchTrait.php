@@ -11,6 +11,11 @@
  */
 namespace Search\Controller;
 
+deprecationWarning(
+    '"Search\Controller\SearchTrait" trait is deprecated. To continue using it copy the ' .
+    'file to your application and use it from there instead'
+);
+
 use Cake\Core\Configure;
 use Cake\Datasource\RepositoryInterface;
 use Cake\Datasource\ResultSetInterface;
@@ -80,7 +85,7 @@ trait SearchTrait
 
         $entity = $search->get($id);
 
-        $searchData = json_decode($entity->get('content'), true);
+        $searchData = $entity->get('content');
 
         // return json response and skip any further processing.
         if ($this->request->is('ajax') && $this->request->accepts('application/json')) {
@@ -99,13 +104,22 @@ trait SearchTrait
         $search->reset($entity);
 
         $this->set('searchableFields', Utility::instance()->getSearchableFields($table, $this->Auth->user()));
-        $this->set('savedSearches', $searchTable->getSavedSearches([$this->Auth->user('id')], [$model]));
+
+        $savedSearches = $searchTable->find('all')
+            ->where([
+                'SavedSearches.name IS NOT' => null,
+                'SavedSearches.system' => false,
+                'SavedSearches.user_id' => $this->Auth->user('id'),
+                'SavedSearches.model' => $model
+            ])
+            ->toArray();
+
+        $this->set('savedSearches', $savedSearches);
         $this->set('model', $model);
         $this->set('searchData', $searchData);
         $this->set('savedSearch', $entity);
         $this->set('preSaveId', $search->create($searchData));
         // INFO: this is valid when a saved search was modified and the form was re-submitted
-        $this->set('isEditable', $searchTable->isEditable($entity));
         $this->set('searchOptions', SearchOptions::get());
         $this->set('associationLabels', Utility::instance()->getAssociationLabels($table));
 

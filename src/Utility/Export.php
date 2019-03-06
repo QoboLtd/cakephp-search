@@ -87,8 +87,7 @@ class Export
          * @var \Search\Model\Entity\SavedSearch
          */
         $savedSearch = TableRegistry::get('Search.SavedSearches')->get($id);
-
-        $data = json_decode($savedSearch->get('content'), true);
+        $data = $savedSearch->get('content');
         $data = isset($data['latest']) ? $data['latest'] : [];
 
         $search = new Search(

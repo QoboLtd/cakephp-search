@@ -11,8 +11,12 @@
  */
 namespace Search\Model\Table;
 
+use ArrayObject;
+use Cake\Database\Schema\TableSchema;
+use Cake\Event\Event;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use Qobo\Utils\ModuleConfig\ConfigType;
 use Qobo\Utils\ModuleConfig\ModuleConfig;
@@ -48,6 +52,16 @@ class SavedSearchesTable extends Table
     }
 
     /**
+     * {@inheritDoc}
+     */
+    protected function _initializeSchema(TableSchema $schema) : TableSchema
+    {
+        $schema->setColumnType('content', 'json');
+
+        return $schema;
+    }
+
+    /**
      * Default validation rules.
      *
      * @param \Cake\Validation\Validator $validator Validator instance.
@@ -70,7 +84,20 @@ class SavedSearchesTable extends Table
 
         $validator
             ->requirePresence('content', 'create')
-            ->notEmpty('content');
+            ->notEmpty('content')
+            ->isArray('content')
+            ->add('content', 'validateSaved', [
+                'rule' => function ($value, $context) {
+                    return is_array($value) ? array_key_exists('saved', $value) : false;
+                },
+                'message' => 'Missing required key "saved"'
+            ])
+            ->add('content', 'validateLatest', [
+                'rule' => function ($value, $context) {
+                    return is_array($value) ? array_key_exists('latest', $value) : false;
+                },
+                'message' => 'Missing required key "latest"'
+            ]);
 
         return $validator;
     }
@@ -91,43 +118,20 @@ class SavedSearchesTable extends Table
     }
 
     /**
-     * Returns saved searches filtered by users and models.
+     * Structures "content" data to suported format.
      *
-     * @param  mixed[]  $users  users ids
-     * @param  mixed[]  $models models names
-     * @return mixed[]
+     * @param \Cake\Event\Event $event Event object
+     * @param \ArrayObject $data Request data
+     * @param \ArrayObject $options Marshaller options
+     * @return void
      */
-    public function getSavedSearches(array $users = [], array $models = []): array
+    public function beforeMarshal(Event $event, ArrayObject $data, ArrayObject $options) : void
     {
-        $conditions = [
-            'SavedSearches.name IS NOT' => null,
-            'SavedSearches.system' => false
-        ];
-
-        if (!empty($users)) {
-            $conditions['SavedSearches.user_id IN'] = $users;
+        $saved = Hash::get($data, 'content.saved', false);
+        $latest = Hash::get($data, 'content.latest', false);
+        if (false === $latest && false !== $saved) {
+            $data['content']['latest'] = $saved;
         }
-
-        if (!empty($models)) {
-            $conditions['SavedSearches.model IN'] = $models;
-        }
-
-        $query = $this->find('all', [
-            'conditions' => $conditions
-        ]);
-
-        return $query->toArray();
-    }
-
-    /**
-     * Validate if search is editable.
-     *
-     * @param \Search\Model\Entity\SavedSearch $entity Search entity
-     * @return bool
-     */
-    public function isEditable(SavedSearch $entity): bool
-    {
-        return (bool)$entity->get('name');
     }
 
     /**
@@ -135,9 +139,14 @@ class SavedSearchesTable extends Table
      *
      * @param  string $tableName Table name.
      * @return bool
+     * @deprecated 20.0.0 This should be handled by the application/business logic.
      */
     public function isSearchable(string $tableName): bool
     {
+        deprecationWarning(
+            __METHOD__ . '() is deprecated. This should be handled by the application/business logic.'
+        );
+
         list(, $tableName) = pluginSplit($tableName);
 
         $config = (new ModuleConfig(ConfigType::MODULE(), $tableName))->parse();

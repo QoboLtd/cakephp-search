@@ -93,7 +93,8 @@ new Vue({
                 dataType: 'json',
                 url: '/search/widgets/index',
                 headers: {
-                    'Authorization': 'Bearer ' + this.token
+                    'Authorization': 'Bearer ' + this.token,
+                    'X-CSRF-Token': document.cookie.match(new RegExp('csrfToken=([^;]+)'))[1]
                 }
             }).then(function (response) {
                 that.elements = response;

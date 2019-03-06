@@ -11,6 +11,10 @@
  */
 namespace Search\Utility;
 
+deprecationWarning(
+    '"Search\Utility\Search" class is deprecated. Use "Search\Model\Behavior\SearchableBehavior" instead'
+);
+
 use Cake\Database\Expression\Comparison;
 use Cake\Database\Expression\IdentifierExpression;
 use Cake\Database\Type;
@@ -22,7 +26,6 @@ use Cake\Http\ServerRequest;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
-use DateTime;
 use InvalidArgumentException;
 use Search\Event\EventName;
 use Search\Model\Entity\SavedSearch;
@@ -30,11 +33,6 @@ use Search\Utility;
 
 class Search
 {
-    /**
-     * Delete older than value
-     */
-    const DELETE_OLDER_THAN = '-3 hours';
-
     /**
      * Group by count field
      */
@@ -161,8 +159,7 @@ class Search
          * @var \Search\Model\Entity\SavedSearch
          */
         $entity = $this->searchTable->get($id);
-        $content = json_decode($entity->get('content'), true);
-        $entity = $this->normalize($entity, $content, $searchData);
+        $entity = $this->normalize($entity, $entity->get('content'), $searchData);
 
         return $this->searchTable->save($entity);
     }
@@ -180,8 +177,7 @@ class Search
          * @var \Search\Model\Entity\SavedSearch
          */
         $entity = $this->searchTable->get($id);
-        $content = json_decode($entity->get('content'), true);
-        $entity = $this->normalize($entity, $content, $content);
+        $entity = $this->normalize($entity, $entity->get('content'), $entity->get('content'));
 
         return $entity;
     }
@@ -194,7 +190,7 @@ class Search
      */
     public function reset(SavedSearch $entity) : ?SavedSearch
     {
-        $content = json_decode($entity->get('content'), true);
+        $content = $entity->get('content');
 
         // for backward compatibility
         $saved = isset($content['saved']) ? $content['saved'] : $content;
@@ -520,9 +516,6 @@ class Search
      */
     protected function preSave(array $data): string
     {
-        // delete old pre-saved searches
-        $this->deletePreSaved();
-
         /**
          * @var \Search\Model\Entity\SavedSearch
          */
@@ -578,21 +571,8 @@ class Search
 
         $entity->set('user_id', $this->user['id']);
         $entity->set('model', $this->table->getRegistryAlias());
-        $entity->set('content', json_encode(['saved' => $saved, 'latest' => $latest]));
+        $entity->set('content', ['saved' => $saved, 'latest' => $latest]);
 
         return $entity;
-    }
-
-    /**
-     * Method that deletes old pre-save search records.
-     *
-     * @return void
-     */
-    protected function deletePreSaved(): void
-    {
-        $this->searchTable->deleteAll([
-            'modified <' => new DateTime(static::DELETE_OLDER_THAN),
-            'name IS' => null
-        ]);
     }
 }

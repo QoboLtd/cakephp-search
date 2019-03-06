@@ -22,6 +22,7 @@ class DashboardsControllerTest extends IntegrationTestCase
         'plugin.CakeDC/Users.users',
         'plugin.groups.groups',
         'plugin.groups.groups_users',
+        'plugin.search.articles',
         'plugin.search.dashboards',
         'plugin.search.saved_searches',
         'plugin.search.widgets',

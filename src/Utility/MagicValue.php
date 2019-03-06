@@ -14,6 +14,11 @@ namespace Search\Utility;
 use Cake\I18n\Time;
 use InvalidArgumentException;
 
+deprecationWarning(
+    '"Search\Utility\MagicValue" class is deprecated. To continue using it copy the ' .
+    'file to your application and use it from there instead'
+);
+
 /**
  * Class responsible for generating Magic values.
  */
