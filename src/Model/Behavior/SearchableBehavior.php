@@ -40,7 +40,7 @@ class SearchableBehavior extends Behavior
      * Search finder method.
      *
      * @param \Cake\ORM\Query $query The query object to apply the finder options to
-     * @param array $options List of options to pass to the finder
+     * @param mixed[] $options List of options to pass to the finder
      * @return \Cake\ORM\Query
      */
     public function findSearch(Query $query, array $options) : Query

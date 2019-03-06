@@ -64,7 +64,7 @@ class SearchableBehaviorTest extends TestCase
 
     /**
      * @dataProvider booleanValueProvider
-     * @param mixed
+     * @param mixed $value
      * @return void
      */
     public function testFindSearchWithBoolean($value) : void

@@ -11,7 +11,9 @@
  */
 namespace Search\Controller;
 
+use Cake\Datasource\EntityInterface;
 use Search\Controller\AppController;
+use Webmozart\Assert\Assert;
 
 /**
  * SavedSearches Controller
@@ -72,7 +74,7 @@ class SavedSearchesController extends AppController
         $this->request->allowMethod('post');
 
         $entity = $this->SavedSearches->newEntity();
-        $entity = $this->SavedSearches->patchEntity($entity, $this->request->getData());
+        $entity = $this->SavedSearches->patchEntity($entity, (array)$this->request->getData());
         $success = (bool)$this->SavedSearches->save($entity);
 
         $this->set('success', $success);
@@ -99,7 +101,8 @@ class SavedSearchesController extends AppController
 
         $success = false;
         if (null !== $entity) {
-            $entity = $this->SavedSearches->patchEntity($entity, $this->request->getData());
+            Assert::isInstanceOf($entity, EntityInterface::class);
+            $entity = $this->SavedSearches->patchEntity($entity, (array)$this->request->getData());
             $success = (bool)$this->SavedSearches->save($entity);
         }
 
@@ -127,7 +130,8 @@ class SavedSearchesController extends AppController
 
         $success = false;
         if (null !== $entity) {
-            $success = (bool)$this->SavedSearches->delete($entity);
+            Assert::isInstanceOf($entity, EntityInterface::class);
+            $success = $this->SavedSearches->delete($entity);
         }
 
         $this->set('success', $success);

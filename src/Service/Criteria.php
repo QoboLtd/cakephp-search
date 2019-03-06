@@ -65,7 +65,7 @@ final class Criteria
      * @return void
      * @throws \InvalidArgumentException When invalid/incomplete data are provided
      */
-    private function validate(array $data)
+    private function validate(array $data) : void
     {
         $diff = array_diff(self::REQUIRED_PARAMS, array_keys($data));
 

@@ -165,6 +165,11 @@ final class Search
         }
     }
 
+    /**
+     * Get required associations based on current search criteria.
+     *
+     * @return mixed[]
+     */
     private function getAssociations() : array
     {
         $result = [];
@@ -184,6 +189,11 @@ final class Search
         return $result;
     }
 
+    /**
+     * Get search query fields from criteria and select clause.
+     *
+     * @return string[]
+     */
     private function getQueryFields() : array
     {
         $result = [];
