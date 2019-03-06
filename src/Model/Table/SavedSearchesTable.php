@@ -11,9 +11,12 @@
  */
 namespace Search\Model\Table;
 
+use ArrayObject;
 use Cake\Database\Schema\TableSchema;
+use Cake\Event\Event;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use Qobo\Utils\ModuleConfig\ConfigType;
 use Qobo\Utils\ModuleConfig\ModuleConfig;
@@ -91,7 +94,6 @@ class SavedSearchesTable extends Table
             ])
             ->add('content', 'validateLatest', [
                 'rule' => function ($value, $context) {
-
                     return is_array($value) ? array_key_exists('latest', $value) : false;
                 },
                 'message' => 'Missing required key "latest"'
@@ -113,6 +115,23 @@ class SavedSearchesTable extends Table
         #$rules->add($rules->existsIn(['user_id'], 'Users'));
 
         return $rules;
+    }
+
+    /**
+     * Structures "content" data to suported format.
+     *
+     * @param \Cake\Event\Event $event Event object
+     * @param \ArrayObject $data Request data
+     * @param \ArrayObject $options Marshaller options
+     * @return void
+     */
+    public function beforeMarshal(Event $event, ArrayObject $data, ArrayObject $options) : void
+    {
+        $saved = Hash::get($data, 'content.saved', false);
+        $latest = Hash::get($data, 'content.latest', false);
+        if (false === $latest && false !== $saved) {
+            $data['content']['latest'] = $saved;
+        }
     }
 
     /**
