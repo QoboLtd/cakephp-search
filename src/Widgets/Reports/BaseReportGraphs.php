@@ -123,6 +123,19 @@ abstract class BaseReportGraphs implements ReportGraphsInterface
     }
 
     /**
+     * setOptions
+     *
+     * Setting report options
+     *
+     * @param mixed[] $data of report.
+     * @return void
+     */
+    public function setOptions(array $data = []) : void
+    {
+        $this->options = $data;
+    }
+
+    /**
      * setData method.
      *
      * @param mixed[] $data for the report widget.
