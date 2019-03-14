@@ -97,6 +97,17 @@ class ReportWidget extends BaseWidget
     }
 
     /**
+     * Setting report options to the report instance.
+     *
+     * @param mixed[] $options to be set for config property.
+     * @return void
+     */
+    public function setOptions(array $options) : void
+    {
+        $this->_instance->setOptions($options);
+    }
+
+    /**
      * Method retrieves all reports from ini files
      *
      * Basic reports getter that uses Events
@@ -215,6 +226,11 @@ class ReportWidget extends BaseWidget
         }
 
         $result = $this->getQueryData($config);
+
+        if (!empty($result)) {
+            $this->_instance->getChartData($result);
+            $this->setOptions(['scripts' => $this->_instance->getScripts()]);
+        }
 
         return $result;
     }
