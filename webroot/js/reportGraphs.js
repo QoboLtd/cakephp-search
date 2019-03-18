@@ -171,6 +171,9 @@
 
     var charts = [];
     window.chartsData.forEach(function (data) {
+        if ( typeof data.options == 'undefined') {
+            return;
+        }
         var id = data.options.element;
         var isVisible = (!$('a[href="#' + id + '"]').data('toggle') || $('#' + id).hasClass('active'));
 
