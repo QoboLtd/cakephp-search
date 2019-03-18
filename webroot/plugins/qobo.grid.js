@@ -89,12 +89,11 @@ new Vue({
             let types = [];
             let models = [];
             $.ajax({
-                type: 'post',
+                type: 'get',
                 dataType: 'json',
                 url: '/search/widgets/index',
                 headers: {
                     'Authorization': 'Bearer ' + this.token,
-                    'X-CSRF-Token': document.cookie.match(new RegExp('csrfToken=([^;]+)'))[1]
                 }
             }).then(function (response) {
                 that.elements = response;
