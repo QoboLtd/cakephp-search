@@ -99,13 +99,12 @@
 
             $.ajax({
                 url: this.ajax.url,
-                method: 'POST',
+                method: 'GET',
                 headers: {
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
                     Authorization: 'Bearer ' + this.ajax.token
                 },
-                data: JSON.stringify(this.ajax.data),
                 success: function (data, textStatus, jqXHR) {
                     // remove placeholder
                     $('#' + placeholder.id).remove();
