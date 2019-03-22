@@ -11,6 +11,7 @@
  */
 namespace Search\Widgets\Reports;
 
+use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
 
 class BarChartReportWidget extends BaseReportGraphs
@@ -29,33 +30,52 @@ class BarChartReportWidget extends BaseReportGraphs
      */
     public function getChartData(array $data = []) : array
     {
-        $labels = [];
+        // $labels = [];
         $report = $this->config;
+
+        $columns = explode(',', $report['info']['columns']);
+        $label = Hash::extract($data, '{n}.' . $columns[1]);
+        $data = (array)Hash::extract($data, '{n}.' . $columns[0]);
+
+        $colors = $this->getChartColors(count($data), $this->getContainerId());
+
+        $newChart = [
+            "type" => "bar",
+            "data" =>
+            [
+                "labels" => $label,
+                "datasets" => [[
+                                    "backgroundColor" => $colors,
+                                    "borderColor" => '#c0c0c0',
+                                    "data" => $data
+                                ]]
+            ],
+            "options" =>
+            [
+                "legend" => [
+                    "display" => false,
+                ],
+                "scales" =>
+                [
+                    "yAxes" => [[
+                        "ticks" =>
+                        [
+                            "beginAtZero" => true
+                        ]
+                    ]]
+                ]
+            ]
+        ];
 
         $chartData = [
             'chart' => $this->type,
+            'id' => $this->getContainerId(),
             'options' => [
-                'element' => $this->getContainerId(),
                 'resize' => true,
-                'hideHover' => true
+                'hideHover' => true,
+                'dataChart' => $newChart,
             ],
         ];
-
-        $columns = explode(',', $report['info']['columns']);
-
-        foreach ($columns as $column) {
-            array_push($labels, Inflector::humanize($column));
-        }
-
-        $options = [
-            'data' => $data,
-            'barColors' => $this->getChartColors(),
-            'labels' => $labels,
-            'xkey' => explode(',', $report['info']['x_axis']),
-            'ykeys' => explode(',', $report['info']['y_axis'])
-        ];
-
-        $chartData['options'] = array_merge($chartData['options'], $options);
 
         if (!empty($data)) {
             $this->setData($chartData);
@@ -76,18 +96,11 @@ class BarChartReportWidget extends BaseReportGraphs
     {
         return [
             'post' => [
-                'css' => [
-                    'type' => 'css',
-                    'content' => [
-                        'AdminLTE./bower_components/morris.js/morris',
-                    ],
-                    'block' => 'css',
-                ],
                 'javascript' => [
                     'type' => 'script',
                     'content' => [
                         'https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js',
-                        'AdminLTE./bower_components/morris.js/morris.min',
+                        'Search./plugins/Chart.min.js',
                     ],
                     'block' => 'scriptBottom',
                 ],

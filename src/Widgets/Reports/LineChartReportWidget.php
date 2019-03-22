@@ -48,7 +48,6 @@ class LineChartReportWidget extends BaseReportGraphs
         }
         $options = [
             'data' => $data,
-            'lineColors' => $this->getChartColors(),
             'labels' => $labels,
             'xkey' => explode(',', $report['info']['x_axis']),
             'ykeys' => explode(',', $report['info']['y_axis'])

@@ -61,33 +61,6 @@ abstract class BaseReportGraphs implements ReportGraphsInterface
     }
 
     /**
-     * Get Chart Colors for the graph
-     *
-     * @throws \RuntimeException Color doesn't match HEX notation.
-     * @return mixed[] $result with colors in hex.
-     */
-    public function getChartColors() : array
-    {
-        if (! isset($this->config['info']['colors'])) {
-            return $this->chartColors;
-        }
-
-        $colors = array_filter(explode(',', $this->config['info']['colors']));
-        if (empty($colors)) {
-            return $this->chartColors;
-        }
-
-        // validate provided colors
-        foreach ($colors as $color) {
-            if (! preg_match('/^#[a-f0-9]{6}$/i', $color)) {
-                throw new RuntimeException("Color {$color} doesn't match HEX notation");
-            }
-        }
-
-        return $colors;
-    }
-
-    /**
      * setContainerId method.
      * Sets the placeholder unique identifier for
      * the widget.
@@ -210,5 +183,50 @@ abstract class BaseReportGraphs implements ReportGraphsInterface
     public function getScripts(array $data = []) : array
     {
         return [];
+    }
+
+    /**
+     * Generate an array whit the colors for the chars.
+     *
+     * @param  int     $count    How many element in the array.
+     * @param  string  $myString The color have to be calculated on a
+     *                           fix string to be constant in every refresh.
+     * @param  string  $color    Define a fix color.
+     * @param  bool    $shade    Shade the default color with another
+     *                           generated one. If false, all the element will have the some color.
+     * @return string[]
+     */
+    public function getChartColors(int $count, string $myString, string $color = "", bool $shade = true) : array
+    {
+        $grad = [];
+        // Generate first color
+        $color = empty($color && !preg_match('/^[a-f0-9]{6}$/i', $color)) ? substr(dechex(crc32($myString)), 0, 6) : $color;
+        if ($shade) {
+            list($r, $g, $b) = array_map(function ($n) {
+                return hexdec($n);
+            }, str_split($color, 2));
+
+            // Generate second color
+            $color2 = substr(dechex(crc32($myString . ' ')), 0, 6);
+            list($r2, $g2, $b2) = array_map(function ($n) {
+                return hexdec($n);
+            }, str_split($color2, 2));
+
+            $rl = ( $r2 - $r) / $count - 1;
+            $gl = ( $g2 - $g) / $count - 1;
+            $bl = ( $b2 - $b) / $count - 1;
+
+            for ($i = 0; $i < $count; $i++) {
+                $grad[] = '#' . str_pad(dechex($r + $rl * $i), 2, "0", 0) . str_pad(dechex($g + $gl * $i), 2, "0", 0) . str_pad(dechex($b + $bl * $i), 2, "0", 0);
+            }
+
+            return $grad;
+        }
+
+        for ($i = 0; $i < $count; $i++) {
+            $grad[] = '#' . $color;
+        }
+
+        return $grad;
     }
 }
