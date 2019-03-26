@@ -52,7 +52,7 @@ class BarChartReportWidget extends BaseReportGraphs
         }
 
         $newChart = [
-            "type" => "bar",
+            "type" => empty($this->config['info']['chart']) ? "bar" : $this->config['info']['chart'],
             "data" =>
             [
                 "labels" => $label,
@@ -66,18 +66,16 @@ class BarChartReportWidget extends BaseReportGraphs
                 "scales" =>
                 [
                     "yAxes" => [[
-                        "stacked" => $num_col > 2 ? true : false,
                         "ticks" =>
                         [
                             "beginAtZero" => true
                         ]
                     ]],
-                    "xAxes" => [[
-                        "stacked" => $num_col > 2 ? true : false
-                    ]]
                 ]
             ]
         ];
+
+        $newChart['options'] = !empty($this->config['info']['options']) ? Hash::merge($newChart['options'], $this->config['info']['options']) : $newChart['options'];
 
         $chartData = [
             'chart' => $this->type,
