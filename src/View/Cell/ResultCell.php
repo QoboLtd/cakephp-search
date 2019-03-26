@@ -147,7 +147,7 @@ final class ResultCell extends Cell
     private function getTableId(): string
     {
         if ('' === $this->tableId) {
-            $this->tableId = 'table-datatable-' . uniqid();
+            $this->tableId = 'table-datatable-' . md5($this->preSaveId);
         }
 
         return $this->tableId;

@@ -94,9 +94,12 @@
 
             $.ajax({
                 url: this.ajax.url,
-                type: 'get',
-                dataType: 'json',
-                contentType: 'application/json',
+                method: 'GET',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    Authorization: 'Bearer ' + this.ajax.token
+                },
                 success: function (data, textStatus, jqXHR) {
                     // remove placeholder
                     $('#' + placeholder.id).remove();
@@ -186,11 +189,11 @@
 
         getColor : function (count) {
             var result = [];
-            var colorGradients = ["#FF8A8A","#FF86E3","#FF86C2","#FE8BF0","#EA8DFE","#DD88FD","#AD8BFE","#FF9797","#FF97E8","#FF97CB","#FE98F1","#ED9EFE","#E29BFD","#B89AFE","#FFA8A8","#FFACEC","#FFA8D3","#FEA9F3","#EFA9FE","#E7A9FE","#C4ABFE","#FFBBBB","#FFACEC","#FFBBDD","#FFBBF7","#F2BCFE","#EDBEFE","#D0BCFE","#FF4AFF","#DD75DD","#C269FE","#AE70ED","#A095EE","#7BA7E1","#57BCD9","#FF86FF","#E697E6","#CD85FE","#C79BF2","#B0A7F1","#8EB4E6","#7BCAE1","#FFA4FF","#EAA6EA","#D698FE","#CEA8F4","#BCB4F3","#A9C5EB","#8CD1E6","#FFBBFF","#EEBBEE","#DFB0FF","#DBBFF7","#CBC5F5","#BAD0EF","#A5DBEB","#8C8CFF","#99C7FF","#99E0FF","#63E9FC","#74FEF8","#62FDCE","#72FE95","#9999FF","#99C7FF","#A8E4FF","#75ECFD","#92FEF9","#7DFDD7","#8BFEA8","#AAAAFF","#A8CFFF","#BBEBFF","#8CEFFD","#A5FEFA","#8FFEDD","#A3FEBA","#EAEA8A","#F7DE00","#FFD34F","#FFBE28","#FFCE73","#FFBB7D","#FFBD82","#EEEEA2","#FFE920","#FFDD75","#FFC848","#FFD586","#FFC48E","#FFC895","#F1F1B1","#FFF06A","#FFE699","#FFD062","#FFDEA2","#FFCFA4","#FFCEA2","#FF7373","#E37795","#D900D9","#BA21E0","#8282FF","#4FBDDD","#8DC7BB","#FF8E8E","#E994AB","#FF2DFF","#CB59E8","#9191FF","#67C7E2","#A5D3CA","#FFA4A4","#EDA9BC","#F206FF","#CB59E8","#A8A8FF","#8ED6EA","#C0E0DA"];
-
-            var num = Math.floor(Math.random() * (colorGradients.length - 20) );
+            var colorGradients = ["#ff9a00","#ff165d","#f6f7d7","#3ec1d3","#521262","#6639a6","#3490de","#6fe7dd","#a4f6a5","#f1eb9a","#f8a978","#f68787","#e88a1a","#35477d","#a06ee1","#fcd307","#007880","#c7004c","#e3c4a8","#77628c","#5893d4","#30e3ca","#f8f3d4","#ffcfdf","#3f72af","#f73859","#61c0bf","#6639a6","#00e0ff","#d4a5a5","#dde7f2","#55e9bc","#d72323","#ff9a00"];
+            // Quick hash function to get a unique number from a string
+            let unique = Math.abs(this.id.split("").reduce(function(a,b){a=((a<<5)-a)+b.charCodeAt(0);return a&a},0)) % colorGradients.length;
             for (let i = 0; i < count ; i++) {
-                result.push(colorGradients[num + i])
+                result.push(colorGradients[(unique + i) % colorGradients.length ])
             }
 
             return result;
@@ -218,7 +221,6 @@
 
     var charts = [];
     window.chartsData.forEach(function (data) {
-        console.log(data)
         var id = data.id;
         var isVisible = (!$('a[href="#' + id + '"]').data('toggle') || $('#' + id).hasClass('active'));
         if (isVisible) {

@@ -191,17 +191,17 @@ abstract class BaseReportGraphs implements ReportGraphsInterface
      * @param  int     $count    How many element in the array.
      * @param  string  $myString The color have to be calculated on a
      *                           fix string to be constant in every refresh.
-     * @param  string  $color    Define a fix color.
      * @param  bool    $shade    Shade the default color with another
-     *                           generated one. If false, all the element will have the some color.
+     *                           generated one. If false, the colors will be from a pre-set palette.
      * @return string[]
      */
-    public function getChartColors(int $count, string $myString, string $color = "", bool $shade = true) : array
+    public function getChartColors(int $count, string $myString, bool $shade = true) : array
     {
         $grad = [];
+
         // Generate first color
-        $color = empty($color && !preg_match('/^[a-f0-9]{6}$/i', $color)) ? substr(dechex(crc32($myString)), 0, 6) : $color;
         if ($shade) {
+            $color = substr(dechex(crc32($myString)), 0, 6);
             list($r, $g, $b) = array_map(function ($n) {
                 return hexdec($n);
             }, str_split($color, 2));
@@ -216,6 +216,7 @@ abstract class BaseReportGraphs implements ReportGraphsInterface
             $gl = ( $g2 - $g) / $count - 1;
             $bl = ( $b2 - $b) / $count - 1;
 
+            // Create a shade from the first color to the second
             for ($i = 0; $i < $count; $i++) {
                 $grad[] = '#' . str_pad(dechex($r + $rl * $i), 2, "0", 0) . str_pad(dechex($g + $gl * $i), 2, "0", 0) . str_pad(dechex($b + $bl * $i), 2, "0", 0);
             }
@@ -223,8 +224,11 @@ abstract class BaseReportGraphs implements ReportGraphsInterface
             return $grad;
         }
 
+        // Set of different colors from https://colorhunt.co/palettes/popular
+        $my_palette = ["#ff9a00", "#ff165d", "#f6f7d7", "#3ec1d3", "#521262", "#6639a6", "#3490de", "#6fe7dd", "#a4f6a5", "#f1eb9a", "#f8a978", "#f68787", "#e88a1a", "#35477d", "#a06ee1", "#fcd307", "#007880", "#c7004c", "#e3c4a8", "#77628c", "#5893d4", "#30e3ca", "#f8f3d4", "#ffcfdf", "#3f72af", "#f73859", "#61c0bf", "#6639a6", "#00e0ff", "#d4a5a5", "#dde7f2", "#55e9bc", "#d72323", "#ff9a00"];
+
         for ($i = 0; $i < $count; $i++) {
-            $grad[] = '#' . $color;
+            $grad[] = $my_palette[(crc32($myString) + $i) % count($my_palette)];
         }
 
         return $grad;

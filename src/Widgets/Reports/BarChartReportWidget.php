@@ -30,38 +30,50 @@ class BarChartReportWidget extends BaseReportGraphs
      */
     public function getChartData(array $data = []) : array
     {
-        // $labels = [];
         $report = $this->config;
 
-        $columns = explode(',', $report['info']['columns']);
-        $label = Hash::extract($data, '{n}.' . $columns[1]);
-        $data = (array)Hash::extract($data, '{n}.' . $columns[0]);
+        // We suppose that in the x_axis are the values with labels
+        $label_column_name = $report['info']['x_axis'];
+        $label = Hash::extract($data, '{n}.' . $label_column_name);
 
-        $colors = $this->getChartColors(count($data), $this->getContainerId());
+        $columns = explode(',', $report['info']['columns']);
+
+        // Check if is a multiple set of data.
+        $datasets = [];
+        $num_col = count($columns);
+        for ($i = 0; $i < $num_col - 1; $i++) {
+            // If the chart is multiple bar or stackbar is better to not have shaded colors.
+            $colors = $this->getChartColors(count($data), $this->getContainerId() . $i, $num_col > 2 ? false : true);
+            $datasets[] = [
+                "label" => Inflector::humanize($columns[$i]),
+                "backgroundColor" => $num_col > 2 ? $colors[0] : $colors,
+                "data" => (array)Hash::extract($data, '{n}.' . $columns[$i])
+            ];
+        }
 
         $newChart = [
             "type" => "bar",
             "data" =>
             [
                 "labels" => $label,
-                "datasets" => [[
-                                    "backgroundColor" => $colors,
-                                    "borderColor" => '#c0c0c0',
-                                    "data" => $data
-                                ]]
+                "datasets" => $datasets
             ],
             "options" =>
             [
                 "legend" => [
-                    "display" => false,
+                    "display" => true,
                 ],
                 "scales" =>
                 [
                     "yAxes" => [[
+                        "stacked" => $num_col > 2 ? true : false,
                         "ticks" =>
                         [
                             "beginAtZero" => true
                         ]
+                    ]],
+                    "xAxes" => [[
+                        "stacked" => $num_col > 2 ? true : false
                     ]]
                 ]
             ]
