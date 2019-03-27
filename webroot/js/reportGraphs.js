@@ -138,17 +138,16 @@
                         parseData.push($('<div>').html(data[k][num]).text());
                     });
                     data = {
-                        type : "pie",
-                        data : {
-                            datasets : [
-                                {
-                                    data : parseData,
-                                    backgroundColor : this.getColor(parseData.length)
-                                }
-                            ],
-                            labels : parseLabel
+                        type: "pie",
+                        data: {
+                            datasets: [{
+                                data: parseData,
+                                backgroundColor: this.getColor(parseData.length)
+                            }],
+                            labels: parseLabel
                         }
                     };
+
                     break;
                 case 'barChart':
                     label = that.options.xkey[0];
@@ -158,17 +157,15 @@
                         parseData.push($('<div>').html(data[k][num]).text());
                     });
                     data = {
-                        type : "bar",
-                        data : {
-                            datasets : [
-                                {
-                                    data : parseData,
-                                    backgroundColor : this.getColor(parseData.length)
-                                }
-                            ],
-                            labels : parseLabel
+                        type: "bar",
+                        data: {
+                            datasets: [{
+                                data: parseData,
+                                backgroundColor: this.getColor(parseData.length)
+                            }],
+                            labels: parseLabel
                         },
-                        options : {
+                        options: {
                             legend: {
                                 display: false
                             },
@@ -181,6 +178,7 @@
                             }
                         }
                     };
+
                     break;
             }
 
@@ -191,8 +189,13 @@
             var result = [];
             var colorGradients = ["#ff9a00","#ff165d","#f6f7d7","#3ec1d3","#521262","#6639a6","#3490de","#6fe7dd","#a4f6a5","#f1eb9a","#f8a978","#f68787","#e88a1a","#35477d","#a06ee1","#fcd307","#007880","#c7004c","#e3c4a8","#77628c","#5893d4","#30e3ca","#f8f3d4","#ffcfdf","#3f72af","#f73859","#61c0bf","#6639a6","#00e0ff","#d4a5a5","#dde7f2","#55e9bc","#d72323","#ff9a00"];
             // Quick hash function to get a unique number from a string
-            let unique = Math.abs(this.id.split("").reduce(function(a,b){a=((a<<5)-a)+b.charCodeAt(0);return a&a},0)) % colorGradients.length;
-            for (let i = 0; i < count ; i++) {
+            let unique = Math.abs(this.id.split("").reduce(function (a, b) {
+                a = ((a << 5) - a) + b.charCodeAt(0);
+
+                return a & a
+            }, 0)) % colorGradients.length;
+
+            for (let i = 0; i < count; i++) {
                 result.push(colorGradients[(unique + i) % colorGradients.length ])
             }
 
