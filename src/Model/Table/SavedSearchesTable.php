@@ -127,11 +127,8 @@ class SavedSearchesTable extends Table
      */
     public function beforeMarshal(Event $event, ArrayObject $data, ArrayObject $options) : void
     {
-        $saved = Hash::get($data, 'content.saved', false);
-        $latest = Hash::get($data, 'content.latest', false);
-        if (false === $latest && false !== $saved) {
-            $data['content']['latest'] = $saved;
-        }
+        // @todo this will be removed once saved searches table schema is adjusted
+        $data['content']['latest'] = Hash::get($data, 'content.saved', []);
     }
 
     /**
