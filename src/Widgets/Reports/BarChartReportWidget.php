@@ -41,17 +41,18 @@ class BarChartReportWidget extends BaseReportGraphs
         // Check if is a multiple set of data.
         $datasets = [];
         $num_col = count($columns);
+        $is_multicolums = $num_col > 2;
         for ($i = 0; $i < $num_col - 1; $i++) {
             // If the chart is multiple bar or stackbar is better to not have shaded colors.
-            $colors = $this->getChartColors(count($data), $this->getContainerId() . $i, $num_col > 2 ? false : true);
+            $colors = $this->getChartColors(count($data), $this->getContainerId() . $i, !$is_multicolums);
             $datasets[] = [
                 "label" => Inflector::humanize($columns[$i]),
-                "backgroundColor" => $num_col > 2 ? $colors[0] : $colors,
+                "backgroundColor" => $is_multicolums ? $colors[0] : $colors,
                 "data" => (array)Hash::extract($data, '{n}.' . $columns[$i])
             ];
         }
 
-        $newChart = [
+        $chartjs = [
             "type" => empty($this->config['info']['chart']) ? "bar" : $this->config['info']['chart'],
             "data" =>
             [
@@ -65,17 +66,19 @@ class BarChartReportWidget extends BaseReportGraphs
                 ],
                 "scales" =>
                 [
-                    "yAxes" => [[
-                        "ticks" =>
+                    "yAxes" => [
                         [
-                            "beginAtZero" => true
+                            "ticks" =>
+                            [
+                                "beginAtZero" => true
+                            ]
                         ]
-                    ]],
+                    ],
                 ]
             ]
         ];
 
-        $newChart['options'] = !empty($this->config['info']['options']) ? Hash::merge($newChart['options'], $this->config['info']['options']) : $newChart['options'];
+        $chartjs['options'] = !empty($this->config['info']['options']) ? Hash::merge($chartjs['options'], $this->config['info']['options']) : $chartjs['options'];
 
         $chartData = [
             'chart' => $this->type,
@@ -83,7 +86,7 @@ class BarChartReportWidget extends BaseReportGraphs
             'options' => [
                 'resize' => true,
                 'hideHover' => true,
-                'dataChart' => $newChart,
+                'dataChart' => $chartjs,
             ],
         ];
 

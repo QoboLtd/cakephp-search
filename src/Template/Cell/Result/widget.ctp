@@ -12,8 +12,6 @@
 
 use Cake\Utility\Inflector;
 
-// $chartOptions = [$chartOptions[1],$chartOptions[2]];
-
 echo $cakeView->Html->css(
     [
         'Qobo/Utils./plugins/datatables/css/dataTables.bootstrap.min',

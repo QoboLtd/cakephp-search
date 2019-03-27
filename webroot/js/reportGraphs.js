@@ -4,7 +4,7 @@
     /**
      * Chart initializer.
      */
-    function Newchart(chart)
+    function Chartjs(chart)
     {
         this.id = chart.id;
         this.type = chart.chart;
@@ -16,7 +16,7 @@
         return this;
     }
 
-    Newchart.prototype = {
+    Chartjs.prototype = {
 
         /**
          * Initialize method.
@@ -227,7 +227,7 @@
         var id = data.id;
         var isVisible = (!$('a[href="#' + id + '"]').data('toggle') || $('#' + id).hasClass('active'));
         if (isVisible) {
-            new Newchart(data);
+            new Chartjs(data);
             charts.push('#' + data.options.id);
         }
     });
@@ -251,7 +251,7 @@
 
         data = data[0];
         // init chart
-        new Newchart(data);
+        new Chartjs(data);
         charts.push('#' + data.id);
     });
 

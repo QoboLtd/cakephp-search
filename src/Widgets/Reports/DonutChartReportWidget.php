@@ -38,16 +38,17 @@ class DonutChartReportWidget extends BaseReportGraphs
 
         $colors = $this->getChartColors(count($data), $this->getContainerId(), false);
 
-        $newChart = [
+        $chartjs = [
             "type" => "doughnut",
             "data" =>
             [
                 "labels" => $label,
-                "datasets" => [[
-                                    "backgroundColor" => $colors,
-                                    "borderColor" => '#c0c0c0',
-                                    "data" => $data
-                                ]]
+                "datasets" => [
+                    [
+                        "backgroundColor" => $colors,
+                        "data" => $data
+                    ]
+                ]
             ]
         ];
 
@@ -57,7 +58,7 @@ class DonutChartReportWidget extends BaseReportGraphs
             'options' => [
                 'resize' => true,
                 'hideHover' => true,
-                'dataChart' => $newChart,
+                'dataChart' => $chartjs,
             ],
         ];
 

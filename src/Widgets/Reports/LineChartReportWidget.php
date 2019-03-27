@@ -51,7 +51,7 @@ class LineChartReportWidget extends BaseReportGraphs
             ];
         }
 
-        $newChart = [
+        $chartjs = [
             "type" => "line",
             "data" =>
             [
@@ -66,7 +66,7 @@ class LineChartReportWidget extends BaseReportGraphs
             'options' => [
                 'resize' => true,
                 'hideHover' => true,
-                'dataChart' => $newChart,
+                'dataChart' => $chartjs,
             ],
         ];
 
