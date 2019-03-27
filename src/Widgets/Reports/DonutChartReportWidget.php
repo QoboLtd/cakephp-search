@@ -39,7 +39,7 @@ class DonutChartReportWidget extends BaseReportGraphs
         $colors = $this->getChartColors(count($data), $this->getContainerId(), false);
 
         $chartjs = [
-            "type" => "doughnut",
+            "type" => "pie",
             "data" =>
             [
                 "labels" => $label,

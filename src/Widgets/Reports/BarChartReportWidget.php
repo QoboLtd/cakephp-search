@@ -53,7 +53,7 @@ class BarChartReportWidget extends BaseReportGraphs
         }
 
         $chartjs = [
-            "type" => empty($this->config['info']['chart']) ? "bar" : $this->config['info']['chart'],
+            "type" => "bar",
             "data" =>
             [
                 "labels" => $label,

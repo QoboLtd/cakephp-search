@@ -41,6 +41,9 @@
                 case 'barChart':
                 case 'donutChart':
                 case 'lineChart':
+                case 'polarArea':
+                case 'pieChart':
+                case 'horizontalBar':
                     var ctx = document.getElementById("canvas_" + this.id).getContext('2d');
                     var myChart = new Chart(ctx, this.options.dataChart);
                     break;
