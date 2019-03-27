@@ -31,7 +31,6 @@ class BarChartReportWidgetTest extends TestCase
         $this->assertInternalType('array', $content);
         $this->assertNotEmpty($content);
         $this->assertArrayHasKey('post', $content);
-        $this->assertArrayHasKey('css', $content['post']);
         $this->assertArrayHasKey('javascript', $content['post']);
     }
 
@@ -79,8 +78,9 @@ class BarChartReportWidgetTest extends TestCase
         $this->widget->setContainerId($config);
 
         $result = $this->widget->getChartData([]);
-        $this->assertNotEmpty($result['options']['element']);
-        $this->assertNotEmpty($result['options']['barColors']);
+
+        $this->assertNotEmpty($result['id']);
+        $this->assertNotEmpty($result['options']['dataChart']);
 
         //as the data passed in the method is empty
         $this->assertEquals([], $this->widget->getData());
@@ -113,11 +113,13 @@ class BarChartReportWidgetTest extends TestCase
         $this->widget->setContainerId($config);
 
         $result = $this->widget->getChartData($data);
-        $this->assertNotEmpty($result['options']['element']);
-        $this->assertNotEmpty($result['options']['barColors']);
+
+        $this->assertNotEmpty($result['id']);
+        $this->assertNotEmpty($result['options']['dataChart']['data']['labels']);
+        $this->assertNotEmpty($result['options']['dataChart']['data']['datasets']);
 
         //as the data passed in the method is empty
         $this->assertNotEmpty($this->widget->getData());
-        $this->assertEquals(['X', 'Y'], $result['options']['labels']);
+        $this->assertEquals('X', $result['options']['dataChart']['data']['datasets'][0]['label']);
     }
 }

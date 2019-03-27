@@ -200,7 +200,7 @@ abstract class BaseReportGraphs implements ReportGraphsInterface
         $grad = [];
 
         // Generate first color
-        if ($shade) {
+        if ($shade && $count > 0) {
             $color = substr(dechex(crc32($myString)), 0, 6);
             list($r, $g, $b) = array_map(function ($n) {
                 return hexdec($n);

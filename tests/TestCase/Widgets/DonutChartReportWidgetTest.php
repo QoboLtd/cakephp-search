@@ -31,7 +31,6 @@ class DonutChartReportWidgetTest extends TestCase
         $this->assertInternalType('array', $content);
         $this->assertNotEmpty($content);
         $this->assertArrayHasKey('post', $content);
-        $this->assertArrayHasKey('css', $content['post']);
         $this->assertArrayHasKey('javascript', $content['post']);
     }
 
@@ -74,7 +73,7 @@ class DonutChartReportWidgetTest extends TestCase
                 'widget_type' => 'report',
                 'name' => 'Report Bar',
                 'query' => '',
-                'columns' => '',
+                'columns' => 'name,place',
                 'renderAs' => 'donutChart',
                 'y_axis' => '',
                 'x_axis' => ''
@@ -85,8 +84,13 @@ class DonutChartReportWidgetTest extends TestCase
         $this->widget->setContainerId($config);
 
         $result = $this->widget->getChartData($data);
-        $this->assertNotEmpty($result['options']['element']);
 
-        $this->assertEquals($expected, $this->widget->getData());
+        $this->assertNotEmpty($result['id']);
+        $this->assertNotEmpty($result['options']['dataChart']['data']['labels']);
+        $this->assertNotEmpty($result['options']['dataChart']['data']['datasets']);
+
+        //as the data passed in the method is empty
+        $this->assertNotEmpty($this->widget->getData());
+        $this->assertEquals(['bar'], $result['options']['dataChart']['data']['labels']);
     }
 }

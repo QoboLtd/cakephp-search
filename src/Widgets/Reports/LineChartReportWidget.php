@@ -16,7 +16,7 @@ use Cake\Utility\Inflector;
 
 class LineChartReportWidget extends BaseReportGraphs
 {
-    public $type = 'donutChart';
+    public $type = 'lineChart';
 
     public $requiredFields = ['query', 'x_axis', 'columns'];
 
