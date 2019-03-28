@@ -22,7 +22,7 @@ class LineChartReportWidgetTest extends TestCase
 
     public function testGetType(): void
     {
-        $this->assertEquals($this->widget->getType(), 'lineChart');
+        $this->assertEquals($this->widget->getType(), 'line');
     }
 
     public function testGetScripts(): void
@@ -49,7 +49,7 @@ class LineChartReportWidgetTest extends TestCase
         $data = ['name' => 'foo'];
 
         $expected = [
-            'chart' => 'lineChart',
+            'chart' => 'line',
             'id' => 'graph_bar_assigned_by_year',
             'options' => [
                 'resize' => true,

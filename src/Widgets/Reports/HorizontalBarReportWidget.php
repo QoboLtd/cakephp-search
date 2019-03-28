@@ -33,7 +33,6 @@ class HorizontalBarReportWidget extends BarChartReportWidget
         $chartData = parent::getChartData($data);
 
         $chartData["options"]["dataChart"]["type"] = $this->type;
-        $this->setData($chartData);
 
         return $chartData;
     }

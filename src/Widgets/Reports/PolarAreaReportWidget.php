@@ -33,7 +33,6 @@ class PolarAreaReportWidget extends DonutChartReportWidget
         $chartData = parent::getChartData($data);
 
         $chartData["options"]["dataChart"]["type"] = $this->type;
-        $this->setData($chartData);
 
         return $chartData;
     }
