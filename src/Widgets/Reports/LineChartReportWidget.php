@@ -20,6 +20,8 @@ class LineChartReportWidget extends BaseReportGraphs
 
     public $requiredFields = ['query', 'x_axis', 'columns'];
 
+    const CHATJS_TYPE = "line";
+
     /**
      * getChartData method
      *
@@ -52,7 +54,7 @@ class LineChartReportWidget extends BaseReportGraphs
         }
 
         $chartjs = [
-            "type" => "line",
+            "type" => self::CHATJS_TYPE,
             "data" =>
             [
                 "labels" => $label,
