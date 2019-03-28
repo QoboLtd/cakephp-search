@@ -20,7 +20,7 @@ class HorizontalBarReportWidget extends BarChartReportWidget
 
     public $requiredFields = ['query', 'columns', 'x_axis', 'y_axis'];
 
-    const CHATJS_TYPE = "horizontalBar";
+    const CHART_TYPE = "horizontalBar";
 
     /**
      * getChartData method
@@ -34,7 +34,7 @@ class HorizontalBarReportWidget extends BarChartReportWidget
     {
         $chartData = parent::getChartData($data);
 
-        $chartData["options"]["dataChart"]["type"] = self::CHATJS_TYPE;
+        $chartData["options"]["dataChart"]["type"] = self::CHART_TYPE;
         $this->setData($chartData);
 
         return $chartData;

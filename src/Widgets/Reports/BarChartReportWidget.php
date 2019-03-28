@@ -20,7 +20,7 @@ class BarChartReportWidget extends BaseReportGraphs
 
     public $requiredFields = ['query', 'columns', 'x_axis', 'y_axis'];
 
-    const CHATJS_TYPE = "bar";
+    const CHART_TYPE = "bar";
 
     /**
      * getChartData method
@@ -55,7 +55,7 @@ class BarChartReportWidget extends BaseReportGraphs
         }
 
         $chartjs = [
-            "type" => self::CHATJS_TYPE,
+            "type" => self::CHART_TYPE,
             "data" =>
             [
                 "labels" => $label,

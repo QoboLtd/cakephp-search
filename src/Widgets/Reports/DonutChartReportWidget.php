@@ -20,7 +20,7 @@ class DonutChartReportWidget extends BaseReportGraphs
 
     public $requiredFields = ['query', 'columns'];
 
-    const CHATJS_TYPE = "doughnut";
+    const CHART_TYPE = "doughnut";
 
     /**
      * getChartData method
@@ -41,7 +41,7 @@ class DonutChartReportWidget extends BaseReportGraphs
         $colors = $this->getChartColors(count($data), $this->getContainerId(), false);
 
         $chartjs = [
-            "type" => self::CHATJS_TYPE,
+            "type" => self::CHART_TYPE,
             "data" =>
             [
                 "labels" => $label,

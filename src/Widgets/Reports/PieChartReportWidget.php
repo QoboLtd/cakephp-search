@@ -20,7 +20,7 @@ class PieChartReportWidget extends DonutChartReportWidget
 
     public $requiredFields = ['query', 'columns'];
 
-    const CHATJS_TYPE = "pie";
+    const CHART_TYPE = "pie";
 
     /**
      * getChartData method
@@ -34,7 +34,7 @@ class PieChartReportWidget extends DonutChartReportWidget
     {
         $chartData = parent::getChartData($data);
 
-        $chartData["options"]["dataChart"]["type"] = self::CHATJS_TYPE;
+        $chartData["options"]["dataChart"]["type"] = self::CHART_TYPE;
         $this->setData($chartData);
 
         return $chartData;
