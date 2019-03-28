@@ -16,11 +16,9 @@ use Cake\Utility\Inflector;
 
 class PieChartReportWidget extends DonutChartReportWidget
 {
-    public $type = 'pieChart';
+    public $type = 'pie';
 
     public $requiredFields = ['query', 'columns'];
-
-    const CHART_TYPE = "pie";
 
     /**
      * getChartData method
@@ -34,7 +32,7 @@ class PieChartReportWidget extends DonutChartReportWidget
     {
         $chartData = parent::getChartData($data);
 
-        $chartData["options"]["dataChart"]["type"] = self::CHART_TYPE;
+        $chartData["options"]["dataChart"]["type"] = $this->type;
         $this->setData($chartData);
 
         return $chartData;

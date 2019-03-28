@@ -16,11 +16,9 @@ use Cake\Utility\Inflector;
 
 class DonutChartReportWidget extends BaseReportGraphs
 {
-    public $type = 'donutChart';
+    public $type = 'doughnut';
 
     public $requiredFields = ['query', 'columns'];
-
-    const CHART_TYPE = "doughnut";
 
     /**
      * getChartData method
@@ -41,7 +39,7 @@ class DonutChartReportWidget extends BaseReportGraphs
         $colors = $this->getChartColors(count($data), $this->getContainerId(), false);
 
         $chartjs = [
-            "type" => self::CHART_TYPE,
+            "type" => $this->type,
             "data" =>
             [
                 "labels" => $label,

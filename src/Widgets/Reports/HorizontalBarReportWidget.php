@@ -20,8 +20,6 @@ class HorizontalBarReportWidget extends BarChartReportWidget
 
     public $requiredFields = ['query', 'columns', 'x_axis', 'y_axis'];
 
-    const CHART_TYPE = "horizontalBar";
-
     /**
      * getChartData method
      *
@@ -34,7 +32,7 @@ class HorizontalBarReportWidget extends BarChartReportWidget
     {
         $chartData = parent::getChartData($data);
 
-        $chartData["options"]["dataChart"]["type"] = self::CHART_TYPE;
+        $chartData["options"]["dataChart"]["type"] = $this->type;
         $this->setData($chartData);
 
         return $chartData;

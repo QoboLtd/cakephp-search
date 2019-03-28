@@ -38,11 +38,11 @@
          */
         draw: function () {
             switch (this.type) {
-                case 'barChart':
-                case 'donutChart':
-                case 'lineChart':
+                case 'bar':
+                case 'doughnut':
+                case 'line':
                 case 'polarArea':
-                case 'pieChart':
+                case 'pie':
                 case 'horizontalBar':
                     var ctx = document.getElementById("canvas_" + this.id).getContext('2d');
                     var myChart = new Chart(ctx, this.options.dataChart);
@@ -133,7 +133,7 @@
                         data[k].value = parseInt(value);
                     });
                     break;
-                case 'donutChart':
+                case 'doughnut':
                     label = that.options.xkey[0];
                     num = that.options.ykeys[0];
                     data.forEach(function (v, k) {
@@ -152,7 +152,7 @@
                     };
 
                     break;
-                case 'barChart':
+                case 'bar':
                     label = that.options.xkey[0];
                     num = that.options.ykeys[0];
                     data.forEach(function (v, k) {

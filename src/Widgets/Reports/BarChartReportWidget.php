@@ -16,11 +16,9 @@ use Cake\Utility\Inflector;
 
 class BarChartReportWidget extends BaseReportGraphs
 {
-    public $type = 'barChart';
+    public $type = 'bar';
 
     public $requiredFields = ['query', 'columns', 'x_axis', 'y_axis'];
-
-    const CHART_TYPE = "bar";
 
     /**
      * getChartData method
@@ -55,7 +53,7 @@ class BarChartReportWidget extends BaseReportGraphs
         }
 
         $chartjs = [
-            "type" => self::CHART_TYPE,
+            "type" => $this->type,
             "data" =>
             [
                 "labels" => $label,

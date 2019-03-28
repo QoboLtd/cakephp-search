@@ -20,8 +20,6 @@ class PolarAreaReportWidget extends DonutChartReportWidget
 
     public $requiredFields = ['query', 'columns'];
 
-    const CHART_TYPE = "polarArea";
-
     /**
      * getChartData method
      *
@@ -34,7 +32,7 @@ class PolarAreaReportWidget extends DonutChartReportWidget
     {
         $chartData = parent::getChartData($data);
 
-        $chartData["options"]["dataChart"]["type"] = self::CHART_TYPE;
+        $chartData["options"]["dataChart"]["type"] = $this->type;
         $this->setData($chartData);
 
         return $chartData;
