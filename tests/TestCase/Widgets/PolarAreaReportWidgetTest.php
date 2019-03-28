@@ -2,15 +2,15 @@
 namespace Search\Test\TestCase\Widgets;
 
 use Cake\TestSuite\TestCase;
-use Search\Widgets\Reports\DonutChartReportWidget;
+use Search\Widgets\Reports\PolarAreaReportWidget;
 
-class DonutChartReportWidgetTest extends TestCase
+class PolarAreaReportWidgetTest extends TestCase
 {
     public $widget;
 
     public function setUp()
     {
-        $this->widget = new DonutChartReportWidget();
+        $this->widget = new PolarAreaReportWidget();
     }
 
     public function tearDown()
@@ -22,7 +22,7 @@ class DonutChartReportWidgetTest extends TestCase
 
     public function testGetType(): void
     {
-        $this->assertEquals('doughnut', $this->widget->getType());
+        $this->assertEquals('polarArea', $this->widget->getType());
     }
 
     public function testGetScripts(): void
@@ -54,7 +54,7 @@ class DonutChartReportWidgetTest extends TestCase
         ];
 
         $expected = [
-            'chart' => 'doughnut',
+            'chart' => 'polarArea',
             'options' => [
                 'element' => 'graph_bar_assigned_by_year',
                 'resize' => true,
@@ -74,7 +74,7 @@ class DonutChartReportWidgetTest extends TestCase
                 'name' => 'Report Bar',
                 'query' => '',
                 'columns' => 'name,place',
-                'renderAs' => 'donutChart',
+                'renderAs' => 'polarArea',
                 'y_axis' => '',
                 'x_axis' => ''
             ]

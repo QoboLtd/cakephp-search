@@ -127,7 +127,7 @@ class DashboardsController extends AppController
         $widgets = $widgetsTable->getWidgets();
 
         if ($this->request->is('post')) {
-            $data = $this->request->getData();
+            $data = (array)$this->request->getData();
 
             $widgets = [];
 
@@ -215,7 +215,7 @@ class DashboardsController extends AppController
         }
 
         if ($this->request->is(['patch', 'post', 'put'])) {
-            $data = $this->request->getData();
+            $data = (array)$this->request->getData();
 
             $dashboard->unsetProperty('widgets');
 

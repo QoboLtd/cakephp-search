@@ -16,7 +16,7 @@ use Cake\Utility\Inflector;
 
 class LineChartReportWidget extends BaseReportGraphs
 {
-    public $type = 'lineChart';
+    public $type = 'line';
 
     public $requiredFields = ['query', 'x_axis', 'columns'];
 
@@ -52,7 +52,7 @@ class LineChartReportWidget extends BaseReportGraphs
         }
 
         $chartjs = [
-            "type" => "line",
+            "type" => $this->type,
             "data" =>
             [
                 "labels" => $label,

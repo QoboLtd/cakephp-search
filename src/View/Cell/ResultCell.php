@@ -46,8 +46,8 @@ final class ResultCell extends Cell
      */
     private $charts = [
         ['type' => 'funnelChart', 'icon' => 'filter'],
-        ['type' => 'donutChart', 'icon' => 'pie-chart'],
-        ['type' => 'barChart', 'icon' => 'bar-chart']
+        ['type' => 'doughnut', 'icon' => 'pie-chart'],
+        ['type' => 'bar', 'icon' => 'bar-chart']
     ];
 
     /**

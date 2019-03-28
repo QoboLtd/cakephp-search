@@ -90,7 +90,6 @@ class ReportWidgetTest extends TestCase
 
         $instance->setContainerId($config['config']);
 
-        $this->assertEquals($config['config']['info']['renderAs'], $instance->getType());
         $this->assertEquals('graph_' . $config['config']['slug'], $instance->getContainerId());
         $this->assertEquals([], $instance->getOptions());
         $this->assertEquals([], $instance->getData());

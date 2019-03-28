@@ -149,8 +149,8 @@ class DashboardsControllerTest extends IntegrationTestCase
         $this->assertResponseOk();
 
         $this->assertResponseContains('#funnel_chart_table');
-        $this->assertResponseContains('#donut_chart_table');
-        $this->assertResponseContains('#bar_chart_table');
+        $this->assertResponseContains('#doughnut_table');
+        $this->assertResponseContains('#bar_table');
         $this->assertResponseContains('<li class="active"');
         $this->assertResponseContains('class="tab-pane active"');
     }
