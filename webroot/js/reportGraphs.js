@@ -25,10 +25,38 @@
          */
         init: function () {
             if (0 < this.options.data.length) {
+                this.options.data = this.escapeData(this.options.data);
                 this.draw();
             } else {
                 this.getData();
             }
+        },
+
+        escapeData: function (data) {
+            var that = this;
+
+            let label = '';
+            switch (this.type) {
+                case 'funnelChart':
+                case 'donutChart':
+                    label = 'label';
+                    break;
+                case 'barChart':
+                    label = that.options.xkey[0];
+                    break;
+            }
+
+            data.forEach(function (item) {
+                const doc = new DOMParser().parseFromString(item[label], 'text/html');
+                // strip html tags
+                let value = doc.body.textContent || '';
+                // strip &nbsp; html entities
+                value = value.replace(/\u00a0/g, '');
+                value = value ? value : 'N/A';
+                item[label] = value;
+            });
+
+            return data;
         },
 
         /**
