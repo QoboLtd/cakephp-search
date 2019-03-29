@@ -2,15 +2,15 @@
 namespace Search\Test\TestCase\Widgets;
 
 use Cake\TestSuite\TestCase;
-use Search\Widgets\Reports\BarChartReportWidget;
+use Search\Widgets\Reports\HorizontalBarReportWidget;
 
-class BarChartReportWidgetTest extends TestCase
+class HorizontalBarReportWidgetTest extends TestCase
 {
     public $widget;
 
     public function setUp()
     {
-        $this->widget = new BarChartReportWidget();
+        $this->widget = new HorizontalBarReportWidget();
     }
 
     public function tearDown()
@@ -22,7 +22,7 @@ class BarChartReportWidgetTest extends TestCase
 
     public function testGetType(): void
     {
-        $this->assertEquals('bar', $this->widget->getType());
+        $this->assertEquals('horizontalBar', $this->widget->getType());
     }
 
     public function testGetScripts(): void
@@ -68,7 +68,7 @@ class BarChartReportWidgetTest extends TestCase
                 'name' => 'Report Bar',
                 'query' => '',
                 'columns' => '',
-                'renderAs' => 'barChart',
+                'renderAs' => 'horizontalBar',
                 'y_axis' => '',
                 'x_axis' => ''
             ]
@@ -98,7 +98,7 @@ class BarChartReportWidgetTest extends TestCase
                 'name' => 'Report Bar',
                 'query' => '',
                 'columns' => 'x,y',
-                'renderAs' => 'barChart',
+                'renderAs' => 'horizontalBar',
                 'y_axis' => 'y',
                 'x_axis' => 'x'
             ]

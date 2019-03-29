@@ -11,50 +11,64 @@
  */
 namespace Search\Widgets\Reports;
 
+use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
 
 class LineChartReportWidget extends BaseReportGraphs
 {
-    public $type = 'lineChart';
+    public $type = 'line';
 
-    public $requiredFields = ['query', 'columns', 'x_axis', 'y_axis'];
+    public $requiredFields = ['query', 'x_axis', 'columns'];
 
     /**
      * getChartData method
      *
-     * Assembles the chart data for the LineChart widget
+     * Assembles graphs data from the reports config and data.
      *
-     * @param array $data with report config and data.
-     * @return array $chartData.
+     * @param array $data containing report configs and data.
+     * @return array $chartData with defined chart information.
      */
     public function getChartData(array $data = []) : array
     {
-        $labels = [];
         $report = $this->config;
 
-        $chartData = [
-            'chart' => $this->type,
-            'options' => [
-                'element' => $this->getContainerId(),
-                'resize' => true,
-                'hideHover' => true
-            ],
-        ];
+        // We suppose that in the x_axis are the values with labels
+        $label_column_name = $report['info']['x_axis'];
+        $label = Hash::extract($data, '{n}.' . $label_column_name);
 
         $columns = explode(',', $report['info']['columns']);
 
-        foreach ($columns as $column) {
-            array_push($labels, Inflector::humanize($column));
+        // Check if is a multiple set of data.
+        $datasets = [];
+        $num_col = count($columns);
+        for ($i = 0; $i < $num_col - 1; $i++) {
+            $colors = $this->getChartColors(1, $this->getContainerId() . $i, false);
+            $datasets[] = [
+                "label" => Inflector::humanize($columns[$i]),
+                "data" => (array)Hash::extract($data, '{n}.' . $columns[$i]),
+                "borderColor" => $colors[0],
+                "fill" => false
+            ];
         }
-        $options = [
-            'data' => $data,
-            'lineColors' => $this->getChartColors(),
-            'labels' => $labels,
-            'xkey' => explode(',', $report['info']['x_axis']),
-            'ykeys' => explode(',', $report['info']['y_axis'])
+
+        $chartjs = [
+            "type" => $this->type,
+            "data" =>
+            [
+                "labels" => $label,
+                "datasets" => $datasets
+            ]
         ];
 
-        $chartData['options'] = array_merge($chartData['options'], $options);
+        $chartData = [
+            'chart' => $this->type,
+            'id' => $this->getContainerId(),
+            'options' => [
+                'resize' => true,
+                'hideHover' => true,
+                'dataChart' => $chartjs,
+            ],
+        ];
 
         if (!empty($data)) {
             $this->setData($chartData);
@@ -64,29 +78,22 @@ class LineChartReportWidget extends BaseReportGraphs
     }
 
     /**
-     * getScripts method
+     * prepareChartOptions method
      *
-     * Specifies required JS/CSS libs for given chart
+     * Specifies JS/CSS libs for the content loading
      *
-     * @param mixed[] $data passed in the method.
-     * @return mixed[] $content with JS/CSS libs.
+     * @param mixed[] $data passed from the widgetHandler.
+     * @return mixed[] $content with the libs.
      */
     public function getScripts(array $data = []) : array
     {
         return [
             'post' => [
-                'css' => [
-                    'type' => 'css',
-                    'content' => [
-                        'AdminLTE./bower_components/morris.js/morris',
-                    ],
-                    'block' => 'css',
-                ],
                 'javascript' => [
                     'type' => 'script',
                     'content' => [
                         'https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js',
-                        'AdminLTE./bower_components/morris.js/morris.min',
+                        'Search./plugins/Chart.min.js',
                     ],
                     'block' => 'scriptBottom',
                 ],

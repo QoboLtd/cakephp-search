@@ -46,8 +46,8 @@ final class ResultCell extends Cell
      */
     private $charts = [
         ['type' => 'funnelChart', 'icon' => 'filter'],
-        ['type' => 'donutChart', 'icon' => 'pie-chart'],
-        ['type' => 'barChart', 'icon' => 'bar-chart']
+        ['type' => 'doughnut', 'icon' => 'pie-chart'],
+        ['type' => 'bar', 'icon' => 'bar-chart']
     ];
 
     /**
@@ -147,7 +147,7 @@ final class ResultCell extends Cell
     private function getTableId(): string
     {
         if ('' === $this->tableId) {
-            $this->tableId = 'table-datatable-' . uniqid();
+            $this->tableId = 'table-datatable-' . md5($this->preSaveId);
         }
 
         return $this->tableId;
@@ -285,6 +285,7 @@ final class ResultCell extends Cell
             $result[] = [
                 'chart' => $chart['type'],
                 'icon' => $chart['icon'],
+                'id' => Inflector::delimit($chart['type']) . '_' . $this->getTableId(),
                 'ajax' => [
                     'url' => Router::url([
                         'plugin' => $plugin,
@@ -295,12 +296,8 @@ final class ResultCell extends Cell
                     'format' => 'pretty',
                 ],
                 'options' => [
-                    'element' => Inflector::delimit($chart['type']) . '_' . $this->getTableId(),
                     'resize' => true,
                     'hideHover' => true,
-                    'data' => [],
-                    'barColors' => ['#0874c7', '#04645e', '#5661f8', '#8298c1', '#c6ba08', '#07ada3'],
-                    'lineColors' => ['#0874c7', '#04645e', '#5661f8', '#8298c1', '#c6ba08', '#07ada3'],
                     'labels' => [Inflector::humanize(Search::GROUP_BY_FIELD), Inflector::humanize($fieldName)],
                     'xkey' => [$groupByField],
                     'ykeys' => [$prefix . '.' . Search::GROUP_BY_FIELD]

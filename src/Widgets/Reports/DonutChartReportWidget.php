@@ -11,46 +11,58 @@
  */
 namespace Search\Widgets\Reports;
 
+use Cake\Utility\Hash;
+use Cake\Utility\Inflector;
+
 class DonutChartReportWidget extends BaseReportGraphs
 {
-    public $type = 'donutChart';
+    public $type = 'doughnut';
 
-    public $requiredFields = ['query', 'label', 'value', 'columns'];
+    public $requiredFields = ['query', 'columns'];
 
     /**
      * getChartData method
      *
-     * Specifies chart data/config of the DonutChart.
+     * Assembles graphs data from the reports config and data.
      *
-     * @param array $data containing configs.
-     * @return array $chartData for graph rendering.
+     * @param array $data containing report configs and data.
+     * @return array $chartData with defined chart information.
      */
     public function getChartData(array $data = []) : array
     {
         $report = $this->config;
 
+        $columns = explode(',', $report['info']['columns']);
+        $label = Hash::extract($data, '{n}.' . $columns[1]);
+        $data = (array)Hash::extract($data, '{n}.' . $columns[0]);
+
+        $colors = $this->getChartColors(count($data), $this->getContainerId(), false);
+
+        $chartjs = [
+            "type" => $this->type,
+            "data" =>
+            [
+                "labels" => $label,
+                "datasets" => [
+                    [
+                        "backgroundColor" => $colors,
+                        "data" => $data
+                    ]
+                ]
+            ]
+        ];
+
         $chartData = [
             'chart' => $this->type,
+            'id' => $this->getContainerId(),
             'options' => [
-                'element' => $this->getContainerId(),
                 'resize' => true,
+                'hideHover' => true,
+                'dataChart' => $chartjs,
             ],
         ];
 
-        $options = [
-            'data' => []
-        ];
-
-        foreach ($data as $item) {
-            array_push($options['data'], [
-                'label' => $item[$report['info']['label']],
-                'value' => $item[$report['info']['value']],
-            ]);
-        }
-
-        $chartData['options'] = array_merge($chartData['options'], $options);
-
-        if (!empty($options['data'])) {
+        if (!empty($data)) {
             $this->setData($chartData);
         }
 
@@ -58,29 +70,22 @@ class DonutChartReportWidget extends BaseReportGraphs
     }
 
     /**
-     * getScripts method
+     * prepareChartOptions method
      *
-     * Assembles JS/CSS libs for the graph rendering.
+     * Specifies JS/CSS libs for the content loading
      *
-     * @param mixed[] $data containing widgetHandler info.
-     * @return mixed[] $content with the scripts.
+     * @param mixed[] $data passed from the widgetHandler.
+     * @return mixed[] $content with the libs.
      */
     public function getScripts(array $data = []) : array
     {
         return [
             'post' => [
-                'css' => [
-                    'type' => 'css',
-                    'content' => [
-                        'AdminLTE./bower_components/morris.js/morris',
-                    ],
-                    'block' => 'css',
-                ],
                 'javascript' => [
                     'type' => 'script',
                     'content' => [
                         'https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js',
-                        'AdminLTE./bower_components/morris.js/morris.min',
+                        'Search./plugins/Chart.min.js',
                     ],
                     'block' => 'scriptBottom',
                 ],
