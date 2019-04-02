@@ -13,6 +13,9 @@ $config = $config ? $config : [];
 // load default plugin config
 Configure::load('Search.search');
 
+// load color palette for reports
+Configure::load('Search.color_palette');
+
 // overwrite default plugin config by app level config
 Configure::write('Search', array_replace_recursive(
     Configure::read('Search'),

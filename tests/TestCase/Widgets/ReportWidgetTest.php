@@ -90,7 +90,6 @@ class ReportWidgetTest extends TestCase
 
         $instance->setContainerId($config['config']);
 
-        $this->assertEquals($config['config']['info']['renderAs'], $instance->getType());
         $this->assertEquals('graph_' . $config['config']['slug'], $instance->getContainerId());
         $this->assertEquals([], $instance->getOptions());
         $this->assertEquals([], $instance->getData());
@@ -238,8 +237,9 @@ class ReportWidgetTest extends TestCase
         $validated = $instance->validate($expectedReport);
         $instance->setConfig($expectedReport);
         $this->assertEquals($validated['status'], true);
+
         $chartData = $instance->getChartData([]);
-        $this->assertEquals(['A', 'B'], $chartData['options']['labels']);
+        $this->assertEquals('A', $chartData['options']['dataChart']['data']['datasets'][0]['label']);
     }
 
     public function testGetReportsWithoutMock(): void

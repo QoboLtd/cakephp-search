@@ -11,11 +11,12 @@
  */
 namespace Search\Widgets\Reports;
 
+use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
 
 class BarChartReportWidget extends BaseReportGraphs
 {
-    public $type = 'barChart';
+    public $type = 'bar';
 
     public $requiredFields = ['query', 'columns', 'x_axis', 'y_axis'];
 
@@ -29,33 +30,65 @@ class BarChartReportWidget extends BaseReportGraphs
      */
     public function getChartData(array $data = []) : array
     {
-        $labels = [];
         $report = $this->config;
 
-        $chartData = [
-            'chart' => $this->type,
-            'options' => [
-                'element' => $this->getContainerId(),
-                'resize' => true,
-                'hideHover' => true
-            ],
-        ];
+        // We suppose that in the x_axis are the values with labels
+        $label_column_name = $report['info']['x_axis'];
+        $label = Hash::extract($data, '{n}.' . $label_column_name);
 
         $columns = explode(',', $report['info']['columns']);
 
-        foreach ($columns as $column) {
-            array_push($labels, Inflector::humanize($column));
+        // Check if is a multiple set of data.
+        $datasets = [];
+        $num_col = count($columns);
+        $is_multicolums = $num_col > 2;
+        for ($i = 0; $i < $num_col - 1; $i++) {
+            // If the chart is multiple bar or stackbar is better to not have shaded colors.
+            $colors = $this->getChartColors(count($data), $this->getContainerId() . $i, !$is_multicolums);
+            $datasets[] = [
+                "label" => Inflector::humanize($columns[$i]),
+                "backgroundColor" => $is_multicolums ? $colors[0] : $colors,
+                "data" => (array)Hash::extract($data, '{n}.' . $columns[$i])
+            ];
         }
 
-        $options = [
-            'data' => $data,
-            'barColors' => $this->getChartColors(),
-            'labels' => $labels,
-            'xkey' => explode(',', $report['info']['x_axis']),
-            'ykeys' => explode(',', $report['info']['y_axis'])
+        $chartjs = [
+            "type" => $this->type,
+            "data" =>
+            [
+                "labels" => $label,
+                "datasets" => $datasets
+            ],
+            "options" =>
+            [
+                "legend" => [
+                    "display" => true,
+                ],
+                "scales" =>
+                [
+                    "yAxes" => [
+                        [
+                            "ticks" =>
+                            [
+                                "beginAtZero" => true
+                            ]
+                        ]
+                    ],
+                ]
+            ]
         ];
 
-        $chartData['options'] = array_merge($chartData['options'], $options);
+        $chartjs['options'] = !empty($this->config['info']['options']) ? Hash::merge($chartjs['options'], $this->config['info']['options']) : $chartjs['options'];
+
+        $chartData = [
+            'chart' => $this->type,
+            'id' => $this->getContainerId(),
+            'options' => [
+                'resize' => true,
+                'hideHover' => true,
+                'dataChart' => $chartjs,
+            ],
+        ];
 
         if (!empty($data)) {
             $this->setData($chartData);
@@ -76,18 +109,11 @@ class BarChartReportWidget extends BaseReportGraphs
     {
         return [
             'post' => [
-                'css' => [
-                    'type' => 'css',
-                    'content' => [
-                        'AdminLTE./bower_components/morris.js/morris',
-                    ],
-                    'block' => 'css',
-                ],
                 'javascript' => [
                     'type' => 'script',
                     'content' => [
                         'https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js',
-                        'AdminLTE./bower_components/morris.js/morris.min',
+                        'Search./plugins/Chart.min.js',
                     ],
                     'block' => 'scriptBottom',
                 ],

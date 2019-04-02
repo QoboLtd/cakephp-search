@@ -181,6 +181,7 @@ class Export
             $entities = $event->result;
         }
 
+        $displayColumns = array_map('strval', $displayColumns);
         $entities = $entities ? Utility::instance()->toCsv($entities, $displayColumns, $table) : [];
 
         if (empty($entities)) {

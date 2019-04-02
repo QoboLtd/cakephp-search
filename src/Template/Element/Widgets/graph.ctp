@@ -27,6 +27,7 @@ $type = $widget->getType();
         </div>
         <div class="box-body">
             <div id="<?= $widget->getContainerId()?>">
+                <canvas id="canvas_<?= $data['id']?>" ></canvas>
                 <?php if ($type == 'knobChart') : ?>
                     <div class="row">
                     <?php foreach ($data['options']['data'] as $k => $item) : ?>

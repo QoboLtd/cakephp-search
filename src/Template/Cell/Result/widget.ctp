@@ -32,12 +32,10 @@ echo $cakeView->Html->script(
 if ($isGroup) {
     $chartsCount = count($chartOptions);
 
-    echo $cakeView->Html->css('AdminLTE./bower_components/morris.js/morris', ['block' => 'css']);
-
     echo $cakeView->Html->script(
         [
             'https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js',
-            'AdminLTE./bower_components/morris.js/morris.min',
+            'Search./plugins/Chart.min.js',
             'Qobo/Utils./plugins/d3/d3.min',
             'Qobo/Utils./plugins/d3/extensions/d3-funnel.min',
             'Search.reportGraphs'
@@ -97,7 +95,7 @@ echo $cakeView->Html->scriptBlock('new DataTablesInit(' . json_encode($dtOptions
         </div>
     <?php if ($isGroup) : ?>
         <?php foreach ($chartOptions as $key => $chart) : ?>
-            <div id="<?= Inflector::delimit($chart['chart']) . '_' . $tableOptions['id'] ?>" class="tab-pane <?= $chartsCount === $key + 1 ? 'active' : '' ?>"></div>
+            <div id="<?= Inflector::delimit($chart['chart']) . '_' . $tableOptions['id'] ?>" class="tab-pane <?= $chartsCount === $key + 1 ? 'active' : '' ?>"><canvas id="canvas_<?= $chart['id']?>" ></canvas></div>
         <?php endforeach; ?>
     <?php endif; ?>
     </div>
