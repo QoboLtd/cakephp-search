@@ -32,29 +32,29 @@
             }
         },
 
-        escapeData: function (data) {
+        escapeData: function (dataChart) {
             var that = this;
 
             let label = '';
             switch (this.type) {
                 case 'bar':
                 case 'pie':
-                    data.data.labels.forEach(function (label, key) {
-                        data.data.labels[key] = this.escapeValue(label)
+                    dataChart.data.labels.forEach(function (label, key) {
+                        dataChart.data.labels[key] = that.escapeValue(label)
                     });
                     break;
                 case 'funnelChart':
-                    data.data.forEach(function (item, key) {
-                        data.data[key].label = this.escapeValue(item.label)
+                    dataChart.data.forEach(function (item, key) {
+                        dataChart.data[key].label = that.escapeValue(item.label)
                     });
                     break;
             }
 
-            return data;
+            return dataChart;
         },
 
         escapeValue: function (value) {
-            new DOMParser().parseFromString(value, 'text/html');
+            const doc = new DOMParser().parseFromString(value, 'text/html');
 
             // strip html tags
             let result = doc.body.textContent || '';
