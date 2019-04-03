@@ -37,26 +37,32 @@
 
             let label = '';
             switch (this.type) {
-                case 'funnelChart':
-                case 'donutChart':
-                    label = 'label';
+                case 'bar':
+                case 'pie':
+                    data.data.labels.forEach(function (label, key) {
+                        data.data.labels[key] = this.escapeValue(label)
+                    });
                     break;
-                case 'barChart':
-                    label = that.options.xkey[0];
+                case 'funnelChart':
+                    data.data.forEach(function (item, key) {
+                        data.data[key].label = this.escapeValue(item.label)
+                    });
                     break;
             }
 
-            data.forEach(function (item) {
-                const doc = new DOMParser().parseFromString(item[label], 'text/html');
-                // strip html tags
-                let value = doc.body.textContent || '';
-                // strip &nbsp; html entities
-                value = value.replace(/\u00a0/g, '');
-                value = value ? value : 'N/A';
-                item[label] = value;
-            });
-
             return data;
+        },
+
+        escapeValue: function (value) {
+            new DOMParser().parseFromString(value, 'text/html');
+
+            // strip html tags
+            let result = doc.body.textContent || '';
+
+            // strip &nbsp; html entities
+            result = result.replace(/\u00a0/g, '');
+
+            return result ? result : 'N/A';
         },
 
         /**
