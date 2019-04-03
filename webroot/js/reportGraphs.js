@@ -102,12 +102,12 @@
                     });
                     break;
                 case 'funnelChart':
-                    this.options.dataChart.sort(function (a, b) {
+                    this.options.dataChart.data.sort(function (a, b) {
                         return (a.value < b.value) ? 1 : ((b.value < a.value) ? -1 : 0);
                     });
 
                     var d3chart = new D3Funnel('#' + this.id);
-                    d3chart.draw(this.options.dataChart, {
+                    d3chart.draw(this.options.dataChart.data, {
                         block: {
                             dynamicHeight: true
                         }
