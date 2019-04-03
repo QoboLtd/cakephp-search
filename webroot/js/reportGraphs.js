@@ -25,10 +25,44 @@
          */
         init: function () {
             if (!$.isEmptyObject(this.options.dataChart)) {
+                this.options.dataChart = this.escapeData(this.options.dataChart);
                 this.draw();
             } else {
                 this.getData();
             }
+        },
+
+        escapeData: function (dataChart) {
+            var that = this;
+
+            let label = '';
+            switch (this.type) {
+                case 'bar':
+                case 'pie':
+                    dataChart.data.labels.forEach(function (label, key) {
+                        dataChart.data.labels[key] = that.escapeValue(label)
+                    });
+                    break;
+                case 'funnelChart':
+                    dataChart.data.forEach(function (item, key) {
+                        dataChart.data[key].label = that.escapeValue(item.label)
+                    });
+                    break;
+            }
+
+            return dataChart;
+        },
+
+        escapeValue: function (value) {
+            const doc = new DOMParser().parseFromString(value, 'text/html');
+
+            // strip html tags
+            let result = doc.body.textContent || '';
+
+            // strip &nbsp; html entities
+            result = result.replace(/\u00a0/g, '');
+
+            return result ? result : 'N/A';
         },
 
         /**
@@ -68,14 +102,19 @@
                     });
                     break;
                 case 'funnelChart':
-                    this.options.dataChart.sort(function (a, b) {
+                    this.options.dataChart.data.sort(function (a, b) {
                         return (a.value < b.value) ? 1 : ((b.value < a.value) ? -1 : 0);
                     });
 
                     var d3chart = new D3Funnel('#' + this.id);
-                    d3chart.draw(this.options.dataChart, {
+                    d3chart.draw(this.options.dataChart.data, {
+                        chart: {
+                            animate: 100
+                        },
                         block: {
-                            dynamicHeight: true
+                            dynamicHeight: true,
+                            fill: { type: 'gradient' },
+                            highlight: true
                         }
                     });
                     break;

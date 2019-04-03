@@ -43,7 +43,7 @@ class NotEqualTest extends TestCase
         $result = $filter->apply($this->query);
 
         $this->assertRegExp(
-            '/WHERE "title" != :c0/',
+            '/WHERE \("title" != :c0 OR \("title"\) IS NULL\)/',
             $result->sql()
         );
 
@@ -60,7 +60,7 @@ class NotEqualTest extends TestCase
         $result = $filter->apply($this->query);
 
         $this->assertRegExp(
-            '/WHERE "title" NOT IN \(:c0,:c1\)/',
+            '/WHERE \("title" NOT IN \(:c0,:c1\) OR \("title"\) IS NULL\)/',
             $result->sql()
         );
 
