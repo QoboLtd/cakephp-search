@@ -111,9 +111,6 @@
                         chart: {
                             animate: 100
                         },
-                        tooltip: {
-                            enabled: true
-                        },
                         block: {
                             dynamicHeight: true,
                             fill: { type: 'gradient' },
