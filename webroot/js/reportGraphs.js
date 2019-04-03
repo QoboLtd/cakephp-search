@@ -108,8 +108,16 @@
 
                     var d3chart = new D3Funnel('#' + this.id);
                     d3chart.draw(this.options.dataChart.data, {
+                        chart: {
+                            animate: 100
+                        },
+                        tooltip: {
+                            enabled: true
+                        },
                         block: {
-                            dynamicHeight: true
+                            dynamicHeight: true,
+                            fill: { type: 'gradient' },
+                            highlight: true
                         }
                     });
                     break;
