@@ -239,7 +239,9 @@ class ArticlesControllerTest extends JsonIntegrationTestCase
         $this->assertNotEquals($entityBefore->get('modified'), $entityAfter->get('modified'));
 
         $preSaved = $table->get($preId);
-        $this->assertEquals($preSaved->get('content'), $entityAfter->get('content'));
+        $this->assertEquals($preSaved->get('content')['saved'], $entityAfter->get('content')['saved']);
+        $this->assertEquals($preSaved->get('content')['saved'], $entityAfter->get('content')['latest']);
+        $this->assertNotEquals($preSaved->get('content')['latest'], $entityAfter->get('content')['latest']);
         $this->assertNotEquals($preSaved->get('user_id'), $entityAfter->get('user_id'));
         $this->assertNotEquals($preSaved->get('model'), $entityAfter->get('model'));
         $this->assertNotEquals($preSaved->get('system'), $entityAfter->get('system'));
