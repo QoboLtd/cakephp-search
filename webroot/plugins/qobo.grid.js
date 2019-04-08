@@ -165,7 +165,7 @@ new Vue({
                 return $(this).height();
             }).get());
 
-            $("div.available-widget").height(maxHeight + 5);
+            $("div.available-widget").height(maxHeight);
         }
     }
 });
