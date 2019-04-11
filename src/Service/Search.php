@@ -19,9 +19,14 @@ use Search\Filter\FilterInterface;
 final class Search
 {
     /**
-     * Group by count field
+     * SQL sort by orders
      */
-    private const GROUP_BY_FIELD = 'total';
+    const SORT_BY_ORDERS = ['desc', 'asc'];
+
+    /**
+     * Default SQL order by direction
+     */
+    const DEFAULT_SORT_BY_ORDER = 'desc';
 
     /**
      * SQL conjunctions
@@ -32,6 +37,11 @@ final class Search
      * Default SQL conjunction
      */
     const DEFAULT_CONJUNCTION = 'AND';
+
+    /**
+     * Group by count field.
+     */
+    const GROUP_BY_FIELD = 'total';
 
     /**
      * Table instance.
