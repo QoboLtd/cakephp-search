@@ -121,7 +121,7 @@ class SearchTest extends TestCase
 
         $query = $search->execute();
 
-        $result = $query->first();
+        $result = $query->firstOrFail();
 
         $this->assertEquals(2, $result->get('total'));
     }
