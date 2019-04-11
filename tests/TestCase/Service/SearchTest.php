@@ -11,12 +11,14 @@
  */
 namespace Search\Test\TestCase\Service;
 
+use Cake\Datasource\EntityInterface;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use Search\Filter\Equal;
 use Search\Filter\StartsWith;
 use Search\Service\Criteria;
 use Search\Service\Search;
+use Webmozart\Assert\Assert;
 
 class SearchTest extends TestCase
 {
@@ -119,9 +121,12 @@ class SearchTest extends TestCase
         $search = new Search($query, $this->table);
         $search->addCriteria(new Criteria(['field' => 'title', 'operator' => StartsWith::class, 'value' => 't']));
 
-        $query = $search->execute();
+        $query = $search->execute()
+            ->enableHydration(true);
 
         $result = $query->firstOrFail();
+
+        Assert::isInstanceOf($result, EntityInterface::class);
 
         $this->assertEquals(2, $result->get('total'));
     }
