@@ -45,9 +45,9 @@ class SearchableBehavior extends Behavior
      */
     public function findSearch(Query $query, array $options) : Query
     {
-        // $aggregator = Hash::get($options, 'aggerator', self::DEFAULT_AGGREGATOR);
-
         $search = new Search($query, $this->getTable());
+
+        $search->setConjunction(Hash::get($options, 'conjunction', Search::DEFAULT_CONJUNCTION));
 
         foreach (Hash::get($options, 'data', []) as $criteria) {
             if (! is_array($criteria)) {

@@ -24,6 +24,16 @@ final class Search
     private const GROUP_BY_FIELD = 'total';
 
     /**
+     * SQL conjunctions
+     */
+    const CONJUNCTIONS = ['AND', 'OR'];
+
+    /**
+     * Default SQL conjunction
+     */
+    const DEFAULT_CONJUNCTION = 'AND';
+
+    /**
      * Table instance.
      *
      * @var \Cake\ORM\Table
@@ -43,6 +53,13 @@ final class Search
      * @var bool
      */
     private $strict = true;
+
+    /**
+     * Search conjunction.
+     *
+     * @var string
+     */
+    private $conjunction = 'AND';
 
     /**
      * Search criteria list.
@@ -83,6 +100,22 @@ final class Search
     }
 
     /**
+     * Add conjunction to Search.
+     *
+     * @param string $conjunction Search conjunction
+     * @return void
+     * @throws \RuntimeException When invalid filter class is provided
+     */
+    public function setConjunction(string $conjunction = self::DEFAULT_CONJUNCTION) : void
+    {
+        if (! in_array($conjunction, self::CONJUNCTIONS)) {
+            throw new \RuntimeException(sprintf('Invalid conjunction provided: %s', $conjunction));
+        }
+
+        $this->conjunction = $conjunction;
+    }
+
+    /**
      * Executes search logic.
      *
      * @return \Cake\ORM\Query
@@ -92,6 +125,12 @@ final class Search
         $this->applyFilters();
         $this->applySelect();
         $this->applyJoins();
+
+        $clause = $this->query->clause('where');
+        // adjust where clause conjunction
+        if (null !== $clause) {
+            $this->query->where($clause->setConjunction($this->conjunction), [], true);
+        }
 
         return $this->query;
     }
