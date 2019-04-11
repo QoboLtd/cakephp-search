@@ -5,7 +5,6 @@ use Cake\Core\Configure;
 use Cake\Event\EventManager;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\IntegrationTestCase;
-use Search\Utility;
 
 /**
  * Search\Controller\DashboardsController Test Case
@@ -33,8 +32,6 @@ class DashboardsControllerTest extends IntegrationTestCase
     public function setUp()
     {
         parent::setUp();
-
-        Utility::instance(new Utility());
 
         Configure::write('Search.dashboard.columns', ['Left Side', 'Right Side']);
 
@@ -120,39 +117,6 @@ class DashboardsControllerTest extends IntegrationTestCase
         $this->assertResponseOk();
 
         $this->assertResponseContains('<h4>Everyone Dashboard</h4>');
-    }
-
-    public function testViewWithSavedSearch(): void
-    {
-        // admin user
-        $this->session(['Auth.User.id' => '00000000-0000-0000-0000-000000000002']);
-
-        $this->get('/search/dashboards/view/00000000-0000-0000-0000-000000000001');
-
-        $this->assertResponseOk();
-
-        $this->assertResponseContains('<h4>Admins Dashboard</h4>');
-        $this->assertResponseContains('Saved search criteria</a>');
-        $this->assertResponseContains('<table');
-        $this->assertResponseContains('<th>Name</th>');
-        $this->assertResponseContains('<th class="actions">Actions</th>');
-        $this->assertResponseContains('<li class="active"');
-    }
-
-    public function testViewWithGroupBySavedSearch(): void
-    {
-        // admin user
-        $this->session(['Auth.User.id' => '00000000-0000-0000-0000-000000000002']);
-
-        $this->get('/search/dashboards/view/00000000-0000-0000-0000-000000000004');
-
-        $this->assertResponseOk();
-
-        $this->assertResponseContains('#funnel_chart_table');
-        $this->assertResponseContains('#doughnut_table');
-        $this->assertResponseContains('#bar_table');
-        $this->assertResponseContains('<li class="active"');
-        $this->assertResponseContains('class="tab-pane active"');
     }
 
     public function testAdd(): void
