@@ -74,4 +74,26 @@ class EqualTest extends TestCase
             Hash::extract($result->getValueBinder()->bindings(), '{s}.type')
         );
     }
+
+    public function testApplyWithEmptyArray() : void
+    {
+        $filter = new Equal('title', []);
+
+        $result = $filter->apply($this->query);
+
+        $this->assertRegExp(
+            '/WHERE "title" IN \(:c0\)/',
+            $result->sql()
+        );
+
+        $this->assertEquals(
+            [''],
+            Hash::extract($result->getValueBinder()->bindings(), '{s}.value')
+        );
+
+        $this->assertEquals(
+            ['string'],
+            Hash::extract($result->getValueBinder()->bindings(), '{s}.type')
+        );
+    }
 }
