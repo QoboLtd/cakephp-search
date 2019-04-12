@@ -74,4 +74,26 @@ class NotEqualTest extends TestCase
             Hash::extract($result->getValueBinder()->bindings(), '{s}.type')
         );
     }
+
+    public function testApplyWithEmtpyArray() : void
+    {
+        $filter = new NotEqual('title', []);
+
+        $result = $filter->apply($this->query);
+
+        $this->assertRegExp(
+            '/WHERE \("title" NOT IN \(:c0\) OR \("title"\) IS NULL\)/',
+            $result->sql()
+        );
+
+        $this->assertEquals(
+            [''],
+            Hash::extract($result->getValueBinder()->bindings(), '{s}.value')
+        );
+
+        $this->assertEquals(
+            ['string'],
+            Hash::extract($result->getValueBinder()->bindings(), '{s}.type')
+        );
+    }
 }

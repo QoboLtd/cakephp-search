@@ -29,7 +29,7 @@ final class Equal extends AbstractFilter
         return $query->where(
             (new QueryExpression())->{$method}(
                 $this->field,
-                $this->value,
+                [] === $this->value ? '' : $this->value,
                 $query->getTypeMap()->type($this->field)
             )
         );

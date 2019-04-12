@@ -29,7 +29,7 @@ final class NotEqual extends AbstractFilter
         return $query->where(['OR' => [
             (new QueryExpression())->{$method}(
                 $this->field,
-                $this->value,
+                [] === $this->value ? '' : $this->value,
                 $query->getTypeMap()->type($this->field)
             ),
             (new QueryExpression())->isNull($this->field)
