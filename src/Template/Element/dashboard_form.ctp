@@ -1,3 +1,5 @@
+<?= $this->element('dashboard_option') ?>
+
  <div id="grid-app">
         <?= $this->Form->control('options', ['type' => 'hidden', 'id' => 'dashboard-options', 'value' => null]);?>
         <div class="box box-primary">
@@ -6,10 +8,11 @@
                     <h3 class="box-title"><?= __('Widgets') ?></h3>
                 </div>
                 <div class="box-body" style="border:1px dashed #d3d3d3;">
+                <div id="templates"></div>
                     <grid-layout
                         :layout="layout"
                         :row-height="50"
-                        :vertical-compact="false"
+                        :vertical-compact="true"
                         :margin="[5, 5]"
                         :use-css-transforms="true"
                     >
@@ -21,17 +24,23 @@
                                    :min-w="2"
                                    :min-h="2"
                                    :i="item.i"
+                                   drag-allow-from=".box-header"
+
                                    class="box box-solid"
                                    v-bind:class="getElementBackground(item)"
                         >
-                            <div class='box-header with-border'>
+                            <div class='box-header with-border' id="title12">
                                 <h3 class="box-title"><i class="fa" v-bind:class="getElementIcon(item)"></i> {{item.title}}</h3>
                                 <div class="box-tools">
                                     <div class="btn btn-box-tool"><a href="#" @click="removeItem(item)"><i class='fa fa-minus-circle'></i></a></div>
                                 </div>
                             </div>
                             <div class="box-body">
-                                <p>{{item.data.name}}</p>
+                                <p>{{item.data.name}}
+                                 <span v-if="item.data.inputs" style="float: right">
+                                 <button data-toggle="modal" :data-target="'#' + getComponentId(item.data.id)" v-on:click.self.prevent>Options</button>
+                                 </span>
+                                </p>
                             </div>
                         </grid-item>
                     </grid-layout>

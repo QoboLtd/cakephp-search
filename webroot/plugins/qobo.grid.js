@@ -1,6 +1,8 @@
 var GridLayout = VueGridLayout.GridLayout;
 var GridItem = VueGridLayout.GridItem;
 
+const EventBus = new Vue();
+
 new Vue({
     el: "#grid-app",
     components: {
@@ -24,6 +26,10 @@ new Vue({
     },
     mounted: function () {
         this.index = this.layout.length;
+        console.log(this.layout)
+        EventBus.$root.$on('sendData', (data) => {
+            console.log(data)
+        })
     },
     beforeUpdate: function () {
         this.$nextTick(function () {
@@ -47,16 +53,19 @@ new Vue({
                             y: element.y,
                             id: element.data.id,
                             type: element.type,
+                            inputs: element.data.inputs,
                         });
                     });
                 }
-
                 $(this.targetElement).val(JSON.stringify(this.dashboard));
             },
             deep: true
         }
     },
     methods: {
+        getComponentId: function (id) {
+            return 'component' + id;
+        },
         getElementBackground: function (item) {
             let colorClass = 'info';
 
@@ -120,6 +129,7 @@ new Vue({
                 h: 2,
                 i: this.getUniqueId(),
                 draggable: true,
+                seen: false
             };
 
             let layoutElement = Object.assign({}, element, item);
