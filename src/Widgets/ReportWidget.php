@@ -250,11 +250,21 @@ class ReportWidget extends BaseWidget
             return [];
         }
 
-        $resultSet = ConnectionManager::get('default')
-            ->execute($config['info']['query'])
-            ->fetchAll('assoc');
-        if (empty($resultSet)) {
-            return [];
+        $resultSet = [];
+
+        if (!empty($config['info']['finders'])) {
+            $table = $config['info']['model'];
+
+            $finder = $config['info']['finders']['name'];
+            $options = !empty($config['info']['finders']['options']) ? $config['info']['finders']['options'] : [];
+
+            $resultSet = TableRegistry::get($table)->find($finder, $options);
+        }
+
+        if (empty($config['info']['finders']) && !empty($config['info']['query'])) {
+            $resultSet = ConnectionManager::get('default')
+                ->execute($config['info']['query'])
+                ->fetchAll('assoc');
         }
 
         $columns = explode(',', $config['info']['columns']);
