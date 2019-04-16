@@ -17,4 +17,18 @@ class ArticlesTable extends Table
 
         $this->belongsTo('Authors');
     }
+
+    public function findTitle($query, array $options)
+    {
+        $query = $this->find()->enableHydration(false);
+        $results = $query
+                    ->select(['title',
+                              'content'
+                             ], true)
+                    ->where($options)
+                    ->all()
+                    ->toArray();
+
+        return $results;
+    }
 }

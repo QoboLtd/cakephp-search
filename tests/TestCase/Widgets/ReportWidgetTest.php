@@ -18,6 +18,7 @@ class ReportWidgetTest extends TestCase
     protected $widget;
 
     public $Widgets;
+    public $Articles;
 
     public $fixtureManager;
     public $appView;
@@ -27,6 +28,7 @@ class ReportWidgetTest extends TestCase
 
     public $fixtures = [
         'plugin.search.widgets',
+        'plugin.search.articles'
     ];
 
     public function setUp()
@@ -47,6 +49,9 @@ class ReportWidgetTest extends TestCase
 
         $config = TableRegistry::exists('Widgets') ? [] : ['className' => 'Search\Model\Table\WidgetsTable'];
         $this->Widgets = TableRegistry::get('Widgets', $config);
+
+        // $config = TableRegistry::exists('Articles') ? [] : ['className' => 'Search\Test\App\Model\Table\ArticlesTable'];
+        $this->Articles = TableRegistry::get('Articles');
 
         $this->fixtureManager->load($this);
     }
@@ -321,6 +326,39 @@ class ReportWidgetTest extends TestCase
     {
         $result = $this->widget->getQueryData([]);
         $this->assertEquals($result, []);
+    }
+
+    public function testGetQueryDataFinder(): void
+    {
+        $config = [
+            'modelName' => 'Articles',
+            'slug' => 'Articles',
+            'info' => [
+                'id' => '00000000-0000-0000-0001-000000000001',
+                'model' => 'Articles',
+                'widget_type' => 'report',
+                'name' => 'Articles',
+                'columns' => 'title,content',
+                'renderAs' => 'barChart',
+                'finder' => [
+                    'name' => 'title',
+                    'options' => [
+                        'title' => 'First article title'
+                    ]
+                ],
+                'y_axis' => 'total_amount',
+                'x_axis' => 'quarter'
+            ]
+        ];
+
+        $query = $this->widget->getQueryData($config);
+        $results = [
+                        0 => [
+                            'title' => 'First article title',
+                            'content' => 'First article content.'
+                        ]
+                    ];
+        $this->assertEquals($results, $query);
     }
 
     /**
