@@ -253,16 +253,16 @@ class ReportWidget extends BaseWidget
 
         $resultSet = [];
 
-        if (!empty($config['info']['finders'])) {
+        if (!empty($config['info']['finder'])) {
             $table = $config['info']['model'];
 
-            $finder = $config['info']['finders']['name'];
-            $options = Hash::get($config, 'info.finders.options', []);
+            $finder = $config['info']['finder']['name'];
+            $options = Hash::get($config, 'info.finder.options', []);
 
             $resultSet = TableRegistry::get($table)->find($finder, $options);
         }
 
-        if (empty($config['info']['finders']) && !empty($config['info']['query'])) {
+        if (empty($config['info']['finder']) && !empty($config['info']['query'])) {
             $resultSet = ConnectionManager::get('default')
                 ->execute($config['info']['query'])
                 ->fetchAll('assoc');
