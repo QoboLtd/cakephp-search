@@ -257,7 +257,7 @@ class ReportWidget extends BaseWidget
             $table = $config['info']['model'];
 
             $finder = $config['info']['finders']['name'];
-            $options = Hash::get($config['info']['finders'], 'options', []);
+            $options = Hash::get($config, 'info.finders.options', []);
 
             $resultSet = TableRegistry::get($table)->find($finder, $options);
         }
