@@ -14,6 +14,7 @@ namespace Search\Widgets;
 use Cake\Datasource\ConnectionManager;
 use Cake\Event\Event;
 use Cake\Event\EventManager;
+use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
 use RuntimeException;
 use Search\Event\EventName;
@@ -256,7 +257,7 @@ class ReportWidget extends BaseWidget
             $table = $config['info']['model'];
 
             $finder = $config['info']['finders']['name'];
-            $options = !empty($config['info']['finders']['options']) ? $config['info']['finders']['options'] : [];
+            $options = Hash::get($config['info']['finders'], 'options', []);
 
             $resultSet = TableRegistry::get($table)->find($finder, $options);
         }
