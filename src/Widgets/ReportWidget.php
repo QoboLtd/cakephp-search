@@ -14,6 +14,8 @@ namespace Search\Widgets;
 use Cake\Datasource\ConnectionManager;
 use Cake\Event\Event;
 use Cake\Event\EventManager;
+use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
 use RuntimeException;
 use Search\Event\EventName;
@@ -250,11 +252,21 @@ class ReportWidget extends BaseWidget
             return [];
         }
 
-        $resultSet = ConnectionManager::get('default')
-            ->execute($config['info']['query'])
-            ->fetchAll('assoc');
-        if (empty($resultSet)) {
-            return [];
+        $resultSet = [];
+
+        if (!empty($config['info']['finder'])) {
+            $table = $config['info']['model'];
+
+            $finder = $config['info']['finder']['name'];
+            $options = Hash::get($config, 'info.finder.options', []);
+
+            $resultSet = TableRegistry::get($table)->find($finder, $options);
+        }
+
+        if (empty($config['info']['finder']) && !empty($config['info']['query'])) {
+            $resultSet = ConnectionManager::get('default')
+                ->execute($config['info']['query'])
+                ->fetchAll('assoc');
         }
 
         $columns = explode(',', $config['info']['columns']);
