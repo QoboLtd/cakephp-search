@@ -18,7 +18,7 @@ class DonutChartReportWidget extends BaseReportGraphs
 {
     public $type = 'doughnut';
 
-    public $requiredFields = ['query', 'columns'];
+    public $requiredFields = ['query', 'columns', 'label'];
 
     /**
      * getChartData method
@@ -33,8 +33,13 @@ class DonutChartReportWidget extends BaseReportGraphs
         $report = $this->config;
 
         $columns = explode(',', $report['info']['columns']);
-        $label = Hash::extract($data, '{n}.' . $columns[1]);
-        $data = (array)Hash::extract($data, '{n}.' . $columns[0]);
+
+        // Check which index colums is the label and the data
+        $label_index = is_numeric($data[0][$columns[0]]) ? $columns[1] : $columns[0];
+        $data_index = is_numeric($data[0][$columns[0]]) ? $columns[0] : $columns[1];
+
+        $label = Hash::extract($data, '{n}.' . $label_index);
+        $data = (array)Hash::extract($data, '{n}.' . $data_index);
 
         $colors = $this->getChartColors(count($data), $this->getContainerId(), false);
 

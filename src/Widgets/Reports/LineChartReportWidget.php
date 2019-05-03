@@ -37,15 +37,16 @@ class LineChartReportWidget extends BaseReportGraphs
         $label = Hash::extract($data, '{n}.' . $label_column_name);
 
         $columns = explode(',', $report['info']['columns']);
+        $columns = array_diff($columns, [$label_column_name]);
 
         // Check if is a multiple set of data.
         $datasets = [];
-        $num_col = count($columns);
-        for ($i = 0; $i < $num_col - 1; $i++) {
-            $colors = $this->getChartColors(1, $this->getContainerId() . $i, false);
+
+        foreach ($columns as $key => $value) {
+            $colors = $this->getChartColors(1, $this->getContainerId() . (string)$key, false);
             $datasets[] = [
-                "label" => Inflector::humanize($columns[$i]),
-                "data" => (array)Hash::extract($data, '{n}.' . $columns[$i]),
+                "label" => Inflector::humanize($value),
+                "data" => (array)Hash::extract($data, '{n}.' . $value),
                 "borderColor" => $colors[0],
                 "fill" => false
             ];

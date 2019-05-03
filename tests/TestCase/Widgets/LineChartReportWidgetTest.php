@@ -70,6 +70,12 @@ class LineChartReportWidgetTest extends TestCase
                                 'data' => [],
                                 'borderColor' => '#ff165d',
                                 'fill' => false
+                            ],
+                            [
+                                'label' => 'Post Code',
+                                'data' => [],
+                                'borderColor' => '#30e3ca',
+                                'fill' => false
                             ]
                         ]
                     ]

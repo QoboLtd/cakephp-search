@@ -91,6 +91,6 @@ class PieChartReportWidgetTest extends TestCase
 
         //as the data passed in the method is empty
         $this->assertNotEmpty($this->widget->getData());
-        $this->assertEquals(['bar'], $result['options']['dataChart']['data']['labels']);
+        $this->assertEquals(['foo'], $result['options']['dataChart']['data']['labels']);
     }
 }
