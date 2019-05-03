@@ -120,6 +120,6 @@ class HorizontalBarReportWidgetTest extends TestCase
 
         //as the data passed in the method is empty
         $this->assertNotEmpty($this->widget->getData());
-        $this->assertEquals('X', $result['options']['dataChart']['data']['datasets'][0]['label']);
+        $this->assertEquals('Y', $result['options']['dataChart']['data']['datasets'][0]['label']);
     }
 }

@@ -35,20 +35,19 @@ class BarChartReportWidget extends BaseReportGraphs
         // We suppose that in the x_axis are the values with labels
         $label_column_name = $report['info']['x_axis'];
         $label = Hash::extract($data, '{n}.' . $label_column_name);
-
         $columns = explode(',', $report['info']['columns']);
+        $columns = array_diff($columns, [$label_column_name]);
 
         // Check if is a multiple set of data.
         $datasets = [];
-        $num_col = count($columns);
-        $is_multicolums = $num_col > 2;
-        for ($i = 0; $i < $num_col - 1; $i++) {
-            // If the chart is multiple bar or stackbar is better to not have shaded colors.
-            $colors = $this->getChartColors(count($data), $this->getContainerId() . $i, !$is_multicolums);
+        $is_multicolums = count($columns) > 1;
+
+        foreach ($columns as $key => $value) {
+            $colors = $this->getChartColors(count($data), $this->getContainerId() . (string)$key, !$is_multicolums);
             $datasets[] = [
-                "label" => Inflector::humanize($columns[$i]),
+                "label" => Inflector::humanize($value),
                 "backgroundColor" => $is_multicolums ? $colors[0] : $colors,
-                "data" => (array)Hash::extract($data, '{n}.' . $columns[$i])
+                "data" => (array)Hash::extract($data, '{n}.' . $value)
             ];
         }
 
@@ -62,7 +61,7 @@ class BarChartReportWidget extends BaseReportGraphs
             "options" =>
             [
                 "legend" => [
-                    "display" => true,
+                    "display" => false,
                 ],
                 "scales" =>
                 [
