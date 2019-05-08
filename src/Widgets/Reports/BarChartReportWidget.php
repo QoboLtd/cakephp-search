@@ -34,6 +34,12 @@ class BarChartReportWidget extends BaseReportGraphs
 
         // We suppose that in the x_axis are the values with labels
         $label_column_name = $report['info']['x_axis'];
+        $list = $this->getList($report['modelName'], $label_column_name);
+
+        if ($list) {
+            $data = $this->sortListByLabel($data, $list, $label_column_name);
+        }
+
         $label = Hash::extract($data, '{n}.' . $label_column_name);
         $columns = explode(',', $report['info']['columns']);
         $columns = array_diff($columns, [$label_column_name]);
@@ -70,6 +76,14 @@ class BarChartReportWidget extends BaseReportGraphs
                             "ticks" =>
                             [
                                 "beginAtZero" => true
+                            ]
+                        ]
+                    ],
+                    "xAxes" => [
+                        [
+                            "ticks" =>
+                            [
+                                "autoSkip" => false
                             ]
                         ]
                     ],

@@ -12,6 +12,9 @@
 namespace Search\Widgets\Reports;
 
 use Cake\Core\Configure;
+use Cake\Utility\Hash;
+use Qobo\Utils\ModuleConfig\ConfigType;
+use Qobo\Utils\ModuleConfig\ModuleConfig;
 use RuntimeException;
 
 abstract class BaseReportGraphs implements ReportGraphsInterface
@@ -232,5 +235,59 @@ abstract class BaseReportGraphs implements ReportGraphsInterface
         }
 
         return $grad;
+    }
+
+    /**
+     * Check if the field of the model is a list type.
+     * In that case, will return the items of the list.
+     *
+     * @param  string $model Model name
+     * @param  string $field Field name
+     * @return mixed[] Items of the list
+     */
+    public function getList(string $model, string $field) : array
+    {
+        $type = !empty((new ModuleConfig(ConfigType::MIGRATION(), $model))->parseToArray()[$field]['type']) ? (new ModuleConfig(ConfigType::MIGRATION(), $model))->parseToArray()[$field]['type'] : '';
+        $is_list = preg_match("/^list\(([^\)]+)\)/", $type, $list);
+
+        return $is_list ? (new ModuleConfig(ConfigType::LISTS(), $model, $list[1]))->parseToArray()['items'] : [];
+    }
+
+    /**
+     * The results can be sorted by a custom list.
+     *
+     * @param  array  $results Data to sort.
+     * @param  array  $list Items list from the model.
+     * @param  string $label Which key of the elements of the $results is the pivot for the sort.
+     * @return mixed[] Sorted data.
+     */
+    public function sortListByLabel(array $results, array $list, string $label) : array
+    {
+        $data = [];
+        // $index is use to make easier find of the position
+        // of the element in the $results.
+        $index = Hash::extract($results, '{n}.' . $label);
+        $i = 0;
+        // $list has the right order of the items.
+        foreach ($list as $key => $value) {
+            if ($value['inactive']) {
+                continue;
+            }
+            $position = array_search($value['label'], $index);
+
+            if (is_numeric($position)) {
+                $data[$i] = $results[$position];
+                unset($results[$position]);
+                $i++;
+            }
+        }
+
+        // In case that are other items (IE. not in model list, inactive labels, etc.)
+        // will be added in the end.
+        foreach ($results as $key => $value) {
+            $data[] = $value;
+        }
+
+        return $data;
     }
 }
