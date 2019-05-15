@@ -256,8 +256,8 @@ abstract class BaseReportGraphs implements ReportGraphsInterface
     /**
      * The results can be sorted by a custom list.
      *
-     * @param  array  $results Data to sort.
-     * @param  array  $list Items list from the model.
+     * @param  mixed[]  $results Data to sort.
+     * @param  mixed[]  $list Items list from the model.
      * @param  string $label Which key of the elements of the $results is the pivot for the sort.
      * @return mixed[] Sorted data.
      */
@@ -273,7 +273,7 @@ abstract class BaseReportGraphs implements ReportGraphsInterface
             if ($value['inactive']) {
                 continue;
             }
-            $position = array_search($value['label'], $index);
+            $position = array_search($value['label'], (array)$index);
 
             if (is_numeric($position)) {
                 $data[$i] = $results[$position];
