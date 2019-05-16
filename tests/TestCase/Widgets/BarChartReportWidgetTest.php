@@ -1,6 +1,7 @@
 <?php
 namespace Search\Test\TestCase\Widgets;
 
+use Cake\Core\Configure;
 use Cake\TestSuite\TestCase;
 use Search\Widgets\Reports\BarChartReportWidget;
 
@@ -58,6 +59,8 @@ class BarChartReportWidgetTest extends TestCase
 
     public function testGetChartData(): void
     {
+        Configure::write('CsvMigrations.modules.path', ROOT . DS . 'test' . DS . 'config' . DS . 'data');
+
         $config = [
             'modelName' => 'Reports',
             'slug' => 'bar_assigned_by_year',
@@ -121,5 +124,92 @@ class BarChartReportWidgetTest extends TestCase
         //as the data passed in the method is empty
         $this->assertNotEmpty($this->widget->getData());
         $this->assertEquals('Y', $result['options']['dataChart']['data']['datasets'][0]['label']);
+    }
+
+    public function testSortListByLabel(): void
+    {
+        $result = [
+            [
+                'status' => 'Being Qualified',
+                'total_amount' => '24'
+            ],
+            [
+                'status' => 'Converted',
+                'total_amount' => '4'
+            ],
+            [
+                'status' => 'Dead',
+                'total_amount' => '3'
+            ],
+            [
+                'status' => 'Prospecting',
+                'total_amount' => '27'
+            ],
+            [
+                'status' => 'Qualified Opportunity',
+                'total_amount' => '19'
+            ],
+            [
+                'status' => 'Another status not listed',
+                'total_amount' => '19'
+            ]
+        ];
+
+        $list = [
+            'very_dead' => [
+                'label' => 'Very dead',
+                'inactive' => true
+            ],
+            'dead' => [
+                'label' => 'Dead',
+                'inactive' => false
+            ],
+            'prospecting' => [
+                'label' => 'Prospecting',
+                'inactive' => false
+            ],
+            'being_qualified' => [
+                'label' => 'Being Qualified',
+                'inactive' => false
+            ],
+            'qualified_opportunity' => [
+                'label' => 'Qualified Opportunity',
+                'inactive' => false
+            ],
+            'converted' => [
+                'label' => 'Converted',
+                'inactive' => false
+            ]
+        ];
+
+        $sort = [
+            [
+                'status' => 'Dead',
+                'total_amount' => '3'
+            ],
+            [
+                'status' => 'Prospecting',
+                'total_amount' => '27'
+            ],
+            [
+                'status' => 'Being Qualified',
+                'total_amount' => '24'
+            ],
+            [
+                'status' => 'Qualified Opportunity',
+                'total_amount' => '19'
+            ],
+            [
+                'status' => 'Converted',
+                'total_amount' => '4'
+            ],
+            [
+                'status' => 'Another status not listed',
+                'total_amount' => '19'
+            ]
+        ];
+
+        $data = $this->widget->sortListByLabel($result, $list, 'status');
+        $this->assertEquals($sort, $data);
     }
 }
