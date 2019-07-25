@@ -134,7 +134,7 @@ class SearchTest extends TestCase
         $this->assertEquals(2, $result->get('total'));
     }
 
-    public function testExecuteWithGroupByAssociated() : void
+    public function testExecuteWithGroupByAssociatedManyToOne() : void
     {
         $this->table->deleteAll([]);
         $this->table->saveMany(
@@ -164,6 +164,80 @@ class SearchTest extends TestCase
         $this->assertSame(
             [1, 'Mark Twain'],
             [$entities[1]->get('total'), $entities[1]->get('_matchingData')['Authors']->get('name')]
+        );
+    }
+
+    public function testExecuteWithGroupByAssociatedManyToMany() : void
+    {
+        $this->table->deleteAll([]);
+        $this->table->saveMany(
+            $this->table->newEntities([
+                ['title' => 'one', 'content' => 'bla bla', 'tags' => ['_ids' => ['00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000002']]],
+                ['title' => 'two', 'content' => 'bla bla', 'tags' => ['_ids' => ['00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000002']]],
+                ['title' => 'three', 'content' => 'bla bla', 'tags' => ['_ids' => ['00000000-0000-0000-0000-000000000001']]],
+                ['title' => 'four', 'content' => 'bla bla', 'tags' => ['_ids' => ['00000000-0000-0000-0000-000000000003']]],
+            ])
+        );
+
+        $query = $this->table->find();
+        $query->group('Tags.id');
+
+        $search = new Search($query, $this->table);
+
+        $query = $search->execute();
+        $query->order(['total' => 'DESC']);
+        $entities = $query->toArray();
+
+        $this->assertCount(3, $entities);
+
+        $this->assertSame(
+            [3, '00000000-0000-0000-0000-000000000001'],
+            [$entities[0]->get('total'), $entities[0]->get('_matchingData')['Tags']->get('id')]
+        );
+        $this->assertSame(
+            [2, '00000000-0000-0000-0000-000000000002'],
+            [$entities[1]->get('total'), $entities[1]->get('_matchingData')['Tags']->get('id')]
+        );
+        $this->assertSame(
+            [1, '00000000-0000-0000-0000-000000000003'],
+            [$entities[2]->get('total'), $entities[2]->get('_matchingData')['Tags']->get('id')]
+        );
+    }
+
+    public function testExecuteWithGroupByAssociatedOneToMany() : void
+    {
+        $table = TableRegistry::getTableLocator()->get('Authors');
+
+        $table->deleteAll([]);
+        /**
+         * @var \Cake\Datasource\EntityInterface[]|\Cake\ORM\ResultSet
+         */
+        $newEntities = $table->newEntities([
+            ['name' => 'Author 1', 'articles' => ['_ids' => ['00000000-0000-0000-0000-000000000003']]],
+            ['name' => 'Author 2', 'articles' => ['_ids' => ['00000000-0000-0000-0000-000000000001']]],
+            ['name' => 'Author 3', 'articles' => ['_ids' => ['00000000-0000-0000-0000-000000000002']]]
+        ]);
+
+        $table->saveMany($newEntities);
+
+        $query = $table->find();
+        $query->group('Articles.published');
+
+        $search = new Search($query, $table);
+
+        $query = $search->execute();
+        $query->order(['total' => 'DESC']);
+        $entities = $query->toArray();
+
+        $this->assertCount(2, $entities);
+
+        $this->assertSame(
+            [2, true],
+            [$entities[0]->get('total'), $entities[0]->get('_matchingData')['Articles']->get('published')]
+        );
+        $this->assertSame(
+            [1, false],
+            [$entities[1]->get('total'), $entities[1]->get('_matchingData')['Articles']->get('published')]
         );
     }
 
