@@ -14,6 +14,7 @@ namespace Search\Test\TestCase\Service;
 use Cake\Datasource\EntityInterface;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
+use Search\Filter\EndsWith;
 use Search\Filter\Equal;
 use Search\Filter\StartsWith;
 use Search\Service\Criteria;
@@ -24,7 +25,9 @@ class SearchTest extends TestCase
 {
     public $fixtures = [
         'plugin.Search.articles',
-        'plugin.Search.authors'
+        'plugin.Search.articles_tags',
+        'plugin.Search.authors',
+        'plugin.Search.tags'
     ];
 
     private $table;
@@ -131,7 +134,40 @@ class SearchTest extends TestCase
         $this->assertEquals(2, $result->get('total'));
     }
 
-    public function testExecuteWithAssociated() : void
+    public function testExecuteWithGroupByAssociated() : void
+    {
+        $this->table->deleteAll([]);
+        $this->table->saveMany(
+            $this->table->newEntities([
+                ['title' => 'one', 'content' => 'bla bla', 'author_id' => '00000000-0000-0000-0000-000000000001'],
+                ['title' => 'two', 'content' => 'bla bla', 'author_id' => '00000000-0000-0000-0000-000000000001'],
+                ['title' => 'three', 'content' => 'bla bla', 'author_id' => '00000000-0000-0000-0000-000000000001'],
+                ['title' => 'four', 'content' => 'bla bla', 'author_id' => '00000000-0000-0000-0000-000000000002'],
+            ])
+        );
+
+        $query = $this->table->find();
+        $query->group('Authors.name');
+
+        $search = new Search($query, $this->table);
+
+        $query = $search->execute();
+        $query->order(['total' => 'DESC']);
+        $entities = $query->toArray();
+
+        $this->assertCount(2, $entities);
+
+        $this->assertSame(
+            [3, 'Stephen King'],
+            [$entities[0]->get('total'), $entities[0]->get('_matchingData')['Authors']->get('name')]
+        );
+        $this->assertSame(
+            [1, 'Mark Twain'],
+            [$entities[1]->get('total'), $entities[1]->get('_matchingData')['Authors']->get('name')]
+        );
+    }
+
+    public function testExecuteWithAssociatedManyToOne() : void
     {
         $this->table->deleteAll([]);
         $this->table->save(
@@ -142,12 +178,71 @@ class SearchTest extends TestCase
             ])
         );
 
-        $search = new Search($this->table->find(), $this->table);
+        $query = $this->table->find();
+        $search = new Search($query, $this->table);
         $search->addCriteria(new Criteria(['field' => 'Authors.name', 'operator' => Equal::class, 'value' => 'Stephen King']));
 
         $query = $search->execute();
 
         $this->assertCount(1, $query);
+    }
+
+    public function testExecuteWithAssociatedManyToMany() : void
+    {
+        $this->table->deleteAll([]);
+        $this->table->saveMany(
+            $this->table->newEntities([
+                ['title' => 'one', 'content' => 'bla bla', 'tags' => ['_ids' => ['00000000-0000-0000-0000-000000000001']]],
+                ['title' => 'two', 'content' => 'bla bla', 'tags' => ['_ids' => ['00000000-0000-0000-0000-000000000002']]],
+                ['title' => 'three', 'content' => 'bla bla', 'tags' => ['_ids' => ['00000000-0000-0000-0000-000000000001']]],
+                ['title' => 'four', 'content' => 'bla bla', 'tags' => ['_ids' => ['00000000-0000-0000-0000-000000000003']]],
+                ['title' => 'five', 'content' => 'bla bla', 'tags' => ['_ids' => ['00000000-0000-0000-0000-000000000003']]]
+            ])
+        );
+
+        $query = $this->table->find();
+        $query->select(['Articles.title', 'Tags.name']);
+        $search = new Search($query, $this->table);
+        $search->addCriteria(new Criteria(['field' => 'Tags.name', 'operator' => EndsWith::class, 'value' => '_tag']));
+
+        $query = $search->execute();
+        $query->order(['Articles.title' => 'ASC']);
+        $entities = $query->toArray();
+
+        $this->assertCount(3, $entities);
+        $this->assertSame(['one', '#first_tag'], [$entities[0]->get('title'), $entities[0]->get('_matchingData')['Tags']->get('name')]);
+        $this->assertSame(['three', '#first_tag'], [$entities[1]->get('title'), $entities[1]->get('_matchingData')['Tags']->get('name')]);
+        $this->assertSame(['two', '#another_tag'], [$entities[2]->get('title'), $entities[2]->get('_matchingData')['Tags']->get('name')]);
+    }
+
+    public function testExecuteWithAssociatedOneToMany() : void
+    {
+        $table = TableRegistry::getTableLocator()->get('Authors');
+
+        $table->deleteAll([]);
+        /**
+         * @var \Cake\Datasource\EntityInterface[]|\Cake\ORM\ResultSet
+         */
+        $newEntities = $table->newEntities([
+            ['name' => 'Author 1', 'articles' => ['_ids' => ['00000000-0000-0000-0000-000000000001']]],
+            ['name' => 'Author 2', 'articles' => ['_ids' => ['00000000-0000-0000-0000-000000000002']]]
+        ]);
+
+        $table->saveMany($newEntities);
+
+        $query = $table->find();
+        $query->select(['Authors.name', 'Articles.title']);
+        $search = new Search($query, $table);
+        $search->addCriteria(new Criteria(['field' => 'Articles.title', 'operator' => StartsWith::class, 'value' => 'First']));
+
+        $query = $search->execute();
+
+        $this->assertCount(1, $query);
+
+        $entity = $query->firstOrFail();
+        Assert::isInstanceOf($entity, \Cake\Datasource\EntityInterface::class);
+
+        $this->assertSame('Author 1', $entity->get('name'));
     }
 
     public function testExecuteWithAssociatedInvalid() : void
