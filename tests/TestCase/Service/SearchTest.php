@@ -170,11 +170,11 @@ class SearchTest extends TestCase
     public function testExecuteWithAssociatedManyToOne() : void
     {
         $this->table->deleteAll([]);
-        $this->table->save(
-            $this->table->newEntity([
-                'title' => 'one',
-                'content' => 'bla bla',
-                'author_id' => '00000000-0000-0000-0000-000000000001'
+        $this->table->saveMany(
+            $this->table->newEntities([
+                ['title' => 'one', 'content' => 'bla bla', 'author_id' => '00000000-0000-0000-0000-000000000001'],
+                ['title' => 'two', 'content' => 'bla bla', 'author_id' => '00000000-0000-0000-0000-000000000002'],
+                ['title' => 'three', 'content' => 'bla bla', 'author_id' => '00000000-0000-0000-0000-000000000001']
             ])
         );
 
@@ -183,8 +183,13 @@ class SearchTest extends TestCase
         $search->addCriteria(new Criteria(['field' => 'Authors.name', 'operator' => Equal::class, 'value' => 'Stephen King']));
 
         $query = $search->execute();
+        $query->order(['Articles.title' => 'ASC']);
+        $entities = $query->toArray();
 
-        $this->assertCount(1, $query);
+        $this->assertCount(2, $entities);
+
+        $this->assertSame('one', $entities[0]->get('title'));
+        $this->assertSame('three', $entities[1]->get('title'));
     }
 
     public function testExecuteWithAssociatedManyToMany() : void
