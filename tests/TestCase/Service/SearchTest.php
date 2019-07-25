@@ -221,6 +221,34 @@ class SearchTest extends TestCase
         $this->assertSame(['two', '#another_tag'], [$entities[3]->get('title'), $entities[3]->get('_matchingData')['Tags']->get('name')]);
     }
 
+    public function testExecuteWithAssociatedManyToManyByRelatedId() : void
+    {
+        $expected = '00000000-0000-0000-0000-000000000001';
+
+        $this->table->deleteAll([]);
+        $this->table->saveMany(
+            $this->table->newEntities([
+                ['title' => 'one', 'content' => 'bla bla', 'tags' => ['_ids' => [$expected]]],
+                ['title' => 'two', 'content' => 'bla bla', 'tags' => ['_ids' => ['00000000-0000-0000-0000-000000000002']]],
+                ['title' => 'three', 'content' => 'bla bla', 'tags' => ['_ids' => [$expected]]],
+                ['title' => 'four', 'content' => 'bla bla', 'tags' => ['_ids' => ['00000000-0000-0000-0000-000000000003']]]
+            ])
+        );
+
+        $query = $this->table->find();
+        $query->select(['Articles.title', 'Tags.id']);
+        $search = new Search($query, $this->table);
+        $search->addCriteria(new Criteria(['field' => 'Tags.id', 'operator' => Equal::class, 'value' => $expected]));
+
+        $query = $search->execute();
+        $query->order(['Articles.title' => 'ASC']);
+        $entities = $query->toArray();
+
+        $this->assertCount(2, $entities);
+        $this->assertSame(['one', $expected], [$entities[0]->get('title'), $entities[0]->get('_matchingData')['Tags']->get('id')]);
+        $this->assertSame(['three', $expected], [$entities[1]->get('title'), $entities[1]->get('_matchingData')['Tags']->get('id')]);
+    }
+
     public function testExecuteWithAssociatedOneToMany() : void
     {
         $table = TableRegistry::getTableLocator()->get('Authors');
