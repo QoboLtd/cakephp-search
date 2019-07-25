@@ -192,7 +192,7 @@ class SearchTest extends TestCase
         $this->table->deleteAll([]);
         $this->table->saveMany(
             $this->table->newEntities([
-                ['title' => 'one', 'content' => 'bla bla', 'tags' => ['_ids' => ['00000000-0000-0000-0000-000000000001']]],
+                ['title' => 'one', 'content' => 'bla bla', 'tags' => ['_ids' => ['00000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000002']]],
                 ['title' => 'two', 'content' => 'bla bla', 'tags' => ['_ids' => ['00000000-0000-0000-0000-000000000002']]],
                 ['title' => 'three', 'content' => 'bla bla', 'tags' => ['_ids' => ['00000000-0000-0000-0000-000000000001']]],
                 ['title' => 'four', 'content' => 'bla bla', 'tags' => ['_ids' => ['00000000-0000-0000-0000-000000000003']]],
@@ -209,10 +209,11 @@ class SearchTest extends TestCase
         $query->order(['Articles.title' => 'ASC']);
         $entities = $query->toArray();
 
-        $this->assertCount(3, $entities);
+        $this->assertCount(4, $entities);
         $this->assertSame(['one', '#first_tag'], [$entities[0]->get('title'), $entities[0]->get('_matchingData')['Tags']->get('name')]);
-        $this->assertSame(['three', '#first_tag'], [$entities[1]->get('title'), $entities[1]->get('_matchingData')['Tags']->get('name')]);
-        $this->assertSame(['two', '#another_tag'], [$entities[2]->get('title'), $entities[2]->get('_matchingData')['Tags']->get('name')]);
+        $this->assertSame(['one', '#another_tag'], [$entities[1]->get('title'), $entities[1]->get('_matchingData')['Tags']->get('name')]);
+        $this->assertSame(['three', '#first_tag'], [$entities[2]->get('title'), $entities[2]->get('_matchingData')['Tags']->get('name')]);
+        $this->assertSame(['two', '#another_tag'], [$entities[3]->get('title'), $entities[3]->get('_matchingData')['Tags']->get('name')]);
     }
 
     public function testExecuteWithAssociatedOneToMany() : void
@@ -243,6 +244,7 @@ class SearchTest extends TestCase
         Assert::isInstanceOf($entity, \Cake\Datasource\EntityInterface::class);
 
         $this->assertSame('Author 1', $entity->get('name'));
+        $this->assertSame('First article title', $entity->get('_matchingData')['Articles']->get('title'));
     }
 
     public function testExecuteWithAssociatedInvalid() : void
