@@ -101,7 +101,7 @@ class ArticlesControllerTest extends JsonIntegrationTestCase
         $this->assertResponseContains('First article title');
 
         $response = $this->getParsedResponse();
-        $this->assertEquals(2, $response->pagination->count);
+        $this->assertEquals(3, $response->pagination->count);
     }
 
     public function testSearchAjaxWithPrimaryKey(): void
@@ -121,7 +121,7 @@ class ArticlesControllerTest extends JsonIntegrationTestCase
         $this->assertJsonResponseOk();
 
         $response = $this->getParsedResponse();
-        $this->assertEquals('00000000-0000-0000-0000-000000000002', $response->data[0]->{'Articles.id'});
+        $this->assertEquals('00000000-0000-0000-0000-000000000003', $response->data[0]->{'Articles.id'});
     }
 
     public function testSearchAjaxWithGroupBy(): void
@@ -298,7 +298,7 @@ class ArticlesControllerTest extends JsonIntegrationTestCase
         $this->assertResponseOk();
 
         $this->assertEquals('lorem-ipsum', $this->viewVariable('filename'));
-        $this->assertEquals(2, $this->viewVariable('count'));
+        $this->assertEquals(3, $this->viewVariable('count'));
     }
 
     public function testExportSearchAjax(): void
