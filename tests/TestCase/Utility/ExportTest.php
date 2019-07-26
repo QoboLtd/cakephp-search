@@ -88,7 +88,7 @@ class ExportTest extends TestCase
 
     public function testCount(): void
     {
-        $this->assertEquals(2, $this->Export->count());
+        $this->assertEquals(3, $this->Export->count());
     }
 
     public function testGetUrl(): void
@@ -128,7 +128,7 @@ class ExportTest extends TestCase
         $this->assertEquals($count + 1, count($data));
 
         // test value with no html entities, no html tags, no spaces at begin and end string.
-        $content = $data[1][1];
+        $content = $data[2][1];
         $this->assertEquals('\'"Fovič"\' €€', $content);
     }
 }
