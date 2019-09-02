@@ -58,5 +58,14 @@ class ArticlesFixture extends TestFixture
             'modified' => '2016-04-27 08:21:54',
             'published' => 0,
         ],
+        [
+            'id' => '00000000-0000-0000-0000-000000000003',
+            'author_id' => '00000000-0000-0000-0000-000000000002',
+            'title' => 'Third article title',
+            'content' => 'Third article title',
+            'created' => '2019-07-25 16:00:13',
+            'modified' => '2019-07-25 16:00:13',
+            'published' => 1,
+        ]
     ];
 }

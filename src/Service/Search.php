@@ -202,12 +202,12 @@ final class Search
         foreach ($this->getAssociations() as $association) {
             switch ($association->type()) {
                 case Association::MANY_TO_ONE:
+                case Association::MANY_TO_MANY:
+                case Association::ONE_TO_MANY:
                     $this->query->leftJoinWith($association->getName());
                     break;
 
                 case Association::ONE_TO_ONE:
-                case Association::ONE_TO_MANY:
-                case Association::MANY_TO_MANY:
                 default:
                     break;
             }

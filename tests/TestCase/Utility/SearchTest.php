@@ -329,7 +329,7 @@ class SearchTest extends TestCase
         $entity = $result->firstOrFail();
 
         $this->assertInstanceOf(Query::class, $result);
-        $this->assertEquals(1, $result->count());
+        $this->assertEquals(2, $result->count());
 
         $this->assertNotEmpty($entity->get('id'));
         $this->assertNotEmpty($entity->get('title'));
