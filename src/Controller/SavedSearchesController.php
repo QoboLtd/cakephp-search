@@ -12,7 +12,6 @@
 namespace Search\Controller;
 
 use Cake\Datasource\EntityInterface;
-use Search\Controller\AppController;
 use Webmozart\Assert\Assert;
 
 /**

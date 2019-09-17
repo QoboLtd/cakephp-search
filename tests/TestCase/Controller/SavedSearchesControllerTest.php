@@ -2,7 +2,6 @@
 namespace Search\Test\TestCase\Controller;
 
 use Cake\TestSuite\IntegrationTestCase;
-use Search\Controller\SavedSearchesController;
 
 /**
  * Search\Controller\SavedSearchesController Test Case

@@ -6,7 +6,6 @@ use Cake\ORM\RulesChecker;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use Cake\Validation\Validator;
-use Search\Model\Table\DashboardsTable;
 
 /**
  * Search\Model\Table\DashboardsTable Test Case

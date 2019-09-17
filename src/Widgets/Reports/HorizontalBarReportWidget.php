@@ -11,9 +11,6 @@
  */
 namespace Search\Widgets\Reports;
 
-use Cake\Utility\Hash;
-use Cake\Utility\Inflector;
-
 class HorizontalBarReportWidget extends BarChartReportWidget
 {
     public $type = 'horizontalBar';

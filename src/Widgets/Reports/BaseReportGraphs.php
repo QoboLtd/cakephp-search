@@ -15,7 +15,6 @@ use Cake\Core\Configure;
 use Cake\Utility\Hash;
 use Qobo\Utils\ModuleConfig\ConfigType;
 use Qobo\Utils\ModuleConfig\ModuleConfig;
-use RuntimeException;
 
 abstract class BaseReportGraphs implements ReportGraphsInterface
 {

@@ -11,12 +11,6 @@
  */
 namespace Search\Criteria;
 
-use Search\Aggregate\AggregateInterface;
-use Search\Criteria\Aggregate;
-use Search\Criteria\Field;
-use Search\Criteria\Filter;
-use Webmozart\Assert\Assert;
-
 /**
  * This class acts as a value object for search criteria.
  */

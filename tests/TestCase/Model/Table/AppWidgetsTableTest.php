@@ -1,10 +1,8 @@
 <?php
 namespace Search\Test\TestCase\Model\Table;
 
-use Cake\Core\Configure;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
-use Search\Model\Table\AppWidgetsTable;
 
 /**
  * Search\Model\Table\AppWidgetsTable Test Case

@@ -11,8 +11,6 @@
  */
 namespace Search\Criteria;
 
-use Webmozart\Assert\Assert;
-
 final class OrderBy
 {
     /**
