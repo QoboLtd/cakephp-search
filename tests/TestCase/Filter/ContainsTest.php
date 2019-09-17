@@ -14,6 +14,8 @@ namespace Search\Test\TestCase\Filter;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use Cake\Utility\Hash;
+use Search\Criteria\Aggregate;
+use Search\Criteria\Field;
 use Search\Filter\Contains;
 
 class ContainsTest extends TestCase
@@ -38,7 +40,7 @@ class ContainsTest extends TestCase
 
     public function testApply() : void
     {
-        $filter = new Contains('title', 'foo');
+        $filter = new Contains(new Field('title'), 'foo');
 
         $result = $filter->apply($this->query);
 
@@ -58,26 +60,25 @@ class ContainsTest extends TestCase
         );
     }
 
-    /**
-     * @dataProvider nonScalarProvider
-     * @param mixed $value
-     */
-    public function testApplyWithNonScalar($value) : void
+    public function testApplyWithAggregateAndGroupBy() : void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $filter = new Contains(new Field('title'), 'foo', new Aggregate(\Search\Aggregate\Count::class), true);
 
-        $filter = new Contains('title', $value);
-    }
+        $result = $filter->apply($this->query);
 
-    /**
-     * @return mixed[]
-     */
-    public function nonScalarProvider() : array
-    {
-        return [
-            [new \DateTime],
-            [new \stdClass],
-            [\stream_context_create()]
-        ];
+        $this->assertRegExp(
+            '/HAVING \(COUNT\(title\)\) LIKE :c0/',
+            $result->sql()
+        );
+
+        $this->assertEquals(
+            ['%foo%'],
+            Hash::extract($result->getValueBinder()->bindings(), '{s}.value')
+        );
+
+        $this->assertEquals(
+            ['integer'],
+            Hash::extract($result->getValueBinder()->bindings(), '{s}.type')
+        );
     }
 }

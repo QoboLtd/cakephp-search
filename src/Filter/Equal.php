@@ -26,11 +26,11 @@ final class Equal extends AbstractFilter
     {
         $method = is_array($this->value) ? 'in' : 'eq';
 
-        return $query->where(
+        return $query->{$this->clause}(
             (new QueryExpression())->{$method}(
                 $this->field,
                 [] === $this->value ? '' : $this->value,
-                $query->getTypeMap()->type($this->field)
+                is_string($this->field) ? $query->getTypeMap()->type($this->field) : $this->type
             )
         );
     }

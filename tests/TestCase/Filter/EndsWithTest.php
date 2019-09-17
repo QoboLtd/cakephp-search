@@ -9,11 +9,14 @@
  * @copyright     Copyright (c) Qobo Ltd. (https://www.qobo.biz)
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
+
 namespace Search\Test\TestCase\Filter;
 
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use Cake\Utility\Hash;
+use Search\Criteria\Aggregate;
+use Search\Criteria\Field;
 use Search\Filter\EndsWith;
 
 class EndsWithTest extends TestCase
@@ -38,12 +41,34 @@ class EndsWithTest extends TestCase
 
     public function testApply() : void
     {
-        $filter = new EndsWith('title', 'foo');
+        $filter = new EndsWith(new Field('title'), 'foo');
 
         $result = $filter->apply($this->query);
 
         $this->assertRegExp(
             '/WHERE "title" LIKE :c0/',
+            $result->sql()
+        );
+
+        $this->assertEquals(
+            ['%foo'],
+            Hash::extract($result->getValueBinder()->bindings(), '{s}.value')
+        );
+
+        $this->assertEquals(
+            ['string'],
+            Hash::extract($result->getValueBinder()->bindings(), '{s}.type')
+        );
+    }
+
+    public function testApplyWithAggregateAndGroupBy() : void
+    {
+        $filter = new EndsWith(new Field('title'), 'foo', new Aggregate(\Search\Aggregate\Maximum::class), true);
+
+        $result = $filter->apply($this->query);
+
+        $this->assertRegExp(
+            '/HAVING \(MAX\(title\)\) LIKE :c0/',
             $result->sql()
         );
 

@@ -11,14 +11,25 @@
  */
 namespace Search\Filter;
 
+use Search\Criteria\Aggregate;
+use Search\Criteria\Field;
+use Search\Criteria\Value;
+
 abstract class AbstractFilter implements FilterInterface
 {
     /**
      * Field name.
      *
-     * @var string
+     * @var \Cake\Database\Expression\FunctionExpression|string
      */
     protected $field;
+
+    /**
+     * Field type.
+     *
+     * @var string
+     */
+    protected $type;
 
     /**
      * Search value.
@@ -28,18 +39,31 @@ abstract class AbstractFilter implements FilterInterface
     protected $value;
 
     /**
-     * Constructor method.
+     * Filter clause.
      *
-     * @param string $field Field name
-     * @param mixed $value Search value
+     * @var string
      */
-    public function __construct(string $field, $value)
-    {
-        if (! is_scalar($value) && ! is_array($value)) {
-            throw new \InvalidArgumentException(sprintf('Unsupported value type provided: %s', gettype($value)));
-        }
+    protected $clause = 'where';
 
-        $this->field = $field;
+    /**
+     * Create filter.
+     *
+     * @param Field $field Field
+     * @param mixed $value Filter value
+     * @param Aggregate|null $aggregate Aggregate
+     * @param bool $withGroupBy Group-by flag
+     */
+    public function __construct(Field $field, $value, ?Aggregate $aggregate = null, bool $withGroupBy = false)
+    {
         $this->value = $value;
+        $this->field = (string)$field;
+
+        if ($aggregate && $withGroupBy) {
+            $this->clause = 'having';
+            $className = (string)$aggregate;
+            $expression = (new $className($field))->getExpression();
+            $this->field = $expression;
+            $this->type = $expression->getReturnType();
+        }
     }
 }
