@@ -14,8 +14,8 @@ namespace Search\Model\Behavior;
 use Cake\ORM\Behavior;
 use Cake\ORM\Query;
 use Cake\Utility\Hash;
-use Search\Service\Criteria;
 use Search\Service\Search;
+use Search\Transformer\QueryDataTransformer;
 
 class SearchableBehavior extends Behavior
 {
@@ -45,19 +45,27 @@ class SearchableBehavior extends Behavior
      */
     public function findSearch(Query $query, array $options) : Query
     {
-        $search = new Search($query, $this->getTable());
+        $data = QueryDataTransformer::transform($query, $options);
 
-        $search->setConjunction(Hash::get($options, 'conjunction', Search::DEFAULT_CONJUNCTION));
+        $search = new Search($this->getTable());
+        if (null !== $data->getGroup()) {
+            $search->setGroupBy($data->getGroup());
+        }
 
-        foreach (Hash::get($options, 'data', []) as $criteria) {
-            if (! is_array($criteria)) {
-                throw new \InvalidArgumentException(sprintf(
-                    'Search criteria must be an array, %s provided instead',
-                    gettype($criteria)
-                ));
-            }
+        if (null !== $data->getOrder()) {
+            $search->setOrderBy($data->getOrder());
+        }
 
-            $search->addCriteria(new Criteria($criteria));
+        if (null !== $data->getConjunction()) {
+            $search->setConjunction($data->getConjunction());
+        }
+
+        foreach ($data->getSelect() as $item) {
+            $search->addSelect($item);
+        }
+
+        foreach ($data->getCriteria() as $item) {
+            $search->addCriteria($item);
         }
 
         return $search->execute();
