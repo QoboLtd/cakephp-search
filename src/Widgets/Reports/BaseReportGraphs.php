@@ -37,6 +37,7 @@ abstract class BaseReportGraphs implements ReportGraphsInterface
         '#c6ba08',
         '#07ada3',
     ];
+
     /**
      * getType
      *

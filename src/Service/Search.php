@@ -35,7 +35,6 @@ final class Search
      */
     const DEFAULT_CONJUNCTION = 'AND';
 
-
     /**
      * Table instance.
      *

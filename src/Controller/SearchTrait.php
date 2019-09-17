@@ -225,6 +225,7 @@ trait SearchTrait
 
         return $this->redirect(['action' => 'search', $id]);
     }
+
     /**
      * Copy action
      *
