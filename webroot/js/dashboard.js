@@ -37,6 +37,17 @@ var dashboard = dashboard || {};
 
             return true;
         });
+
+        $('#dashboardForm').on('click', '.widget-tab a', function(){
+            //Remove active class from all tab-pane
+            $('#dashboardForm .tab-content .tab-pane').each(function(){
+                $(this).removeClass('active');
+            });
+
+            var tabId = $(this).attr("href");
+            //Add active class to the selected tab-pane
+            $('#dashboardForm .tab-content ' + tabId).addClass('active');
+        })
     };
 
     /**
