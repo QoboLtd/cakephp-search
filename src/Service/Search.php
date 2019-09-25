@@ -26,16 +26,6 @@ use Search\Service\Aggregate;
 final class Search
 {
     /**
-     * Default SQL order by direction
-     */
-    const DEFAULT_SORT_BY_ORDER = 'desc';
-
-    /**
-     * Default SQL conjunction
-     */
-    const DEFAULT_CONJUNCTION = 'AND';
-
-    /**
      * Table instance.
      *
      * @var \Cake\ORM\Table
