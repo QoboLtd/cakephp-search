@@ -100,6 +100,17 @@ class SavedSearchesTable extends Table
                 'message' => 'Missing required key "latest"'
             ]);
 
+        $validator
+            ->allowEmpty('criteria')
+            ->isArray('criteria')
+
+            ->inList('conjunction', \Search\Criteria\Conjunction::CONJUNCTIONS)
+
+            ->allowEmpty('fields')
+            ->isArray('fields')
+
+            ->inList('sort_by_order', \Search\Criteria\Direction::DIRECTIONS);
+
         return $validator;
     }
 
