@@ -43,7 +43,7 @@ class MinimumTest extends TestCase
         $result = $aggregate->apply($this->query);
 
         $this->assertRegExp(
-            '/SELECT \(MIN\(priority\)\) AS "min%%priority"/',
+            '/SELECT \(MIN\(priority\)\) AS "MIN%%priority"/',
             $result->sql()
         );
     }

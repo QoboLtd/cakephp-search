@@ -131,7 +131,7 @@ class SearchTest extends TestCase
             ->firstOrFail();
         Assert::isInstanceOf($result, \Cake\Datasource\EntityInterface::class);
 
-        $this->assertEquals(2, $result->get('count(content)'));
+        $this->assertEquals(2, $result->get('COUNT(content)'));
     }
 
     public function testShouldExecuteWithGroupByAndFilter() : void
@@ -173,6 +173,7 @@ class SearchTest extends TestCase
         );
 
         $field = new Field('Authors.name');
+        $aggregateField = 'COUNT(Authors.name)';
 
         $criteria = Criteria::create($field);
         $criteria->setAggregate(new Aggregate(\Search\Aggregate\Count::class));
@@ -181,19 +182,19 @@ class SearchTest extends TestCase
         $search->addSelect($field);
         $search->setGroupBy($field);
         $search->addCriteria($criteria);
-        $search->setOrderBy(new OrderBy(new Field('count(Authors.name)'), new Direction('DESC')));
+        $search->setOrderBy(new OrderBy(new Field($aggregateField), new Direction('DESC')));
         $query = $search->execute();
 
-        $query->order(['count(Authors.name)' => 'DESC']);
+        $query->order([$aggregateField => 'DESC']);
         $entities = $query->toArray();
         $this->assertCount(2, $entities);
         $this->assertSame(
             [3, 'Stephen King'],
-            [$entities[0]->get('count(Authors.name)'), $entities[0]->get('_matchingData')['Authors']->get('name')]
+            [$entities[0]->get($aggregateField), $entities[0]->get('_matchingData')['Authors']->get('name')]
         );
         $this->assertSame(
             [1, 'Mark Twain'],
-            [$entities[1]->get('count(Authors.name)'), $entities[1]->get('_matchingData')['Authors']->get('name')]
+            [$entities[1]->get($aggregateField), $entities[1]->get('_matchingData')['Authors']->get('name')]
         );
     }
 
@@ -210,6 +211,7 @@ class SearchTest extends TestCase
         );
 
         $field = new Field('Tags.id');
+        $aggregateField = 'COUNT(Tags.id)';
 
         $criteria = Criteria::create($field);
         $criteria->setAggregate(new Aggregate(\Search\Aggregate\Count::class));
@@ -219,22 +221,22 @@ class SearchTest extends TestCase
         $search->addSelect(new Field('Tags.name'));
         $search->setGroupBy($field);
         $search->addCriteria($criteria);
-        $search->setOrderBy(new OrderBy(new Field('count(Tags.id)'), new Direction('DESC')));
+        $search->setOrderBy(new OrderBy(new Field($aggregateField), new Direction('DESC')));
         $query = $search->execute();
 
         $entities = $query->toArray();
         $this->assertCount(3, $entities);
         $this->assertSame(
             [3, '00000000-0000-0000-0000-000000000001'],
-            [$entities[0]->get('count(Tags.id)'), $entities[0]->get('_matchingData')['Tags']->get('id')]
+            [$entities[0]->get($aggregateField), $entities[0]->get('_matchingData')['Tags']->get('id')]
         );
         $this->assertSame(
             [2, '00000000-0000-0000-0000-000000000002'],
-            [$entities[1]->get('count(Tags.id)'), $entities[1]->get('_matchingData')['Tags']->get('id')]
+            [$entities[1]->get($aggregateField), $entities[1]->get('_matchingData')['Tags']->get('id')]
         );
         $this->assertSame(
             [1, '00000000-0000-0000-0000-000000000003'],
-            [$entities[2]->get('count(Tags.id)'), $entities[2]->get('_matchingData')['Tags']->get('id')]
+            [$entities[2]->get($aggregateField), $entities[2]->get('_matchingData')['Tags']->get('id')]
         );
     }
 
@@ -255,6 +257,7 @@ class SearchTest extends TestCase
         $table->saveMany($newEntities);
 
         $field = new Field('Articles.published');
+        $aggregateField = 'COUNT(Articles.published)';
 
         $criteria = Criteria::create($field);
         $criteria->setAggregate(new Aggregate(\Search\Aggregate\Count::class));
@@ -263,18 +266,18 @@ class SearchTest extends TestCase
         $search->addSelect($field);
         $search->setGroupBy($field);
         $search->addCriteria($criteria);
-        $search->setOrderBy(new OrderBy(new Field('count(Articles.published)'), new Direction('DESC')));
+        $search->setOrderBy(new OrderBy(new Field($aggregateField), new Direction('DESC')));
         $query = $search->execute();
 
         $entities = $query->toArray();
         $this->assertCount(2, $entities);
         $this->assertSame(
             [2, true],
-            [$entities[0]->get('count(Articles.published)'), $entities[0]->get('_matchingData')['Articles']->get('published')]
+            [$entities[0]->get($aggregateField), $entities[0]->get('_matchingData')['Articles']->get('published')]
         );
         $this->assertSame(
             [1, false],
-            [$entities[1]->get('count(Articles.published)'), $entities[1]->get('_matchingData')['Articles']->get('published')]
+            [$entities[1]->get($aggregateField), $entities[1]->get('_matchingData')['Articles']->get('published')]
         );
     }
 
@@ -334,7 +337,7 @@ class SearchTest extends TestCase
             ->firstOrFail();
         Assert::isInstanceOf($entity, \Cake\Datasource\EntityInterface::class);
 
-        $this->assertSame(70.11, $entity->get('sum(priority)'));
+        $this->assertSame(70.11, $entity->get('SUM(priority)'));
     }
 
     public function testShouldExecuteWithAggregateAndGroupBy() : void
@@ -361,18 +364,18 @@ class SearchTest extends TestCase
 
         $query = $search->execute();
 
-        $aggregateField = 'max(priority)';
+        $aggregateField = 'MAX(priority)';
         $query->order([$aggregateField => 'DESC']);
 
         $entities = $query->toArray();
         $this->assertCount(2, $entities);
         $this->assertSame(
             ['40.11', false],
-            [$entities[0]->get('max(priority)'), $entities[0]->get('published')]
+            [$entities[0]->get($aggregateField), $entities[0]->get('published')]
         );
         $this->assertSame(
             ['20.32', true],
-            [$entities[1]->get('max(priority)'), $entities[1]->get('published')]
+            [$entities[1]->get($aggregateField), $entities[1]->get('published')]
         );
     }
 
@@ -406,7 +409,7 @@ class SearchTest extends TestCase
         Assert::isInstanceOf($result, \Cake\Datasource\EntityInterface::class);
         $this->assertSame(
             ['00000000-0000-0000-0000-000000000001', 3],
-            [$result->get('author_id'), $result->get('count(author_id)')]
+            [$result->get('author_id'), $result->get('COUNT(author_id)')]
         );
     }
 
@@ -558,11 +561,11 @@ class SearchTest extends TestCase
     public function aggregatesProvider() : array
     {
         return [
-            [\Search\Aggregate\Average::class, 25.2325, 'avg'],
-            [\Search\Aggregate\Count::class, 4, 'count'],
-            [\Search\Aggregate\Maximum::class, '40.11', 'max'],
-            [\Search\Aggregate\Minimum::class, '10.5', 'min'],
-            [\Search\Aggregate\Sum::class, 100.93, 'sum']
+            [\Search\Aggregate\Average::class, 25.2325, 'AVG'],
+            [\Search\Aggregate\Count::class, 4, 'COUNT'],
+            [\Search\Aggregate\Maximum::class, '40.11', 'MAX'],
+            [\Search\Aggregate\Minimum::class, '10.5', 'MIN'],
+            [\Search\Aggregate\Sum::class, 100.93, 'SUM']
         ];
     }
 }

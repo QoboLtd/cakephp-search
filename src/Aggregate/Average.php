@@ -16,7 +16,7 @@ use Cake\Database\FunctionsBuilder;
 
 final class Average extends AbstractAggregate
 {
-    const IDENTIFIER = 'avg';
+    const IDENTIFIER = 'AVG';
 
     /**
      * {@inheritDoc}

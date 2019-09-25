@@ -43,7 +43,7 @@ class AverageTest extends TestCase
         $result = $aggregate->apply($this->query);
 
         $this->assertRegExp(
-            '/SELECT \(AVG\(priority\)\) AS "avg%%priority"/',
+            '/SELECT \(AVG\(priority\)\) AS "AVG%%priority"/',
             $result->sql()
         );
     }

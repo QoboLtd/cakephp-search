@@ -16,7 +16,7 @@ use Cake\Database\FunctionsBuilder;
 
 final class Minimum extends AbstractAggregate
 {
-    const IDENTIFIER = 'min';
+    const IDENTIFIER = 'MIN';
 
     /**
      * {@inheritDoc}

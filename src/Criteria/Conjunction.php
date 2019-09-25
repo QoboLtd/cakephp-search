@@ -18,7 +18,12 @@ final class Conjunction
     /**
      * SQL conjunctions
      */
-    private const CONJUNCTIONS = ['AND', 'OR'];
+    public const CONJUNCTIONS = ['AND', 'OR'];
+
+    /**
+     * Default SQL conjunction
+     */
+    public const DEFAULT_CONJUNCTION = 'AND';
 
     /**
      * @var string

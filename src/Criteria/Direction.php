@@ -21,6 +21,11 @@ final class Direction
     public const DIRECTIONS = ['DESC', 'ASC'];
 
     /**
+     * Default SQL sort direction
+     */
+    public const DEFAULT_DIRECTION = 'DESC';
+
+    /**
      * @var string
      */
     private $value;

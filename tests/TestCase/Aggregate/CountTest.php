@@ -43,7 +43,7 @@ class CountTest extends TestCase
         $result = $aggregate->apply($this->query);
 
         $this->assertRegExp(
-            '/SELECT \(COUNT\(priority\)\) AS "count%%priority"/',
+            '/SELECT \(COUNT\(priority\)\) AS "COUNT%%priority"/',
             $result->sql()
         );
     }

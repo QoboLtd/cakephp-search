@@ -16,7 +16,7 @@ use Cake\Database\FunctionsBuilder;
 
 final class Sum extends AbstractAggregate
 {
-    const IDENTIFIER = 'sum';
+    const IDENTIFIER = 'SUM';
 
     /**
      * {@inheritDoc}
