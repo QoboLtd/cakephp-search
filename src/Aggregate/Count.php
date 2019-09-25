@@ -16,7 +16,7 @@ use Cake\Database\FunctionsBuilder;
 
 final class Count extends AbstractAggregate
 {
-    const IDENTIFIER = 'count';
+    const IDENTIFIER = 'COUNT';
 
     /**
      * {@inheritDoc}

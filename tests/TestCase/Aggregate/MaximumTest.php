@@ -43,7 +43,7 @@ class MaximumTest extends TestCase
         $result = $aggregate->apply($this->query);
 
         $this->assertRegExp(
-            '/SELECT \(MAX\(priority\)\) AS "max%%priority"/',
+            '/SELECT \(MAX\(priority\)\) AS "MAX%%priority"/',
             $result->sql()
         );
     }

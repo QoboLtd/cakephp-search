@@ -16,7 +16,7 @@ use Cake\Database\FunctionsBuilder;
 
 final class Maximum extends AbstractAggregate
 {
-    const IDENTIFIER = 'max';
+    const IDENTIFIER = 'MAX';
 
     /**
      * {@inheritDoc}

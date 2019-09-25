@@ -43,7 +43,7 @@ class SumTest extends TestCase
         $result = $aggregate->apply($this->query);
 
         $this->assertRegExp(
-            '/SELECT \(SUM\(priority\)\) AS "sum%%priority"/',
+            '/SELECT \(SUM\(priority\)\) AS "SUM%%priority"/',
             $result->sql()
         );
     }
