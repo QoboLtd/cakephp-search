@@ -56,6 +56,8 @@ class SavedSearchesTable extends Table
     protected function _initializeSchema(TableSchema $schema) : TableSchema
     {
         $schema->setColumnType('content', 'json');
+        $schema->setColumnType('criteria', 'json');
+        $schema->setColumnType('fields', 'json');
 
         return $schema;
     }
