@@ -84,23 +84,6 @@ class SavedSearchesTable extends Table
             ->notEmpty('model');
 
         $validator
-            ->requirePresence('content', 'create')
-            ->notEmpty('content')
-            ->isArray('content')
-            ->add('content', 'validateSaved', [
-                'rule' => function ($value, $context) {
-                    return is_array($value) ? array_key_exists('saved', $value) : false;
-                },
-                'message' => 'Missing required key "saved"'
-            ])
-            ->add('content', 'validateLatest', [
-                'rule' => function ($value, $context) {
-                    return is_array($value) ? array_key_exists('latest', $value) : false;
-                },
-                'message' => 'Missing required key "latest"'
-            ]);
-
-        $validator
             ->allowEmpty('criteria')
             ->isArray('criteria')
 
@@ -127,23 +110,6 @@ class SavedSearchesTable extends Table
         #$rules->add($rules->existsIn(['user_id'], 'Users'));
 
         return $rules;
-    }
-
-    /**
-     * Structures "content" data to suported format.
-     *
-     * @param \Cake\Event\Event $event Event object
-     * @param \ArrayObject $data Request data
-     * @param \ArrayObject $options Marshaller options
-     * @return void
-     */
-    public function beforeMarshal(Event $event, ArrayObject $data, ArrayObject $options) : void
-    {
-        // @todo this will be removed once saved searches table schema is adjusted
-        $saved = Hash::get($data, 'content.saved', []);
-        if (! empty($saved)) {
-            $data['content']['latest'] = $saved;
-        }
     }
 
     /**
