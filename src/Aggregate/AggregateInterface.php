@@ -16,7 +16,7 @@ use Cake\ORM\Query;
 
 interface AggregateInterface
 {
-    const AGGREGATE_PATTERN = '/(.*?)\((.*?)\)/';
+    public const AGGREGATE_PATTERN = '/(.*?)\((.*?)\)/';
 
     /**
      * Applies aggregate to the provided query.
