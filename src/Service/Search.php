@@ -145,7 +145,7 @@ final class Search
         $this->applyJoins();
 
         if (null !== $this->groupBy) {
-            $this->query->group($this->groupBy);
+            $this->query->group((string)$this->groupBy);
         }
 
         if ($this->orderBy) {
