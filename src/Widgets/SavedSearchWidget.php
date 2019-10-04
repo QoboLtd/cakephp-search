@@ -102,25 +102,7 @@ final class SavedSearchWidget extends BaseWidget
             return null;
         }
 
-        /** @var \Cake\Datasource\RepositoryInterface */
-        $table = TableRegistry::get($savedSearch->get('model'));
-
-        $search = new Search($table, $options['user']);
-        // keeps backward compatibility
-        $entity = $search->reset($savedSearch);
-        if (null === $entity) {
-            $this->errors[] = 'Failed to reset entity';
-
-            return null;
-        }
-        $content = $entity->get('content');
-        $content['saved'] = Validator::validateData($table, $content['saved'], $options['user']);
-        $entity->set('content', $content);
-
-        $this->options['fields'] = Utility::instance()->getSearchableFields($table, $options['user']);
-        $this->options['associationLabels'] = Utility::instance()->getAssociationLabels($table);
-
-        $this->data = $entity;
+        $this->data = $savedSearch;
 
         return $this->data;
     }
