@@ -36,7 +36,9 @@ final class Filter
     public function __construct(string $type, $value)
     {
         Assert::classExists($type);
-        Assert::implementsInterface($type, FilterInterface::class);
+        if (! in_array(FilterInterface::class, class_implements($type))) {
+            throw new \InvalidArgumentException(sprintf('"%s" does not implement "%s"', $type, FilterInterface::class));
+        }
 
         $items = is_array($value) ? $value : [$value];
         foreach ($items as $item) {
