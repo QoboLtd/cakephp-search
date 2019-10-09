@@ -30,7 +30,11 @@ final class Aggregate
     public function __construct(string $value)
     {
         Assert::classExists($value);
-        Assert::implementsInterface($value, AggregateInterface::class);
+        if (! in_array(AggregateInterface::class, class_implements($value))) {
+            throw new \InvalidArgumentException(
+                sprintf('"%s" does not implement "%s"', $value, AggregateInterface::class)
+            );
+        }
 
         $this->value = $value;
     }
