@@ -105,6 +105,7 @@ final class MagicValue
     {
         return new Time('yesterday');
     }
+
     /**
      * Tomorrow's date magic value getter.
      *

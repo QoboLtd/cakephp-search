@@ -14,6 +14,8 @@ namespace Search\Test\TestCase\Filter;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use Cake\Utility\Hash;
+use Search\Criteria\Aggregate;
+use Search\Criteria\Field;
 use Search\Filter\NotEqual;
 
 class NotEqualTest extends TestCase
@@ -38,7 +40,7 @@ class NotEqualTest extends TestCase
 
     public function testApply() : void
     {
-        $filter = new NotEqual('title', 'foo');
+        $filter = new NotEqual(new Field('title'), 'foo');
 
         $result = $filter->apply($this->query);
 
@@ -51,11 +53,16 @@ class NotEqualTest extends TestCase
             ['foo'],
             Hash::extract($result->getValueBinder()->bindings(), '{s}.value')
         );
+
+        $this->assertEquals(
+            ['string'],
+            Hash::extract($result->getValueBinder()->bindings(), '{s}.type')
+        );
     }
 
     public function testApplyWithMulti() : void
     {
-        $filter = new NotEqual('title', ['foo', 'bar']);
+        $filter = new NotEqual(new Field('title'), ['foo', 'bar']);
 
         $result = $filter->apply($this->query);
 
@@ -77,7 +84,7 @@ class NotEqualTest extends TestCase
 
     public function testApplyWithEmtpyArray() : void
     {
-        $filter = new NotEqual('title', []);
+        $filter = new NotEqual(new Field('title'), []);
 
         $result = $filter->apply($this->query);
 
@@ -93,6 +100,28 @@ class NotEqualTest extends TestCase
 
         $this->assertEquals(
             ['string'],
+            Hash::extract($result->getValueBinder()->bindings(), '{s}.type')
+        );
+    }
+
+    public function testApplyWithAggregateAndGroupBy() : void
+    {
+        $filter = new NotEqual(new Field('title'), 'foo', new Aggregate(\Search\Aggregate\Average::class), true);
+
+        $result = $filter->apply($this->query);
+
+        $this->assertRegExp(
+            '/HAVING \(\(AVG\(title\)\) != :c0 OR \(AVG\(title\)\) IS NULL\)/',
+            $result->sql()
+        );
+
+        $this->assertEquals(
+            ['foo'],
+            Hash::extract($result->getValueBinder()->bindings(), '{s}.value')
+        );
+
+        $this->assertEquals(
+            ['float'],
             Hash::extract($result->getValueBinder()->bindings(), '{s}.type')
         );
     }

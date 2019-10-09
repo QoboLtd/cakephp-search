@@ -14,6 +14,8 @@ namespace Search\Test\TestCase\Filter;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use Cake\Utility\Hash;
+use Search\Criteria\Aggregate;
+use Search\Criteria\Field;
 use Search\Filter\LessOrEqual;
 
 class LessOrEqualTest extends TestCase
@@ -38,7 +40,7 @@ class LessOrEqualTest extends TestCase
 
     public function testApply() : void
     {
-        $filter = new LessOrEqual('title', 'foo');
+        $filter = new LessOrEqual(new Field('title'), 'foo');
 
         $result = $filter->apply($this->query);
 
@@ -54,6 +56,28 @@ class LessOrEqualTest extends TestCase
 
         $this->assertEquals(
             ['string'],
+            Hash::extract($result->getValueBinder()->bindings(), '{s}.type')
+        );
+    }
+
+    public function testApplyWithAggregateAndGroupBy() : void
+    {
+        $filter = new LessOrEqual(new Field('title'), 'foo', new Aggregate(\Search\Aggregate\Average::class), true);
+
+        $result = $filter->apply($this->query);
+
+        $this->assertRegExp(
+            '/HAVING \(AVG\(title\)\) <= :c0/',
+            $result->sql()
+        );
+
+        $this->assertEquals(
+            ['foo'],
+            Hash::extract($result->getValueBinder()->bindings(), '{s}.value')
+        );
+
+        $this->assertEquals(
+            ['float'],
             Hash::extract($result->getValueBinder()->bindings(), '{s}.type')
         );
     }

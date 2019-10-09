@@ -24,11 +24,11 @@ final class NotContains extends AbstractFilter
      */
     public function apply(Query $query) : Query
     {
-        return $query->where(
+        return $query->{$this->clause}(
             (new QueryExpression())->notLike(
                 $this->field,
                 '%' . $this->value . '%',
-                $query->getTypeMap()->type($this->field)
+                is_string($this->field) ? $query->getTypeMap()->type($this->field) : $this->type
             )
         );
     }

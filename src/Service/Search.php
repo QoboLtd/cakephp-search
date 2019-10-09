@@ -11,38 +11,20 @@
  */
 namespace Search\Service;
 
+use Cake\Database\Expression\OrderByExpression;
 use Cake\ORM\Association;
 use Cake\ORM\Query;
 use Cake\ORM\Table;
+use Search\Aggregate\AggregateInterface;
+use Search\Criteria\Conjunction;
+use Search\Criteria\Criteria;
+use Search\Criteria\Field;
+use Search\Criteria\OrderBy;
 use Search\Filter\FilterInterface;
+use Search\Service\Aggregate;
 
 final class Search
 {
-    /**
-     * SQL sort by orders
-     */
-    const SORT_BY_ORDERS = ['desc', 'asc'];
-
-    /**
-     * Default SQL order by direction
-     */
-    const DEFAULT_SORT_BY_ORDER = 'desc';
-
-    /**
-     * SQL conjunctions
-     */
-    const CONJUNCTIONS = ['AND', 'OR'];
-
-    /**
-     * Default SQL conjunction
-     */
-    const DEFAULT_CONJUNCTION = 'AND';
-
-    /**
-     * Group by count field.
-     */
-    const GROUP_BY_FIELD = 'total';
-
     /**
      * Table instance.
      *
@@ -58,70 +40,100 @@ final class Search
     private $query;
 
     /**
-     * Strict mode flag.
-     *
-     * @var bool
-     */
-    private $strict = true;
-
-    /**
      * Search conjunction.
      *
-     * @var string
+     * @var \Search\Criteria\Conjunction
      */
-    private $conjunction = 'AND';
+    private $conjunction;
 
     /**
      * Search criteria list.
      *
-     * @var \Search\Service\Criteria[]
+     * @var \Search\Criteria\Criteria[]
      */
     private $criteria = [];
 
     /**
+     * @var \Search\Criteria\Field|null
+     */
+    private $groupBy = null;
+
+    /**
+     * @var \Search\Criteria\OrderBy|null
+     */
+    private $orderBy = null;
+
+    /**
+     * @var \Search\Criteria\Field[]
+     */
+    private $select = [];
+
+    /**
      * Constructor method.
      *
-     * @param \Cake\ORM\Query $query Query instance
      * @param \Cake\ORM\Table $table Table instance
-     * @param bool $strict Strict mode flag
      * @return void
      */
-    public function __construct(Query $query, Table $table, bool $strict = true)
+    public function __construct(Table $table)
     {
         $this->table = $table;
-        $this->query = $query;
-        $this->strict = $strict;
+        $this->query = $table->query();
+
+        $this->setConjunction(new Conjunction('AND'));
+    }
+
+    /**
+     * Add group-by to Search.
+     *
+     * @param \Search\Criteria\Field $field Field
+     * @return void
+     */
+    public function setGroupBy(Field $field) : void
+    {
+        $this->groupBy = $field;
+    }
+
+    /**
+     * Add order-by to Search.
+     *
+     * @param \Search\Criteria\OrderBy $orderBy OrderBy
+     * @return void
+     */
+    public function setOrderBy(OrderBy $orderBy) : void
+    {
+        $this->orderBy = $orderBy;
     }
 
     /**
      * Add criteria to Search.
      *
-     * @param \Search\Service\Criteria $criteria Criteria object
+     * @param \Search\Criteria\Criteria $criteria Criteria object
      * @return void
-     * @throws \RuntimeException When invalid filter class is provided
      */
     public function addCriteria(Criteria $criteria) : void
     {
-        if (! $this->isValidFilter($criteria->getOperator())) {
-            throw new \RuntimeException(sprintf('Invalid filter provided: %s', $criteria->getOperator()));
-        }
-
         $this->criteria[] = $criteria;
+    }
+
+    /**
+     * Add selection field to Search.
+     *
+     * @param \Search\Criteria\Field $field Field
+     * @return void
+     */
+    public function addSelect(Field $field) : void
+    {
+        $this->select[] = $field;
     }
 
     /**
      * Add conjunction to Search.
      *
-     * @param string $conjunction Search conjunction
+     * @param \Search\Criteria\Conjunction $conjunction Search conjunction
      * @return void
-     * @throws \RuntimeException When invalid filter class is provided
      */
-    public function setConjunction(string $conjunction = self::DEFAULT_CONJUNCTION) : void
+    public function setConjunction(Conjunction $conjunction) : void
     {
-        if (! in_array($conjunction, self::CONJUNCTIONS)) {
-            throw new \RuntimeException(sprintf('Invalid conjunction provided: %s', $conjunction));
-        }
-
         $this->conjunction = $conjunction;
     }
 
@@ -132,28 +144,25 @@ final class Search
      */
     public function execute() : Query
     {
-        $this->applyFilters();
         $this->applySelect();
+        $this->applyFilters();
         $this->applyJoins();
 
-        $clause = $this->query->clause('where');
+        if (null !== $this->groupBy) {
+            $this->query->group((string)$this->groupBy);
+        }
+
+        if ($this->orderBy) {
+            $this->query->order([(string)$this->orderBy->field() => (string)$this->orderBy->direction()]);
+        }
+
         // adjust where clause conjunction
+        $clause = $this->query->clause('where');
         if (null !== $clause) {
-            $this->query->where($clause->setConjunction($this->conjunction), [], true);
+            $this->query->where($clause->setConjunction((string)$this->conjunction), [], true);
         }
 
         return $this->query;
-    }
-
-    /**
-     * Validates filter class.
-     *
-     * @param string $filter Filter class name
-     * @return bool
-     */
-    private function isValidFilter(string $filter) : bool
-    {
-        return in_array(FilterInterface::class, class_implements($filter));
     }
 
     /**
@@ -164,11 +173,17 @@ final class Search
     private function applyFilters() : void
     {
         foreach ($this->criteria as $criteria) {
-            $filterClass = $criteria->getOperator();
+            if (null === $criteria->filter()) {
+                continue;
+            }
+
+            $filterClass = $criteria->filter()->type();
 
             $filter = new $filterClass(
-                $this->table->aliasField($criteria->getField()),
-                $criteria->getValue()
+                $criteria->field(),
+                $criteria->filter()->value(),
+                $criteria->aggregate(),
+                $this->hasGroup()
             );
 
             $filter->apply($this->query);
@@ -182,14 +197,29 @@ final class Search
      */
     private function applySelect() : void
     {
-        $group = $this->query->clause('group');
-        $group = array_filter($group);
-        if (empty($group)) {
-            return;
+        foreach ($this->select as $item) {
+            $this->query->select((string)$item);
         }
+        foreach ($this->criteria as $criteria) {
+            if (null === $criteria->aggregate()) {
+                continue;
+            }
 
-        $this->query->select($group, true);
-        $this->query->select([self::GROUP_BY_FIELD => $this->query->func()->count($group[0])]);
+            $className = (string)$criteria->aggregate();
+            $aggregate = new $className($criteria->field());
+
+            $aggregate->apply($this->query);
+        }
+    }
+
+    /**
+     * Group checker.
+     *
+     * @return bool
+     */
+    private function hasGroup() : bool
+    {
+        return null !== $this->groupBy;
     }
 
     /**
@@ -247,7 +277,7 @@ final class Search
     {
         $result = [];
         foreach ($this->criteria as $criteria) {
-            $field = $this->table->aliasField($criteria->getField());
+            $field = $this->table->aliasField((string)$criteria->field());
             if (! in_array($field, $result)) {
                 $result[] = $field;
             }
