@@ -20,7 +20,6 @@ use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use Qobo\Utils\ModuleConfig\ConfigType;
 use Qobo\Utils\ModuleConfig\ModuleConfig;
-use Search\Model\Entity\SavedSearch;
 
 /**
  * SavedSearches Model

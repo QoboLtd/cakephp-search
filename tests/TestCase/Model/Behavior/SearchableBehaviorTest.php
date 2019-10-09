@@ -13,7 +13,6 @@ namespace Search\Test\TestCase\Model\Behavior;
 
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
-use Cake\Utility\Hash;
 use Search\Filter\Equal;
 use Search\Filter\StartsWith;
 

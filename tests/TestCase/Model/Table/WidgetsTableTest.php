@@ -7,7 +7,6 @@ use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use Cake\Validation\Validator;
 use Search\Event\Model\WidgetsListener;
-use Search\Model\Table\WidgetsTable;
 
 /**
  * Search\Model\Table\WidgetsTable Test Case

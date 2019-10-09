@@ -3,7 +3,6 @@ namespace Search\Test\TestCase\Widgets;
 
 use Cake\TestSuite\TestCase;
 use Cake\View\View;
-use RuntimeException;
 use Search\Widgets\ReportWidget;
 use Search\Widgets\SavedSearchWidget;
 use Search\Widgets\WidgetFactory;

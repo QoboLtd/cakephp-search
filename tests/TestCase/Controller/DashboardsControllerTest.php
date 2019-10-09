@@ -3,7 +3,6 @@ namespace Search\Test\TestCase\Controller;
 
 use Cake\Core\Configure;
 use Cake\Event\EventManager;
-use Cake\ORM\TableRegistry;
 use Cake\TestSuite\IntegrationTestCase;
 use Search\Utility;
 

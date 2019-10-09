@@ -11,17 +11,13 @@
  */
 namespace Search\Service;
 
-use Cake\Database\Expression\OrderByExpression;
 use Cake\ORM\Association;
 use Cake\ORM\Query;
 use Cake\ORM\Table;
-use Search\Aggregate\AggregateInterface;
 use Search\Criteria\Conjunction;
 use Search\Criteria\Criteria;
 use Search\Criteria\Field;
 use Search\Criteria\OrderBy;
-use Search\Filter\FilterInterface;
-use Search\Service\Aggregate;
 
 final class Search
 {

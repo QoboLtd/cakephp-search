@@ -3,7 +3,6 @@ namespace Search\Test\TestCase\Shell;
 
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\ConsoleIntegrationTestCase;
-use Search\Shell\SearchShell;
 
 /**
  * Search\Shell\SearchShell Test Case
