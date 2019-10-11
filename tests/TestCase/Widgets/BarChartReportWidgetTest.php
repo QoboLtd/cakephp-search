@@ -1,6 +1,7 @@
 <?php
 namespace Search\Test\TestCase\Widgets;
 
+use Cake\Core\Configure;
 use Cake\TestSuite\TestCase;
 use Search\Widgets\Reports\BarChartReportWidget;
 
@@ -10,7 +11,10 @@ class BarChartReportWidgetTest extends TestCase
 
     public function setUp()
     {
+        parent::setUp();
+
         $this->widget = new BarChartReportWidget();
+        Configure::write('CsvMigrations.modules.path', TESTS . 'config' . DS . 'data' . DS);
     }
 
     public function tearDown()
