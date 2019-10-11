@@ -12,7 +12,6 @@
 namespace Search\Widgets;
 
 use Cake\Utility\Inflector;
-use RuntimeException;
 
 class WidgetFactory
 {
@@ -47,11 +46,11 @@ class WidgetFactory
         }
 
         if ('' === $className) {
-            throw new RuntimeException("Class [$type] doesn't exist");
+            throw new \RuntimeException("Class [$type] doesn't exist");
         }
 
         if (!in_array($interface, class_implements($className))) {
-            throw new RuntimeException("Class [$type] doesn't implement " . self::WIDGET_INTERFACE);
+            throw new \RuntimeException("Class [$type] doesn't implement " . self::WIDGET_INTERFACE);
         }
 
         return new $className($options);

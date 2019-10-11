@@ -17,7 +17,6 @@ use Cake\Event\EventManager;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
-use RuntimeException;
 use Search\Event\EventName;
 use Search\Widgets\Reports\ReportGraphsInterface;
 
@@ -224,7 +223,7 @@ class ReportWidget extends BaseWidget
         $validated = $this->validate($config);
 
         if (! $validated['status']) {
-            throw new RuntimeException("Report validation failed");
+            throw new \RuntimeException('Report validation failed');
         }
 
         $result = $this->getQueryData($config);
