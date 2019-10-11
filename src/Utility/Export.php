@@ -156,20 +156,20 @@ final class Export
 
         $result = [];
         foreach ($this->data['fields'] as $field) {
-            $extraInfo = '';
+            $extraInfo = [];
             if (AbstractAggregate::isAggregate($field)) {
-                $extraInfo = AbstractAggregate::extractAggregate($field);
+                $extraInfo[] = AbstractAggregate::extractAggregate($field);
                 $field = AbstractAggregate::extractFieldName($field);
             }
 
             $label = array_key_exists($field, $fieldLabels) ? $fieldLabels[$field] : $field;
 
             list($fieldModel, ) = pluginSplit($field);
-            $extraInfo = array_key_exists($fieldModel, $associationLabels) ?
-                $associationLabels[$fieldModel] :
-                $extraInfo;
+            if (array_key_exists($fieldModel, $associationLabels)) {
+                $extraInfo[] = $associationLabels[$fieldModel];
+            }
 
-            $result[] = $extraInfo ? $label . ' (' . $extraInfo . ')' : $label;
+            $result[] = [] !== $extraInfo ? $label . ' (' . implode(' - ', $extraInfo) . ')' : $label;
         }
 
         return $result;
