@@ -1,6 +1,7 @@
 # Project specific files #
 ##########################
 build/
+/tmp/
 vendor/
 cghooks.lock
 
@@ -37,5 +38,7 @@ Thumbs.db
 nbproject/*
 # Visual Studio Code
 .vscode
+# php-cs-fixer
+.php_cs.cache
 # Sass preprocessor
 .sass-cache/
