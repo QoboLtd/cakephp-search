@@ -249,6 +249,12 @@ final class QueryDataTransformer
         }
     }
 
+    /**
+     * Aggregate class getter.
+     *
+     * @param string $aggregate Aggregate type
+     * @return string
+     */
     private static function getAggregateClass(string $aggregate) : string
     {
         return array_key_exists(strtolower($aggregate), self::AGGREGATE_MAP) ?
