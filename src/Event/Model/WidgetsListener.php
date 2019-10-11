@@ -27,7 +27,7 @@ class WidgetsListener implements EventListenerInterface
         return [
             (string)EventName::MODEL_DASHBOARDS_GET_WIDGETS() => [
                 'callable' => 'getWidgets',
-                'priority' => 9999999999 // this listener should be called last
+                'priority' => PHP_INT_MAX // this listener should be called last
             ]
         ];
     }
