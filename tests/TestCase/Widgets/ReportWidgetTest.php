@@ -4,7 +4,6 @@ namespace Search\Test\TestCase\Widgets;
 use Cake\Core\Configure;
 use Cake\Event\EventList;
 use Cake\Event\EventManager;
-use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use Search\Widgets\Reports\BarChartReportWidget;
 use Search\Widgets\Reports\DonutChartReportWidget;
