@@ -2,21 +2,12 @@
 namespace Search\Test\TestCase\Widgets;
 
 use Cake\TestSuite\TestCase;
-use Cake\View\View;
 use Search\Widgets\ReportWidget;
 use Search\Widgets\SavedSearchWidget;
 use Search\Widgets\WidgetFactory;
 
-/**
- * @property \Cake\View\View $appView
- */
 class WidgetFactoryTest extends TestCase
 {
-    public function setUp()
-    {
-        $this->appView = new View();
-    }
-
     /**
      * @dataProvider dataProviderWidgets
      * @param mixed[] $widgetConfig

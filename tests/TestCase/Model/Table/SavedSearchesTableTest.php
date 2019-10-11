@@ -13,13 +13,6 @@ use Search\Model\Entity\SavedSearch;
 class SavedSearchesTableTest extends TestCase
 {
     /**
-     * Test subject
-     *
-     * @var \Search\Model\Table\SavedSearchesTable
-     */
-    public $SavedSearches;
-
-    /**
      * Fixtures
      *
      * @var array
@@ -28,6 +21,8 @@ class SavedSearchesTableTest extends TestCase
         'plugin.CakeDC/Users.users',
         'plugin.search.saved_searches'
     ];
+
+    private $SavedSearches;
 
     /**
      * setUp method
@@ -38,12 +33,7 @@ class SavedSearchesTableTest extends TestCase
     {
         parent::setUp();
 
-        $config = TableRegistry::exists('Search.SavedSearches') ? [] : ['className' => 'Search\Model\Table\SavedSearchesTable'];
-        /**
-         * @var \Search\Model\Table\SavedSearchesTable $table
-         */
-        $table = TableRegistry::get('Search.SavedSearches', $config);
-        $this->SavedSearches = $table;
+        $this->SavedSearches = TableRegistry::getTableLocator()->get('Search.SavedSearches');
     }
 
     /**
@@ -79,39 +69,31 @@ class SavedSearchesTableTest extends TestCase
         $data = [
             'name' => 'withName',
             'model' => 'Foobar',
-            'content' => [
-                'saved' => 'foo',
-                'latest' => 'bar'
-            ],
-            'user_id' => '00000000-0000-0000-0000-000000000001'
+            'user_id' => '00000000-0000-0000-0000-000000000002'
         ];
 
         $entity = $this->SavedSearches->newEntity($data);
-
         $saved = $this->SavedSearches->save($entity);
 
         $this->assertInstanceOf(SavedSearch::class, $saved);
     }
 
-    public function testSaveWithInvalidDataStructure(): void
+    public function testSaveWithInvalidData(): void
     {
-        $data = [
-            'name' => 'withName',
-            'model' => 'Foobar',
-            'content' => 'foo', // invalid content strucutre
-            'user_id' => '00000000-0000-0000-0000-000000000001'
-        ];
-
-        $entity = $this->SavedSearches->newEntity($data);
+        $entity = $this->SavedSearches->newEntity([]);
 
         $saved = (bool)$this->SavedSearches->save($entity);
         $this->assertFalse($saved);
 
         $expected = [
-            'content' => [
-                'isArray' => 'The provided value is invalid',
-                'validateSaved' => 'Missing required key "saved"',
-                'validateLatest' => 'Missing required key "latest"'
+            'name' => [
+                '_required' => 'This field is required'
+            ],
+            'model' => [
+                '_required' => 'This field is required'
+            ],
+            'user_id' => [
+                '_required' => 'This field is required'
             ]
         ];
 
@@ -123,10 +105,6 @@ class SavedSearchesTableTest extends TestCase
         $data = [
             'name' => 'withName',
             'model' => 'Foobar',
-            'content' => [
-                'saved' => 'foo',
-                'latest' => 'bar'
-            ],
             'user_id' => '00000000-0000-0000-0000-000000000001'
         ];
 

@@ -4,9 +4,7 @@ namespace Search\Test\TestCase\Widgets;
 use Cake\Event\EventList;
 use Cake\Event\EventManager;
 use Cake\ORM\TableRegistry;
-use Cake\TestSuite\Fixture\FixtureManager;
 use Cake\TestSuite\TestCase;
-use Cake\View\View;
 use Search\Widgets\Reports\BarChartReportWidget;
 use Search\Widgets\Reports\DonutChartReportWidget;
 use Search\Widgets\Reports\KnobChartReportWidget;
@@ -15,54 +13,37 @@ use Search\Widgets\ReportWidget;
 
 class ReportWidgetTest extends TestCase
 {
-    protected $widget;
-
-    public $Widgets;
-    public $Articles;
-
-    public $fixtureManager;
-    public $appView;
-
-    public $autoFixtures = true;
-    public $dropTables = false;
 
     public $fixtures = [
         'plugin.search.widgets',
         'plugin.search.articles'
     ];
 
+    private $widget;
+
     public function setUp()
     {
         parent::setUp();
 
-        $this->appView = new View();
-
-        $this->appView->getEventManager()->trackEvents(true);
-        $this->appView->getEventManager()->setEventList(new EventList());
-        EventManager::instance()->trackEvents(true);
-        EventManager::instance()->setEventList(new EventList());
-
-        $this->fixtureManager = new FixtureManager();
-        $this->fixtureManager->fixturize($this);
-
         $this->widget = new ReportWidget();
 
-        $config = TableRegistry::exists('Widgets') ? [] : ['className' => 'Search\Model\Table\WidgetsTable'];
-        $this->Widgets = TableRegistry::get('Widgets', $config);
-
-        // $config = TableRegistry::exists('Articles') ? [] : ['className' => 'Search\Test\App\Model\Table\ArticlesTable'];
-        $this->Articles = TableRegistry::get('Articles');
-
-        $this->fixtureManager->load($this);
+        EventManager::instance()->setEventList(new EventList());
+        Configure::write('CsvMigrations.modules.path', TESTS . 'config' . DS . 'data' . DS);
     }
 
     public function tearDown()
     {
-        parent::tearDown();
-        unset($this->fixtureManager);
         unset($this->widget);
-        unset($this->Widgets);
-        unset($this->appView);
+
+        parent::tearDown();
+    }
+
+
+    }
+
+    }
+
+    {
     }
 
     public function testGetRenderElement(): void

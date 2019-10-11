@@ -9,7 +9,10 @@ use Cake\TestSuite\ConsoleIntegrationTestCase;
  */
 class SearchShellTest extends ConsoleIntegrationTestCase
 {
-    public $fixtures = ['plugin.Search.saved_searches'];
+    public $fixtures = [
+        'plugin.CakeDC/Users.users',
+        'plugin.Search.saved_searches'
+    ];
 
     private $table;
 
@@ -17,9 +20,8 @@ class SearchShellTest extends ConsoleIntegrationTestCase
     {
         parent::setUp();
 
-        $this->table = TableRegistry::get('Search.SavedSearches');
+        $this->table = TableRegistry::getTableLocator()->get('Search.SavedSearches');
 
-        // truncate table
         $this->table->deleteAll([]);
 
         $data = [

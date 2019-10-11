@@ -34,11 +34,6 @@ class SavedSearchesControllerTest extends IntegrationTestCase
         ]);
     }
 
-    public function tearDown()
-    {
-        parent::tearDown();
-    }
-
     /**
      * Test index method
      *
@@ -85,8 +80,7 @@ class SavedSearchesControllerTest extends IntegrationTestCase
     {
         $data = [
             'name' => 'Foobar',
-            'model' => 'Foo',
-            'content' => ['saved' => 'Bar']
+            'model' => 'Foo'
         ];
 
         $this->post('/search/saved-searches/add', $data);

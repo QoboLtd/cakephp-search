@@ -30,9 +30,7 @@ class ArticlesTable extends Table
     {
         $query = $this->find()->enableHydration(false);
         $results = $query
-                    ->select(['title',
-                              'content'
-                             ], true)
+                    ->select(['title', 'content'], true)
                     ->where($options)
                     ->all()
                     ->toArray();

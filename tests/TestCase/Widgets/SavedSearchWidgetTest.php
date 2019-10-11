@@ -1,78 +1,36 @@
 <?php
 namespace Search\Test\TestCase\Widgets;
 
-use Cake\Event\EventManager;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use Search\Model\Entity\SavedSearch;
 use Search\Widgets\SavedSearchWidget;
 
-/**
- * @property \Search\Model\Table\SavedSearchesTable $SavedSearches
- * @property \Search\Model\Table\Widgets $Widgets
- * @property \Search\Widgets\SavedSearchWidget $widget
- */
 class SavedSearchWidgetTest extends TestCase
 {
-    protected $widget;
-
-    public $Widgets;
-
     public $fixtures = [
-        'plugin.Search.dashboards',
         'plugin.Search.saved_searches',
-        'plugin.Search.widgets',
-        'plugin.CakeDC/Users.users',
+        'plugin.Search.widgets'
     ];
+
+    private $SavedSearches;
+    private $Widgets;
+    private $widget;
 
     public function setUp()
     {
         parent::setUp();
 
-        $config = TableRegistry::exists('Search.SavedSearches') ? [] : ['className' => 'Search\Model\Table\SavedSearchesTable'];
-        /**
-         * @var \Search\Model\Table\SavedSearchesTable $table
-         */
-        $table = TableRegistry::get('Search.SavedSearches', $config);
-        $this->SavedSearches = $table;
-
-        $config = TableRegistry::exists('Search.Widgets') ? [] : ['className' => 'Search\Model\Table\WidgetsTable'];
-        /**
-         * @var \Search\Model\Table\WidgetsTable $table
-         */
-        $table = TableRegistry::get('Search.Widgets', $config);
-        $this->Widgets = $table;
-
+        $this->SavedSearches = TableRegistry::getTableLocator()->get('Search.SavedSearches');
+        $this->Widgets = TableRegistry::getTableLocator()->get('Search.Widgets');
         $this->widget = new SavedSearchWidget(['entity' => $this->Widgets->get('00000000-0000-0000-0000-000000000002')]);
-
-        // anonymous event listener that passes some dummy searchable fields
-        EventManager::instance()->on(
-            'Search.Model.Search.searchabeFields',
-            function ($event, $table) {
-                return [
-                    'name' => [
-                        'operators' => [
-                            'contains' => [
-                                'label' => 'contains',
-                                'operator' => 'LIKE',
-                                'pattern' => '%{{value}}%',
-                            ],
-                        ],
-                    ],
-                    'first_name' => [],
-                    'last_name' => [],
-                    'street' => [],
-                    'city' => [],
-                ];
-            }
-        );
     }
 
     public function tearDown()
     {
-        unset($this->SavedSearches);
         unset($this->widget);
         unset($this->Widgets);
+        unset($this->SavedSearches);
 
         parent::tearDown();
     }

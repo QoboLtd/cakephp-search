@@ -4,7 +4,7 @@ namespace Search\Test\TestCase\Controller;
 use Cake\Core\Configure;
 use Cake\Event\EventManager;
 use Cake\TestSuite\IntegrationTestCase;
-use Search\Utility;
+use Search\Event\Model\WidgetsListener;
 
 /**
  * Search\Controller\DashboardsController Test Case
@@ -33,41 +33,9 @@ class DashboardsControllerTest extends IntegrationTestCase
     {
         parent::setUp();
 
-        Utility::instance(new Utility());
-
         Configure::write('Search.dashboard.columns', ['Left Side', 'Right Side']);
-
         $this->session(['Auth.User.id' => '00000000-0000-0000-0000-000000000001']);
-
-        // anonymous event listener that defines searchable fields
-        EventManager::instance()->on('Search.Model.Search.searchabeFields', function ($event, $table) {
-            return [
-                'Dashboards.name' => [
-                    'type' => 'string',
-                    'label' => 'Name',
-                    'operators' => [
-                        'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%']
-                    ]
-                ]
-            ];
-        });
-    }
-
-    /**
-     * tearDown method
-     *
-     * @return void
-     */
-    public function tearDown()
-    {
-        parent::tearDown();
-    }
-
-    public function testSearchNonSearchableModel(): void
-    {
-        $this->post('/search/dashboards/search');
-
-        $this->assertResponseError();
+        EventManager::instance()->on(new WidgetsListener());
     }
 
     public function testIndex(): void
@@ -113,45 +81,28 @@ class DashboardsControllerTest extends IntegrationTestCase
     {
         // admin user
         $this->session(['Auth.User.id' => '00000000-0000-0000-0000-000000000002']);
-
         $this->get('/search/dashboards/view/00000000-0000-0000-0000-000000000003');
 
         $this->assertResponseOk();
-
         $this->assertResponseContains('<h4>Everyone Dashboard</h4>');
     }
 
     public function testViewWithSavedSearch(): void
     {
-        // admin user
         $this->session(['Auth.User.id' => '00000000-0000-0000-0000-000000000002']);
-
         $this->get('/search/dashboards/view/00000000-0000-0000-0000-000000000001');
 
         $this->assertResponseOk();
-
-        $this->assertResponseContains('<h4>Admins Dashboard</h4>');
-        $this->assertResponseContains('Saved search criteria</a>');
-        $this->assertResponseContains('<table');
-        $this->assertResponseContains('<th>Name</th>');
-        $this->assertResponseContains('<th class="actions">Actions</th>');
-        $this->assertResponseContains('<li class="active"');
+        $this->assertResponseContains('The rendering part of this widget needs');
     }
 
     public function testViewWithGroupBySavedSearch(): void
     {
-        // admin user
         $this->session(['Auth.User.id' => '00000000-0000-0000-0000-000000000002']);
-
         $this->get('/search/dashboards/view/00000000-0000-0000-0000-000000000004');
 
         $this->assertResponseOk();
-
-        $this->assertResponseContains('#funnel_chart_table');
-        $this->assertResponseContains('#doughnut_table');
-        $this->assertResponseContains('#bar_table');
-        $this->assertResponseContains('<li class="active"');
-        $this->assertResponseContains('class="tab-pane active"');
+        $this->assertResponseContains('The rendering part of this widget needs');
     }
 
     public function testAdd(): void
@@ -194,26 +145,6 @@ class DashboardsControllerTest extends IntegrationTestCase
 
     public function testEditPost(): void
     {
-        EventManager::instance()->on('Search.Dashboards.getWidgets', function ($event) {
-            return [
-                [
-                    'type' => 'saved_search',
-                    'data' => [
-                        '00000000-0000-0000-0000-000000000002' => [
-                            'id' => '00000000-0000-0000-0000-000000000002',
-                            'name' => 'Test Saved Search',
-                            'type' => 'criteria',
-                            'user_id' => '5a5271e5-b1e6-4135-939a-e4576acbc557',
-                            'model' => 'Contacts',
-                            'shared' => 'private',
-                            'content' => '',
-                            'trashed' => null
-                        ]
-                    ]
-                ]
-            ];
-        });
-
         $data = [
             'name' => 'Test Dashboard',
             'role_id' => null,
@@ -240,7 +171,7 @@ class DashboardsControllerTest extends IntegrationTestCase
         $this->assertRedirect();
         $this->assertRedirectContains('/search/dashboards/view');
 
-        $table = \Cake\ORM\TableRegistry::get('Search.Dashboards');
+        $table = TableRegistry::getTableLocator()->get('Search.Dashboards');
         $entity = $table->get('00000000-0000-0000-0000-000000000001');
 
         $this->assertEquals('Test Dashboard', $entity->get('name'));
@@ -254,7 +185,7 @@ class DashboardsControllerTest extends IntegrationTestCase
         $this->assertRedirect();
         $this->assertRedirectContains('/search/dashboards');
 
-        $table = \Cake\ORM\TableRegistry::get('Search.Dashboards');
+        $table = TableRegistry::getTableLocator()->get('Search.Dashboards');
         $query = $table->find()->where(['Dashboards.id' => '00000000-0000-0000-0000-000000000001']);
 
         $this->assertTrue($query->isEmpty());

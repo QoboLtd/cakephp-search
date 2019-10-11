@@ -52,29 +52,7 @@ class SavedSearchesFixture extends TestFixture
             'name' => 'Saved search result',
             'user_id' => '00000000-0000-0000-0000-000000000001',
             'model' => 'Search.Dashboards',
-            'content' => '{
-                "saved": {
-                    "criteria": {
-                        "Dashboards.first_name": {
-                            "799": {
-                                "type": "string",
-                                "operator": "contains",
-                                "value": "jo"
-                            }
-                        }
-                    },
-                    "aggregator": "OR",
-                    "display_columns": [
-                        "first_name",
-                        "last_name",
-                        "street",
-                        "city"
-                    ],
-                    "sort_by_field": "Dashboards.first_name",
-                    "sort_by_order": "desc",
-                    "limit": "10"
-                }
-            }',
+            'content' => null,
             'conjunction' => 'OR',
             'criteria' => '{ "Dashboards.first_name": [{ "type": "string", "operator": "contains", "value": "jo" }] }',
             'fields' => '["first_name", "last_name", "street", "city"]',
@@ -90,44 +68,7 @@ class SavedSearchesFixture extends TestFixture
             'name' => 'Saved search criteria',
             'user_id' => '00000000-0000-0000-0000-000000000002',
             'model' => 'Search.Dashboards',
-            'content' => '{
-                "saved": {
-                    "criteria": {
-                        "Dashboards.name": [
-                            {
-                                "type": "string",
-                                "operator": "contains",
-                                "value": "user"
-                            }
-                        ]
-                    },
-                    "aggregator": "OR",
-                    "display_columns": [
-                        "Dashboards.name"
-                    ],
-                    "sort_by_field": "Dashboards.name",
-                    "sort_by_order": "desc",
-                    "limit": 10
-                },
-                "latest": {
-                    "criteria": {
-                        "Dashboards.name": [
-                            {
-                                "type": "string",
-                                "operator": "contains",
-                                "value": "foo"
-                            }
-                        ]
-                    },
-                    "aggregator": "OR",
-                    "display_columns": [
-                        "Dashboards.name"
-                    ],
-                    "sort_by_field": "Dashboards.name",
-                    "sort_by_order": "desc",
-                    "limit": 10
-                }
-            }',
+            'content' => null,
             'conjunction' => 'OR',
             'criteria' => '{ "Dashboards.name": [{ "type": "string", "operator": "contains", "value": "foo" }] }',
             'fields' => '["Dashboards.name"]',
@@ -143,42 +84,7 @@ class SavedSearchesFixture extends TestFixture
             'name' => 'Articles saved criteria',
             'user_id' => '00000000-0000-0000-0000-000000000001',
             'model' => 'Articles',
-            'content' => '{
-                "saved": {
-                    "criteria": {
-                        "Articles.title": [
-                            {
-                                "type": "string",
-                                "operator": "contains",
-                                "value": "article"
-                            }
-                        ]
-                    },
-                    "aggregator": "OR",
-                    "display_columns": [
-                        "Articles.title"
-                    ],
-                    "sort_by_field": "title",
-                    "sort_by_order": "desc"
-                },
-                "latest": {
-                    "criteria": {
-                        "Articles.title": [
-                            {
-                                "type": "string",
-                                "operator": "contains",
-                                "value": "article"
-                            }
-                        ]
-                    },
-                    "aggregator": "OR",
-                    "display_columns": [
-                        "Articles.title"
-                    ],
-                    "sort_by_field": "title",
-                    "sort_by_order": "desc"
-                }
-            }',
+            'content' => null,
             'conjunction' => 'OR',
             'criteria' => '{ "Articles.title": [{ "type": "string", "operator": "contains", "value": "article" }] }',
             'fields' => '["Articles.title"]',
@@ -194,26 +100,7 @@ class SavedSearchesFixture extends TestFixture
             'name' => 'Deleted saved search criteria',
             'user_id' => '00000000-0000-0000-0000-000000000001',
             'model' => 'Search.Dashboards',
-            'content' => '{
-                "saved": {
-                    "criteria": {
-                        "Dashboards.name": [
-                            {
-                                "type": "string",
-                                "operator": "contains",
-                                "value": "user"
-                            }
-                        ]
-                    },
-                    "aggregator": "OR",
-                    "display_columns": [
-                        "Dashboards.name"
-                    ],
-                    "sort_by_field": "Dashboards.name",
-                    "sort_by_order": "desc",
-                    "limit": 10
-                }
-            }',
+            'content' => null,
             'conjunction' => 'OR',
             'criteria' => '{ "Dashboards.name": [{ "type": "string", "operator": "contains", "value": "user" }] }',
             'fields' => '["Dashboards.name"]',
@@ -229,44 +116,7 @@ class SavedSearchesFixture extends TestFixture
             'name' => 'Articles saved criteria with Group by',
             'user_id' => '00000000-0000-0000-0000-000000000001',
             'model' => 'Articles',
-            'content' => '{
-                "saved": {
-                    "criteria": {
-                        "Articles.title": [
-                            {
-                                "type": "string",
-                                "operator": "contains",
-                                "value": "article"
-                            }
-                        ]
-                    },
-                    "aggregator": "OR",
-                    "display_columns": [
-                        "Articles.title"
-                    ],
-                    "sort_by_field": "title",
-                    "sort_by_order": "desc",
-                    "group_by": "Articles.author_id"
-                },
-                "latest": {
-                    "criteria": {
-                        "Articles.title": [
-                            {
-                                "type": "string",
-                                "operator": "contains",
-                                "value": "article"
-                            }
-                        ]
-                    },
-                    "aggregator": "OR",
-                    "display_columns": [
-                        "Articles.title"
-                    ],
-                    "sort_by_field": "title",
-                    "sort_by_order": "desc",
-                    "group_by": "Articles.author_id"
-                }
-            }',
+            'content' => null,
             'conjunction' => 'OR',
             'criteria' => '{ "Articles.title": [{ "type": "string", "operator": "contains", "value": "article" }] }',
             'fields' => '["Articles.author_id","COUNT(Articles.title)"]',
@@ -282,7 +132,7 @@ class SavedSearchesFixture extends TestFixture
             'name' => 'Articles saved criteria',
             'user_id' => '00000000-0000-0000-0000-000000000001',
             'model' => 'Articles',
-            'content' => '{"saved":{"criteria":{"Articles.title":[{"type":"string","operator":"contains","value":"article"}]},"aggregator":"OR","display_columns":["Articles.title","Articles.content"],"sort_by_field":"title","sort_by_order":"desc"},"latest":{"criteria":{"Articles.title":[{"type":"string","operator":"contains","value":"article"}]},"aggregator":"OR","display_columns":["Articles.title","Articles.content"],"sort_by_field":"title","sort_by_order":"desc"}}',
+            'content' => null,
             'conjunction' => 'OR',
             'criteria' => '{ "Articles.title":[{ "type":"string", "operator":"contains", "value":"article" }] }',
             'fields' => '["Articles.title","Articles.author_id","Articles.content","Authors.name","Articles.status","Authors.type"]',

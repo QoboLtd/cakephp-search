@@ -59,7 +59,7 @@ class BarChartReportWidgetTest extends TestCase
 
     public function testGetChartData(): void
     {
-        Configure::write('CsvMigrations.modules.path', ROOT . DS . 'test' . DS . 'config' . DS . 'data');
+        // Configure::write('CsvMigrations.modules.path', ROOT . DS . 'test' . DS . 'config' . DS . 'data');
 
         $config = [
             'modelName' => 'Reports',

@@ -1,6 +1,7 @@
 <?php
 namespace Search\Test\TestCase\Model\Table;
 
+use Cake\Event\EventList;
 use Cake\Event\EventManager;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\TableRegistry;
@@ -13,13 +14,7 @@ use Search\Event\Model\WidgetsListener;
  */
 class WidgetsTableTest extends TestCase
 {
-
-    /**
-     * Test subject
-     *
-     * @var \Search\Model\Table\WidgetsTable
-     */
-    public $Widgets;
+    private $Widgets;
 
     /**
      * Fixtures
@@ -40,12 +35,9 @@ class WidgetsTableTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $config = TableRegistry::exists('Search.Widgets') ? [] : ['className' => 'Search\Model\Table\WidgetsTable'];
-        /**
-         * @var \Search\Model\Table\WidgetsTable $table
-         */
-        $table = TableRegistry::get('Search.Widgets', $config);
-        $this->Widgets = $table;
+
+        $this->Widgets = TableRegistry::getTableLocator()->get('Search.Widgets');
+        $this->Widgets->getEventManager()->setEventList(new EventList());
     }
 
     /**
