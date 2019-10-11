@@ -25,7 +25,6 @@ use Qobo\Utils\ModuleConfig\ConfigType;
 use Qobo\Utils\ModuleConfig\ModuleConfig;
 use Search\Aggregate\AbstractAggregate;
 use Search\Model\Entity\SavedSearch;
-use Search\Transformer\QueryDataTransformer;
 
 final class Export
 {
@@ -215,11 +214,8 @@ final class Export
         foreach ($resultSet as $key => $entity) {
             foreach ($fields as $field) {
                 if (AbstractAggregate::isAggregate($field)) {
-                    $aggregate = AbstractAggregate::extractAggregate($field);
-                    if (array_key_exists(strtolower($aggregate), QueryDataTransformer::AGGREGATE_MAP)) {
-                        $result[$key][] = $entity->get($field);
-                        continue;
-                    }
+                    $result[$key][] = $entity->get($field);
+                    continue;
                 }
 
                 list($tableName, $fieldName) = explode('.', $field);
@@ -358,7 +354,6 @@ final class Export
             if ($fieldName !== $field) {
                 continue;
             }
-
 
             if (! preg_match('/(.*?)\((.*?)\)/', $params['type'], $matches)) {
                 continue;
