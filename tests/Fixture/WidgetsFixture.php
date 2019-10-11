@@ -62,7 +62,7 @@ class WidgetsFixture extends TestFixture
         ],
         [
             'id' => '00000000-0000-0000-0000-000000000002',
-            'dashboard_id' => '00000000-0000-0000-0000-000000000100',
+            'dashboard_id' => '00000000-0000-0000-0000-000000000003',
             'widget_id' => '00000000-0000-0000-0000-000000000001',
             'widget_type' => 'saved_search',
             'widget_options' => null,
@@ -74,7 +74,7 @@ class WidgetsFixture extends TestFixture
         ],
         [
             'id' => '00000000-0000-0000-0000-000000000003',
-            'dashboard_id' => '00000000-0000-0000-0000-000000000100',
+            'dashboard_id' => '00000000-0000-0000-0000-000000000003',
             'widget_id' => '00000000-0000-0000-0000-000000000001',
             'widget_type' => 'app',
             'widget_options' => '{x:"2", y:"3", h:4, w:"10"}',
@@ -86,7 +86,7 @@ class WidgetsFixture extends TestFixture
         ],
         [
             'id' => '00000000-0000-0000-0000-000000000004',
-            'dashboard_id' => '00000000-0000-0000-0000-000000000100',
+            'dashboard_id' => '00000000-0000-0000-0000-000000000003',
             'widget_id' => '00000000-0000-0000-0000-000000000002',
             'widget_type' => 'app',
             'widget_options' => '{Lorem: "Ipsum"}',
