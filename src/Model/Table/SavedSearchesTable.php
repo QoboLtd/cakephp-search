@@ -13,6 +13,7 @@ namespace Search\Model\Table;
 
 use CakeDC\Users\Controller\Traits\CustomUsersTableTrait;
 use Cake\Database\Schema\TableSchema;
+use Cake\Datasource\EntityInterface;
 use Cake\Event\Event;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -115,5 +116,16 @@ class SavedSearchesTable extends Table
         $rules->add($rules->existsIn(['user_id'], $this->getUsersTable()));
 
         return $rules;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function beforeSave(Event $event, EntityInterface $entity, \ArrayObject $options)
+    {
+        if (! $entity->isNew()) {
+            // prevent user id change.
+            $entity->set('user_id', $entity->getOriginal('user_id'));
+        }
     }
 }

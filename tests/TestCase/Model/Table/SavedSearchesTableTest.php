@@ -78,6 +78,24 @@ class SavedSearchesTableTest extends TestCase
         $this->assertInstanceOf(SavedSearch::class, $saved);
     }
 
+    public function testUpdate(): void
+    {
+        $data = [
+            'name' => 'withName',
+            'model' => 'Foobar',
+            'user_id' => '00000000-0000-0000-0000-000000000002'
+        ];
+
+        $entity = $this->SavedSearches->newEntity($data);
+        $this->SavedSearches->save($entity);
+
+        $this->SavedSearches->patchEntity($entity, ['user_id' => '00000000-0000-0000-0000-000000000001']);
+        $this->SavedSearches->save($entity);
+
+        $savedSearch = $this->SavedSearches->get($entity->get('id'));
+        $this->assertSame('00000000-0000-0000-0000-000000000002', $savedSearch->get('user_id'));
+    }
+
     public function testSaveWithInvalidData(): void
     {
         $entity = $this->SavedSearches->newEntity([]);
