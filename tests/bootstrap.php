@@ -109,6 +109,7 @@ $loadPluginRoutes = file_exists(ROOT . DS . 'config' . DS . 'routes.php');
 $loadPluginBootstrap = file_exists(ROOT . DS . 'config' . DS . 'bootstrap.php');
 Cake\Core\Plugin::load($pluginName, ['path' => ROOT . DS, 'autoload' => true, 'routes' => $loadPluginRoutes, 'bootstrap' => $loadPluginBootstrap]);
 
+Cake\Core\Plugin::load('CakeDC/Users', ['routes' => true, 'bootstrap' => true]);
 Cake\Core\Plugin::load('Qobo/Utils', ['bootstrap' => true]);
 Cake\Core\Plugin::load('RolesCapabilities', ['bootstrap' => true]);
 

@@ -25,6 +25,7 @@ class SavedSearchesTableTest extends TestCase
      * @var array
      */
     public $fixtures = [
+        'plugin.CakeDC/Users.users',
         'plugin.search.saved_searches'
     ];
 
