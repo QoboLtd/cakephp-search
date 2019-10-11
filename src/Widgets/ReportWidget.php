@@ -140,11 +140,11 @@ class ReportWidget extends BaseWidget
             $options['reports'] = $this->getReports();
         }
 
-        $widgetId = $options['entity']->widget_id;
-
         if (empty($options['reports'])) {
             return [];
         }
+
+        $widgetId = $options['entity']->widget_id;
 
         $result = [];
         foreach ($options['reports'] as $modelName => $reports) {
@@ -179,11 +179,11 @@ class ReportWidget extends BaseWidget
             return null;
         }
 
-        $renderAs = $options['config']['info']['renderAs'];
-        if (empty($renderAs)) {
+        if (empty($options['config']['info']['renderAs'])) {
             return null;
         }
 
+        $renderAs = $options['config']['info']['renderAs'];
         $className = __NAMESPACE__ . '\\Reports\\' . Inflector::camelize($renderAs) . self::WIDGET_REPORT_SUFFIX;
         if (! class_exists($className)) {
             return null;
