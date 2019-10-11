@@ -93,6 +93,10 @@ class WidgetsListener implements EventListenerInterface
         $result = [];
         foreach ($event->result as $reports) {
             foreach ($reports as $report) {
+                if (array_diff(['widget_type', 'id'], array_keys($report))) {
+                    continue;
+                }
+
                 if (! isset($result[$report['widget_type']])) {
                     $result[$report['widget_type']] = ['type' => $report['widget_type'], 'data' => []];
                 }
