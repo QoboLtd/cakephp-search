@@ -465,11 +465,9 @@ final class Export
     {
         $result = [];
         foreach ($table->associations() as $association) {
-            if (! in_array($association->type(), [Association::MANY_TO_ONE])) {
-                continue;
+            if (Association::MANY_TO_ONE === $association->type()) {
+                $result[$association->getName()] = Inflector::humanize(current((array)$association->getForeignKey()));
             }
-
-            $result[$association->getName()] = Inflector::humanize(current((array)$association->getForeignKey()));
         }
 
         return $result;
@@ -521,7 +519,7 @@ final class Export
     {
         $result = [];
         foreach ($table->associations() as $association) {
-            if (! in_array($association->type(), [Association::MANY_TO_ONE])) {
+            if (Association::MANY_TO_ONE !== $association->type()) {
                 continue;
             }
             if ($association->getTarget()->getTable() === $table->getTable()) {
