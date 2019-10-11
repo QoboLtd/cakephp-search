@@ -18,6 +18,7 @@ use Cake\Event\Event;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use Webmozart\Assert\Assert;
 
 /**
  * SavedSearches Model
@@ -118,9 +119,10 @@ class SavedSearchesTable extends Table
     /**
      * {@inheritDoc}
      */
-    public function beforeSave(Event $event, EntityInterface $entity, \ArrayObject $options)
+    public function beforeSave(Event $event, EntityInterface $entity, \ArrayObject $options) : void
     {
         if (! $entity->isNew()) {
+            Assert::isInstanceOf($entity, \Cake\ORM\Entity::class);
             // prevent user id change.
             $entity->set('user_id', $entity->getOriginal('user_id'));
         }

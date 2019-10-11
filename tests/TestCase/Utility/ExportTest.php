@@ -139,6 +139,9 @@ class ExportTest extends TestCase
         return WWW_ROOT . 'uploads' . DS . 'export' . DS . end($parts);
     }
 
+    /**
+     * @return mixed[]
+     */
     private static function readFromCsv(string $path) : array
     {
         $result = [];

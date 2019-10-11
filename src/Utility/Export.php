@@ -25,6 +25,7 @@ use Qobo\Utils\ModuleConfig\ConfigType;
 use Qobo\Utils\ModuleConfig\ModuleConfig;
 use Search\Aggregate\AbstractAggregate;
 use Search\Model\Entity\SavedSearch;
+use Webmozart\Assert\Assert;
 
 final class Export
 {
@@ -83,7 +84,8 @@ final class Export
     {
         $this->user = $user;
 
-        $savedSearch = TableRegistry::get('Search.SavedSearches')->get($id);
+        $savedSearch = TableRegistry::getTableLocator()->get('Search.SavedSearches')->get($id);
+        Assert::isInstanceOf($savedSearch, SavedSearch::class);
 
         $options = $this->getOptionsFromSavedSearch($savedSearch);
 
@@ -402,16 +404,18 @@ final class Export
         $targetTable = $association->getTarget();
         $displayField = $targetTable->getDisplayField();
         $primaryKey = $targetTable->getPrimaryKey();
+        Assert::string($primaryKey);
 
         $entity = $targetTable->find()->select($displayField)->where([$primaryKey => $value])->first();
         if (null === $entity) {
             return $value;
         }
+        Assert::isInstanceOf($entity, \Cake\Datasource\EntityInterface::class);
         $value = $entity->get($displayField);
 
         $association = self::getAssociationFromField($targetTable, $displayField);
         if (null !== $association) {
-            $value = self::getDisplayValueFromAssociation($targetTable, $displayField, $value);
+            $value = self::getDisplayValueFromAssociation($association, $displayField, $value);
         }
 
         return $value;
@@ -489,7 +493,7 @@ final class Export
             return array_key_exists('label', $item);
         });
 
-        $result = array_combine(
+        $result = (array)array_combine(
             array_map(function ($item) use ($table) {
                 return $table->aliasField($item);
             }, array_keys($filtered)),
@@ -538,7 +542,7 @@ final class Export
      * @param string $value Field value
      * @return mixed
      */
-    public function getMagicValue($value)
+    public function getMagicValue(string $value)
     {
         $method = str_replace('%%', '', $value);
 

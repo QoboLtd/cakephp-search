@@ -9,6 +9,7 @@ use Cake\TestSuite\TestCase;
 use Cake\Validation\Validator;
 use Search\Event\EventName;
 use Search\Event\Model\WidgetsListener;
+use Webmozart\Assert\Assert;
 
 /**
  * Search\Model\Table\WidgetsTable Test Case
@@ -210,13 +211,14 @@ class WidgetsTableTest extends TestCase
     public function testSaveDashboardWidgets() : void
     {
         $widgets = [['id' => 'foobaz', 'type' => 'foobar']];
-        $dashboardId = TableRegistry::getTableLocator()
+
+        $dashboard = TableRegistry::getTableLocator()
             ->get('Search.Dashboards')
             ->find()
-            ->firstOrFail()
-            ->get('id');
+            ->firstOrFail();
+        Assert::isInstanceOf($dashboard, \Cake\Datasource\EntityInterface::class);
 
-        $this->assertTrue($this->Widgets->saveDashboardWidgets($dashboardId, $widgets));
+        $this->assertTrue($this->Widgets->saveDashboardWidgets($dashboard->get('id'), $widgets));
     }
 
     public function testSaveDashboardWidgetsWithoutWidgets() : void
