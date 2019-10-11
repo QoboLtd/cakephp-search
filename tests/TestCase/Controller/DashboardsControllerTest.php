@@ -6,6 +6,7 @@ use Cake\Event\EventManager;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\IntegrationTestCase;
 use Search\Event\Model\WidgetsListener;
+use Search\Model\Entity\Dashboard;
 
 /**
  * Search\Controller\DashboardsController Test Case
@@ -136,6 +137,26 @@ class DashboardsControllerTest extends IntegrationTestCase
         $this->assertRedirectContains('/search/dashboards/view');
     }
 
+    public function testAddFail(): void
+    {
+        $this->enableRetainFlashMessages();
+
+        // prevent save
+        EventManager::instance()->on('Model.beforeSave', function () {
+            return false;
+        });
+
+        $data = [
+            'name' => 'Test Dashboard',
+            'role_id' => '79928943-0016-4677-869a-e37728ff6564'
+        ];
+
+        $this->post('/search/dashboards/add', $data);
+
+        $this->assertResponseCode(200);
+        $this->assertSession('The dashboard could not be saved. Please, try again.', 'Flash.flash.0.message');
+    }
+
     public function testEdit(): void
     {
         $this->get('/search/dashboards/edit/00000000-0000-0000-0000-000000000001');
@@ -143,6 +164,26 @@ class DashboardsControllerTest extends IntegrationTestCase
         $this->assertResponseOk();
         $this->assertResponseContains('Edit Dashboard');
         $this->assertResponseContains('Submit');
+    }
+
+    public function testEditFail(): void
+    {
+        $this->enableRetainFlashMessages();
+
+        // prevent save
+        EventManager::instance()->on('Model.beforeSave', function () {
+            return false;
+        });
+
+        $data = [
+            'name' => 'Test Dashboard',
+            'role_id' => '79928943-0016-4677-869a-e37728ff6564'
+        ];
+
+        $this->put('/search/dashboards/edit/00000000-0000-0000-0000-000000000001', $data);
+
+        $this->assertResponseCode(200);
+        $this->assertSession('The dashboard could not be saved. Please, try again.', 'Flash.flash.0.message');
     }
 
     public function testEditPost(): void
@@ -191,5 +232,25 @@ class DashboardsControllerTest extends IntegrationTestCase
         $query = $table->find()->where(['Dashboards.id' => '00000000-0000-0000-0000-000000000001']);
 
         $this->assertTrue($query->isEmpty());
+    }
+
+    public function testDeleteFail(): void
+    {
+        $this->enableRetainFlashMessages();
+
+        // prevent save
+        EventManager::instance()->on('Model.beforeDelete', function () {
+            return false;
+        });
+
+        $this->delete('/search/dashboards/delete/00000000-0000-0000-0000-000000000001');
+
+        $this->assertRedirect();
+        $this->assertRedirectContains('/search/dashboards');
+
+        $this->assertSession('The dashboard could not be deleted. Please, try again.', 'Flash.flash.0.message');
+
+        $table = TableRegistry::getTableLocator()->get('Search.Dashboards');
+        $this->assertInstanceOf(Dashboard::class, $table->get('00000000-0000-0000-0000-000000000001'));
     }
 }

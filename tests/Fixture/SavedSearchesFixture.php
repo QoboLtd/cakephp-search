@@ -135,7 +135,7 @@ class SavedSearchesFixture extends TestFixture
             'content' => null,
             'conjunction' => 'OR',
             'criteria' => '{ "Articles.title":[{ "type":"string", "operator":"contains", "value":"article" }] }',
-            'fields' => '["Articles.title","Articles.author_id","Articles.content","Authors.name","Articles.status","Authors.type"]',
+            'fields' => '["Articles.title","Articles.author_id","Articles.content","Authors.name","Articles.status","Authors.type", "Articles.created"]',
             'group_by' => '',
             'order_by_field' => 'title',
             'order_by_direction' => 'desc',
