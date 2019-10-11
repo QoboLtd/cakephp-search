@@ -15,9 +15,6 @@ use Cake\Datasource\EntityInterface;
 use Cake\ORM\TableRegistry;
 use Search\Model\Entity\SavedSearch;
 use Search\Model\Entity\Widget;
-use Search\Utility;
-use Search\Utility\Search;
-use Search\Utility\Validator;
 
 final class SavedSearchWidget extends BaseWidget
 {

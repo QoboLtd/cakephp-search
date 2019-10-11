@@ -15,21 +15,5 @@ $widgetOptions = $widget->getOptions();
 if (empty($savedSearch)) {
     return '';
 }
-
-$args = [
-    [
-        'entity' => $savedSearch,
-        'searchData' => $savedSearch->get('content')['saved'],
-        'searchableFields' => $widgetOptions['fields'],
-        'associationLabels' => $widgetOptions['associationLabels'],
-        'batch' => false,
-        'preSaveId' => $savedSearch->get('id'),
-        'action' => 'search'
-    ],
-    $this
-];
-
-$cell = $this->cell('Search.Result', $args);
-$cell->template = 'widget';
-
-echo $cell;
+?>
+<p>The rendering part of this widget needs to be implemented on the application level, by copying this template in: src/Template/Plugin/Search/Element/Widgets/table.ctp</p>

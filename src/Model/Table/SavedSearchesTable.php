@@ -111,31 +111,4 @@ class SavedSearchesTable extends Table
 
         return $rules;
     }
-
-    /**
-     * Returns true if table is searchable, false otherwise.
-     *
-     * @param  string $tableName Table name.
-     * @return bool
-     * @deprecated 20.0.0 This should be handled by the application/business logic.
-     */
-    public function isSearchable(string $tableName): bool
-    {
-        deprecationWarning(
-            __METHOD__ . '() is deprecated. This should be handled by the application/business logic.'
-        );
-
-        list(, $tableName) = pluginSplit($tableName);
-
-        $config = (new ModuleConfig(ConfigType::MODULE(), $tableName))->parse();
-        if (! property_exists($config, 'table')) {
-            return false;
-        }
-
-        if (! property_exists($config->table, 'searchable')) {
-            return false;
-        }
-
-        return (bool)$config->table->searchable;
-    }
 }
