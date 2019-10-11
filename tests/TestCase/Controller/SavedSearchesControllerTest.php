@@ -71,6 +71,18 @@ class SavedSearchesControllerTest extends IntegrationTestCase
         $this->assertSame($id, $response->data->id);
     }
 
+    public function testViewWithInvalidId() : void
+    {
+        $this->get('/search/saved-searches/view/INVALID_ID');
+
+        $this->assertResponseCode(200);
+
+        $response = json_decode($this->_getBodyAsString());
+
+        $this->assertFalse($response->success);
+        $this->assertSame('Failed to fetch saved search for record with ID "INVALID_ID".', $response->error);
+    }
+
     /**
      * Test add method
      *
@@ -91,6 +103,21 @@ class SavedSearchesControllerTest extends IntegrationTestCase
 
         $this->assertTrue($response->success);
         $this->assertSame(36, strlen($response->data->id));
+    }
+
+    public function testAddWithMissingRequiredData() : void
+    {
+        $this->post('/search/saved-searches/add', []);
+
+        $this->assertResponseCode(200);
+
+        $response = json_decode($this->_getBodyAsString(), true);
+        $this->assertFalse($response['success']);
+        $expected = [
+            'name' => ['_required' => 'This field is required'],
+            'model' => ['_required' => 'This field is required']
+        ];
+        $this->assertSame($expected, $response['error']);
     }
 
     /**
@@ -114,6 +141,20 @@ class SavedSearchesControllerTest extends IntegrationTestCase
         $this->assertSame([], $response->data);
     }
 
+    public function testEditWithInvalidData() : void
+    {
+        $id = '00000000-0000-0000-0000-000000000001';
+
+        $this->put('/search/saved-searches/edit/' . $id, ['model' => null]);
+
+        $this->assertResponseCode(200);
+
+        $response = json_decode($this->_getBodyAsString());
+
+        $this->assertFalse($response->success);
+        $this->assertSame('The saved search could not be saved. Please, try again.', $response->error);
+    }
+
     /**
      * Test delete method
      *
@@ -131,5 +172,17 @@ class SavedSearchesControllerTest extends IntegrationTestCase
 
         $this->assertTrue($response->success);
         $this->assertSame([], $response->data);
+    }
+
+    public function testDeleteWithInvalidId() : void
+    {
+        $this->delete('/search/saved-searches/delete/INVALID_ID');
+
+        $this->assertResponseCode(200);
+
+        $response = json_decode($this->_getBodyAsString());
+
+        $this->assertFalse($response->success);
+        $this->assertSame('The saved search could not be deleted. Please, try again.', $response->error);
     }
 }

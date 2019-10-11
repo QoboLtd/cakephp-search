@@ -3,6 +3,7 @@ namespace Search\Test\TestCase\Controller;
 
 use Cake\Core\Configure;
 use Cake\Event\EventManager;
+use Cake\ORM\TableRegistry;
 use Cake\TestSuite\IntegrationTestCase;
 use Search\Event\Model\WidgetsListener;
 
@@ -21,6 +22,7 @@ class DashboardsControllerTest extends IntegrationTestCase
         'plugin.CakeDC/Users.users',
         'plugin.groups.groups',
         'plugin.groups.groups_users',
+        'plugin.search.app_widgets',
         'plugin.search.articles',
         'plugin.search.dashboards',
         'plugin.search.saved_searches',

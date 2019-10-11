@@ -1,7 +1,6 @@
 <?php
 namespace Search\Test\TestCase\Widgets;
 
-use Cake\Core\Configure;
 use Cake\TestSuite\TestCase;
 use Search\Widgets\Reports\BarChartReportWidget;
 
@@ -59,8 +58,6 @@ class BarChartReportWidgetTest extends TestCase
 
     public function testGetChartData(): void
     {
-        // Configure::write('CsvMigrations.modules.path', ROOT . DS . 'test' . DS . 'config' . DS . 'data');
-
         $config = [
             'modelName' => 'Reports',
             'slug' => 'bar_assigned_by_year',
