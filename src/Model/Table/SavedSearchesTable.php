@@ -11,7 +11,7 @@
  */
 namespace Search\Model\Table;
 
-use ArrayObject;
+use CakeDC\Users\Controller\Traits\CustomUsersTableTrait;
 use Cake\Database\Schema\TableSchema;
 use Cake\Event\Event;
 use Cake\ORM\RulesChecker;
@@ -28,6 +28,8 @@ use Qobo\Utils\ModuleConfig\ModuleConfig;
  */
 class SavedSearchesTable extends Table
 {
+    use CustomUsersTableTrait;
+
     /**
      * Initialize method
      *
@@ -45,8 +47,8 @@ class SavedSearchesTable extends Table
         $this->addBehavior('Muffin/Trash.Trash');
 
         $this->belongsTo('Users', [
-            'foreignKey' => 'user_id',
-            'className' => 'Search.Users'
+            'className' => $this->getUsersTable()->getRegistryAlias(),
+            'foreignKey' => 'user_id'
         ]);
     }
 
@@ -84,6 +86,10 @@ class SavedSearchesTable extends Table
             ->notEmpty('model');
 
         $validator
+            ->requirePresence('user_id', 'create')
+            ->notEmpty('user_id');
+
+        $validator
             ->allowEmpty('criteria')
             ->isArray('criteria')
 
@@ -106,8 +112,7 @@ class SavedSearchesTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
-        # TODO : Temporary disabled
-        #$rules->add($rules->existsIn(['user_id'], 'Users'));
+        $rules->add($rules->existsIn(['user_id'], $this->getUsersTable()));
 
         return $rules;
     }
