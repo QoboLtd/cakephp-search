@@ -11,7 +11,7 @@
  */
 namespace Search\Model\Table;
 
-use ArrayObject;
+use CakeDC\Users\Controller\Traits\CustomUsersTableTrait;
 use Cake\Database\Schema\TableSchema;
 use Cake\Event\Event;
 use Cake\ORM\RulesChecker;
@@ -28,6 +28,8 @@ use Qobo\Utils\ModuleConfig\ModuleConfig;
  */
 class SavedSearchesTable extends Table
 {
+    use CustomUsersTableTrait;
+
     /**
      * Initialize method
      *
@@ -45,8 +47,8 @@ class SavedSearchesTable extends Table
         $this->addBehavior('Muffin/Trash.Trash');
 
         $this->belongsTo('Users', [
-            'foreignKey' => 'user_id',
-            'className' => 'Search.Users'
+            'className' => $this->getUsersTable()->getRegistryAlias(),
+            'foreignKey' => 'user_id'
         ]);
     }
 
@@ -56,6 +58,8 @@ class SavedSearchesTable extends Table
     protected function _initializeSchema(TableSchema $schema) : TableSchema
     {
         $schema->setColumnType('content', 'json');
+        $schema->setColumnType('criteria', 'json');
+        $schema->setColumnType('fields', 'json');
 
         return $schema;
     }
@@ -82,21 +86,19 @@ class SavedSearchesTable extends Table
             ->notEmpty('model');
 
         $validator
-            ->requirePresence('content', 'create')
-            ->notEmpty('content')
-            ->isArray('content')
-            ->add('content', 'validateSaved', [
-                'rule' => function ($value, $context) {
-                    return is_array($value) ? array_key_exists('saved', $value) : false;
-                },
-                'message' => 'Missing required key "saved"'
-            ])
-            ->add('content', 'validateLatest', [
-                'rule' => function ($value, $context) {
-                    return is_array($value) ? array_key_exists('latest', $value) : false;
-                },
-                'message' => 'Missing required key "latest"'
-            ]);
+            ->requirePresence('user_id', 'create')
+            ->notEmpty('user_id');
+
+        $validator
+            ->allowEmpty('criteria')
+            ->isArray('criteria')
+
+            ->inList('conjunction', \Search\Criteria\Conjunction::CONJUNCTIONS)
+
+            ->allowEmpty('fields')
+            ->isArray('fields')
+
+            ->inList('sort_by_order', \Search\Criteria\Direction::DIRECTIONS);
 
         return $validator;
     }
@@ -110,27 +112,9 @@ class SavedSearchesTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
-        # TODO : Temporary disabled
-        #$rules->add($rules->existsIn(['user_id'], 'Users'));
+        $rules->add($rules->existsIn(['user_id'], $this->getUsersTable()));
 
         return $rules;
-    }
-
-    /**
-     * Structures "content" data to suported format.
-     *
-     * @param \Cake\Event\Event $event Event object
-     * @param \ArrayObject $data Request data
-     * @param \ArrayObject $options Marshaller options
-     * @return void
-     */
-    public function beforeMarshal(Event $event, ArrayObject $data, ArrayObject $options) : void
-    {
-        // @todo this will be removed once saved searches table schema is adjusted
-        $saved = Hash::get($data, 'content.saved', []);
-        if (! empty($saved)) {
-            $data['content']['latest'] = $saved;
-        }
     }
 
     /**

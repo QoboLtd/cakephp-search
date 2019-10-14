@@ -62,8 +62,7 @@ class WidgetsListener implements EventListenerInterface
         $query = $table->find('all')
             ->where([
                 'SavedSearches.name IS NOT' => null,
-                'SavedSearches.name !=' => '',
-                'SavedSearches.system' => false
+                'SavedSearches.name !=' => ''
             ])
             ->enableHydration(false)
             ->indexBy('id');
