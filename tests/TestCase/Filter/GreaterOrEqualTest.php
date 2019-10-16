@@ -14,6 +14,8 @@ namespace Search\Test\TestCase\Filter;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use Cake\Utility\Hash;
+use Search\Criteria\Aggregate;
+use Search\Criteria\Field;
 use Search\Filter\GreaterOrEqual;
 
 class GreaterOrEqualTest extends TestCase
@@ -38,12 +40,34 @@ class GreaterOrEqualTest extends TestCase
 
     public function testApply() : void
     {
-        $filter = new GreaterOrEqual('title', 'foo');
+        $filter = new GreaterOrEqual(new Field('title'), 'foo');
 
         $result = $filter->apply($this->query);
 
         $this->assertRegExp(
             '/WHERE "title" >= :c0/',
+            $result->sql()
+        );
+
+        $this->assertEquals(
+            ['foo'],
+            Hash::extract($result->getValueBinder()->bindings(), '{s}.value')
+        );
+
+        $this->assertEquals(
+            ['string'],
+            Hash::extract($result->getValueBinder()->bindings(), '{s}.type')
+        );
+    }
+
+    public function testApplyWithAggregateAndGroupBy() : void
+    {
+        $filter = new GreaterOrEqual(new Field('title'), 'foo', new Aggregate(\Search\Aggregate\Minimum::class), true);
+
+        $result = $filter->apply($this->query);
+
+        $this->assertRegExp(
+            '/HAVING \(MIN\(title\)\) >= :c0/',
             $result->sql()
         );
 

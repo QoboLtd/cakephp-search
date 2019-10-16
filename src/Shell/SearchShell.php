@@ -54,7 +54,7 @@ class SearchShell extends Shell
 
         $count = $table->deleteAll([
             'modified <' => $date,
-            'name IS' => null
+            'OR' => ['name' => '', 'name IS' => null]
         ]);
 
         $this->info($count . ' outdated pre-saved searches removed.');

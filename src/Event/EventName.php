@@ -20,9 +20,4 @@ class EventName extends Enum
 {
     const MODEL_DASHBOARDS_GET_REPORTS = 'Search.Report.getReports';
     const MODEL_DASHBOARDS_GET_WIDGETS = 'Search.Dashboards.getWidgets';
-    const MODEL_SEARCH_AFTER_FIND = 'Search.Model.Search.afterFind';
-    const MODEL_SEARCH_BASIC_SEARCH_FIELDS = 'Search.Model.Search.basicSearchFields';
-    const MODEL_SEARCH_CHILD_ITEMS = 'Search.Model.Search.childItemsForParent';
-    const MODEL_SEARCH_DISPLAY_FIELDS = 'Search.Model.Search.displayFields';
-    const MODEL_SEARCH_SEARCHABLE_FIELDS = 'Search.Model.Search.searchabeFields';
 }

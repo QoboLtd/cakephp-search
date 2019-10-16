@@ -14,8 +14,9 @@ namespace Search\Widgets;
 use Cake\Datasource\ConnectionManager;
 use Cake\Event\Event;
 use Cake\Event\EventManager;
+use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
-use RuntimeException;
 use Search\Event\EventName;
 use Search\Widgets\Reports\ReportGraphsInterface;
 
@@ -139,11 +140,11 @@ class ReportWidget extends BaseWidget
             $options['reports'] = $this->getReports();
         }
 
-        $widgetId = $options['entity']->widget_id;
-
         if (empty($options['reports'])) {
             return [];
         }
+
+        $widgetId = $options['entity']->widget_id;
 
         $result = [];
         foreach ($options['reports'] as $modelName => $reports) {
@@ -178,11 +179,11 @@ class ReportWidget extends BaseWidget
             return null;
         }
 
-        $renderAs = $options['config']['info']['renderAs'];
-        if (empty($renderAs)) {
+        if (empty($options['config']['info']['renderAs'])) {
             return null;
         }
 
+        $renderAs = $options['config']['info']['renderAs'];
         $className = __NAMESPACE__ . '\\Reports\\' . Inflector::camelize($renderAs) . self::WIDGET_REPORT_SUFFIX;
         if (! class_exists($className)) {
             return null;
@@ -222,7 +223,7 @@ class ReportWidget extends BaseWidget
         $validated = $this->validate($config);
 
         if (! $validated['status']) {
-            throw new RuntimeException("Report validation failed");
+            throw new \RuntimeException('Report validation failed');
         }
 
         $result = $this->getQueryData($config);
@@ -250,11 +251,21 @@ class ReportWidget extends BaseWidget
             return [];
         }
 
-        $resultSet = ConnectionManager::get('default')
-            ->execute($config['info']['query'])
-            ->fetchAll('assoc');
-        if (empty($resultSet)) {
-            return [];
+        $resultSet = [];
+
+        if (!empty($config['info']['finder'])) {
+            $table = $config['info']['model'];
+
+            $finder = $config['info']['finder']['name'];
+            $options = Hash::get($config, 'info.finder.options', []);
+
+            $resultSet = TableRegistry::get($table)->find($finder, $options);
+        }
+
+        if (empty($config['info']['finder']) && !empty($config['info']['query'])) {
+            $resultSet = ConnectionManager::get('default')
+                ->execute($config['info']['query'])
+                ->fetchAll('assoc');
         }
 
         $columns = explode(',', $config['info']['columns']);

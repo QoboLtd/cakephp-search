@@ -26,11 +26,11 @@ final class NotEqual extends AbstractFilter
     {
         $method = is_array($this->value) ? 'notIn' : 'notEq';
 
-        return $query->where(['OR' => [
+        return $query->{$this->clause}(['OR' => [
             (new QueryExpression())->{$method}(
                 $this->field,
-                $this->value,
-                $query->getTypeMap()->type($this->field)
+                [] === $this->value ? '' : $this->value,
+                is_string($this->field) ? $query->getTypeMap()->type($this->field) : $this->type
             ),
             (new QueryExpression())->isNull($this->field)
         ]]);

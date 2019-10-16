@@ -1,6 +1,7 @@
 <?php
 namespace Search\Test\TestCase\Widgets;
 
+use Cake\Core\Configure;
 use Cake\TestSuite\TestCase;
 use Search\Widgets\Reports\HorizontalBarReportWidget;
 
@@ -10,7 +11,10 @@ class HorizontalBarReportWidgetTest extends TestCase
 
     public function setUp()
     {
+        parent::setUp();
+
         $this->widget = new HorizontalBarReportWidget();
+        Configure::write('CsvMigrations.modules.path', TESTS . 'config' . DS . 'data' . DS);
     }
 
     public function tearDown()
@@ -120,6 +124,6 @@ class HorizontalBarReportWidgetTest extends TestCase
 
         //as the data passed in the method is empty
         $this->assertNotEmpty($this->widget->getData());
-        $this->assertEquals('X', $result['options']['dataChart']['data']['datasets'][0]['label']);
+        $this->assertEquals('Y', $result['options']['dataChart']['data']['datasets'][0]['label']);
     }
 }

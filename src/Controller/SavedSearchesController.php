@@ -12,7 +12,6 @@
 namespace Search\Controller;
 
 use Cake\Datasource\EntityInterface;
-use Search\Controller\AppController;
 use Webmozart\Assert\Assert;
 
 /**
@@ -74,8 +73,11 @@ class SavedSearchesController extends AppController
     {
         $this->request->allowMethod('post');
 
+        $data = (array)$this->request->getData();
+        $data['user_id'] = $this->Auth->user('id');
+
         $entity = $this->SavedSearches->newEntity();
-        $entity = $this->SavedSearches->patchEntity($entity, (array)$this->request->getData());
+        $entity = $this->SavedSearches->patchEntity($entity, $data);
         $success = (bool)$this->SavedSearches->save($entity);
 
         $this->set('success', $success);

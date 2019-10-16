@@ -1,7 +1,8 @@
 <?php
 use Migrations\AbstractMigration;
+use Phinx\Db\Adapter\MysqlAdapter;
 
-class AddSystemToSavedSearches extends AbstractMigration
+class AlterContentColumnSavedSearches extends AbstractMigration
 {
     /**
      * Change Method.
@@ -13,10 +14,13 @@ class AddSystemToSavedSearches extends AbstractMigration
     public function change()
     {
         $table = $this->table('saved_searches');
-        $table->addColumn('system', 'boolean', [
-            'default' => false,
-            'null' => false,
+
+        $table->changeColumn('content', 'text', [
+            'default' => null,
+            'limit' => MysqlAdapter::TEXT_LONG,
+            'null' => true,
         ]);
+
         $table->update();
     }
 }

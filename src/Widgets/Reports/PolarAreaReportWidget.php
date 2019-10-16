@@ -11,9 +11,6 @@
  */
 namespace Search\Widgets\Reports;
 
-use Cake\Utility\Hash;
-use Cake\Utility\Inflector;
-
 class PolarAreaReportWidget extends DonutChartReportWidget
 {
     public $type = 'polarArea';

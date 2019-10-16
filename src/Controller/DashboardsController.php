@@ -14,6 +14,7 @@ namespace Search\Controller;
 use Cake\Core\Configure;
 use Cake\Http\Exception\ForbiddenException;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 
 /**
  * Dashboards Controller
@@ -70,8 +71,8 @@ class DashboardsController extends AppController
         foreach ($dashboard->get('widgets') as $k => $item) {
             $opts = $widgetsTable->getWidgetOptions($item);
 
-            $x = (int)$opts['x'];
-            $y = (int)$opts['y'];
+            $x = (int)Hash::get($opts, 'x', 0);
+            $y = (int)Hash::get($opts, 'y', 0);
 
             if (isset($widgets[$y][$x])) {
                 $widgets[$y][] = $item;
@@ -88,11 +89,11 @@ class DashboardsController extends AppController
             }
 
             usort($widgets[$k], function ($a, $b) {
-                $opts_a = json_decode($a->widget_options, true);
-                $opts_b = json_decode($b->widget_options, true);
+                $opts_a = (array)json_decode($a->widget_options, true);
+                $opts_b = (array)json_decode($b->widget_options, true);
 
-                $x_a = (int)$opts_a['x'];
-                $x_b = (int)$opts_b['x'];
+                $x_a = (int)Hash::get($opts_a, 'x', 0);
+                $x_b = (int)Hash::get($opts_b, 'x', 0);
 
                 if ($x_a == $x_b) {
                     return 0;

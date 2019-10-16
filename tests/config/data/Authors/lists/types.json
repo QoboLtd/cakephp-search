@@ -1,0 +1,16 @@
+{
+    "items": [
+        {
+            "value": "internal",
+            "label": "Internal",
+            "inactive": false,
+            "children": []
+        },
+        {
+            "value": "external",
+            "label": "External",
+            "inactive": false,
+            "children": []
+        }
+    ]
+}
