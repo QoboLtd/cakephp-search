@@ -76,14 +76,15 @@ class ExportTest extends TestCase
 
         // csv rows must be equal to search records count, +2 for the headers row and last empty line
         $this->assertSame(3 + 2, count($data));
-        $this->assertSame(['Article Title', 'Author Id', 'Content', 'Name (Author Id)', 'Status', 'Author type (Author Id)'], $data[0]);
+        $this->assertSame(['Article Title', 'Author Id', 'Content', 'Name (Author Id)', 'Status', 'Author type (Author Id)', 'Created'], $data[0]);
         $this->assertSame([
             'Second article title',
             'Stephen King', // validates that related UUID is converted to display field.
             '\'"Fovič"\' €€', // validates that value strips out html entities, html tags and trims spaces.
             'Stephen King',
             'Draft', // validates that list value is converted to its label.
-            'Internal' // validates that list value from association field is converted to its label.
+            'Internal', // validates that list value from association field is converted to its label.
+            '2016-04-27 08:21:54'
         ], $data[2]);
     }
 
@@ -139,6 +140,9 @@ class ExportTest extends TestCase
         return WWW_ROOT . 'uploads' . DS . 'export' . DS . end($parts);
     }
 
+    /**
+     * @return mixed[]
+     */
     private static function readFromCsv(string $path) : array
     {
         $result = [];

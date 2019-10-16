@@ -27,7 +27,7 @@ class WidgetsListener implements EventListenerInterface
         return [
             (string)EventName::MODEL_DASHBOARDS_GET_WIDGETS() => [
                 'callable' => 'getWidgets',
-                'priority' => 9999999999 // this listener should be called last
+                'priority' => PHP_INT_MAX // this listener should be called last
             ]
         ];
     }
@@ -93,6 +93,10 @@ class WidgetsListener implements EventListenerInterface
         $result = [];
         foreach ($event->result as $reports) {
             foreach ($reports as $report) {
+                if (array_diff(['widget_type', 'id'], array_keys($report))) {
+                    continue;
+                }
+
                 if (! isset($result[$report['widget_type']])) {
                     $result[$report['widget_type']] = ['type' => $report['widget_type'], 'data' => []];
                 }
