@@ -3,6 +3,7 @@
 build/
 /tmp/
 vendor/
+tmp/
 cghooks.lock
 
 composer.lock
