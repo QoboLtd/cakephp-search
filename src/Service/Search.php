@@ -232,10 +232,6 @@ final class Search
                 case Association::ONE_TO_MANY:
                     $this->query->leftJoinWith($association->getName());
                     break;
-
-                case Association::ONE_TO_ONE:
-                default:
-                    break;
             }
         }
     }

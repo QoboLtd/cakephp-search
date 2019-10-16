@@ -37,6 +37,10 @@ class SavedSearch extends Entity
     protected $_accessible = [
         '*' => true,
         'id' => false,
+        /**
+         * @deprecated
+         */
+        'content' => false
     ];
 
     /**

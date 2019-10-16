@@ -54,4 +54,41 @@ abstract class AbstractAggregate implements AggregateInterface
 
         return $query;
     }
+
+    /**
+     * Aggregate field check.
+     *
+     * @param string $field Field name
+     * @return bool
+     */
+    public static function isAggregate(string $field) : bool
+    {
+        return 1 === preg_match(AggregateInterface::AGGREGATE_PATTERN, $field);
+    }
+
+    /**
+     * Extract aggregate type from field's name.
+     *
+     * @param string $field Field name
+     * @return string
+     */
+    public static function extractAggregate(string $field) : string
+    {
+        preg_match(AggregateInterface::AGGREGATE_PATTERN, $field, $matches);
+
+        return array_key_exists(1, $matches) ? $matches[1] : '';
+    }
+
+    /**
+     * Extract field name from aggregated field.
+     *
+     * @param string $field Field name
+     * @return string
+     */
+    public static function extractFieldName(string $field) : string
+    {
+        preg_match(AggregateInterface::AGGREGATE_PATTERN, $field, $matches);
+
+        return array_key_exists(2, $matches) ? $matches[2] : '';
+    }
 }

@@ -1,7 +1,7 @@
 <?php
 namespace Search\Test\TestCase\Utility;
 
-use Cake\Event\EventManager;
+use Cake\Core\Configure;
 use Cake\TestSuite\TestCase;
 use Search\Utility\Export;
 
@@ -14,8 +14,11 @@ class ExportTest extends TestCase
 {
     public $fixtures = [
         'plugin.search.articles',
+        'plugin.search.authors',
         'plugin.search.saved_searches'
     ];
+
+    private $user;
 
     /**
      * setUp method
@@ -26,52 +29,8 @@ class ExportTest extends TestCase
     {
         parent::setUp();
 
-        // anonymous event listener that defines searchable fields
-        EventManager::instance()->on('Search.Model.Search.searchabeFields', function ($event, $table) {
-            return [
-                'Articles.title' => [
-                    'type' => 'string',
-                    'label' => 'Title',
-                    'operators' => [
-                        'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%']
-                    ]
-                ],
-                'Articles.content' => [
-                    'type' => 'string',
-                    'label' => 'Content',
-                    'operators' => [
-                        'contains' => ['label' => 'is', 'operator' => 'IN']
-                    ]
-                ],
-                'Articles.created' => [
-                    'type' => 'datetime',
-                    'label' => 'Created',
-                    'operators' => [
-                        'is' => ['label' => 'is', 'operator' => 'IN']
-                    ]
-                ],
-                'Articles.modified' => [
-                    'type' => 'datetime',
-                    'label' => 'Modified',
-                    'operators' => [
-                        'is' => ['label' => 'is', 'operator' => 'IN']
-                    ]
-                ],
-                'Authors.name' => [
-                    'type' => 'string',
-                    'label' => 'Name',
-                    'operators' => [
-                        'contains' => ['label' => 'contains', 'operator' => 'LIKE', 'pattern' => '%{{value}}%']
-                    ]
-                ]
-            ];
-        });
-
-        $this->Export = new Export(
-            '00000000-0000-0000-0000-000000000006',
-            'Foobar',
-            ['id' => '00000000-0000-0000-0000-000000000001']
-        );
+        $this->user = ['id' => '00000000-0000-0000-0000-000000000001'];
+        Configure::write('CsvMigrations.modules.path', TESTS . 'config' . DS . 'data' . DS);
     }
 
     /**
@@ -81,54 +40,122 @@ class ExportTest extends TestCase
      */
     public function tearDown()
     {
-        unset($this->Export);
+        unset($user);
 
         parent::tearDown();
     }
 
     public function testCount(): void
     {
-        $this->assertEquals(3, $this->Export->count());
+        $export = new Export('00000000-0000-0000-0000-000000000006', 'test_export', $this->user);
+
+        $this->assertSame(3, $export->count());
     }
 
     public function testGetUrl(): void
     {
-        $this->assertEquals('/uploads/export/Foobar.csv', $this->Export->getUrl());
+        $export = new Export('00000000-0000-0000-0000-000000000006', 'test_export', $this->user);
+        $this->assertSame('/uploads/export/test_export.csv', $export->getUrl());
     }
 
     public function testExecute(): void
     {
-        $count = $this->Export->count();
-        $limit = 1;
+        $export = new Export('00000000-0000-0000-0000-000000000006', 'test_export', $this->user);
 
+        $count = $export->count();
         for ($page = 1; $page <= $count; $page++) {
-            $this->Export->execute($page, $limit);
+            $export->execute($page, 1);
         }
 
-        $parts = explode('/', $this->Export->getUrl());
-        $path = WWW_ROOT . 'uploads' . DS . 'export' . DS . end($parts);
+        $path = self::getCsvPathFromUrl($export->getUrl());
         $this->assertTrue(file_exists($path));
         $this->assertTrue(is_readable($path));
+
+        $data = self::readFromCsv($path);
+        unlink($path);
+
+        // csv rows must be equal to search records count, +2 for the headers row and last empty line
+        $this->assertSame(3 + 2, count($data));
+        $this->assertSame(['Article Title', 'Author Id', 'Content', 'Name (Author Id)', 'Status', 'Author type (Author Id)', 'Created'], $data[0]);
+        $this->assertSame([
+            'Second article title',
+            'Stephen King', // validates that related UUID is converted to display field.
+            '\'"Fovič"\' €€', // validates that value strips out html entities, html tags and trims spaces.
+            'Stephen King',
+            'Draft', // validates that list value is converted to its label.
+            'Internal', // validates that list value from association field is converted to its label.
+            '2016-04-27 08:21:54'
+        ], $data[2]);
+    }
+
+    public function testExecuteWithGroupBy(): void
+    {
+        $export = new Export('00000000-0000-0000-0000-000000000005', 'test_group_export', $this->user);
+
+        $export->execute(1, $export->count());
+
+        $path = self::getCsvPathFromUrl($export->getUrl());
+        $this->assertTrue(file_exists($path));
+        $this->assertTrue(is_readable($path));
+
+        $data = self::readFromCsv($path);
+        unlink($path);
+
+        // csv rows must be equal to search records count, +2 for the headers row and last empty line
+        $this->assertSame(2 + 2, count($data));
+        $this->assertSame(['Author Id', 'Article Title (COUNT)'], $data[0]);
+        $this->assertSame(['Stephen King', '1'], $data[1]);
+        $this->assertSame(['Mark Twain', '2'], $data[2]);
+    }
+
+    /**
+     * @dataProvider validMagicValues
+     */
+    public function testGetMagicValue(string $value, string $expected): void
+    {
+        $export = new Export('00000000-0000-0000-0000-000000000005', 'test_group_export', $this->user);
+
+        $this->assertSame($expected, $export->getMagicValue($value));
+    }
+
+    /**
+     * @return mixed[]
+     */
+    public function validMagicValues() : array
+    {
+        return [
+            ['%%me%%', '00000000-0000-0000-0000-000000000001'],
+            ['%%today%%', date('Y-m-d')],
+            ['%%yesterday%%', date('Y-m-d', time() - (24 * 60 * 60))],
+            ['%%tomorrow%%', date('Y-m-d', time() + (24 * 60 * 60))],
+            ['no-change', 'no-change'],
+            ['%%no-change%%', '%%no-change%%']
+        ];
+    }
+
+    private static function getCsvPathFromUrl(string $url) : string
+    {
+        $parts = explode('/', $url);
+
+        return WWW_ROOT . 'uploads' . DS . 'export' . DS . end($parts);
+    }
+
+    /**
+     * @return mixed[]
+     */
+    private static function readFromCsv(string $path) : array
+    {
+        $result = [];
 
         /**
          * @var resource
          */
         $fh = fopen($path, 'r');
-        $data = [];
         while (!feof($fh)) {
-            $data[] = fgetcsv($fh);
+            $result[] = fgetcsv($fh);
         }
         fclose($fh);
-        unlink($path);
 
-        // remove empty csv rows
-        $data = array_filter($data);
-
-        // csv rows must be equal to search records count, +1 for the headers row
-        $this->assertEquals($count + 1, count($data));
-
-        // test value with no html entities, no html tags, no spaces at begin and end string.
-        $content = $data[2][1];
-        $this->assertEquals('\'"Fovič"\' €€', $content);
+        return $result;
     }
 }

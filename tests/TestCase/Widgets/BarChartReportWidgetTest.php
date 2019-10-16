@@ -11,7 +11,10 @@ class BarChartReportWidgetTest extends TestCase
 
     public function setUp()
     {
+        parent::setUp();
+
         $this->widget = new BarChartReportWidget();
+        Configure::write('CsvMigrations.modules.path', TESTS . 'config' . DS . 'data' . DS);
     }
 
     public function tearDown()
@@ -59,8 +62,6 @@ class BarChartReportWidgetTest extends TestCase
 
     public function testGetChartData(): void
     {
-        Configure::write('CsvMigrations.modules.path', ROOT . DS . 'test' . DS . 'config' . DS . 'data');
-
         $config = [
             'modelName' => 'Reports',
             'slug' => 'bar_assigned_by_year',

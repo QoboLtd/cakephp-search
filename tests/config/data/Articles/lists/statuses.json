@@ -1,0 +1,22 @@
+{
+    "items": [
+        {
+            "value": "published",
+            "label": "Published",
+            "inactive": false,
+            "children": []
+        },
+        {
+            "value": "draft",
+            "label": "Draft",
+            "inactive": false,
+            "children": []
+        },
+        {
+            "value": "trashed",
+            "label": "Trashed",
+            "inactive": false,
+            "children": []
+        }
+    ]
+}

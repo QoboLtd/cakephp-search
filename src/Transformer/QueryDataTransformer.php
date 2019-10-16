@@ -13,7 +13,7 @@ namespace Search\Transformer;
 
 use Cake\ORM\Query;
 use Cake\Utility\Hash;
-use Search\Aggregate\AggregateInterface;
+use Search\Aggregate\AbstractAggregate;
 use Search\Criteria\Aggregate;
 use Search\Criteria\Conjunction;
 use Search\Criteria\Criteria;
@@ -185,7 +185,7 @@ final class QueryDataTransformer
     private function setSelect(Query $query) : void
     {
         $items = array_filter($query->clause('select'), function ($item) {
-            return ! self::isAggregate($item);
+            return ! AbstractAggregate::isAggregate($item);
         });
 
         array_map(function ($item) {
@@ -217,7 +217,9 @@ final class QueryDataTransformer
             Assert::isMap($data);
             Assert::keyExists($data, 'field');
 
-            $fieldName = self::isAggregate($data['field']) ? self::extractFieldName($data['field']) : $data['field'];
+            $fieldName = AbstractAggregate::isAggregate($data['field']) ?
+                AbstractAggregate::extractFieldName($data['field']) :
+                $data['field'];
             $criteria = Criteria::create(new Field($fieldName));
 
             if (array_key_exists('operator', $data)) {
@@ -225,8 +227,9 @@ final class QueryDataTransformer
                 $criteria->setFilter(new Filter(self::getFilterClass($data['operator']), $data['value']));
             }
 
-            if (self::isAggregate($data['field'])) {
-                $criteria->setAggregate(new Aggregate(self::extractAggregate($data['field'])));
+            if (AbstractAggregate::isAggregate($data['field'])) {
+                $aggregateClass = self::getAggregateClass(AbstractAggregate::extractAggregate($data['field']));
+                $criteria->setAggregate(new Aggregate($aggregateClass));
                 $having[] = $data['field'];
             }
 
@@ -234,28 +237,29 @@ final class QueryDataTransformer
         }
 
         $aggregates = (array)array_filter($query->clause('select'), function ($item) use ($having) {
-            return self::isAggregate($item) && ! in_array($item, $having);
+            return AbstractAggregate::isAggregate($item) && ! in_array($item, $having);
         });
 
         // adding aggregate remainders
         foreach ($aggregates as $aggregate) {
-            $criteria = Criteria::create(new Field(self::extractFieldName($aggregate)));
-            $criteria->setAggregate(new Aggregate(self::extractAggregate($aggregate)));
+            $criteria = Criteria::create(new Field(AbstractAggregate::extractFieldName($aggregate)));
+            $aggregateClass = self::getAggregateClass(AbstractAggregate::extractAggregate($aggregate));
+            $criteria->setAggregate(new Aggregate($aggregateClass));
             $this->criteria[] = $criteria;
         }
     }
 
     /**
-     * Extract field name from aggregated field.
+     * Aggregate class getter.
      *
-     * @param string $field Field name
+     * @param string $aggregate Aggregate type
      * @return string
      */
-    private static function extractFieldName(string $field) : string
+    private static function getAggregateClass(string $aggregate) : string
     {
-        preg_match(AggregateInterface::AGGREGATE_PATTERN, $field, $matches);
-
-        return array_key_exists(2, $matches) ? $matches[2] : '';
+        return array_key_exists(strtolower($aggregate), self::AGGREGATE_MAP) ?
+            self::AGGREGATE_MAP[strtolower($aggregate)] :
+            $aggregate;
     }
 
     /**
@@ -269,31 +273,5 @@ final class QueryDataTransformer
         return array_key_exists(strtolower($filter), self::FILTER_MAP) ?
             self::FILTER_MAP[strtolower($filter)] :
             $filter;
-    }
-
-    /**
-     * Aggregate field check.
-     *
-     * @param string $field Field name
-     * @return bool
-     */
-    private static function isAggregate(string $field) : bool
-    {
-        return 1 === preg_match(AggregateInterface::AGGREGATE_PATTERN, $field);
-    }
-
-    /**
-     * Extract aggregate type from field's name.
-     *
-     * @param string $field Field name
-     * @return string
-     */
-    private static function extractAggregate(string $field) : string
-    {
-        preg_match(AggregateInterface::AGGREGATE_PATTERN, $field, $matches);
-
-        return array_key_exists(strtolower($matches[1]), self::AGGREGATE_MAP) ?
-            self::AGGREGATE_MAP[strtolower($matches[1])] :
-            $matches[1];
     }
 }

@@ -15,6 +15,7 @@ class ArticlesTable extends Table
         $this->setDisplayField('title');
 
         $this->addBehavior('Timestamp');
+        $this->addBehavior('Search.Searchable');
 
         $this->belongsTo('Authors');
         $this->belongsToMany('Tags');
@@ -30,9 +31,7 @@ class ArticlesTable extends Table
     {
         $query = $this->find()->enableHydration(false);
         $results = $query
-                    ->select(['title',
-                              'content'
-                             ], true)
+                    ->select(['title', 'content'], true)
                     ->where($options)
                     ->all()
                     ->toArray();
