@@ -68,7 +68,7 @@ abstract class BaseWidget implements WidgetInterface
      *
      * @return string $type of the WidgetHandler.
      */
-    public function getType() : string
+    public function getType(): string
     {
         return $this->type;
     }
@@ -81,7 +81,7 @@ abstract class BaseWidget implements WidgetInterface
      *
      * @return string $renderElement name.
      */
-    public function getRenderElement() : string
+    public function getRenderElement(): string
     {
         return $this->renderElement;
     }
@@ -91,7 +91,7 @@ abstract class BaseWidget implements WidgetInterface
      *
      * @return string $containerId of the widget.
      */
-    public function getContainerId() : string
+    public function getContainerId(): string
     {
         return $this->containerId;
     }
@@ -99,7 +99,7 @@ abstract class BaseWidget implements WidgetInterface
     /**
      * {@inheritDoc}
      */
-    public function getTitle() : string
+    public function getTitle(): string
     {
         return $this->title;
     }
@@ -107,7 +107,7 @@ abstract class BaseWidget implements WidgetInterface
     /**
      * {@inheritDoc}
      */
-    public function getIcon() : string
+    public function getIcon(): string
     {
         return $this->icon;
     }
@@ -115,7 +115,7 @@ abstract class BaseWidget implements WidgetInterface
     /**
      * {@inheritDoc}
      */
-    public function getColor() : string
+    public function getColor(): string
     {
         return $this->color;
     }
@@ -123,7 +123,7 @@ abstract class BaseWidget implements WidgetInterface
     /**
      * {@inheritDoc}
      */
-    public function getOptions() : array
+    public function getOptions(): array
     {
         return $this->options;
     }

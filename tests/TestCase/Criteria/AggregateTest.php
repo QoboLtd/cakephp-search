@@ -16,25 +16,25 @@ use Search\Criteria\Aggregate;
 
 class AggregateTest extends TestCase
 {
-    public function testShouldRequireNonEmptyAggregate() : void
+    public function testShouldRequireNonEmptyAggregate(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $aggregate = new Aggregate('');
     }
 
-    public function testShouldRequireValidAggregate() : void
+    public function testShouldRequireValidAggregate(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $aggregate = new Aggregate(Aggregate::class);
     }
 
-    public function testShouldAcceptValidAggregate() : void
+    public function testShouldAcceptValidAggregate(): void
     {
         $aggregate = new Aggregate(\Search\Aggregate\Average::class);
         $this->assertInstanceOf(Aggregate::class, $aggregate);
     }
 
-    public function testShouldReturnAsString() : void
+    public function testShouldReturnAsString(): void
     {
         $aggregate = new Aggregate(\Search\Aggregate\Average::class);
         $this->assertEquals(\Search\Aggregate\Average::class, (string)$aggregate);

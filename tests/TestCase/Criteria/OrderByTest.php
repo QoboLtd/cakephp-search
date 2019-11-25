@@ -18,25 +18,25 @@ use Search\Criteria\OrderBy;
 
 class OrderByTest extends TestCase
 {
-    public function testShouldAcceptValidOrderByFieldAndDirection() : void
+    public function testShouldAcceptValidOrderByFieldAndDirection(): void
     {
         $orderBy = new OrderBy(new Field('valid-value'), new Direction('asc'));
         $this->assertInstanceOf(OrderBy::class, $orderBy);
     }
 
-    public function testShouldReturnOrderByFieldAsString() : void
+    public function testShouldReturnOrderByFieldAsString(): void
     {
         $orderBy = new OrderBy(new Field('valid-value'), new Direction('asc'));
         $this->assertInstanceOf(Field::class, $orderBy->field());
     }
 
-    public function testShouldReturnOrderByDirection() : void
+    public function testShouldReturnOrderByDirection(): void
     {
         $orderBy = new OrderBy(new Field('valid-value'), new Direction('asc'));
         $this->assertInstanceOf(Direction::class, $orderBy->direction());
     }
 
-    public function testShouldReturnAsString() : void
+    public function testShouldReturnAsString(): void
     {
         $orderBy = new OrderBy(new Field('valid-value'), new Direction('asc'));
         $this->assertEquals('valid-value - ASC', (string)$orderBy);

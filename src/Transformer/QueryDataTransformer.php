@@ -79,7 +79,7 @@ final class QueryDataTransformer
      * @param mixed[] $options Query options
      * @return \Search\Transformer\QueryDataTransformer
      */
-    public static function transform(Query $query, array $options) : QueryDataTransformer
+    public static function transform(Query $query, array $options): QueryDataTransformer
     {
         return new QueryDataTransformer($query, $options);
     }
@@ -89,7 +89,7 @@ final class QueryDataTransformer
      *
      * @return \Search\Criteria\Conjunction|null
      */
-    public function getConjunction() : ?Conjunction
+    public function getConjunction(): ?Conjunction
     {
         return $this->conjunction;
     }
@@ -100,7 +100,7 @@ final class QueryDataTransformer
      * @param mixed[] $options Query options
      * @return void
      */
-    private function setConjunction(array $options) : void
+    private function setConjunction(array $options): void
     {
         $conjunction = Hash::get($options, 'conjunction');
         if (null !== $conjunction) {
@@ -113,7 +113,7 @@ final class QueryDataTransformer
      *
      * @return \Search\Criteria\Field|null
      */
-    public function getGroup() : ?Field
+    public function getGroup(): ?Field
     {
         return $this->group;
     }
@@ -124,7 +124,7 @@ final class QueryDataTransformer
      * @param \Cake\ORM\Query $query Query
      * @return void
      */
-    private function setGroup(Query $query) : void
+    private function setGroup(Query $query): void
     {
         $group = $query->clause('group');
         Assert::isArray($group);
@@ -142,7 +142,7 @@ final class QueryDataTransformer
      *
      * @return \Search\Criteria\OrderBy|null
      */
-    public function getOrder() : ?OrderBy
+    public function getOrder(): ?OrderBy
     {
         return $this->order;
     }
@@ -153,7 +153,7 @@ final class QueryDataTransformer
      * @param \Cake\ORM\Query $query Query
      * @return void
      */
-    private function setOrder(Query $query) : void
+    private function setOrder(Query $query): void
     {
         $order = $query->clause('order');
         if (null === $order) {
@@ -171,7 +171,7 @@ final class QueryDataTransformer
      *
      * @return \Search\Criteria\Field[]
      */
-    public function getSelect() : array
+    public function getSelect(): array
     {
         return $this->select;
     }
@@ -182,7 +182,7 @@ final class QueryDataTransformer
      * @param \Cake\ORM\Query $query Query
      * @return void
      */
-    private function setSelect(Query $query) : void
+    private function setSelect(Query $query): void
     {
         $items = array_filter($query->clause('select'), function ($item) {
             return ! AbstractAggregate::isAggregate($item);
@@ -198,7 +198,7 @@ final class QueryDataTransformer
      *
      * @return \Search\Criteria\Criteria[]
      */
-    public function getCriteria() : array
+    public function getCriteria(): array
     {
         return $this->criteria;
     }
@@ -210,7 +210,7 @@ final class QueryDataTransformer
      * @param mixed[] $options Query options
      * @return void
      */
-    private function setCriteria(Query $query, array $options) : void
+    private function setCriteria(Query $query, array $options): void
     {
         $having = [];
         foreach (Hash::get($options, 'data', []) as $data) {
@@ -255,7 +255,7 @@ final class QueryDataTransformer
      * @param string $aggregate Aggregate type
      * @return string
      */
-    private static function getAggregateClass(string $aggregate) : string
+    private static function getAggregateClass(string $aggregate): string
     {
         return array_key_exists(strtolower($aggregate), self::AGGREGATE_MAP) ?
             self::AGGREGATE_MAP[strtolower($aggregate)] :
@@ -268,7 +268,7 @@ final class QueryDataTransformer
      * @param string $filter Filter type
      * @return string
      */
-    private static function getFilterClass(string $filter) : string
+    private static function getFilterClass(string $filter): string
     {
         return array_key_exists(strtolower($filter), self::FILTER_MAP) ?
             self::FILTER_MAP[strtolower($filter)] :

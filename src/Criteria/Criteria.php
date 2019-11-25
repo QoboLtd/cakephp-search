@@ -48,7 +48,7 @@ final class Criteria
      * @param \Search\Criteria\Field $field Field
      * @return \Search\Criteria\Criteria
      */
-    public static function create(Field $field) : Criteria
+    public static function create(Field $field): Criteria
     {
         return new Criteria($field);
     }
@@ -58,7 +58,7 @@ final class Criteria
      *
      * @return \Search\Criteria\Field
      */
-    public function field() : Field
+    public function field(): Field
     {
         return $this->field;
     }
@@ -69,7 +69,7 @@ final class Criteria
      * @param \Search\Criteria\Filter $filter Filter object
      * @return void
      */
-    public function setFilter(Filter $filter) : void
+    public function setFilter(Filter $filter): void
     {
         $this->filter = $filter;
     }
@@ -79,7 +79,7 @@ final class Criteria
      *
      * @return \Search\Criteria\Filter|null
      */
-    public function filter() : ?Filter
+    public function filter(): ?Filter
     {
         return $this->filter;
     }
@@ -90,7 +90,7 @@ final class Criteria
      * @param \Search\Criteria\Aggregate $aggregate Aggregate object
      * @return void
      */
-    public function setAggregate(Aggregate $aggregate) : void
+    public function setAggregate(Aggregate $aggregate): void
     {
         $this->aggregate = $aggregate;
     }
@@ -100,7 +100,7 @@ final class Criteria
      *
      * @return \Search\Criteria\Aggregate|null
      */
-    public function aggregate() : ?Aggregate
+    public function aggregate(): ?Aggregate
     {
         return $this->aggregate;
     }

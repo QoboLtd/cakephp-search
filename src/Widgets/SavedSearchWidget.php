@@ -70,7 +70,7 @@ final class SavedSearchWidget extends BaseWidget
     /**
      * @return \Search\Model\Entity\SavedSearch|null
      */
-    public function getData() : ?SavedSearch
+    public function getData(): ?SavedSearch
     {
         return $this->data;
     }
@@ -81,7 +81,7 @@ final class SavedSearchWidget extends BaseWidget
      * @param array $options containing entity and view params.
      * @return \Search\Model\Entity\SavedSearch|null
      */
-    public function getResults(array $options = []) : ?SavedSearch
+    public function getResults(array $options = []): ?SavedSearch
     {
         $this->setContainerId($options['entity']);
 
@@ -112,7 +112,7 @@ final class SavedSearchWidget extends BaseWidget
      * @param \Cake\Datasource\EntityInterface $entity used for setting id of widget.
      * @return void
      */
-    public function setContainerId(EntityInterface $entity) : void
+    public function setContainerId(EntityInterface $entity): void
     {
         $this->containerId = self::TABLE_PREFIX . md5($entity->id);
     }
@@ -120,7 +120,7 @@ final class SavedSearchWidget extends BaseWidget
     /**
      * @return string[] $errors in case of validation
      */
-    public function getErrors() : array
+    public function getErrors(): array
     {
         return $this->errors;
     }

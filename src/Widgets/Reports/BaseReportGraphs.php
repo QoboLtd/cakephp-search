@@ -43,7 +43,7 @@ abstract class BaseReportGraphs implements ReportGraphsInterface
      * Returns Chart type
      * @return string $type of the report instance.
      */
-    public function getType() : string
+    public function getType(): string
     {
         return $this->type;
     }
@@ -51,7 +51,7 @@ abstract class BaseReportGraphs implements ReportGraphsInterface
     /**
      * @return mixed[] $_config of the reports.
      */
-    public function getConfig() : array
+    public function getConfig(): array
     {
         return $this->config;
     }
@@ -59,7 +59,7 @@ abstract class BaseReportGraphs implements ReportGraphsInterface
     /**
      * @return mixed[] $options
      */
-    public function getOptions() : array
+    public function getOptions(): array
     {
         return $this->options;
     }
@@ -71,7 +71,7 @@ abstract class BaseReportGraphs implements ReportGraphsInterface
      * @param mixed[] $data of the config.
      * @return void
      */
-    public function setContainerId(array $data = []) : void
+    public function setContainerId(array $data = []): void
     {
         $config = empty($data) ? $this->getConfig() : $data;
 
@@ -81,7 +81,7 @@ abstract class BaseReportGraphs implements ReportGraphsInterface
     /**
      * @return string $containerId property of the widget.
      */
-    public function getContainerId() : string
+    public function getContainerId(): string
     {
         return $this->containerId;
     }
@@ -94,7 +94,7 @@ abstract class BaseReportGraphs implements ReportGraphsInterface
      * @param mixed[] $data of report.
      * @return void
      */
-    public function setConfig(array $data = []) : void
+    public function setConfig(array $data = []): void
     {
         $this->config = $data;
     }
@@ -107,7 +107,7 @@ abstract class BaseReportGraphs implements ReportGraphsInterface
      * @param mixed[] $data of report.
      * @return void
      */
-    public function setOptions(array $data = []) : void
+    public function setOptions(array $data = []): void
     {
         $this->options = $data;
     }
@@ -118,7 +118,7 @@ abstract class BaseReportGraphs implements ReportGraphsInterface
      * @param mixed[] $data for the report widget.
      * @return void
      */
-    public function setData(array $data = []) : void
+    public function setData(array $data = []): void
     {
         $this->data = $data;
     }
@@ -126,7 +126,7 @@ abstract class BaseReportGraphs implements ReportGraphsInterface
     /**
      * @return mixed[] $data of the widget.
      */
-    public function getData() : array
+    public function getData(): array
     {
         return $this->data;
     }
@@ -134,7 +134,7 @@ abstract class BaseReportGraphs implements ReportGraphsInterface
     /**
      * @return string[] $errors in case any exists.
      */
-    public function getErrors() : array
+    public function getErrors(): array
     {
         return $this->errors;
     }
@@ -147,7 +147,7 @@ abstract class BaseReportGraphs implements ReportGraphsInterface
      * @param array $data with report configuration
      * @return mixed[] result of validation
      */
-    public function validate(array $data = []) : array
+    public function validate(array $data = []): array
     {
         $validated = false;
         $errors = [];
@@ -184,7 +184,7 @@ abstract class BaseReportGraphs implements ReportGraphsInterface
      * @param mixed[] $data passed in the method.
      * @return mixed[] JS/CSS libs paths.
      */
-    public function getScripts(array $data = []) : array
+    public function getScripts(array $data = []): array
     {
         return [];
     }
@@ -199,7 +199,7 @@ abstract class BaseReportGraphs implements ReportGraphsInterface
      *                           generated one. If false, the colors will be from a pre-set palette.
      * @return string[]
      */
-    public function getChartColors(int $count, string $myString, bool $shade = true) : array
+    public function getChartColors(int $count, string $myString, bool $shade = true): array
     {
         $grad = [];
 
@@ -245,7 +245,7 @@ abstract class BaseReportGraphs implements ReportGraphsInterface
      * @param  string $field Field name
      * @return mixed[] Items of the list
      */
-    public function getList(string $model, string $field) : array
+    public function getList(string $model, string $field): array
     {
         $type = !empty((new ModuleConfig(ConfigType::MIGRATION(), $model))->parseToArray()[$field]['type']) ? (new ModuleConfig(ConfigType::MIGRATION(), $model))->parseToArray()[$field]['type'] : '';
         $is_list = preg_match("/^list\(([^\)]+)\)/", $type, $list);
@@ -261,7 +261,7 @@ abstract class BaseReportGraphs implements ReportGraphsInterface
      * @param  string $label Which key of the elements of the $results is the pivot for the sort.
      * @return mixed[] Sorted data.
      */
-    public function sortListByLabel(array $results, array $list, string $label) : array
+    public function sortListByLabel(array $results, array $list, string $label): array
     {
         $data = [];
         // $index is use to make easier find of the position

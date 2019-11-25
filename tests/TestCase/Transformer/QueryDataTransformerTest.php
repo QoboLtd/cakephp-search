@@ -27,21 +27,21 @@ class QueryDataTransformerTest extends TestCase
 
     private $table;
 
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
 
         $this->table = TableRegistry::getTableLocator()->get('Articles');
     }
 
-    public function tearDown() : void
+    public function tearDown(): void
     {
         unset($this->table);
 
         parent::tearDown();
     }
 
-    public function testTransform() : void
+    public function testTransform(): void
     {
         $query = $this->table->query()
             ->applyOptions([
@@ -74,7 +74,7 @@ class QueryDataTransformerTest extends TestCase
         }
     }
 
-    public function testTransformWithoutData() : void
+    public function testTransformWithoutData(): void
     {
         $result = QueryDataTransformer::transform($this->table->query(), []);
 
@@ -85,7 +85,7 @@ class QueryDataTransformerTest extends TestCase
         $this->assertSame([], $result->getCriteria());
     }
 
-    public function testShouldRequireValidAggregate() : void
+    public function testShouldRequireValidAggregate(): void
     {
         $this->expectException(\InvalidArgumentException::class);
 
@@ -95,7 +95,7 @@ class QueryDataTransformerTest extends TestCase
         );
     }
 
-    public function testShouldRequireValidFilter() : void
+    public function testShouldRequireValidFilter(): void
     {
         $this->expectException(\InvalidArgumentException::class);
 

@@ -21,7 +21,7 @@ interface ReportGraphsInterface
      * @param mixed[] $data with extra settings.
      * @return mixed[] $chartData with all required info.
      */
-    public function getChartData(array $data = []) : array;
+    public function getChartData(array $data = []): array;
 
     /**
      * validate method.
@@ -30,7 +30,7 @@ interface ReportGraphsInterface
      * @param mixed[] $data with report config
      * @return mixed[] $validated on the check.
      */
-    public function validate(array $data = []) : array;
+    public function validate(array $data = []): array;
 
     /**
      * getScripts method
@@ -40,5 +40,5 @@ interface ReportGraphsInterface
      * @param mixed[] $data passed in the method.
      * @return mixed[] JS/CSS libs paths.
      */
-    public function getScripts(array $data = []) : array;
+    public function getScripts(array $data = []): array;
 }

@@ -21,7 +21,7 @@ final class Count extends AbstractAggregate
     /**
      * {@inheritDoc}
      */
-    public function getExpression() : FunctionExpression
+    public function getExpression(): FunctionExpression
     {
         return (new FunctionsBuilder())->count($this->field);
     }

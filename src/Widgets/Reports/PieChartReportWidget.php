@@ -25,7 +25,7 @@ class PieChartReportWidget extends DonutChartReportWidget
      * @param array $data containing report configs and data.
      * @return array $chartData with defined chart information.
      */
-    public function getChartData(array $data = []) : array
+    public function getChartData(array $data = []): array
     {
         $chartData = parent::getChartData($data);
 
@@ -42,7 +42,7 @@ class PieChartReportWidget extends DonutChartReportWidget
      * @param mixed[] $data passed from the widgetHandler.
      * @return mixed[] $content with the libs.
      */
-    public function getScripts(array $data = []) : array
+    public function getScripts(array $data = []): array
     {
          return parent::getScripts($data);
     }

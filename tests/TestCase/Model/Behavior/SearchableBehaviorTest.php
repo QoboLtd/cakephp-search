@@ -25,7 +25,7 @@ class SearchableBehaviorTest extends TestCase
 
     private $articles;
 
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -33,14 +33,14 @@ class SearchableBehaviorTest extends TestCase
         $this->articles->addBehavior('Search.Searchable');
     }
 
-    public function tearDown() : void
+    public function tearDown(): void
     {
         unset($this->articles);
 
         parent::tearDown();
     }
 
-    public function testFindSearch() : void
+    public function testFindSearch(): void
     {
         $this->articles->deleteAll([]);
         $this->articles->saveMany(
@@ -61,7 +61,7 @@ class SearchableBehaviorTest extends TestCase
         $this->assertCount(2, $query);
     }
 
-    public function testFindSearchWithConjunction() : void
+    public function testFindSearchWithConjunction(): void
     {
         $this->articles->deleteAll([]);
         $this->articles->saveMany(
@@ -88,7 +88,7 @@ class SearchableBehaviorTest extends TestCase
      * @param mixed $value
      * @return void
      */
-    public function testFindSearchWithBoolean($value) : void
+    public function testFindSearchWithBoolean($value): void
     {
         $this->articles->deleteAll([]);
         $this->articles->save(
@@ -108,7 +108,7 @@ class SearchableBehaviorTest extends TestCase
         $this->assertCount(1, $query);
     }
 
-    public function testFindSearchWithGroupClause() : void
+    public function testFindSearchWithGroupClause(): void
     {
         $this->articles->deleteAll([]);
         $this->articles->saveMany(
@@ -129,7 +129,7 @@ class SearchableBehaviorTest extends TestCase
         $this->assertCount(2, $query);
     }
 
-    public function testFindSearchWithOrderClause() : void
+    public function testFindSearchWithOrderClause(): void
     {
         $this->articles->deleteAll([]);
         $this->articles->saveMany(
@@ -151,7 +151,7 @@ class SearchableBehaviorTest extends TestCase
         $this->assertCount(2, $query);
     }
 
-    public function testFindSearchWithSelectClause() : void
+    public function testFindSearchWithSelectClause(): void
     {
         $this->articles->deleteAll([]);
         $this->articles->saveMany(
@@ -172,7 +172,7 @@ class SearchableBehaviorTest extends TestCase
         $this->assertCount(2, $query);
     }
 
-    public function testFindSearchWithAggregate() : void
+    public function testFindSearchWithAggregate(): void
     {
         $this->articles->deleteAll([]);
         $this->articles->saveMany(
@@ -187,7 +187,7 @@ class SearchableBehaviorTest extends TestCase
         $this->assertCount(1, $query);
     }
 
-    public function testFindSearchWithAssociated() : void
+    public function testFindSearchWithAssociated(): void
     {
         $this->articles->deleteAll([]);
         $this->articles->save(
@@ -210,7 +210,7 @@ class SearchableBehaviorTest extends TestCase
     /**
      * @return mixed[]
      */
-    public function booleanValueProvider() : array
+    public function booleanValueProvider(): array
     {
         return [
             [1],

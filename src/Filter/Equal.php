@@ -22,7 +22,7 @@ final class Equal extends AbstractFilter
      * @param \Cake\ORM\Query $query Query instance
      * @return \Cake\ORM\Query
      */
-    public function apply(Query $query) : Query
+    public function apply(Query $query): Query
     {
         $method = is_array($this->value) ? 'in' : 'eq';
 

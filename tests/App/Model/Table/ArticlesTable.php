@@ -27,7 +27,7 @@ class ArticlesTable extends Table
      * @param  mixed[]  $options where option
      * @return mixed[]
      */
-    public function findTitle(Query $query, array $options) : array
+    public function findTitle(Query $query, array $options): array
     {
         $query = $this->find()->enableHydration(false);
         $results = $query

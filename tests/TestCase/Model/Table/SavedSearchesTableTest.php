@@ -140,7 +140,7 @@ class SavedSearchesTableTest extends TestCase
     /**
      * @return mixed[]
      */
-    public function dataProviderGetBasicSearchCriteria() : array
+    public function dataProviderGetBasicSearchCriteria(): array
     {
         return [
             [['query' => 'SELECT id,created FROM dashboards LIMIT 2', 'table' => 'Dashboards']],

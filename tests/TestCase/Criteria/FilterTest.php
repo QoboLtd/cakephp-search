@@ -16,31 +16,31 @@ use Search\Criteria\Filter;
 
 class FilterTest extends TestCase
 {
-    public function testShouldRequireNonEmptyFilterType() : void
+    public function testShouldRequireNonEmptyFilterType(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $filter = new Filter('', 'foobar');
     }
 
-    public function testShouldRequireScalarOrArrayFilterValue() : void
+    public function testShouldRequireScalarOrArrayFilterValue(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $filter = new Filter(\Search\Filter\StartsWith::class, (object)['foo']);
     }
 
-    public function testShouldRequireValidFilterType() : void
+    public function testShouldRequireValidFilterType(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $filter = new Filter(\stdClass::class, 'valid-value');
     }
 
-    public function testShouldAcceptValidFilterType() : void
+    public function testShouldAcceptValidFilterType(): void
     {
         $filter = new Filter(\Search\Filter\Contains::class, 'foobar');
         $this->assertInstanceOf(Filter::class, $filter);
     }
 
-    public function testShouldReturnFilterTypeAsString() : void
+    public function testShouldReturnFilterTypeAsString(): void
     {
         $filter = new Filter(\Search\Filter\Contains::class, 'foobar');
         $this->assertEquals(\Search\Filter\Contains::class, $filter->type());
@@ -51,7 +51,7 @@ class FilterTest extends TestCase
      * @dataProvider validValuesProvider
      * @param mixed $value
      */
-    public function testShouldReturnFilterValueAsScalarOrArray($value) : void
+    public function testShouldReturnFilterValueAsScalarOrArray($value): void
     {
         $filter = new Filter(\Search\Filter\Contains::class, $value);
         $this->assertEquals($value, $filter->value());
@@ -60,7 +60,7 @@ class FilterTest extends TestCase
     /**
      * @return mixed[]
      */
-    public function validValuesProvider() : array
+    public function validValuesProvider(): array
     {
         return [
             [''],

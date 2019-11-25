@@ -210,7 +210,7 @@ final class Export
      * @param \Cake\ORM\Table $table Table instance
      * @return mixed[]
      */
-    private static function toCsv(ResultSetInterface $resultSet, array $fields, Table $table) : array
+    private static function toCsv(ResultSetInterface $resultSet, array $fields, Table $table): array
     {
         $result = [];
         foreach ($resultSet as $key => $entity) {
@@ -242,7 +242,7 @@ final class Export
      * @param \Search\Model\Entity\SavedSearch $savedSearch SavedSearch
      * @return mixed[]
      */
-    private function getOptionsFromSavedSearch(SavedSearch $savedSearch) : array
+    private function getOptionsFromSavedSearch(SavedSearch $savedSearch): array
     {
         $options = [];
 
@@ -344,7 +344,7 @@ final class Export
      * @param string $field Field name
      * @return string
      */
-    private static function getListNameFromField(Table $table, string $field) : string
+    private static function getListNameFromField(Table $table, string $field): string
     {
         list(, $module) = pluginSplit(App::shortName(get_class($table), 'Model/Table', 'Table'));
         $config = (new ModuleConfig(ConfigType::MIGRATION(), $module))->parseToArray();
@@ -378,7 +378,7 @@ final class Export
      * @param string $field Field name
      * @return \Cake\ORM\Association|null
      */
-    private static function getAssociationFromField(Table $table, string $field) : ?Association
+    private static function getAssociationFromField(Table $table, string $field): ?Association
     {
         foreach ($table->associations() as $association) {
             if ($association->getForeignKey() === $field) {
@@ -428,7 +428,7 @@ final class Export
      * @param string $mode File mode
      * @return void
      */
-    private function create(array $data, string $mode = 'a') : void
+    private function create(array $data, string $mode = 'a'): void
     {
         // create file path
         $file = new File($this->path, true);
@@ -465,7 +465,7 @@ final class Export
      * @param \Cake\ORM\Table $table Table instance
      * @return mixed[]
      */
-    private static function getAssociationLabels(Table $table) : array
+    private static function getAssociationLabels(Table $table): array
     {
         $result = [];
         foreach ($table->associations() as $association) {
@@ -484,7 +484,7 @@ final class Export
      * @param bool $withAssociated flag for including associations fields
      * @return mixed[]
      */
-    private static function getFieldLabels(Table $table, bool $withAssociated = true) : array
+    private static function getFieldLabels(Table $table, bool $withAssociated = true): array
     {
         list(, $module) = pluginSplit(App::shortName(get_class($table), 'Model/Table', 'Table'));
         $config = (new ModuleConfig(ConfigType::FIELDS(), $module))->parseToArray();
@@ -519,7 +519,7 @@ final class Export
      * @param \Cake\ORM\Table $table Table instance
      * @return mixed[]
      */
-    private static function includeAssociated(Table $table) : array
+    private static function includeAssociated(Table $table): array
     {
         $result = [];
         foreach ($table->associations() as $association) {
