@@ -16,7 +16,7 @@ use Search\Criteria\Direction;
 
 class DirectionTest extends TestCase
 {
-    public function testShouldRequireValidDirection() : void
+    public function testShouldRequireValidDirection(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $direction = new Direction('invalid-direction');
@@ -25,7 +25,7 @@ class DirectionTest extends TestCase
     /**
      * @dataProvider validDirectionsProvider
      */
-    public function testShouldAcceptValidDirection(string $value) : void
+    public function testShouldAcceptValidDirection(string $value): void
     {
         $direction = new Direction($value);
         $this->assertInstanceOf(Direction::class, $direction);
@@ -34,7 +34,7 @@ class DirectionTest extends TestCase
     /**
      * @dataProvider validDirectionsProvider
      */
-    public function testShouldReturnDirectionAsUppercasedString(string $value) : void
+    public function testShouldReturnDirectionAsUppercasedString(string $value): void
     {
         $direction = new Direction($value);
         $this->assertSame(strtoupper($value), (string)$direction);
@@ -43,7 +43,7 @@ class DirectionTest extends TestCase
     /**
      * @return string[][]
      */
-    public function validDirectionsProvider() : array
+    public function validDirectionsProvider(): array
     {
         return [
             ['ASC'],

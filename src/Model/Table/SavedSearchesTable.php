@@ -54,7 +54,7 @@ class SavedSearchesTable extends Table
     /**
      * {@inheritDoc}
      */
-    protected function _initializeSchema(TableSchema $schema) : TableSchema
+    protected function _initializeSchema(TableSchema $schema): TableSchema
     {
         $schema->setColumnType('content', 'json');
         $schema->setColumnType('criteria', 'json');
@@ -119,7 +119,7 @@ class SavedSearchesTable extends Table
     /**
      * {@inheritDoc}
      */
-    public function beforeSave(Event $event, EntityInterface $entity, \ArrayObject $options) : void
+    public function beforeSave(Event $event, EntityInterface $entity, \ArrayObject $options): void
     {
         if (! $entity->isNew()) {
             Assert::isInstanceOf($entity, \Cake\ORM\Entity::class);

@@ -16,7 +16,7 @@ class SearchShellTest extends ConsoleIntegrationTestCase
 
     private $table;
 
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -39,14 +39,14 @@ class SearchShellTest extends ConsoleIntegrationTestCase
         }
     }
 
-    public function tearDown() : void
+    public function tearDown(): void
     {
         unset($this->table);
 
         parent::tearDown();
     }
 
-    public function testCleanup() : void
+    public function testCleanup(): void
     {
         $this->assertSame(4, $this->table->find('all')->count());
 
@@ -56,7 +56,7 @@ class SearchShellTest extends ConsoleIntegrationTestCase
         $this->assertSame(0, $this->table->find('all')->count());
     }
 
-    public function testCleanupWithTime() : void
+    public function testCleanupWithTime(): void
     {
         $this->assertSame(4, $this->table->find('all')->count());
 
@@ -66,7 +66,7 @@ class SearchShellTest extends ConsoleIntegrationTestCase
         $this->assertSame(0, $this->table->find('all')->count());
     }
 
-    public function testCleanupWithInvalidTime() : void
+    public function testCleanupWithInvalidTime(): void
     {
         $this->exec('search cleanup foobar');
 

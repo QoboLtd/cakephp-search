@@ -15,7 +15,7 @@ class SearchShell extends Shell
     /**
      * @return \Cake\Console\ConsoleOptionParser
      */
-    public function getOptionParser() : ConsoleOptionParser
+    public function getOptionParser(): ConsoleOptionParser
     {
         $parser = parent::getOptionParser();
 
@@ -40,7 +40,7 @@ class SearchShell extends Shell
      * @param string $time A date/time string. Valid formats are explained in http://php.net/manual/en/datetime.formats.php
      * @return void
      */
-    public function cleanup(string $time = self::DEFAULT_MAX_LENGTH) : void
+    public function cleanup(string $time = self::DEFAULT_MAX_LENGTH): void
     {
         $table = $this->loadModel('Search.SavedSearches');
 

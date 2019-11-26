@@ -22,21 +22,21 @@ class AverageTest extends TestCase
 
     private $query;
 
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
 
         $this->query = TableRegistry::getTableLocator()->get('Articles')->query();
     }
 
-    public function tearDown() : void
+    public function tearDown(): void
     {
         unset($this->query);
 
         parent::tearDown();
     }
 
-    public function testApply() : void
+    public function testApply(): void
     {
         $aggregate = new Average(new Field('priority'));
 

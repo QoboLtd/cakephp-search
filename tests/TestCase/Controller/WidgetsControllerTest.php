@@ -36,7 +36,7 @@ class WidgetsControllerTest extends IntegrationTestCase
         EventManager::instance()->on(new WidgetsListener());
     }
 
-    public function testIndex() : void
+    public function testIndex(): void
     {
         $this->get('/search/widgets/index');
         $this->assertResponseCode(200);
@@ -46,7 +46,7 @@ class WidgetsControllerTest extends IntegrationTestCase
         $this->assertNotEmpty($responseBody);
     }
 
-    public function testWithoutSession() : void
+    public function testWithoutSession(): void
     {
         $this->_session = [];
 

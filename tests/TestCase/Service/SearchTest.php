@@ -36,7 +36,7 @@ class SearchTest extends TestCase
     private $criteria;
     private $conjunction;
 
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -49,7 +49,7 @@ class SearchTest extends TestCase
         $this->conjunction = new Conjunction('AND');
     }
 
-    public function tearDown() : void
+    public function tearDown(): void
     {
         unset($this->table);
 
@@ -59,7 +59,7 @@ class SearchTest extends TestCase
     /**
      * @doesNotPerformAssertions
      */
-    public function testShouldAddCriteria() : void
+    public function testShouldAddCriteria(): void
     {
         $this->doesNotPerformAssertions();
 
@@ -70,7 +70,7 @@ class SearchTest extends TestCase
     /**
      * @doesNotPerformAssertions
      */
-    public function testShouldSetConjunction() : void
+    public function testShouldSetConjunction(): void
     {
         $this->doesNotPerformAssertions();
 
@@ -78,7 +78,7 @@ class SearchTest extends TestCase
         $search->setConjunction($this->conjunction);
     }
 
-    public function testShouldExecute() : void
+    public function testShouldExecute(): void
     {
         $this->table->deleteAll([]);
         $this->table->saveMany(
@@ -107,7 +107,7 @@ class SearchTest extends TestCase
         $this->assertEquals([], array_diff(['title', 'content'], $result->visibleProperties()));
     }
 
-    public function testShouldExecuteWithGroupBy() : void
+    public function testShouldExecuteWithGroupBy(): void
     {
         $this->table->deleteAll([]);
         $this->table->saveMany(
@@ -134,7 +134,7 @@ class SearchTest extends TestCase
         $this->assertEquals(2, $result->get('COUNT(content)'));
     }
 
-    public function testShouldExecuteWithGroupByAndFilter() : void
+    public function testShouldExecuteWithGroupByAndFilter(): void
     {
         $this->table->deleteAll([]);
         $this->table->saveMany(
@@ -160,7 +160,7 @@ class SearchTest extends TestCase
         $this->assertCount(2, $result);
     }
 
-    public function testShouldExecuteWithGroupByAssociatedManyToOne() : void
+    public function testShouldExecuteWithGroupByAssociatedManyToOne(): void
     {
         $this->table->deleteAll([]);
         $this->table->saveMany(
@@ -198,7 +198,7 @@ class SearchTest extends TestCase
         );
     }
 
-    public function testShouldExecuteWithGroupByAssociatedManyToMany() : void
+    public function testShouldExecuteWithGroupByAssociatedManyToMany(): void
     {
         $this->table->deleteAll([]);
         $this->table->saveMany(
@@ -240,7 +240,7 @@ class SearchTest extends TestCase
         );
     }
 
-    public function testShouldExecuteWithGroupByAssociatedOneToMany() : void
+    public function testShouldExecuteWithGroupByAssociatedOneToMany(): void
     {
         $table = TableRegistry::getTableLocator()->get('Authors');
 
@@ -287,7 +287,7 @@ class SearchTest extends TestCase
      * @param mixed $expected
      * @param string $prefix Aggregate prefix
      */
-    public function testShouldExecuteWithAggregate(string $aggregateClass, $expected, string $prefix) : void
+    public function testShouldExecuteWithAggregate(string $aggregateClass, $expected, string $prefix): void
     {
         $this->table->deleteAll([]);
         $this->table->saveMany(
@@ -313,7 +313,7 @@ class SearchTest extends TestCase
         $this->assertSame($expected, $entity->get($prefix . '(priority)'));
     }
 
-    public function testShouldExecuteWithAggregateAndFilter() : void
+    public function testShouldExecuteWithAggregateAndFilter(): void
     {
         $this->table->deleteAll([]);
         $this->table->saveMany(
@@ -340,7 +340,7 @@ class SearchTest extends TestCase
         $this->assertSame(70.11, $entity->get('SUM(priority)'));
     }
 
-    public function testShouldExecuteWithAggregateAndGroupBy() : void
+    public function testShouldExecuteWithAggregateAndGroupBy(): void
     {
         $this->table->deleteAll([]);
         $this->table->saveMany(
@@ -379,7 +379,7 @@ class SearchTest extends TestCase
         );
     }
 
-    public function testShouldExecuteWithAggregateAndGroupByAndFilter() : void
+    public function testShouldExecuteWithAggregateAndGroupByAndFilter(): void
     {
         $this->table->deleteAll([]);
         $this->table->saveMany(
@@ -413,7 +413,7 @@ class SearchTest extends TestCase
         );
     }
 
-    public function testShouldExecuteWithFilterOnAssociatedManyToOne() : void
+    public function testShouldExecuteWithFilterOnAssociatedManyToOne(): void
     {
         $this->table->deleteAll([]);
         $this->table->saveMany(
@@ -439,7 +439,7 @@ class SearchTest extends TestCase
         $this->assertSame('three', $entities[1]->get('title'));
     }
 
-    public function testShouldExecuteWithFilterOnAssociatedManyToMany() : void
+    public function testShouldExecuteWithFilterOnAssociatedManyToMany(): void
     {
         $this->table->deleteAll([]);
         $this->table->saveMany(
@@ -473,7 +473,7 @@ class SearchTest extends TestCase
         $this->assertSame(['two', '#another_tag'], [$entities[3]->get('title'), $entities[3]->get('_matchingData')['Tags']->get('name')]);
     }
 
-    public function testShouldExecuteWithFilterByRelatedIdOnAssociatedManyToMany() : void
+    public function testShouldExecuteWithFilterByRelatedIdOnAssociatedManyToMany(): void
     {
         $expected = '00000000-0000-0000-0000-000000000001';
 
@@ -506,7 +506,7 @@ class SearchTest extends TestCase
         $this->assertSame(['three', $expected], [$entities[1]->get('title'), $entities[1]->get('_matchingData')['Tags']->get('id')]);
     }
 
-    public function testShouldExecuteWithFilterOnAssociatedOneToMany() : void
+    public function testShouldExecuteWithFilterOnAssociatedOneToMany(): void
     {
         $table = TableRegistry::getTableLocator()->get('Authors');
 
@@ -542,7 +542,7 @@ class SearchTest extends TestCase
         $this->assertSame('First article title', $entity->get('_matchingData')['Articles']->get('title'));
     }
 
-    public function testShouldRequireValidAssociation() : void
+    public function testShouldRequireValidAssociation(): void
     {
         $this->expectException(\RuntimeException::class);
 
@@ -558,7 +558,7 @@ class SearchTest extends TestCase
     /**
      * @return mixed[]
      */
-    public function aggregatesProvider() : array
+    public function aggregatesProvider(): array
     {
         return [
             [\Search\Aggregate\Average::class, 25.2325, 'AVG'],

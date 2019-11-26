@@ -21,7 +21,7 @@ final class Sum extends AbstractAggregate
     /**
      * {@inheritDoc}
      */
-    public function getExpression() : FunctionExpression
+    public function getExpression(): FunctionExpression
     {
         return (new FunctionsBuilder())->sum($this->field);
     }

@@ -16,19 +16,19 @@ use Search\Criteria\Field;
 
 class FieldTest extends TestCase
 {
-    public function testShouldRequireNonEmptyField() : void
+    public function testShouldRequireNonEmptyField(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $field = new Field('');
     }
 
-    public function testShouldAcceptValidField() : void
+    public function testShouldAcceptValidField(): void
     {
         $field = new Field('foobar');
         $this->assertInstanceOf(Field::class, $field);
     }
 
-    public function testShouldReturnAsString() : void
+    public function testShouldReturnAsString(): void
     {
         $field = new Field('foobar');
         $this->assertEquals('foobar', (string)$field);

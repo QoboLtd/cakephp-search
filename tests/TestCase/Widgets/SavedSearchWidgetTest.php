@@ -94,7 +94,7 @@ class SavedSearchWidgetTest extends TestCase
         $this->assertSame($result, $expected);
     }
 
-    public function testGetResults() : void
+    public function testGetResults(): void
     {
         $result = $this->widget->getResults(['entity' => $this->SavedSearches->newEntity()]);
         $this->assertInstanceOf(SavedSearch::class, $result);
@@ -104,7 +104,7 @@ class SavedSearchWidgetTest extends TestCase
         $this->assertNull($widget->getResults(['entity' => $this->SavedSearches->newEntity()]));
     }
 
-    public function testGetContainerId() : void
+    public function testGetContainerId(): void
     {
         $savedSearchId = '00000000-0000-0000-0000-000000000002';
         $expected = SavedSearchWidget::TABLE_PREFIX . md5($savedSearchId);

@@ -21,7 +21,7 @@ final class Minimum extends AbstractAggregate
     /**
      * {@inheritDoc}
      */
-    public function getExpression() : FunctionExpression
+    public function getExpression(): FunctionExpression
     {
         return (new FunctionsBuilder())->min($this->field);
     }

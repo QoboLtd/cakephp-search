@@ -21,7 +21,7 @@ final class Maximum extends AbstractAggregate
     /**
      * {@inheritDoc}
      */
-    public function getExpression() : FunctionExpression
+    public function getExpression(): FunctionExpression
     {
         return (new FunctionsBuilder())->max($this->field);
     }

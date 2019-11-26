@@ -36,7 +36,7 @@ interface WidgetInterface
      * is applied.
      * @return string $containerId of the widget.
      */
-    public function getContainerId() : string;
+    public function getContainerId(): string;
 
     /**
      * getType method
@@ -44,40 +44,40 @@ interface WidgetInterface
      * to each instance.
      * @return string $type of the current widgetHandler.
      */
-    public function getType() : string;
+    public function getType(): string;
 
     /**
      * Widget's title getter.
      *
      * @return string
      */
-    public function getTitle() : string;
+    public function getTitle(): string;
 
     /**
      * Widget's icon getter.
      *
      * @return string
      */
-    public function getIcon() : string;
+    public function getIcon(): string;
 
     /**
      * Widget's color getter.
      *
      * @return string
      */
-    public function getColor() : string;
+    public function getColor(): string;
 
     /**
      * getRenderElement
      * Returns the name of the render element
      * @return string $renderElement
      */
-    public function getRenderElement() : string;
+    public function getRenderElement(): string;
 
     /**
      * getOptions method.
      *
      * @return mixed[] $content of all widget scripts listed with scriptBlocks.
      */
-    public function getOptions() : array;
+    public function getOptions(): array;
 }

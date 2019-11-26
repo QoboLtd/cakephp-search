@@ -24,21 +24,21 @@ class LessOrEqualTest extends TestCase
 
     private $query;
 
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
 
         $this->query = TableRegistry::get('Articles')->query();
     }
 
-    public function tearDown() : void
+    public function tearDown(): void
     {
         unset($this->query);
 
         parent::tearDown();
     }
 
-    public function testApply() : void
+    public function testApply(): void
     {
         $filter = new LessOrEqual(new Field('title'), 'foo');
 
@@ -60,7 +60,7 @@ class LessOrEqualTest extends TestCase
         );
     }
 
-    public function testApplyWithAggregateAndGroupBy() : void
+    public function testApplyWithAggregateAndGroupBy(): void
     {
         $filter = new LessOrEqual(new Field('title'), 'foo', new Aggregate(\Search\Aggregate\Average::class), true);
 
