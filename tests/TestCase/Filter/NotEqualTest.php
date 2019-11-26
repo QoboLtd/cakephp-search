@@ -24,21 +24,21 @@ class NotEqualTest extends TestCase
 
     private $query;
 
-    public function setUp() : void
+    public function setUp(): void
     {
         parent::setUp();
 
         $this->query = TableRegistry::get('Articles')->query();
     }
 
-    public function tearDown() : void
+    public function tearDown(): void
     {
         unset($this->query);
 
         parent::tearDown();
     }
 
-    public function testApply() : void
+    public function testApply(): void
     {
         $filter = new NotEqual(new Field('title'), 'foo');
 
@@ -60,7 +60,7 @@ class NotEqualTest extends TestCase
         );
     }
 
-    public function testApplyWithMulti() : void
+    public function testApplyWithMulti(): void
     {
         $filter = new NotEqual(new Field('title'), ['foo', 'bar']);
 
@@ -82,7 +82,7 @@ class NotEqualTest extends TestCase
         );
     }
 
-    public function testApplyWithEmtpyArray() : void
+    public function testApplyWithEmtpyArray(): void
     {
         $filter = new NotEqual(new Field('title'), []);
 
@@ -104,7 +104,7 @@ class NotEqualTest extends TestCase
         );
     }
 
-    public function testApplyWithAggregateAndGroupBy() : void
+    public function testApplyWithAggregateAndGroupBy(): void
     {
         $filter = new NotEqual(new Field('title'), 'foo', new Aggregate(\Search\Aggregate\Average::class), true);
 

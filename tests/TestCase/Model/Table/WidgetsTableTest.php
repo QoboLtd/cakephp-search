@@ -173,7 +173,7 @@ class WidgetsTableTest extends TestCase
         $this->assertContains($data, $result);
     }
 
-    public function testGetWidgetOptions() : void
+    public function testGetWidgetOptions(): void
     {
         $widget = $this->Widgets->get('00000000-0000-0000-0000-000000000001');
         $expected = array_merge(
@@ -186,7 +186,7 @@ class WidgetsTableTest extends TestCase
         $this->assertSame($expected, $result);
     }
 
-    public function testGetWidgetDefaultOptions() : void
+    public function testGetWidgetDefaultOptions(): void
     {
         $expected = [
             'title' => 'Report',
@@ -208,7 +208,7 @@ class WidgetsTableTest extends TestCase
         $this->assertSame($expected, $result);
     }
 
-    public function testSaveDashboardWidgets() : void
+    public function testSaveDashboardWidgets(): void
     {
         $widgets = [['id' => 'foobaz', 'type' => 'foobar']];
 
@@ -221,7 +221,7 @@ class WidgetsTableTest extends TestCase
         $this->assertTrue($this->Widgets->saveDashboardWidgets($dashboard->get('id'), $widgets));
     }
 
-    public function testSaveDashboardWidgetsWithoutWidgets() : void
+    public function testSaveDashboardWidgetsWithoutWidgets(): void
     {
         $this->assertFalse($this->Widgets->saveDashboardWidgets('some-id', []));
     }

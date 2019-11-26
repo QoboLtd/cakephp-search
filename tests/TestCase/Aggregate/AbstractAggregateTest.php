@@ -16,19 +16,19 @@ use Search\Aggregate\AbstractAggregate;
 
 class AbstractAggregateTest extends TestCase
 {
-    public function testIsAggregate() : void
+    public function testIsAggregate(): void
     {
         $this->assertFalse(AbstractAggregate::isAggregate('foo'));
         $this->assertTrue(AbstractAggregate::isAggregate('foo(bar)'));
     }
 
-    public function testExtractFieldName() : void
+    public function testExtractFieldName(): void
     {
         $this->assertSame('', AbstractAggregate::extractFieldName('foo'));
         $this->assertSame('bar', AbstractAggregate::extractFieldName('foo(bar)'));
     }
 
-    public function testExtractAggregate() : void
+    public function testExtractAggregate(): void
     {
         $this->assertSame('', AbstractAggregate::extractAggregate('foo'));
         $this->assertSame('foo', AbstractAggregate::extractAggregate('foo(bar)'));

@@ -48,7 +48,7 @@ class SavedSearch extends Entity
      *
      * @return bool
      */
-    protected function _getIsEditable() : bool
+    protected function _getIsEditable(): bool
     {
         return array_key_exists('name', $this->_properties) ? (bool)$this->_properties['name'] : false;
     }

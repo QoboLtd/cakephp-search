@@ -24,12 +24,12 @@ interface AggregateInterface
      * @param \Cake\ORM\Query $query Query instance
      * @return \Cake\ORM\Query
      */
-    public function apply(Query $query) : Query;
+    public function apply(Query $query): Query;
 
     /**
      * Returns aggregate function expression.
      *
      * @return \Cake\Database\Expression\FunctionExpression
      */
-    public function getExpression() : FunctionExpression;
+    public function getExpression(): FunctionExpression;
 }

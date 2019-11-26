@@ -36,7 +36,7 @@ abstract class AbstractAggregate implements AggregateInterface
     /**
      * {@inheritDoc}
      */
-    public function apply(Query $query) : Query
+    public function apply(Query $query): Query
     {
         $alias = static::IDENTIFIER . '%%' . $this->field;
 
@@ -61,7 +61,7 @@ abstract class AbstractAggregate implements AggregateInterface
      * @param string $field Field name
      * @return bool
      */
-    public static function isAggregate(string $field) : bool
+    public static function isAggregate(string $field): bool
     {
         return 1 === preg_match(AggregateInterface::AGGREGATE_PATTERN, $field);
     }
@@ -72,7 +72,7 @@ abstract class AbstractAggregate implements AggregateInterface
      * @param string $field Field name
      * @return string
      */
-    public static function extractAggregate(string $field) : string
+    public static function extractAggregate(string $field): string
     {
         preg_match(AggregateInterface::AGGREGATE_PATTERN, $field, $matches);
 
@@ -85,7 +85,7 @@ abstract class AbstractAggregate implements AggregateInterface
      * @param string $field Field name
      * @return string
      */
-    public static function extractFieldName(string $field) : string
+    public static function extractFieldName(string $field): string
     {
         preg_match(AggregateInterface::AGGREGATE_PATTERN, $field, $matches);
 

@@ -24,5 +24,5 @@ interface FilterInterface
      * @param \Cake\ORM\Query $query Query instance
      * @return \Cake\ORM\Query
      */
-    public function apply(Query $query) : Query;
+    public function apply(Query $query): Query;
 }

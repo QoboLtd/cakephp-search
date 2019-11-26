@@ -43,7 +43,7 @@ class SearchableBehavior extends Behavior
      * @param mixed[] $options List of options to pass to the finder
      * @return \Cake\ORM\Query
      */
-    public function findSearch(Query $query, array $options) : Query
+    public function findSearch(Query $query, array $options): Query
     {
         $data = QueryDataTransformer::transform($query, $options);
 

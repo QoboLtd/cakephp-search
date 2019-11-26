@@ -39,7 +39,7 @@ class SavedSearchesControllerTest extends IntegrationTestCase
      *
      * @return void
      */
-    public function testIndex() : void
+    public function testIndex(): void
     {
         $this->get('/search/saved-searches/index');
 
@@ -57,7 +57,7 @@ class SavedSearchesControllerTest extends IntegrationTestCase
      *
      * @return void
      */
-    public function testView() : void
+    public function testView(): void
     {
         $id = '00000000-0000-0000-0000-000000000001';
 
@@ -71,7 +71,7 @@ class SavedSearchesControllerTest extends IntegrationTestCase
         $this->assertSame($id, $response->data->id);
     }
 
-    public function testViewWithInvalidId() : void
+    public function testViewWithInvalidId(): void
     {
         $this->get('/search/saved-searches/view/INVALID_ID');
 
@@ -88,7 +88,7 @@ class SavedSearchesControllerTest extends IntegrationTestCase
      *
      * @return void
      */
-    public function testAdd() : void
+    public function testAdd(): void
     {
         $data = [
             'name' => 'Foobar',
@@ -105,7 +105,7 @@ class SavedSearchesControllerTest extends IntegrationTestCase
         $this->assertSame(36, strlen($response->data->id));
     }
 
-    public function testAddWithMissingRequiredData() : void
+    public function testAddWithMissingRequiredData(): void
     {
         $this->post('/search/saved-searches/add', []);
 
@@ -125,7 +125,7 @@ class SavedSearchesControllerTest extends IntegrationTestCase
      *
      * @return void
      */
-    public function testEdit() : void
+    public function testEdit(): void
     {
         $id = '00000000-0000-0000-0000-000000000001';
 
@@ -141,7 +141,7 @@ class SavedSearchesControllerTest extends IntegrationTestCase
         $this->assertSame([], $response->data);
     }
 
-    public function testEditWithInvalidData() : void
+    public function testEditWithInvalidData(): void
     {
         $id = '00000000-0000-0000-0000-000000000001';
 
@@ -160,7 +160,7 @@ class SavedSearchesControllerTest extends IntegrationTestCase
      *
      * @return void
      */
-    public function testDelete() : void
+    public function testDelete(): void
     {
         $id = '00000000-0000-0000-0000-000000000001';
 
@@ -174,7 +174,7 @@ class SavedSearchesControllerTest extends IntegrationTestCase
         $this->assertSame([], $response->data);
     }
 
-    public function testDeleteWithInvalidId() : void
+    public function testDeleteWithInvalidId(): void
     {
         $this->delete('/search/saved-searches/delete/INVALID_ID');
 

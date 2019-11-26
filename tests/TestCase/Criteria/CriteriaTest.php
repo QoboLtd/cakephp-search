@@ -25,14 +25,14 @@ class CriteriaTest extends TestCase
     private $filter;
     private $aggregate;
 
-    public function setUp() : void
+    public function setUp(): void
     {
         $this->field = new Field('Articles.title');
         $this->filter = new Filter(Contains::class, 'foobar');
         $this->aggregate = new Aggregate(Maximum::class);
     }
 
-    public function testShouldCreateNewCriteria() : void
+    public function testShouldCreateNewCriteria(): void
     {
         $criteria = Criteria::create($this->field);
 
@@ -40,7 +40,7 @@ class CriteriaTest extends TestCase
         $this->assertSame($this->field, $criteria->field());
     }
 
-    public function testShouldHaveFilterAndValue() : void
+    public function testShouldHaveFilterAndValue(): void
     {
         $criteria = Criteria::create($this->field);
         $this->assertNull($criteria->filter());
@@ -49,7 +49,7 @@ class CriteriaTest extends TestCase
         $this->assertSame($this->filter, $criteria->filter());
     }
 
-    public function testShouldHaveAggregate() : void
+    public function testShouldHaveAggregate(): void
     {
         $criteria = Criteria::create($this->field);
         $this->assertNull($criteria->aggregate());

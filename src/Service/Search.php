@@ -84,7 +84,7 @@ final class Search
      * @param \Search\Criteria\Field $field Field
      * @return void
      */
-    public function setGroupBy(Field $field) : void
+    public function setGroupBy(Field $field): void
     {
         $this->groupBy = $field;
     }
@@ -95,7 +95,7 @@ final class Search
      * @param \Search\Criteria\OrderBy $orderBy OrderBy
      * @return void
      */
-    public function setOrderBy(OrderBy $orderBy) : void
+    public function setOrderBy(OrderBy $orderBy): void
     {
         $this->orderBy = $orderBy;
     }
@@ -106,7 +106,7 @@ final class Search
      * @param \Search\Criteria\Criteria $criteria Criteria object
      * @return void
      */
-    public function addCriteria(Criteria $criteria) : void
+    public function addCriteria(Criteria $criteria): void
     {
         $this->criteria[] = $criteria;
     }
@@ -117,7 +117,7 @@ final class Search
      * @param \Search\Criteria\Field $field Field
      * @return void
      */
-    public function addSelect(Field $field) : void
+    public function addSelect(Field $field): void
     {
         $this->select[] = $field;
     }
@@ -128,7 +128,7 @@ final class Search
      * @param \Search\Criteria\Conjunction $conjunction Search conjunction
      * @return void
      */
-    public function setConjunction(Conjunction $conjunction) : void
+    public function setConjunction(Conjunction $conjunction): void
     {
         $this->conjunction = $conjunction;
     }
@@ -138,7 +138,7 @@ final class Search
      *
      * @return \Cake\ORM\Query
      */
-    public function execute() : Query
+    public function execute(): Query
     {
         $this->applySelect();
         $this->applyFilters();
@@ -166,7 +166,7 @@ final class Search
      *
      * @return void
      */
-    private function applyFilters() : void
+    private function applyFilters(): void
     {
         foreach ($this->criteria as $criteria) {
             if (null === $criteria->filter()) {
@@ -191,7 +191,7 @@ final class Search
      *
      * @return void
      */
-    private function applySelect() : void
+    private function applySelect(): void
     {
         foreach ($this->select as $item) {
             $this->query->select((string)$item);
@@ -213,7 +213,7 @@ final class Search
      *
      * @return bool
      */
-    private function hasGroup() : bool
+    private function hasGroup(): bool
     {
         return null !== $this->groupBy;
     }
@@ -223,7 +223,7 @@ final class Search
      *
      * @return void
      */
-    private function applyJoins() : void
+    private function applyJoins(): void
     {
         foreach ($this->getAssociations() as $association) {
             switch ($association->type()) {
@@ -241,7 +241,7 @@ final class Search
      *
      * @return mixed[]
      */
-    private function getAssociations() : array
+    private function getAssociations(): array
     {
         $result = [];
         foreach ($this->getQueryFields() as $field) {
@@ -265,7 +265,7 @@ final class Search
      *
      * @return string[]
      */
-    private function getQueryFields() : array
+    private function getQueryFields(): array
     {
         $result = [];
         foreach ($this->criteria as $criteria) {
@@ -293,7 +293,7 @@ final class Search
      * @return \Cake\ORM\Association|null
      * @throws \RuntimeException When invalid association is found
      */
-    private function getAssociationByField(string $field) : ?Association
+    private function getAssociationByField(string $field): ?Association
     {
         list($name) = explode('.', $this->table->aliasField($field), 2);
 

@@ -16,7 +16,7 @@ use Search\Criteria\Conjunction;
 
 class ConjunctionTest extends TestCase
 {
-    public function testShouldRequireValidValue() : void
+    public function testShouldRequireValidValue(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $value = new Conjunction('invalid value');
@@ -25,7 +25,7 @@ class ConjunctionTest extends TestCase
     /**
      * @dataProvider validValuesProvider
      */
-    public function testShouldAcceptValidValue(string $item) : void
+    public function testShouldAcceptValidValue(string $item): void
     {
         $value = new Conjunction($item);
         $this->assertInstanceOf(Conjunction::class, $value);
@@ -34,7 +34,7 @@ class ConjunctionTest extends TestCase
     /**
      * @return string[][]
      */
-    public function validValuesProvider() : array
+    public function validValuesProvider(): array
     {
         return [
             ['AND'],
@@ -44,7 +44,7 @@ class ConjunctionTest extends TestCase
         ];
     }
 
-    public function testShouldReturnAsString() : void
+    public function testShouldReturnAsString(): void
     {
         $conjunction = new Conjunction('and');
         $this->assertEquals('AND', (string)$conjunction);

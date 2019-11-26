@@ -121,7 +121,7 @@ class ExportTest extends TestCase
     /**
      * @return mixed[]
      */
-    public function validMagicValues() : array
+    public function validMagicValues(): array
     {
         return [
             ['%%me%%', '00000000-0000-0000-0000-000000000001'],
@@ -133,7 +133,7 @@ class ExportTest extends TestCase
         ];
     }
 
-    private static function getCsvPathFromUrl(string $url) : string
+    private static function getCsvPathFromUrl(string $url): string
     {
         $parts = explode('/', $url);
 
@@ -143,7 +143,7 @@ class ExportTest extends TestCase
     /**
      * @return mixed[]
      */
-    private static function readFromCsv(string $path) : array
+    private static function readFromCsv(string $path): array
     {
         $result = [];
 

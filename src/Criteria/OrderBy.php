@@ -41,7 +41,7 @@ final class OrderBy
      *
      * @return \Search\Criteria\Field
      */
-    public function field() : Field
+    public function field(): Field
     {
         return $this->field;
     }
@@ -51,7 +51,7 @@ final class OrderBy
      *
      * @return \Search\Criteria\Direction
      */
-    public function direction() : Direction
+    public function direction(): Direction
     {
         return $this->direction;
     }
@@ -61,7 +61,7 @@ final class OrderBy
      *
      * @return string
      */
-    public function __toString() : string
+    public function __toString(): string
     {
         return (string)$this->field . ' - ' . (string)$this->direction;
     }

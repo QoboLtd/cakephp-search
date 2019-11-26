@@ -47,7 +47,7 @@ class ReportWidget extends BaseWidget
     /**
      * @return mixed[] $report configuration.
      */
-    public function getConfig() : array
+    public function getConfig(): array
     {
         return $this->_instance->getConfig();
     }
@@ -56,7 +56,7 @@ class ReportWidget extends BaseWidget
      * @param mixed[] $data for extra setup
      * @return mixed[] $data of the report.
      */
-    public function getChartData(array $data = []) : array
+    public function getChartData(array $data = []): array
     {
         return $this->_instance->getChartData($data);
     }
@@ -65,7 +65,7 @@ class ReportWidget extends BaseWidget
      * @param mixed[] $data for extra settings
      * @return mixed[] $validated with errors and validation check.
      */
-    public function validate(array $data = []) : array
+    public function validate(array $data = []): array
     {
         return $this->_instance->validate($data);
     }
@@ -73,7 +73,7 @@ class ReportWidget extends BaseWidget
     /**
      * @return mixed[] $options of widget instance.
      */
-    public function getOptions() : array
+    public function getOptions(): array
     {
         return $this->_instance->getOptions();
     }
@@ -81,7 +81,7 @@ class ReportWidget extends BaseWidget
     /**
      * @return string $type of the Report widget.
      */
-    public function getType() : string
+    public function getType(): string
     {
         return $this->_instance->getType();
     }
@@ -92,7 +92,7 @@ class ReportWidget extends BaseWidget
      * @param mixed[] $config to be set for config property.
      * @return void
      */
-    public function setConfig(array $config) : void
+    public function setConfig(array $config): void
     {
         $this->_instance->setConfig($config);
     }
@@ -103,7 +103,7 @@ class ReportWidget extends BaseWidget
      * @param mixed[] $options to be set for config property.
      * @return void
      */
-    public function setOptions(array $options) : void
+    public function setOptions(array $options): void
     {
         $this->_instance->setOptions($options);
     }
@@ -116,7 +116,7 @@ class ReportWidget extends BaseWidget
      *
      * @return mixed[] $result with reports array.
      */
-    public function getReports() : array
+    public function getReports(): array
     {
         $event = new Event((string)EventName::MODEL_DASHBOARDS_GET_REPORTS());
         EventManager::instance()->dispatch($event);
@@ -130,7 +130,7 @@ class ReportWidget extends BaseWidget
      * @param mixed[] $options with entity data.
      * @return mixed[]
      */
-    public function getReport(array $options = []) : array
+    public function getReport(array $options = []): array
     {
         if (empty($options['entity'])) {
             return [];
@@ -169,7 +169,7 @@ class ReportWidget extends BaseWidget
      * @param mixed[] $options containing reports
      * @return \Search\Widgets\Reports\ReportGraphsInterface|null
      */
-    public function getReportInstance(array $options = []) : ?ReportGraphsInterface
+    public function getReportInstance(array $options = []): ?ReportGraphsInterface
     {
         if (empty($options['config'])) {
             $options['config'] = $this->getReport($options);
@@ -205,7 +205,7 @@ class ReportWidget extends BaseWidget
      * @throws \RuntimeException
      * @return mixed[] $result containing $_data.
      */
-    public function getResults(array $options = []) : array
+    public function getResults(array $options = []): array
     {
         $this->_instance = $this->getReportInstance($options);
         if (null === $this->_instance) {
@@ -245,7 +245,7 @@ class ReportWidget extends BaseWidget
      * @param mixed[] $config of the report.ini
      * @return mixed[] $result containing required resultset fields.
      */
-    public function getQueryData(array $config = []) : array
+    public function getQueryData(array $config = []): array
     {
         if (empty($config)) {
             return [];
@@ -289,7 +289,7 @@ class ReportWidget extends BaseWidget
      *
      * @return mixed[] $data of the report widget instance.
      */
-    public function getData() : array
+    public function getData(): array
     {
         return $this->_instance->getData();
     }
@@ -300,7 +300,7 @@ class ReportWidget extends BaseWidget
      * @param mixed[] $data with information related
      * @return void
      */
-    public function setData(array $data = []) : void
+    public function setData(array $data = []): void
     {
         $this->_instance->setData($data);
     }
@@ -308,7 +308,7 @@ class ReportWidget extends BaseWidget
     /**
      * @return string $containerId of the widget instance.
      */
-    public function getContainerId() : string
+    public function getContainerId(): string
     {
         return $this->_instance->getContainerId();
     }
@@ -321,7 +321,7 @@ class ReportWidget extends BaseWidget
      * @param mixed[] $config of the widget.
      * @return void
      */
-    public function setContainerId(array $config = []) : void
+    public function setContainerId(array $config = []): void
     {
         $this->_instance->setContainerId($config);
     }
@@ -329,7 +329,7 @@ class ReportWidget extends BaseWidget
     /**
      * @return string[] $errors in case validation failed
      */
-    public function getErrors() : array
+    public function getErrors(): array
     {
         return $this->_instance->getErrors();
     }

@@ -67,7 +67,7 @@ class AppWidget extends BaseWidget
      *
      * @return array
      */
-    public function getOptions() : array
+    public function getOptions(): array
     {
         return $this->options;
     }
