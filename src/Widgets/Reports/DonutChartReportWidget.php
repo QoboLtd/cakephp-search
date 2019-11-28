@@ -34,8 +34,8 @@ class DonutChartReportWidget extends BaseReportGraphs
         $columns = explode(',', $report['info']['columns']);
 
         // Check which index colums is the label and the data
-        $label_index = is_numeric($data[0][$columns[0]]) ? $columns[1] : $columns[0];
-        $data_index = is_numeric($data[0][$columns[0]]) ? $columns[0] : $columns[1];
+        $label_index = array_key_exists(0, $data) && is_numeric($data[0][$columns[0]]) ? $columns[1] : $columns[0];
+        $data_index = array_key_exists(0, $data) && is_numeric($data[0][$columns[0]]) ? $columns[0] : $columns[1];
 
         $label = Hash::extract($data, '{n}.' . $label_index);
         $data = (array)Hash::extract($data, '{n}.' . $data_index);
