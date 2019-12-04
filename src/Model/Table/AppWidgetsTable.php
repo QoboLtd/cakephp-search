@@ -13,6 +13,7 @@ namespace Search\Model\Table;
 
 use Cake\Core\App;
 use Cake\Database\Schema\TableSchema;
+use Cake\Datasource\EntityInterface;
 use Cake\Filesystem\Folder;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -30,6 +31,8 @@ use Cake\Validation\Validator;
  * @method \Search\Model\Entity\AppWidget[] patchEntities($entities, array $data, array $options = [])
  * @method \Search\Model\Entity\AppWidget findOrCreate($search, callable $callback = null, $options = [])
  * @method \Muffin\Trash\Model\Behavior\TrashBehavior trashAll($conditions)
+ * @method \Muffin\Trash\Model\Behavior\TrashBehavior restoreTrash(\Cake\Datasource\EntityInterface $entity, $options = [])
+ *
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
@@ -132,8 +135,13 @@ class AppWidgetsTable extends Table
         foreach ($widgets as $widget) {
             $found[] = $widget['name'];
 
-            // skip adding existing app widgets
-            if ($this->exists(['AppWidgets.name' => $widget['name']])) {
+            // skip adding existing app widgets.
+            /**
+             * @var EntityInterface $appWidgetEntity
+             */
+            $appWidgetEntity = $this->find('withTrashed')->where(['AppWidgets.name' => $widget['name']])->first();
+            if (!empty($appWidgetEntity) && !empty($appWidgetEntity->get('trashed'))) {
+                $this->restoreTrash($appWidgetEntity);
                 continue;
             }
 
