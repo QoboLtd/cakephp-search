@@ -1,0 +1,79 @@
+# LANGUAGE translation of CakePHP Application
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2019-12-06 13:32+0000\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+msgid "The dashboard has been saved."
+msgstr ""
+
+msgid "The dashboard could not be saved. Please, try again."
+msgstr ""
+
+msgid "The dashboard has been deleted."
+msgstr ""
+
+msgid "The dashboard could not be deleted. Please, try again."
+msgstr ""
+
+msgid "Reports"
+msgstr ""
+
+msgid "Saved Searches"
+msgstr ""
+
+msgid "Create {0}"
+msgstr ""
+
+msgid "Submit"
+msgstr ""
+
+msgid "Edit {0}"
+msgstr ""
+
+msgid "Dashboards"
+msgstr ""
+
+msgid "There are no configured Dashboards for you. Please contact the system administrator."
+msgstr ""
+
+msgid "Widget is unavailable"
+msgstr ""
+
+msgid "Widgets"
+msgstr ""
+
+msgid "Available Widgets"
+msgstr ""
+
+msgid "Edit"
+msgstr ""
+
+msgid "Delete"
+msgstr ""
+
+msgid "Are you sure you want to delete {0}?"
+msgstr ""
+
+msgid "completed"
+msgstr ""
+
+msgid "Export"
+msgstr ""
+
+msgid "in progress"
+msgstr ""
+
+msgid "records"
+msgstr ""
+

@@ -140,7 +140,7 @@ class DashboardsController extends AppController
             $resultedDashboard = $this->Dashboards->save($dashboard);
 
             if ($resultedDashboard) {
-                $this->Flash->success((string)__('The dashboard has been saved.'));
+                $this->Flash->success((string)__d('Qobo/Search', 'The dashboard has been saved.'));
 
                 $dashboardId = $resultedDashboard->id;
 
@@ -152,7 +152,7 @@ class DashboardsController extends AppController
 
                 return $this->redirect(['action' => 'view', $dashboard->id]);
             } else {
-                $this->Flash->error((string)__('The dashboard could not be saved. Please, try again.'));
+                $this->Flash->error((string)__d('Qobo/Search', 'The dashboard could not be saved. Please, try again.'));
             }
         }
 
@@ -226,7 +226,7 @@ class DashboardsController extends AppController
             ]);
 
             if ($this->Dashboards->save($dashboard)) {
-                $this->Flash->success((string)__('The dashboard has been saved.'));
+                $this->Flash->success((string)__d('Qobo/Search', 'The dashboard has been saved.'));
                 /** @var \Search\Model\Table\WidgetsTable */
                 $widgetTable = TableRegistry::get('Search.Widgets');
                 $widgetTable->trashAll([
@@ -240,7 +240,7 @@ class DashboardsController extends AppController
 
                 return $this->redirect(['action' => 'view', $id]);
             } else {
-                $this->Flash->error((string)__('The dashboard could not be saved. Please, try again.'));
+                $this->Flash->error((string)__d('Qobo/Search', 'The dashboard could not be saved. Please, try again.'));
             }
         }
 
@@ -269,9 +269,9 @@ class DashboardsController extends AppController
                 'dashboard_id' => $id
             ]);
 
-            $this->Flash->success((string)__('The dashboard has been deleted.'));
+            $this->Flash->success((string)__d('Qobo/Search', 'The dashboard has been deleted.'));
         } else {
-            $this->Flash->error((string)__('The dashboard could not be deleted. Please, try again.'));
+            $this->Flash->error((string)__d('Qobo/Search', 'The dashboard could not be deleted. Please, try again.'));
         }
 
         return $this->redirect(['action' => 'index']);
