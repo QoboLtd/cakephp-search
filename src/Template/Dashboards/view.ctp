@@ -63,7 +63,7 @@ $chartData = [];
                 );
 
                 if (empty($widgetContent)) {
-                    throw new \Exception(__('Widget is unavailable'));
+                    throw new \Exception(__d('Qobo/Search', 'Widget is unavailable'));
                 }
                 echo $widgetContent;
             } catch (\Exception $e) {

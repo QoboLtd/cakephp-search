@@ -12,7 +12,7 @@
 ?>
 <div class="row">
     <div class="col-xs-12">
-        <p class="h3 text-center saved-searches-title"><?= __('Reports') ?></p>
+        <p class="h3 text-center saved-searches-title"><?= __d('Qobo/Search', 'Reports') ?></p>
         <ul class="list-inline droppable-area reports-area">
             <?php if (!empty($reports)) { ?>
                 <?php foreach ($reports as $model => $items) { ?>
