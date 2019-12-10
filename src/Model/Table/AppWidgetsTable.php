@@ -11,8 +11,12 @@
  */
 namespace Search\Model\Table;
 
+use ArrayObject;
 use Cake\Core\App;
+use Cake\Core\Configure;
 use Cake\Database\Schema\TableSchema;
+use Cake\Datasource\QueryInterface;
+use Cake\Event\Event;
 use Cake\Filesystem\Folder;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -184,5 +188,25 @@ class AppWidgetsTable extends Table
         }
 
         return $result;
+    }
+
+    /**
+     * @param \Cake\Event\Event $event Event object
+     * @param \Cake\Datasource\QueryInterface $query Query object
+     * @param \ArrayObject $options Query options
+     * @param bool $primary Primary Standalone Query flag
+     * @return void
+     */
+    public function beforeFind(Event $event, QueryInterface $query, ArrayObject $options, bool $primary): void
+    {
+        $enable = Configure::read('Search.enableWidget');
+
+        if (!empty($enable) && is_array($enable)) {
+            $query->where(["name in" => $enable]);
+
+            return;
+        }
+
+        $query->limit(0);
     }
 }

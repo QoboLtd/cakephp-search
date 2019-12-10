@@ -11,7 +11,6 @@
  */
 namespace Search\Event\Model;
 
-use Cake\Core\Configure;
 use Cake\Event\Event;
 use Cake\Event\EventListenerInterface;
 use Cake\Event\EventManager;
@@ -124,15 +123,9 @@ class WidgetsListener implements EventListenerInterface
             return [];
         }
 
-        $disabled = Configure::read('Search.disabledWidget');
-
         $data = [];
         // normalize app widget data
         foreach ($query->all() as $entity) {
-            if (!empty($disabled) && in_array($entity->get('name'), $disabled)) {
-                continue;
-            }
-
             $data[] = [
                 'id' => $entity->get('id'),
                 'model' => $entity->get('content')['model'],
