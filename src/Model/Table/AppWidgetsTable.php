@@ -199,7 +199,7 @@ class AppWidgetsTable extends Table
      */
     public function beforeFind(Event $event, QueryInterface $query, ArrayObject $options, bool $primary): void
     {
-        $enable = Configure::read('Search.enableWidget');
+        $enable = Configure::read('Search.enabledWidgets');
 
         if (!empty($enable) && is_array($enable)) {
             $query->where(["name in" => $enable]);
