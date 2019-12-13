@@ -23,7 +23,7 @@ class AppWidgetsTableTest extends TestCase
      * @var array
      */
     public $fixtures = [
-        'plugin.search.app_widgets'
+        'plugin.search.app_widgets',
     ];
 
     /**

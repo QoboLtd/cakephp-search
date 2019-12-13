@@ -86,7 +86,7 @@ class KnobChartReportWidget extends BaseReportGraphs
                     ],
                     'block' => 'scriptBottom',
                 ],
-            ]
+            ],
         ];
     }
 }

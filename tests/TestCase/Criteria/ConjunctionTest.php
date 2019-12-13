@@ -40,7 +40,7 @@ class ConjunctionTest extends TestCase
             ['AND'],
             ['OR'],
             ['and'],
-            ['or']
+            ['or'],
         ];
     }
 

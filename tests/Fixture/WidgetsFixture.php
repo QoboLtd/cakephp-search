@@ -58,7 +58,7 @@ class WidgetsFixture extends TestFixture
             'row' => 1,
             'created' => '2016-10-19 12:08:59',
             'modified' => '2016-10-19 12:08:59',
-            'trashed' => null
+            'trashed' => null,
         ],
         [
             'id' => '00000000-0000-0000-0000-000000000002',
@@ -70,7 +70,7 @@ class WidgetsFixture extends TestFixture
             'row' => 1,
             'created' => '2016-10-19 12:08:59',
             'modified' => '2016-10-19 12:08:59',
-            'trashed' => null
+            'trashed' => null,
         ],
         [
             'id' => '00000000-0000-0000-0000-000000000003',
@@ -82,7 +82,7 @@ class WidgetsFixture extends TestFixture
             'row' => 2,
             'created' => '2016-10-19 12:08:59',
             'modified' => '2016-10-19 12:08:59',
-            'trashed' => null
+            'trashed' => null,
         ],
         [
             'id' => '00000000-0000-0000-0000-000000000004',
@@ -94,7 +94,7 @@ class WidgetsFixture extends TestFixture
             'row' => 2,
             'created' => '2016-10-19 12:08:59',
             'modified' => '2016-10-19 12:08:59',
-            'trashed' => null
+            'trashed' => null,
         ],
         [
             'id' => '00000000-0000-0000-0000-000000000005',
@@ -106,7 +106,7 @@ class WidgetsFixture extends TestFixture
             'row' => 3,
             'created' => '2016-10-19 12:08:59',
             'modified' => '2016-10-19 12:08:59',
-            'trashed' => null
+            'trashed' => null,
         ],
         [
             'id' => '00000000-0000-0000-0000-000000000006',
@@ -118,7 +118,7 @@ class WidgetsFixture extends TestFixture
             'row' => 3,
             'created' => '2016-10-19 12:08:59',
             'modified' => '2016-10-19 12:08:59',
-            'trashed' => null
+            'trashed' => null,
         ],
     ];
 }
