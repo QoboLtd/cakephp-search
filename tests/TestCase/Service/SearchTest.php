@@ -29,7 +29,7 @@ class SearchTest extends TestCase
         'plugin.Search.articles',
         'plugin.Search.articles_tags',
         'plugin.Search.authors',
-        'plugin.Search.tags'
+        'plugin.Search.tags',
     ];
 
     private $table;
@@ -113,7 +113,7 @@ class SearchTest extends TestCase
         $this->table->saveMany(
             $this->table->newEntities([
                 ['title' => 'one', 'content' => 'bla bla'],
-                ['title' => 'two', 'content' => 'bla bla']
+                ['title' => 'two', 'content' => 'bla bla'],
             ])
         );
 
@@ -251,7 +251,7 @@ class SearchTest extends TestCase
         $newEntities = $table->newEntities([
             ['name' => 'Author 1', 'articles' => ['_ids' => ['00000000-0000-0000-0000-000000000003']]],
             ['name' => 'Author 2', 'articles' => ['_ids' => ['00000000-0000-0000-0000-000000000001']]],
-            ['name' => 'Author 3', 'articles' => ['_ids' => ['00000000-0000-0000-0000-000000000002']]]
+            ['name' => 'Author 3', 'articles' => ['_ids' => ['00000000-0000-0000-0000-000000000002']]],
         ]);
 
         $table->saveMany($newEntities);
@@ -420,7 +420,7 @@ class SearchTest extends TestCase
             $this->table->newEntities([
                 ['title' => 'one', 'content' => 'bla bla', 'author_id' => '00000000-0000-0000-0000-000000000001'],
                 ['title' => 'two', 'content' => 'bla bla', 'author_id' => '00000000-0000-0000-0000-000000000002'],
-                ['title' => 'three', 'content' => 'bla bla', 'author_id' => '00000000-0000-0000-0000-000000000001']
+                ['title' => 'three', 'content' => 'bla bla', 'author_id' => '00000000-0000-0000-0000-000000000001'],
             ])
         );
 
@@ -448,7 +448,7 @@ class SearchTest extends TestCase
                 ['title' => 'two', 'content' => 'bla bla', 'tags' => ['_ids' => ['00000000-0000-0000-0000-000000000002']]],
                 ['title' => 'three', 'content' => 'bla bla', 'tags' => ['_ids' => ['00000000-0000-0000-0000-000000000001']]],
                 ['title' => 'four', 'content' => 'bla bla', 'tags' => ['_ids' => ['00000000-0000-0000-0000-000000000003']]],
-                ['title' => 'five', 'content' => 'bla bla', 'tags' => ['_ids' => ['00000000-0000-0000-0000-000000000003']]]
+                ['title' => 'five', 'content' => 'bla bla', 'tags' => ['_ids' => ['00000000-0000-0000-0000-000000000003']]],
             ])
         );
 
@@ -483,7 +483,7 @@ class SearchTest extends TestCase
                 ['title' => 'one', 'content' => 'bla bla', 'tags' => ['_ids' => [$expected]]],
                 ['title' => 'two', 'content' => 'bla bla', 'tags' => ['_ids' => ['00000000-0000-0000-0000-000000000002']]],
                 ['title' => 'three', 'content' => 'bla bla', 'tags' => ['_ids' => [$expected]]],
-                ['title' => 'four', 'content' => 'bla bla', 'tags' => ['_ids' => ['00000000-0000-0000-0000-000000000003']]]
+                ['title' => 'four', 'content' => 'bla bla', 'tags' => ['_ids' => ['00000000-0000-0000-0000-000000000003']]],
             ])
         );
 
@@ -516,7 +516,7 @@ class SearchTest extends TestCase
          */
         $newEntities = $table->newEntities([
             ['name' => 'Author 1', 'articles' => ['_ids' => ['00000000-0000-0000-0000-000000000001']]],
-            ['name' => 'Author 2', 'articles' => ['_ids' => ['00000000-0000-0000-0000-000000000002']]]
+            ['name' => 'Author 2', 'articles' => ['_ids' => ['00000000-0000-0000-0000-000000000002']]],
         ]);
 
         $table->saveMany($newEntities);
@@ -565,7 +565,7 @@ class SearchTest extends TestCase
             [\Search\Aggregate\Count::class, 4, 'COUNT'],
             [\Search\Aggregate\Maximum::class, '40.11', 'MAX'],
             [\Search\Aggregate\Minimum::class, '10.5', 'MIN'],
-            [\Search\Aggregate\Sum::class, 100.93, 'SUM']
+            [\Search\Aggregate\Sum::class, 100.93, 'SUM'],
         ];
     }
 }

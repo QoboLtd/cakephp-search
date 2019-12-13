@@ -2,19 +2,19 @@
 return [
     'Search' => [
         'api' => [
-            'token' => null
+            'token' => null,
         ],
         'batch' => [
             'active' => true,
-            'button_id' => '#batch-button'
+            'button_id' => '#batch-button',
         ],
         'dashboard' => [
-            'columns' => ['Left Side', 'Right Side']
+            'columns' => ['Left Side', 'Right Side'],
         ],
         'export' => [
             'url' => '/uploads/export/',
-            'limit' => 100
+            'limit' => 100,
         ],
         'enabledWidgets' => [],
-    ]
+    ],
 ];

@@ -25,10 +25,10 @@ class SearchShell extends Shell
                 'arguments' => [
                     'time' => [
                         'help' => 'Time, as a date-time string, of pre-saved searches to keep in the database. ' .
-                            'Valid formats are explained in http://php.net/manual/en/datetime.formats.php'
-                    ]
-                ]
-            ]
+                            'Valid formats are explained in http://php.net/manual/en/datetime.formats.php',
+                    ],
+                ],
+            ],
         ]);
 
         return $parser;
@@ -54,7 +54,7 @@ class SearchShell extends Shell
 
         $count = $table->deleteAll([
             'modified <' => $date,
-            'OR' => ['name' => '', 'name IS' => null]
+            'OR' => ['name' => '', 'name IS' => null],
         ]);
 
         $this->info($count . ' outdated pre-saved searches removed.');

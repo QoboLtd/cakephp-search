@@ -74,6 +74,6 @@ class ArticlesFixture extends TestFixture
             'modified' => '2019-07-25 16:00:13',
             'published' => 1,
             'priority' => 30,
-        ]
+        ],
     ];
 }

@@ -20,7 +20,7 @@ class SearchableBehaviorTest extends TestCase
 {
     public $fixtures = [
         'plugin.Search.articles',
-        'plugin.Search.authors'
+        'plugin.Search.authors',
     ];
 
     private $articles;
@@ -53,7 +53,7 @@ class SearchableBehaviorTest extends TestCase
         );
 
         $data = [
-            ['field' => 'title', 'operator' => StartsWith::class, 'value' => 't']
+            ['field' => 'title', 'operator' => StartsWith::class, 'value' => 't'],
         ];
 
         $query = $this->articles->find('search', ['data' => $data]);
@@ -75,7 +75,7 @@ class SearchableBehaviorTest extends TestCase
 
         $data = [
             ['field' => 'title', 'operator' => StartsWith::class, 'value' => 't'],
-            ['field' => 'title', 'operator' => StartsWith::class, 'value' => 'o']
+            ['field' => 'title', 'operator' => StartsWith::class, 'value' => 'o'],
         ];
 
         $query = $this->articles->find('search', ['data' => $data, 'conjunction' => 'OR']);
@@ -95,12 +95,12 @@ class SearchableBehaviorTest extends TestCase
             $this->articles->newEntity([
                 'title' => 'one',
                 'content' => 'bla bla',
-                'published' => $value
+                'published' => $value,
             ])
         );
 
         $data = [
-            ['field' => 'published', 'operator' => Equal::class, 'value' => $value]
+            ['field' => 'published', 'operator' => Equal::class, 'value' => $value],
         ];
 
         $query = $this->articles->find('search', ['data' => $data]);
@@ -121,7 +121,7 @@ class SearchableBehaviorTest extends TestCase
         );
 
         $data = [
-            ['field' => 'title', 'operator' => StartsWith::class, 'value' => 't']
+            ['field' => 'title', 'operator' => StartsWith::class, 'value' => 't'],
         ];
 
         $query = $this->articles->find('search', ['data' => $data, 'group' => 'content']);
@@ -142,7 +142,7 @@ class SearchableBehaviorTest extends TestCase
         );
 
         $data = [
-            ['field' => 'title', 'operator' => StartsWith::class, 'value' => 't']
+            ['field' => 'title', 'operator' => StartsWith::class, 'value' => 't'],
         ];
 
         $query = $this->articles->find('search', ['data' => $data, 'order' => ['title' => 'desc']]);
@@ -164,7 +164,7 @@ class SearchableBehaviorTest extends TestCase
         );
 
         $data = [
-            ['field' => 'title', 'operator' => StartsWith::class, 'value' => 't']
+            ['field' => 'title', 'operator' => StartsWith::class, 'value' => 't'],
         ];
 
         $query = $this->articles->find('search', ['data' => $data, 'fields' => ['title']]);
@@ -178,7 +178,7 @@ class SearchableBehaviorTest extends TestCase
         $this->articles->saveMany(
             $this->articles->newEntities([
                 ['title' => 'one', 'content' => 'bla bla', 'priority' => 10.5],
-                ['title' => 'two', 'content' => 'bla bla', 'priority' => 20.32]
+                ['title' => 'two', 'content' => 'bla bla', 'priority' => 20.32],
             ])
         );
 
@@ -194,12 +194,12 @@ class SearchableBehaviorTest extends TestCase
             $this->articles->newEntity([
                 'title' => 'one',
                 'content' => 'bla bla',
-                'author_id' => '00000000-0000-0000-0000-000000000001'
+                'author_id' => '00000000-0000-0000-0000-000000000001',
             ])
         );
 
         $data = [
-            ['field' => 'Authors.name', 'operator' => Equal::class, 'value' => 'Stephen King']
+            ['field' => 'Authors.name', 'operator' => Equal::class, 'value' => 'Stephen King'],
         ];
 
         $query = $this->articles->find('search', ['data' => $data]);
@@ -218,7 +218,7 @@ class SearchableBehaviorTest extends TestCase
             [true],
             [false],
             ['1'],
-            ['0']
+            ['0'],
         ];
     }
 }

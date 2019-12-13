@@ -51,8 +51,8 @@ class DashboardsController extends AppController
         $dashboard = $this->Dashboards->get($id, [
             'contain' => [
                 'Roles',
-                'Widgets'
-            ]
+                'Widgets',
+            ],
         ]);
 
         $query = $this->Dashboards->getUserDashboards($this->Auth->user());
@@ -174,7 +174,7 @@ class DashboardsController extends AppController
     {
         $savedWidgetData = [];
         $dashboard = $this->Dashboards->get($id, [
-            'contain' => ['Widgets']
+            'contain' => ['Widgets'],
         ]);
 
         $dashboardWidgets = $dashboard->get('widgets');
@@ -198,10 +198,10 @@ class DashboardsController extends AppController
 
                 $item = array_merge(
                     [
-                        'id' => $widget['data']['id']
+                        'id' => $widget['data']['id'],
                     ],
                     [
-                        'data' => $widget['data']
+                        'data' => $widget['data'],
                     ],
                     $widgetOptions
                 );
@@ -222,7 +222,7 @@ class DashboardsController extends AppController
 
             $dashboard = $this->Dashboards->patchEntity($dashboard, [
                 'name' => $data['name'],
-                'role_id' => $data['role_id']
+                'role_id' => $data['role_id'],
             ]);
 
             if ($this->Dashboards->save($dashboard)) {
@@ -230,7 +230,7 @@ class DashboardsController extends AppController
                 /** @var \Search\Model\Table\WidgetsTable */
                 $widgetTable = TableRegistry::get('Search.Widgets');
                 $widgetTable->trashAll([
-                    'dashboard_id' => $dashboard->id
+                    'dashboard_id' => $dashboard->id,
                 ]);
 
                 $data['widgets'] = !empty($data['options']) ? json_decode($data['options'], true) : [];
@@ -266,7 +266,7 @@ class DashboardsController extends AppController
             /** @var \Search\Model\Table\WidgetsTable */
             $widgetTable = TableRegistry::get('Search.Widgets');
             $widgetTable->trashAll([
-                'dashboard_id' => $id
+                'dashboard_id' => $id,
             ]);
 
             $this->Flash->success((string)__d('Qobo/Search', 'The dashboard has been deleted.'));

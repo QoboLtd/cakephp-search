@@ -50,10 +50,10 @@ class DonutChartReportWidget extends BaseReportGraphs
                 "datasets" => [
                     [
                         "backgroundColor" => $colors,
-                        "data" => $data
-                    ]
-                ]
-            ]
+                        "data" => $data,
+                    ],
+                ],
+            ],
         ];
 
         $chartData = [
@@ -93,7 +93,7 @@ class DonutChartReportWidget extends BaseReportGraphs
                     ],
                     'block' => 'scriptBottom',
                 ],
-            ]
+            ],
         ];
     }
 }

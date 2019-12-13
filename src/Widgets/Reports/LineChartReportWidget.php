@@ -48,7 +48,7 @@ class LineChartReportWidget extends BaseReportGraphs
                 "label" => Inflector::humanize($value),
                 "data" => (array)Hash::extract($data, '{n}.' . $value),
                 "borderColor" => $colors[0],
-                "fill" => false
+                "fill" => false,
             ];
         }
 
@@ -57,8 +57,8 @@ class LineChartReportWidget extends BaseReportGraphs
             "data" =>
             [
                 "labels" => $label,
-                "datasets" => $datasets
-            ]
+                "datasets" => $datasets,
+            ],
         ];
 
         $chartData = [
@@ -98,7 +98,7 @@ class LineChartReportWidget extends BaseReportGraphs
                     ],
                     'block' => 'scriptBottom',
                 ],
-            ]
+            ],
         ];
     }
 }

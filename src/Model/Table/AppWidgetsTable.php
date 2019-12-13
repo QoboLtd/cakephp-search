@@ -181,8 +181,8 @@ class AppWidgetsTable extends Table
                     'content' => [
                         'model' => $this->getAlias(),
                         'path' => $path . $file,
-                        'element' => $element
-                    ]
+                        'element' => $element,
+                    ],
                 ];
             }
         }

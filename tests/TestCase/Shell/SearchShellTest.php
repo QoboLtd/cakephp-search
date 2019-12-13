@@ -11,7 +11,7 @@ class SearchShellTest extends ConsoleIntegrationTestCase
 {
     public $fixtures = [
         'plugin.CakeDC/Users.users',
-        'plugin.Search.saved_searches'
+        'plugin.Search.saved_searches',
     ];
 
     private $table;
@@ -29,7 +29,7 @@ class SearchShellTest extends ConsoleIntegrationTestCase
             'model' => 'Foobar',
             'content' => ['saved' => 'Lorem', 'latest' => 'Ipsum'],
             'user_id' => '00000000-0000-0000-0000-000000000001',
-            'modified' => date('Y-m-d H:i:s', time() - WEEK)
+            'modified' => date('Y-m-d H:i:s', time() - WEEK),
         ];
 
         // create test data

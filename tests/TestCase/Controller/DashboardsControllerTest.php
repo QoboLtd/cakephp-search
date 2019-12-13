@@ -29,7 +29,7 @@ class DashboardsControllerTest extends IntegrationTestCase
         'plugin.search.saved_searches',
         'plugin.search.widgets',
         'plugin.roles_capabilities.groups_roles',
-        'plugin.roles_capabilities.roles'
+        'plugin.roles_capabilities.roles',
     ];
 
     public function setUp()
@@ -127,8 +127,8 @@ class DashboardsControllerTest extends IntegrationTestCase
                 'widget_type' => ['saved_search'],
                 'widget_options' => json_encode(['x' => 0, 'y' => 0, 'i' => '999', 'h' => '2', 'w' => '2']),
                 'row' => ['0'],
-                'column' => ['0']
-            ]
+                'column' => ['0'],
+            ],
         ];
 
         $this->post('/search/dashboards/add', $data);
@@ -148,7 +148,7 @@ class DashboardsControllerTest extends IntegrationTestCase
 
         $data = [
             'name' => 'Test Dashboard',
-            'role_id' => '79928943-0016-4677-869a-e37728ff6564'
+            'role_id' => '79928943-0016-4677-869a-e37728ff6564',
         ];
 
         $this->post('/search/dashboards/add', $data);
@@ -177,7 +177,7 @@ class DashboardsControllerTest extends IntegrationTestCase
 
         $data = [
             'name' => 'Test Dashboard',
-            'role_id' => '79928943-0016-4677-869a-e37728ff6564'
+            'role_id' => '79928943-0016-4677-869a-e37728ff6564',
         ];
 
         $this->put('/search/dashboards/edit/00000000-0000-0000-0000-000000000001', $data);
@@ -195,8 +195,8 @@ class DashboardsControllerTest extends IntegrationTestCase
                 'widget_id' => ['00000000-0000-0000-0000-000000009999'],
                 'widget_type' => ['saved_search'],
                 'row' => ['0'],
-                'column' => ['0']
-            ]
+                'column' => ['0'],
+            ],
         ];
 
         $this->put('/search/dashboards/edit/00000000-0000-0000-0000-000000000001', $data);
