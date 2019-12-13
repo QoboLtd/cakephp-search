@@ -14,6 +14,7 @@ return [
         'export' => [
             'url' => '/uploads/export/',
             'limit' => 100
-        ]
+        ],
+        'enabledWidgets' => [],
     ]
 ];
