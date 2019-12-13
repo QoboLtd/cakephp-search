@@ -32,7 +32,7 @@ final class NotEqual extends AbstractFilter
                 [] === $this->value ? '' : $this->value,
                 is_string($this->field) ? $query->getTypeMap()->type($this->field) : $this->type
             ),
-            (new QueryExpression())->isNull($this->field)
+            (new QueryExpression())->isNull($this->field),
         ]]);
     }
 }

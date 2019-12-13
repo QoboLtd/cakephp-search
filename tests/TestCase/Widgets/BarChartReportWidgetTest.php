@@ -74,8 +74,8 @@ class BarChartReportWidgetTest extends TestCase
                 'columns' => '',
                 'renderAs' => 'barChart',
                 'y_axis' => '',
-                'x_axis' => ''
-            ]
+                'x_axis' => '',
+            ],
         ];
 
         $this->widget->setConfig($config);
@@ -104,8 +104,8 @@ class BarChartReportWidgetTest extends TestCase
                 'columns' => 'x,y',
                 'renderAs' => 'barChart',
                 'y_axis' => 'y',
-                'x_axis' => 'x'
-            ]
+                'x_axis' => 'x',
+            ],
         ];
 
         $data = [
@@ -132,82 +132,82 @@ class BarChartReportWidgetTest extends TestCase
         $result = [
             [
                 'status' => 'Being Qualified',
-                'total_amount' => '24'
+                'total_amount' => '24',
             ],
             [
                 'status' => 'Converted',
-                'total_amount' => '4'
+                'total_amount' => '4',
             ],
             [
                 'status' => 'Dead',
-                'total_amount' => '3'
+                'total_amount' => '3',
             ],
             [
                 'status' => 'Prospecting',
-                'total_amount' => '27'
+                'total_amount' => '27',
             ],
             [
                 'status' => 'Qualified Opportunity',
-                'total_amount' => '19'
+                'total_amount' => '19',
             ],
             [
                 'status' => 'Another status not listed',
-                'total_amount' => '19'
-            ]
+                'total_amount' => '19',
+            ],
         ];
 
         $list = [
             'very_dead' => [
                 'label' => 'Very dead',
-                'inactive' => true
+                'inactive' => true,
             ],
             'dead' => [
                 'label' => 'Dead',
-                'inactive' => false
+                'inactive' => false,
             ],
             'prospecting' => [
                 'label' => 'Prospecting',
-                'inactive' => false
+                'inactive' => false,
             ],
             'being_qualified' => [
                 'label' => 'Being Qualified',
-                'inactive' => false
+                'inactive' => false,
             ],
             'qualified_opportunity' => [
                 'label' => 'Qualified Opportunity',
-                'inactive' => false
+                'inactive' => false,
             ],
             'converted' => [
                 'label' => 'Converted',
-                'inactive' => false
-            ]
+                'inactive' => false,
+            ],
         ];
 
         $sort = [
             [
                 'status' => 'Dead',
-                'total_amount' => '3'
+                'total_amount' => '3',
             ],
             [
                 'status' => 'Prospecting',
-                'total_amount' => '27'
+                'total_amount' => '27',
             ],
             [
                 'status' => 'Being Qualified',
-                'total_amount' => '24'
+                'total_amount' => '24',
             ],
             [
                 'status' => 'Qualified Opportunity',
-                'total_amount' => '19'
+                'total_amount' => '19',
             ],
             [
                 'status' => 'Converted',
-                'total_amount' => '4'
+                'total_amount' => '4',
             ],
             [
                 'status' => 'Another status not listed',
-                'total_amount' => '19'
-            ]
+                'total_amount' => '19',
+            ],
         ];
 
         $data = $this->widget->sortListByLabel($result, $list, 'status');

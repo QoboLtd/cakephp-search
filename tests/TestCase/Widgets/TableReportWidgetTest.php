@@ -49,8 +49,8 @@ class TableReportWidgetTest extends TestCase
                 'columns' => '',
                 'renderAs' => 'table',
                 'y_axis' => '',
-                'x_axis' => ''
-            ]
+                'x_axis' => '',
+            ],
         ];
 
         $this->widget->setConfig($config);
@@ -64,8 +64,8 @@ class TableReportWidgetTest extends TestCase
             'options' => [
                 'element' => 'graph_bar_assigned_by_year',
                 'resize' => true,
-                'data' => ['foo']
-            ]
+                'data' => ['foo'],
+            ],
         ];
         $this->assertEquals($expected, $this->widget->getData());
     }

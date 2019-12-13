@@ -15,7 +15,7 @@ class ExportTest extends TestCase
     public $fixtures = [
         'plugin.search.articles',
         'plugin.search.authors',
-        'plugin.search.saved_searches'
+        'plugin.search.saved_searches',
     ];
 
     private $user;
@@ -84,7 +84,7 @@ class ExportTest extends TestCase
             'Stephen King',
             'Draft', // validates that list value is converted to its label.
             'Internal', // validates that list value from association field is converted to its label.
-            '2016-04-27 08:21:54'
+            '2016-04-27 08:21:54',
         ], $data[2]);
     }
 
@@ -129,7 +129,7 @@ class ExportTest extends TestCase
             ['%%yesterday%%', date('Y-m-d', time() - (24 * 60 * 60))],
             ['%%tomorrow%%', date('Y-m-d', time() + (24 * 60 * 60))],
             ['no-change', 'no-change'],
-            ['%%no-change%%', '%%no-change%%']
+            ['%%no-change%%', '%%no-change%%'],
         ];
     }
 

@@ -60,7 +60,7 @@ class WidgetsTable extends Table
         $this->belongsTo('Dashboards', [
             'foreignKey' => 'dashboard_id',
             'joinType' => 'INNER',
-            'className' => 'Search.Dashboards'
+            'className' => 'Search.Dashboards',
         ]);
     }
 
@@ -145,7 +145,7 @@ class WidgetsTable extends Table
                     'title' => $instance->getTitle(),
                     'icon' => $instance->getIcon(),
                     'color' => $instance->getColor(),
-                    'data' => $data
+                    'data' => $data,
                 ]);
             }
         }
@@ -168,7 +168,7 @@ class WidgetsTable extends Table
         $defaults = [
             'title' => $widget->getTitle(),
             'icon' => $widget->getIcon(),
-            'color' => $widget->getColor()
+            'color' => $widget->getColor(),
         ];
 
         if ($entity->get('widget_options')) {
@@ -185,7 +185,7 @@ class WidgetsTable extends Table
             'h' => 3,
             'w' => 6,
             'id' => $entity->get('id'),
-            'type' => $entity->get('widget_type')
+            'type' => $entity->get('widget_type'),
         ]);
     }
 
