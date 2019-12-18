@@ -141,7 +141,7 @@ class AppWidgetsTable extends Table
 
             // skip adding existing app widgets.
             $appWidgetEntity = $this->find('withTrashed')->where(['AppWidgets.name' => $widget['name']])->first();
-            Assert::isInstanceOf($appWidgetEntity, \Search\Model\Entity\AppWidget::class);
+            Assert::nullOrIsInstanceOf($appWidgetEntity, \Search\Model\Entity\AppWidget::class);
             if (!empty($appWidgetEntity) && !empty($appWidgetEntity->get('trashed'))) {
                 $this->restoreTrash($appWidgetEntity);
                 continue;
