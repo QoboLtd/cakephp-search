@@ -15,11 +15,14 @@ use ArrayObject;
 use Cake\Core\App;
 use Cake\Core\Configure;
 use Cake\Database\Schema\TableSchema;
+use Cake\Datasource\QueryInterface;
+use Cake\Event\Event;
 use Cake\Filesystem\Folder;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Utility\Inflector;
 use Cake\Validation\Validator;
+use Webmozart\Assert\Assert;
 
 /**
  * AppWidgets Model
@@ -137,10 +140,8 @@ class AppWidgetsTable extends Table
             $found[] = $widget['name'];
 
             // skip adding existing app widgets.
-            /**
-             * @var EntityInterface $appWidgetEntity
-             */
             $appWidgetEntity = $this->find('withTrashed')->where(['AppWidgets.name' => $widget['name']])->first();
+            Assert::isInstanceOf($appWidgetEntity, \Search\Model\Entity\AppWidget::class);
             if (!empty($appWidgetEntity) && !empty($appWidgetEntity->get('trashed'))) {
                 $this->restoreTrash($appWidgetEntity);
                 continue;
