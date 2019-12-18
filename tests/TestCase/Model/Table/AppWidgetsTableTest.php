@@ -9,63 +9,58 @@ use Cake\TestSuite\TestCase;
  */
 class AppWidgetsTableTest extends TestCase
 {
+    public $fixtures = ['plugin.search.app_widgets'];
 
-    /**
-     * Test subject
-     *
-     * @var \Search\Model\Table\AppWidgetsTable
-     */
-    public $AppWidgets;
+    private $table;
 
-    /**
-     * Fixtures
-     *
-     * @var array
-     */
-    public $fixtures = [
-        'plugin.search.app_widgets'
-    ];
-
-    /**
-     * setUp method
-     *
-     * @return void
-     */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
-        $config = TableRegistry::exists('Search.AppWidgets') ? [] : ['className' => 'Search\Model\Table\AppWidgetsTable'];
-        /**
-         * @var \Search\Model\Table\AppWidgetsTable $table
-         */
-        $table = TableRegistry::get('Search.AppWidgets', $config);
-        $this->AppWidgets = $table;
+
+        $this->table = TableRegistry::getTableLocator()->get('Search.AppWidgets');
     }
 
-    /**
-     * tearDown method
-     *
-     * @return void
-     */
-    public function tearDown()
+    public function tearDown(): void
     {
-        unset($this->AppWidgets);
+        unset($this->table);
 
         parent::tearDown();
     }
 
     public function testInitialize(): void
     {
-        $result = $this->AppWidgets->find('list')->toArray();
+        $result = $this->table->find('list')->toArray();
 
         $this->assertContains('Another Test Widget', $result);
         $this->assertContains('Hello World', $result);
     }
 
+    public function testSaveAppWidgets(): void
+    {
+        $widgetId = '00000000-0000-0000-0000-000000000001';
+
+        // trash specific widget
+        $this->table->delete($this->table->get($widgetId));
+
+        $this->assertCount(1, $this->table->find(), sprintf('Widget with id %s was not trashed', $widgetId));
+
+        TableRegistry::getTableLocator()->clear();
+        TableRegistry::getTableLocator()->get('Search.AppWidgets');
+
+        // validate that the widget was restored
+        $this->assertCount(2, $this->table->find(), sprintf('Widget with id %s was not restored', $widgetId));
+
+        $widget = $this->table->find()
+            ->where(['name' => 'Hello World'])
+            ->first();
+
+        $this->assertSame($widgetId, $widget->get('id'), 'Widget id does not match, the widget was re-created');
+    }
+
     public function testValidationDefault(): void
     {
         $validator = new \Cake\Validation\Validator();
-        $result = $this->AppWidgets->validationDefault($validator);
+        $result = $this->table->validationDefault($validator);
 
         $this->assertInstanceOf('\Cake\Validation\Validator', $result);
     }
@@ -73,7 +68,7 @@ class AppWidgetsTableTest extends TestCase
     public function testBuildRules(): void
     {
         $rules = new \Cake\ORM\RulesChecker();
-        $result = $this->AppWidgets->buildRules($rules);
+        $result = $this->table->buildRules($rules);
 
         $this->assertInstanceOf('\Cake\ORM\RulesChecker', $result);
     }
