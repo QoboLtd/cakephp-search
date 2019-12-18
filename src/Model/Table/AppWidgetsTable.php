@@ -15,7 +15,6 @@ use ArrayObject;
 use Cake\Core\App;
 use Cake\Core\Configure;
 use Cake\Database\Schema\TableSchema;
-
 use Cake\Filesystem\Folder;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
