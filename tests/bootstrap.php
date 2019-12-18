@@ -115,3 +115,7 @@ Cake\Core\Plugin::load('RolesCapabilities', ['bootstrap' => true]);
 
 Configure::load('Search.search');
 Configure::load('RolesCapabilities.roles_capabilities');
+
+// Enable test App Widgets
+$config = array_merge(Configure::read('Search.enabledWidgets'), ['Hello World', 'Another Test Widget']);
+Configure::write('Search.enabledWidgets', $config);

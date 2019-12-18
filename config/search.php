@@ -15,5 +15,6 @@ return [
             'url' => '/uploads/export/',
             'limit' => 100,
         ],
+        'enabledWidgets' => [],
     ],
 ];
