@@ -47,7 +47,7 @@ class SavedSearchesTable extends Table
 
         $this->belongsTo('Users', [
             'className' => $this->getUsersTable()->getRegistryAlias(),
-            'foreignKey' => 'user_id'
+            'foreignKey' => 'user_id',
         ]);
     }
 

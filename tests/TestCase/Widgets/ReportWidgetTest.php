@@ -17,7 +17,7 @@ class ReportWidgetTest extends TestCase
 
     public $fixtures = [
         'plugin.search.widgets',
-        'plugin.search.articles'
+        'plugin.search.articles',
     ];
 
     private $widget;
@@ -63,9 +63,9 @@ class ReportWidgetTest extends TestCase
                     'columns' => 'a,b',
                     'renderAs' => 'lineChart',
                     'y_axis' => 'a',
-                    'x_axis' => 'b'
-                ]
-            ]
+                    'x_axis' => 'b',
+                ],
+            ],
         ];
 
         $this->widget->getResults($options);
@@ -81,10 +81,10 @@ class ReportWidgetTest extends TestCase
                     'type' => 'line',
                     'data' => [
                         'labels' => [],
-                        'datasets' => [['label' => 'A', 'data' => [], 'borderColor' => '#6639a6', 'fill' => false]]
-                    ]
-                ]
-            ]
+                        'datasets' => [['label' => 'A', 'data' => [], 'borderColor' => '#6639a6', 'fill' => false]],
+                    ],
+                ],
+            ],
         ];
 
         $this->assertSame($expected, $this->widget->getChartData());
@@ -102,8 +102,8 @@ class ReportWidgetTest extends TestCase
                 'Required field [x_axis] must be set',
                 'Required Field [x_axis] cannot be empty',
                 'Required field [y_axis] must be set',
-                'Required Field [y_axis] cannot be empty'
-            ]
+                'Required Field [y_axis] cannot be empty',
+            ],
         ];
 
         $this->widget->getResults(self::DEFAULT_OPTIONS);
@@ -274,8 +274,8 @@ class ReportWidgetTest extends TestCase
                 'columns' => 'a,b',
                 'renderAs' => 'lineChart',
                 'y_axis' => 'a',
-                'x_axis' => 'b'
-            ]
+                'x_axis' => 'b',
+            ],
         ];
 
         $instance->requiredFields = [];
@@ -302,8 +302,8 @@ class ReportWidgetTest extends TestCase
                 'columns' => 'a,b',
                 'renderAs' => 'lineChart',
                 'y_axis' => 'a',
-                'x_axis' => 'b'
-            ]
+                'x_axis' => 'b',
+            ],
         ];
 
         $validated = $instance->validate($expectedReport);
@@ -321,7 +321,7 @@ class ReportWidgetTest extends TestCase
                 'columns' => 'a,b',
                 'renderAs' => 'lineChart',
                 'y_axis' => '',
-            ]
+            ],
         ];
 
         $validated = $instance->validate($expectedReport);
@@ -348,8 +348,8 @@ class ReportWidgetTest extends TestCase
                 'columns' => 'a,b',
                 'renderAs' => 'lineChart',
                 'y_axis' => 'a',
-                'x_axis' => 'b'
-            ]
+                'x_axis' => 'b',
+            ],
         ];
 
         $validated = $instance->validate($expectedReport);
@@ -391,8 +391,8 @@ class ReportWidgetTest extends TestCase
                     'renderAs' => 'lineChart',
                     'y_axis' => '',
                     'x_axis' => '',
-                ]
-            ]
+                ],
+            ],
         ];
 
         $expectedReport = [
@@ -407,8 +407,8 @@ class ReportWidgetTest extends TestCase
                 'columns' => '',
                 'renderAs' => 'lineChart',
                 'y_axis' => '',
-                'x_axis' => ''
-            ]
+                'x_axis' => '',
+            ],
         ];
 
         $entity = (object)[
@@ -445,14 +445,14 @@ class ReportWidgetTest extends TestCase
                     'renderAs' => 'barChart',
                     'y_axis' => 'a',
                     'x_axis' => 'b',
-                ]
-            ]
+                ],
+            ],
         ];
 
         $expected = [
             ['title' => 'First article title', 'status' => 'published'],
             ['title' => 'Second article title', 'status' => 'draft'],
-            ['title' => 'Third article title', 'status' => 'trashed']
+            ['title' => 'Third article title', 'status' => 'trashed'],
         ];
 
         $this->assertSame($expected, $this->widget->getResults(['entity' => $entity, 'reports' => $reports]));
@@ -479,8 +479,8 @@ class ReportWidgetTest extends TestCase
                     'renderAs' => 'barChart',
                     'y_axis' => 'a',
                     'x_axis' => 'b',
-                ]
-            ]
+                ],
+            ],
         ];
 
         $this->expectException(\RuntimeException::class);
@@ -510,12 +510,12 @@ class ReportWidgetTest extends TestCase
                 'finder' => [
                     'name' => 'title',
                     'options' => [
-                        'title' => 'First article title'
-                    ]
+                        'title' => 'First article title',
+                    ],
                 ],
                 'y_axis' => 'total_amount',
-                'x_axis' => 'quarter'
-            ]
+                'x_axis' => 'quarter',
+            ],
         ];
 
         $query = $this->widget->getQueryData($config);
@@ -536,7 +536,7 @@ class ReportWidgetTest extends TestCase
                 'columns' => 'id,created',
                 'y_axis' => 'id',
                 'x_axis' => 'created',
-            ]
+            ],
         ];
 
         $result = $this->widget->getQueryData($config);

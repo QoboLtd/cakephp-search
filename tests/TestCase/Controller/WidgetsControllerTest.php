@@ -16,7 +16,7 @@ class WidgetsControllerTest extends IntegrationTestCase
     public $fixtures = [
         'plugin.search.widgets',
         'plugin.search.app_widgets',
-        'plugin.search.saved_searches'
+        'plugin.search.saved_searches',
     ];
 
     public function setUp()
@@ -29,8 +29,8 @@ class WidgetsControllerTest extends IntegrationTestCase
             'headers' => [
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
-                'X-Requested-With' => 'XMLHttpRequest'
-            ]
+                'X-Requested-With' => 'XMLHttpRequest',
+            ],
         ]);
 
         EventManager::instance()->on(new WidgetsListener());

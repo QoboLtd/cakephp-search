@@ -53,7 +53,7 @@ class BarChartReportWidget extends BaseReportGraphs
             $datasets[] = [
                 "label" => Inflector::humanize($value),
                 "backgroundColor" => $is_multicolums ? $colors[0] : $colors,
-                "data" => (array)Hash::extract($data, '{n}.' . $value)
+                "data" => (array)Hash::extract($data, '{n}.' . $value),
             ];
         }
 
@@ -62,7 +62,7 @@ class BarChartReportWidget extends BaseReportGraphs
             "data" =>
             [
                 "labels" => $label,
-                "datasets" => $datasets
+                "datasets" => $datasets,
             ],
             "options" =>
             [
@@ -75,20 +75,20 @@ class BarChartReportWidget extends BaseReportGraphs
                         [
                             "ticks" =>
                             [
-                                "beginAtZero" => true
-                            ]
-                        ]
+                                "beginAtZero" => true,
+                            ],
+                        ],
                     ],
                     "xAxes" => [
                         [
                             "ticks" =>
                             [
-                                "autoSkip" => false
-                            ]
-                        ]
+                                "autoSkip" => false,
+                            ],
+                        ],
                     ],
-                ]
-            ]
+                ],
+            ],
         ];
 
         $chartjs['options'] = !empty($this->config['info']['options']) ? Hash::merge($chartjs['options'], $this->config['info']['options']) : $chartjs['options'];
@@ -130,7 +130,7 @@ class BarChartReportWidget extends BaseReportGraphs
                     ],
                     'block' => 'scriptBottom',
                 ],
-            ]
+            ],
         ];
     }
 }

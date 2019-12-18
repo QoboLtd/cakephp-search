@@ -16,7 +16,7 @@ class SavedSearchesControllerTest extends IntegrationTestCase
      */
     public $fixtures = [
         'plugin.CakeDC/Users.users',
-        'plugin.search.saved_searches'
+        'plugin.search.saved_searches',
     ];
 
     public function setUp()
@@ -29,8 +29,8 @@ class SavedSearchesControllerTest extends IntegrationTestCase
             'headers' => [
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
-                'X-Requested-With' => 'XMLHttpRequest'
-            ]
+                'X-Requested-With' => 'XMLHttpRequest',
+            ],
         ]);
     }
 
@@ -92,7 +92,7 @@ class SavedSearchesControllerTest extends IntegrationTestCase
     {
         $data = [
             'name' => 'Foobar',
-            'model' => 'Foo'
+            'model' => 'Foo',
         ];
 
         $this->post('/search/saved-searches/add', $data);
@@ -115,7 +115,7 @@ class SavedSearchesControllerTest extends IntegrationTestCase
         $this->assertFalse($response['success']);
         $expected = [
             'name' => ['_required' => 'This field is required'],
-            'model' => ['_required' => 'This field is required']
+            'model' => ['_required' => 'This field is required'],
         ];
         $this->assertSame($expected, $response['error']);
     }

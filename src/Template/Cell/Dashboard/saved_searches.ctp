@@ -36,7 +36,7 @@
 </div>
 <div class="row">
     <div class="col-xs-12">
-        <p class="h3 text-center saved-searches-title"><?= __('Saved Searches') ?></p>
+        <p class="h3 text-center saved-searches-title"><?= __d('Qobo/Search', 'Saved Searches') ?></p>
         <ul class="list-inline droppable-area saved-searches-area">
             <?php foreach ($allSavedSearches as $savedSearch) : ?>
             <li class="droppable col-xs-1" data-id="<?= $savedSearch['id'] ?>" data-type="saved_search">

@@ -11,9 +11,11 @@
  */
 namespace Search\Model\Table;
 
+use ArrayObject;
 use Cake\Core\App;
+use Cake\Core\Configure;
 use Cake\Database\Schema\TableSchema;
-use Cake\Datasource\EntityInterface;
+
 use Cake\Filesystem\Folder;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -185,12 +187,32 @@ class AppWidgetsTable extends Table
                     'content' => [
                         'model' => $this->getAlias(),
                         'path' => $path . $file,
-                        'element' => $element
-                    ]
+                        'element' => $element,
+                    ],
                 ];
             }
         }
 
         return $result;
+    }
+
+    /**
+     * @param \Cake\Event\Event $event Event object
+     * @param \Cake\Datasource\QueryInterface $query Query object
+     * @param \ArrayObject $options Query options
+     * @param bool $primary Primary Standalone Query flag
+     * @return void
+     */
+    public function beforeFind(Event $event, QueryInterface $query, ArrayObject $options, bool $primary): void
+    {
+        $enable = Configure::read('Search.enabledWidgets');
+
+        if (!empty($enable) && is_array($enable)) {
+            $query->where(["name in" => $enable]);
+
+            return;
+        }
+
+        $query->limit(0);
     }
 }

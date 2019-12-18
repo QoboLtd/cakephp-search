@@ -40,7 +40,7 @@ class SavedSearch extends Entity
         /**
          * @deprecated
          */
-        'content' => false
+        'content' => false,
     ];
 
     /**

@@ -69,7 +69,7 @@ class FilterTest extends TestCase
             [1],
             [1.1],
             [true],
-            [false]
+            [false],
         ];
     }
 }

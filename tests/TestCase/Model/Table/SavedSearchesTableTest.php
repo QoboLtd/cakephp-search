@@ -19,7 +19,7 @@ class SavedSearchesTableTest extends TestCase
      */
     public $fixtures = [
         'plugin.CakeDC/Users.users',
-        'plugin.search.saved_searches'
+        'plugin.search.saved_searches',
     ];
 
     private $SavedSearches;
@@ -69,7 +69,7 @@ class SavedSearchesTableTest extends TestCase
         $data = [
             'name' => 'withName',
             'model' => 'Foobar',
-            'user_id' => '00000000-0000-0000-0000-000000000002'
+            'user_id' => '00000000-0000-0000-0000-000000000002',
         ];
 
         $entity = $this->SavedSearches->newEntity($data);
@@ -83,7 +83,7 @@ class SavedSearchesTableTest extends TestCase
         $data = [
             'name' => 'withName',
             'model' => 'Foobar',
-            'user_id' => '00000000-0000-0000-0000-000000000002'
+            'user_id' => '00000000-0000-0000-0000-000000000002',
         ];
 
         $entity = $this->SavedSearches->newEntity($data);
@@ -105,14 +105,14 @@ class SavedSearchesTableTest extends TestCase
 
         $expected = [
             'name' => [
-                '_required' => 'This field is required'
+                '_required' => 'This field is required',
             ],
             'model' => [
-                '_required' => 'This field is required'
+                '_required' => 'This field is required',
             ],
             'user_id' => [
-                '_required' => 'This field is required'
-            ]
+                '_required' => 'This field is required',
+            ],
         ];
 
         $this->assertEquals($expected, $entity->getErrors());
@@ -123,7 +123,7 @@ class SavedSearchesTableTest extends TestCase
         $data = [
             'name' => 'withName',
             'model' => 'Foobar',
-            'user_id' => '00000000-0000-0000-0000-000000000001'
+            'user_id' => '00000000-0000-0000-0000-000000000001',
         ];
 
         $entity = $this->SavedSearches->newEntity($data);

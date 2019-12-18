@@ -63,24 +63,24 @@ class LineChartReportWidgetTest extends TestCase
                                 'label' => 'City',
                                 'data' => [],
                                 'borderColor' => '#f68787',
-                                'fill' => false
+                                'fill' => false,
                             ],
                             [
                                 'label' => 'Country',
                                 'data' => [],
                                 'borderColor' => '#ff165d',
-                                'fill' => false
+                                'fill' => false,
                             ],
                             [
                                 'label' => 'Post Code',
                                 'data' => [],
                                 'borderColor' => '#30e3ca',
-                                'fill' => false
-                            ]
-                        ]
-                    ]
-                ]
-            ]
+                                'fill' => false,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ];
 
         $config = [
@@ -95,8 +95,8 @@ class LineChartReportWidgetTest extends TestCase
                 'columns' => 'city,country,post_code',
                 'renderAs' => 'lineChart',
                 'y_axis' => 'id,title',
-                'x_axis' => 'name'
-            ]
+                'x_axis' => 'name',
+            ],
         ];
 
         $this->widget->setConfig($config);

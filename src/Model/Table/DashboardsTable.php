@@ -44,12 +44,12 @@ class DashboardsTable extends Table
         $this->addBehavior('Muffin/Trash.Trash');
 
         $this->belongsTo('RolesCapabilities.Roles', [
-            'foreignKey' => 'role_id'
+            'foreignKey' => 'role_id',
         ]);
 
         $this->hasMany('Widgets', [
             'foreignKey' => 'dashboard_id',
-            'className' => 'Search.Widgets'
+            'className' => 'Search.Widgets',
         ]);
     }
 
@@ -126,7 +126,7 @@ class DashboardsTable extends Table
         // get role(s) dashboards
         $query->where(['OR' => [
             ['Dashboards.role_id IN' => array_keys($roles)],
-            ['Dashboards.role_id IS NULL']
+            ['Dashboards.role_id IS NULL'],
         ]]);
 
         return $query;
