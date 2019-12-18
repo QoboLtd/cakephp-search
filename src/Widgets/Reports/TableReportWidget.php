@@ -69,7 +69,7 @@ class TableReportWidget extends BaseReportGraphs
                     'content' => [
                         'Qobo/Utils./plugins/datatables/css/dataTables.bootstrap.min',
                         'Qobo/Utils.buttons.dataTables.min',
-                        'Search.grid'
+                        'Search.grid',
                     ],
                     'block' => 'css',
                 ],
@@ -88,7 +88,7 @@ class TableReportWidget extends BaseReportGraphs
                     ],
                     'block' => 'scriptBottom',
                 ],
-            ]
+            ],
         ];
     }
 }

@@ -25,7 +25,7 @@ echo $this->Html->script('Search./plugins/qobo.grid', ['block' => 'scriptBottom'
 <section class="content-header">
     <div class="row">
         <div class="col-xs-12 col-md-6">
-            <h4><?= __('Create {0}', ['Dashboard']) ?></h4>
+            <h4><?= __d('Qobo/Search', 'Create {0}', ['Dashboard']) ?></h4>
         </div>
     </div>
 </section>
@@ -45,7 +45,7 @@ echo $this->Html->script('Search./plugins/qobo.grid', ['block' => 'scriptBottom'
     </div>
     <?php
     echo $this->element('Search.dashboard_form');
-    echo $this->Form->button(__('Submit'), ['class' => 'btn btn-primary']);
+    echo $this->Form->button(__d('Qobo/Search', 'Submit'), ['class' => 'btn btn-primary']);
     echo $this->Form->end();
     ?>
 </section>

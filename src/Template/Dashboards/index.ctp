@@ -14,8 +14,8 @@
     <div class="row">
         <div class="col-xs-12">
             <div class="jumbotron">
-                <h1><?= __('Dashboards') ?></h1>
-                <p><?= __('There are no configured Dashboards for you. Please contact the system administrator.') ?></p>
+                <h1><?= __d('Qobo/Search', 'Dashboards') ?></h1>
+                <p><?= __d('Qobo/Search', 'There are no configured Dashboards for you. Please contact the system administrator.') ?></p>
             </div>
         </div>
     </div>

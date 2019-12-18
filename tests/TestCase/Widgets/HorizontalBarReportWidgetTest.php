@@ -74,8 +74,8 @@ class HorizontalBarReportWidgetTest extends TestCase
                 'columns' => '',
                 'renderAs' => 'horizontalBar',
                 'y_axis' => '',
-                'x_axis' => ''
-            ]
+                'x_axis' => '',
+            ],
         ];
 
         $this->widget->setConfig($config);
@@ -104,8 +104,8 @@ class HorizontalBarReportWidgetTest extends TestCase
                 'columns' => 'x,y',
                 'renderAs' => 'horizontalBar',
                 'y_axis' => 'y',
-                'x_axis' => 'x'
-            ]
+                'x_axis' => 'x',
+            ],
         ];
 
         $data = [

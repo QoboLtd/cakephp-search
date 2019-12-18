@@ -51,8 +51,8 @@ class DashboardsController extends AppController
         $dashboard = $this->Dashboards->get($id, [
             'contain' => [
                 'Roles',
-                'Widgets'
-            ]
+                'Widgets',
+            ],
         ]);
 
         $query = $this->Dashboards->getUserDashboards($this->Auth->user());
@@ -140,7 +140,7 @@ class DashboardsController extends AppController
             $resultedDashboard = $this->Dashboards->save($dashboard);
 
             if ($resultedDashboard) {
-                $this->Flash->success((string)__('The dashboard has been saved.'));
+                $this->Flash->success((string)__d('Qobo/Search', 'The dashboard has been saved.'));
 
                 $dashboardId = $resultedDashboard->id;
 
@@ -152,7 +152,7 @@ class DashboardsController extends AppController
 
                 return $this->redirect(['action' => 'view', $dashboard->id]);
             } else {
-                $this->Flash->error((string)__('The dashboard could not be saved. Please, try again.'));
+                $this->Flash->error((string)__d('Qobo/Search', 'The dashboard could not be saved. Please, try again.'));
             }
         }
 
@@ -174,7 +174,7 @@ class DashboardsController extends AppController
     {
         $savedWidgetData = [];
         $dashboard = $this->Dashboards->get($id, [
-            'contain' => ['Widgets']
+            'contain' => ['Widgets'],
         ]);
 
         $dashboardWidgets = $dashboard->get('widgets');
@@ -198,10 +198,10 @@ class DashboardsController extends AppController
 
                 $item = array_merge(
                     [
-                        'id' => $widget['data']['id']
+                        'id' => $widget['data']['id'],
                     ],
                     [
-                        'data' => $widget['data']
+                        'data' => $widget['data'],
                     ],
                     $widgetOptions
                 );
@@ -222,15 +222,15 @@ class DashboardsController extends AppController
 
             $dashboard = $this->Dashboards->patchEntity($dashboard, [
                 'name' => $data['name'],
-                'role_id' => $data['role_id']
+                'role_id' => $data['role_id'],
             ]);
 
             if ($this->Dashboards->save($dashboard)) {
-                $this->Flash->success((string)__('The dashboard has been saved.'));
+                $this->Flash->success((string)__d('Qobo/Search', 'The dashboard has been saved.'));
                 /** @var \Search\Model\Table\WidgetsTable */
                 $widgetTable = TableRegistry::get('Search.Widgets');
                 $widgetTable->trashAll([
-                    'dashboard_id' => $dashboard->id
+                    'dashboard_id' => $dashboard->id,
                 ]);
 
                 $data['widgets'] = !empty($data['options']) ? json_decode($data['options'], true) : [];
@@ -240,7 +240,7 @@ class DashboardsController extends AppController
 
                 return $this->redirect(['action' => 'view', $id]);
             } else {
-                $this->Flash->error((string)__('The dashboard could not be saved. Please, try again.'));
+                $this->Flash->error((string)__d('Qobo/Search', 'The dashboard could not be saved. Please, try again.'));
             }
         }
 
@@ -266,12 +266,12 @@ class DashboardsController extends AppController
             /** @var \Search\Model\Table\WidgetsTable */
             $widgetTable = TableRegistry::get('Search.Widgets');
             $widgetTable->trashAll([
-                'dashboard_id' => $id
+                'dashboard_id' => $id,
             ]);
 
-            $this->Flash->success((string)__('The dashboard has been deleted.'));
+            $this->Flash->success((string)__d('Qobo/Search', 'The dashboard has been deleted.'));
         } else {
-            $this->Flash->error((string)__('The dashboard could not be deleted. Please, try again.'));
+            $this->Flash->error((string)__d('Qobo/Search', 'The dashboard could not be deleted. Please, try again.'));
         }
 
         return $this->redirect(['action' => 'index']);

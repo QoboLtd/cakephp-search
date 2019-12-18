@@ -48,7 +48,7 @@ class AppWidgetsFixture extends TestFixture
             'created' => '2017-04-03 11:49:00',
             'modified' => '2017-04-03 11:49:00',
             'name' => 'Hello World',
-            'trashed' => null
+            'trashed' => null,
         ],
         [
             'id' => '00000000-0000-0000-0000-000000000002',
@@ -57,7 +57,7 @@ class AppWidgetsFixture extends TestFixture
             'created' => '2017-04-03 11:49:00',
             'modified' => '2017-04-03 11:49:00',
             'name' => 'Foobar',
-            'trashed' => '2017-04-03 11:49:00'
+            'trashed' => '2017-04-03 11:49:00',
         ],
     ];
 }

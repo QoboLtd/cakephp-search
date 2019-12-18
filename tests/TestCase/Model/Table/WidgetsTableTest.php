@@ -27,7 +27,7 @@ class WidgetsTableTest extends TestCase
         'plugin.search.widgets',
         'plugin.search.app_widgets',
         'plugin.search.dashboards',
-        'plugin.search.saved_searches'
+        'plugin.search.saved_searches',
     ];
 
     /**
@@ -134,8 +134,8 @@ class WidgetsTableTest extends TestCase
                 'columns' => '',
                 'renderAs' => 'barChart',
                 'y_axis' => '',
-                'x_axis' => ''
-            ]
+                'x_axis' => '',
+            ],
         ];
 
         // anonymous event listener that passes some dummy reports
@@ -166,8 +166,8 @@ class WidgetsTableTest extends TestCase
                 'id' => '00000000-0000-0000-0000-000000000001',
                 'model' => 'AppWidgets',
                 'name' => 'Hello World',
-                'path' => 'src/Template/Element/Plugin/Search/Widgets/hello_world.ctp'
-            ]
+                'path' => 'src/Template/Element/Plugin/Search/Widgets/hello_world.ctp',
+            ],
         ];
 
         $this->assertContains($data, $result);
@@ -198,7 +198,7 @@ class WidgetsTableTest extends TestCase
             'h' => 3,
             'w' => 6,
             'id' => null,
-            'type' => 'report'
+            'type' => 'report',
         ];
 
         $widget = $this->Widgets->newEntity(['widget_type' => $expected['type']]);

@@ -31,7 +31,7 @@ class DashboardsTableTest extends TestCase
         'plugin.groups.groups',
         'plugin.groups.groups_users',
         'plugin.roles_capabilities.groups_roles',
-        'plugin.roles_capabilities.roles'
+        'plugin.roles_capabilities.roles',
     ];
 
     /**

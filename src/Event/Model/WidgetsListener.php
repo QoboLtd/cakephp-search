@@ -27,8 +27,8 @@ class WidgetsListener implements EventListenerInterface
         return [
             (string)EventName::MODEL_DASHBOARDS_GET_WIDGETS() => [
                 'callable' => 'getWidgets',
-                'priority' => PHP_INT_MAX // this listener should be called last
-            ]
+                'priority' => PHP_INT_MAX, // this listener should be called last
+            ],
         ];
     }
 
@@ -62,7 +62,7 @@ class WidgetsListener implements EventListenerInterface
         $query = $table->find('all')
             ->where([
                 'SavedSearches.name IS NOT' => null,
-                'SavedSearches.name !=' => ''
+                'SavedSearches.name !=' => '',
             ])
             ->enableHydration(false)
             ->indexBy('id');
@@ -72,7 +72,7 @@ class WidgetsListener implements EventListenerInterface
         }
 
         return [
-            ['type' => 'saved_search', 'data' => $query->toArray()]
+            ['type' => 'saved_search', 'data' => $query->toArray()],
         ];
     }
 
@@ -130,12 +130,12 @@ class WidgetsListener implements EventListenerInterface
                 'id' => $entity->get('id'),
                 'model' => $entity->get('content')['model'],
                 'name' => $entity->get('name'),
-                'path' => $entity->get('content')['path']
+                'path' => $entity->get('content')['path'],
             ];
         }
 
         return [
-            ['type' => 'app', 'data' => $data]
+            ['type' => 'app', 'data' => $data],
         ];
     }
 }

@@ -40,7 +40,7 @@ final class QueryDataTransformer
         'contains' => \Search\Filter\Contains::class,
         'not_contains' => \Search\Filter\NotContains::class,
         'starts_with' => \Search\Filter\StartsWith::class,
-        'ends_with' => \Search\Filter\EndsWith::class
+        'ends_with' => \Search\Filter\EndsWith::class,
     ];
 
     private const AGGREGATE_MAP = [

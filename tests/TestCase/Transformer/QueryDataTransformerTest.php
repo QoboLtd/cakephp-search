@@ -22,7 +22,7 @@ use Search\Transformer\QueryDataTransformer;
 class QueryDataTransformerTest extends TestCase
 {
     public $fixtures = [
-        'plugin.Search.articles'
+        'plugin.Search.articles',
     ];
 
     private $table;
@@ -47,14 +47,14 @@ class QueryDataTransformerTest extends TestCase
             ->applyOptions([
                 'group' => 'content',
                 'order' => ['title' => 'desc'],
-                'fields' => ['title', 'avg(priority)', 'count(published)']
+                'fields' => ['title', 'avg(priority)', 'count(published)'],
             ]);
         $options = [
             'conjunction' => 'OR',
             'data' => [
                 ['field' => 'title', 'operator' => \Search\Filter\EndsWith::class, 'value' => 't'],
-                ['field' => 'avg(priority)', 'operator' => 'greater', 'value' => 3]
-            ]
+                ['field' => 'avg(priority)', 'operator' => 'greater', 'value' => 3],
+            ],
         ];
 
         $result = QueryDataTransformer::transform($query, $options);

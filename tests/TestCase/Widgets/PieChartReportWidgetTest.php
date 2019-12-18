@@ -49,8 +49,8 @@ class PieChartReportWidgetTest extends TestCase
         $data = [
             [
                 'name' => 'foo',
-                'place' => 'bar'
-            ]
+                'place' => 'bar',
+            ],
         ];
 
         $expected = [
@@ -58,8 +58,8 @@ class PieChartReportWidgetTest extends TestCase
             'options' => [
                 'element' => 'graph_bar_assigned_by_year',
                 'resize' => true,
-                'data' => [['value' => 'bar', 'label' => 'foo']]
-            ]
+                'data' => [['value' => 'bar', 'label' => 'foo']],
+            ],
         ];
 
         $config = [
@@ -76,8 +76,8 @@ class PieChartReportWidgetTest extends TestCase
                 'columns' => 'name,place',
                 'renderAs' => 'donutChart',
                 'y_axis' => '',
-                'x_axis' => ''
-            ]
+                'x_axis' => '',
+            ],
         ];
 
         $this->widget->setConfig($config);
