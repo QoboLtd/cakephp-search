@@ -22,6 +22,7 @@ use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Utility\Inflector;
 use Cake\Validation\Validator;
+use Webmozart\Assert\Assert;
 
 /**
  * AppWidgets Model
@@ -34,6 +35,8 @@ use Cake\Validation\Validator;
  * @method \Search\Model\Entity\AppWidget[] patchEntities($entities, array $data, array $options = [])
  * @method \Search\Model\Entity\AppWidget findOrCreate($search, callable $callback = null, $options = [])
  * @method \Muffin\Trash\Model\Behavior\TrashBehavior trashAll($conditions)
+ * @method \Muffin\Trash\Model\Behavior\TrashBehavior restoreTrash(\Cake\Datasource\EntityInterface $entity, $options = [])
+ *
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
@@ -136,8 +139,11 @@ class AppWidgetsTable extends Table
         foreach ($widgets as $widget) {
             $found[] = $widget['name'];
 
-            // skip adding existing app widgets
-            if ($this->exists(['AppWidgets.name' => $widget['name']])) {
+            // skip adding existing app widgets.
+            $appWidgetEntity = $this->find('withTrashed')->where(['AppWidgets.name' => $widget['name']])->first();
+            Assert::nullOrIsInstanceOf($appWidgetEntity, \Search\Model\Entity\AppWidget::class);
+            if (!empty($appWidgetEntity) && !empty($appWidgetEntity->get('trashed'))) {
+                $this->restoreTrash($appWidgetEntity);
                 continue;
             }
 
