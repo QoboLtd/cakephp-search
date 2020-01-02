@@ -186,7 +186,7 @@ class AppWidgetsTable extends Table
                     'type' => static::WIDGET_TYPE,
                     'content' => [
                         'model' => $this->getAlias(),
-                        'path' => str_replace (APP, '', $path) . $file,
+                        'path' => str_replace(APP, '', $path) . $file,
                         'element' => $element,
                     ],
                 ];
