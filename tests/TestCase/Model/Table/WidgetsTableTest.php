@@ -166,11 +166,12 @@ class WidgetsTableTest extends TestCase
                 'id' => '00000000-0000-0000-0000-000000000001',
                 'model' => 'AppWidgets',
                 'name' => 'Hello World',
-                'path' => 'src/Template/Element/Plugin/Search/Widgets/hello_world.ctp',
+                'path' => 'Template/Element/Plugin/Search/Widgets/hello_world.ctp',
             ],
         ];
 
         $this->assertContains($data, $result);
+        $this->assertIsReadable(APP . $data['data']['path']);
     }
 
     public function testGetWidgetOptions(): void
