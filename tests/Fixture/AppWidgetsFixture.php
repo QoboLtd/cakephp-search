@@ -44,7 +44,7 @@ class AppWidgetsFixture extends TestFixture
         [
             'id' => '00000000-0000-0000-0000-000000000001',
             'type' => 'app_widget',
-            'content' => '{"model":"AppWidgets","path":"src\/Template\/Element\/Plugin\/Search\/Widgets\/hello_world.ctp","element":"Plugin\/Search\/Widgets\/hello_world"}',
+            'content' => '{"model":"AppWidgets","path":"Template\/Element\/Plugin\/Search\/Widgets\/hello_world.ctp","element":"Plugin\/Search\/Widgets\/hello_world"}',
             'created' => '2017-04-03 11:49:00',
             'modified' => '2017-04-03 11:49:00',
             'name' => 'Hello World',
@@ -53,7 +53,7 @@ class AppWidgetsFixture extends TestFixture
         [
             'id' => '00000000-0000-0000-0000-000000000002',
             'type' => 'app_widget',
-            'content' => '{"model":"AppWidgets","path":"src\/Template\/Element\/Plugin\/Search\/Widgets\/foobar.ctp","element":"Plugin\/Search\/Widgets\/foobar"}',
+            'content' => '{"model":"AppWidgets","path":"Template\/Element\/Plugin\/Search\/Widgets\/foobar.ctp","element":"Plugin\/Search\/Widgets\/foobar"}',
             'created' => '2017-04-03 11:49:00',
             'modified' => '2017-04-03 11:49:00',
             'name' => 'Foobar',
