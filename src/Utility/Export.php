@@ -292,7 +292,7 @@ final class Export
     {
         $association = self::getAssociationFromField($table, $field);
         if (null !== $association) {
-            $value = self::getDisplayValueFromAssociation($association, $field, $value);
+            $value = self::getDisplayValueFromAssociation($table, $association, $field, $value);
         }
 
         $listName = self::getListNameFromField($table, $field);
@@ -394,28 +394,38 @@ final class Export
      *
      * This method will recurse until it retrieves a non-primary-key value.
      *
+     * @param \Cake\ORM\Table $table ORM table
      * @param \Cake\ORM\Association $association Association
      * @param string $field Field name
      * @param mixed $value Field value
      * @return mixed
      */
-    private static function getDisplayValueFromAssociation(Association $association, string $field, $value)
+    private static function getDisplayValueFromAssociation(Table $table, Association $association, string $field, $value)
     {
+
         $targetTable = $association->getTarget();
         $displayField = $targetTable->getDisplayField();
         $primaryKey = $targetTable->getPrimaryKey();
         Assert::string($primaryKey);
 
+        list(, $module) = pluginSplit(App::shortName(get_class($table), 'Model/Table', 'Table'));
+        $config = (new ModuleConfig(ConfigType::MIGRATION(), $module))->parseToArray();
+
+        if (!isset($config[$displayField])) {
+            return $value;
+        }
+
         $entity = $targetTable->find()->select($displayField)->where([$primaryKey => $value])->first();
         if (null === $entity) {
             return $value;
         }
+
         Assert::isInstanceOf($entity, \Cake\Datasource\EntityInterface::class);
         $value = $entity->get($displayField);
 
         $association = self::getAssociationFromField($targetTable, $displayField);
         if (null !== $association) {
-            $value = self::getDisplayValueFromAssociation($association, $displayField, $value);
+            $value = self::getDisplayValueFromAssociation($table, $association, $displayField, $value);
         }
 
         return $value;
