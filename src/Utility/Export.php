@@ -401,7 +401,6 @@ final class Export
      */
     private static function getDisplayValueFromAssociation(Association $association, string $field, $value)
     {
-
         $targetTable = $association->getTarget();
         $displayField = $targetTable->getDisplayField();
         $primaryKey = $targetTable->getPrimaryKey();
