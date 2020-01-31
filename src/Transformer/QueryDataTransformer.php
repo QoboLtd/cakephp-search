@@ -283,5 +283,6 @@ final class QueryDataTransformer
     private static function testMethod(): void
     {
         echo "test method";
+        echo "test method";
     }
 }
