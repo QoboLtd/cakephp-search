@@ -274,4 +274,9 @@ final class QueryDataTransformer
             self::FILTER_MAP[strtolower($filter)] :
             $filter;
     }
+
+    private static function testMethod(): void
+    {
+        echo "test method";
+    }
 }
