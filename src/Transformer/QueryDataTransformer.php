@@ -275,6 +275,11 @@ final class QueryDataTransformer
             $filter;
     }
 
+    /**
+     * A test method.
+     *
+     * @return void
+     */
     private static function testMethod(): void
     {
         echo "test method";
