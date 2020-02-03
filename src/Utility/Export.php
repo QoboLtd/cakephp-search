@@ -406,10 +406,16 @@ final class Export
         $primaryKey = $targetTable->getPrimaryKey();
         Assert::string($primaryKey);
 
-        $entity = $targetTable->find()->select($displayField)->where([$primaryKey => $value])->first();
+        if (!$targetTable->getSchema()->hasColumn($displayField)) {
+            $entity = $targetTable->find()->where([$primaryKey => $value])->first();
+        } else {
+            $entity = $targetTable->find()->select($displayField)->where([$primaryKey => $value])->first();
+        }
+
         if (null === $entity) {
             return $value;
         }
+
         Assert::isInstanceOf($entity, \Cake\Datasource\EntityInterface::class);
         $value = $entity->get($displayField);
 
