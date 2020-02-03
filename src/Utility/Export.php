@@ -415,6 +415,7 @@ final class Export
         if (null === $entity) {
             return $value;
         }
+
         Assert::isInstanceOf($entity, \Cake\Datasource\EntityInterface::class);
         $value = $entity->get($displayField);
 
