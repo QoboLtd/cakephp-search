@@ -129,7 +129,7 @@
             options.options = {
                 tooltips: {
                     callbacks: {
-                        label: function(tooltipItem, data) {
+                        label: function (tooltipItem, data) {
                             let value = data.datasets[0].data[tooltipItem.index];
                             value = 'number' === typeof value ? value.toLocaleString() : value;
                             let label = data.labels[tooltipItem.index] + ': ' + value;
@@ -146,7 +146,7 @@
         barOptions: function (options) {
             options.options.tooltips = {
                 callbacks: {
-                    label: function(tooltipItem, data) {
+                    label: function (tooltipItem, data) {
                         return 'number' === typeof tooltipItem.yLabel ?
                             tooltipItem.yLabel.toLocaleString() :
                             tooltipItem.yLabel;
@@ -154,7 +154,7 @@
                 }
             };
 
-           options.options.scales.yAxes[0].ticks.callback = function(value, index, values) {
+            options.options.scales.yAxes[0].ticks.callback = function (value, index, values) {
                 return 'number' === typeof value ? value.toLocaleString() : value;
             }
 
