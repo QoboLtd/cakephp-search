@@ -78,6 +78,10 @@
                 case 'polarArea':
                 case 'pie':
                 case 'horizontalBar':
+                    if ('function' === typeof this[this.type + 'Options']) {
+                        this[this.type + 'Options'](this.options.dataChart)
+                    }
+
                     var ctx = document.getElementById("canvas_" + this.id).getContext('2d');
                     var myChart = new Chart(ctx, this.options.dataChart);
                     break;
@@ -119,6 +123,42 @@
                     });
                     break;
             }
+        },
+
+        pieOptions: function (options) {
+            options.options = {
+                tooltips: {
+                    callbacks: {
+                        label: function(tooltipItem, data) {
+                            let value = data.datasets[0].data[tooltipItem.index];
+                            value = 'number' === typeof value ? value.toLocaleString() : value;
+                            let label = data.labels[tooltipItem.index] + ': ' + value;
+
+                            return label
+                        }
+                    }
+                }
+            };
+
+            return options;
+        },
+
+        barOptions: function (options) {
+            options.options.tooltips = {
+                callbacks: {
+                    label: function(tooltipItem, data) {
+                        return 'number' === typeof tooltipItem.yLabel ?
+                            tooltipItem.yLabel.toLocaleString() :
+                            tooltipItem.yLabel;
+                    }
+                }
+            };
+
+           options.options.scales.yAxes[0].ticks.callback = function(value, index, values) {
+                return 'number' === typeof value ? value.toLocaleString() : value;
+            }
+
+            return options;
         },
 
         getData: function () {
