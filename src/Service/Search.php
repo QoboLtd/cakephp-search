@@ -18,6 +18,7 @@ use Search\Criteria\Conjunction;
 use Search\Criteria\Criteria;
 use Search\Criteria\Field;
 use Search\Criteria\OrderBy;
+use Webmozart\Assert\Assert;
 
 final class Search
 {
@@ -55,9 +56,9 @@ final class Search
     private $groupBy = null;
 
     /**
-     * @var \Search\Criteria\OrderBy|null
+     * @var \Search\Criteria\OrderBy[]
      */
-    private $orderBy = null;
+    private $orderBy = [];
 
     /**
      * @var \Search\Criteria\Field[]
@@ -92,12 +93,18 @@ final class Search
     /**
      * Add order-by to Search.
      *
-     * @param \Search\Criteria\OrderBy $orderBy OrderBy
+     * @param \Search\Criteria\OrderBy|\Search\Criteria\OrderBy[] $orderBy OrderBy
      * @return void
      */
-    public function setOrderBy(OrderBy $orderBy): void
+    public function setOrderBy($orderBy): void
     {
-        $this->orderBy = $orderBy;
+        if (is_array($orderBy)) {
+            Assert::allIsInstanceOf($orderBy, OrderBy::class);
+            $this->orderBy = array_merge($this->orderBy, $orderBy);
+        } else {
+            Assert::isInstanceOf($orderBy, OrderBy::class);
+            $this->orderBy[] = $orderBy;
+        }
     }
 
     /**
@@ -148,8 +155,8 @@ final class Search
             $this->query->group((string)$this->groupBy);
         }
 
-        if ($this->orderBy) {
-            $this->query->order([(string)$this->orderBy->field() => (string)$this->orderBy->direction()]);
+        foreach ($this->orderBy as $order) {
+            $this->query->order([(string)$order->field() => (string)$order->direction()]);
         }
 
         // adjust where clause conjunction
@@ -300,7 +307,6 @@ final class Search
         if ($name === $this->table->getAlias()) {
             return null;
         }
-
         if (! $this->table->hasAssociation($name)) {
             throw new \RuntimeException(sprintf('Table "%s" does not have association "%s"', $this->table->getAlias(), $name));
         }

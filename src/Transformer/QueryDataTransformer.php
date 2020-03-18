@@ -52,7 +52,12 @@ final class QueryDataTransformer
     ];
 
     private $group;
-    private $order;
+
+    /**
+     * Order by conditions
+     * @var \Search\Criteria\OrderBy[]
+     */
+    private $order = [];
     private $conjunction;
     private $select = [];
     private $criteria = [];
@@ -140,9 +145,9 @@ final class QueryDataTransformer
     /**
      * Order-by getter.
      *
-     * @return \Search\Criteria\OrderBy|null
+     * @return \Search\Criteria\OrderBy[]
      */
-    public function getOrder(): ?OrderBy
+    public function getOrder(): array
     {
         return $this->order;
     }
@@ -162,7 +167,7 @@ final class QueryDataTransformer
         Assert::isInstanceOf($order, \Cake\Database\Expression\OrderByExpression::class);
 
         $order->iterateParts(function ($direction, $field) {
-            $this->order = new OrderBy(new Field($field), new Direction($direction));
+            $this->order[] = new OrderBy(new Field($field), new Direction($direction));
         });
     }
 
