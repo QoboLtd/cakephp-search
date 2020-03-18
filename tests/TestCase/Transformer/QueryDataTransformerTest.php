@@ -60,7 +60,12 @@ class QueryDataTransformerTest extends TestCase
         $result = QueryDataTransformer::transform($query, $options);
 
         $this->assertInstanceOf(Field::class, $result->getGroup());
-        $this->assertInstanceOf(OrderBy::class, $result->getOrder());
+        $order = $result->getOrder();
+        $this->assertTrue(is_array($order));
+        $this->assertNotEmpty($order);
+        foreach ($order as $o) {
+            $this->assertInstanceOf(OrderBy::class, $o);
+        }
         $this->assertInstanceOf(Conjunction::class, $result->getConjunction());
 
         $this->assertTrue([] !== $result->getSelect());
@@ -79,7 +84,9 @@ class QueryDataTransformerTest extends TestCase
         $result = QueryDataTransformer::transform($this->table->query(), []);
 
         $this->assertNull($result->getGroup());
-        $this->assertNull($result->getOrder());
+        $order = $result->getOrder();
+        $this->assertTrue(is_array($order));
+        $this->assertEmpty($order);
         $this->assertNull($result->getConjunction());
         $this->assertSame([], $result->getSelect());
         $this->assertSame([], $result->getCriteria());
