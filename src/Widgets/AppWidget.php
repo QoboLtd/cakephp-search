@@ -77,7 +77,7 @@ class AppWidget extends BaseWidget
      */
     public function getResults(array $options = [])
     {
-        $table = TableRegistry::get('Search.AppWidgets');
+        $table = TableRegistry::getTableLocator()->get('Search.AppWidgets');
 
         /**
          * @var \Cake\Datasource\EntityInterface|null

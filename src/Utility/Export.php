@@ -151,7 +151,7 @@ final class Export
             return [];
         }
 
-        $table = TableRegistry::get($this->search->get('model'));
+        $table = TableRegistry::getTableLocator()->get($this->search->get('model'));
 
         $associationLabels = self::getAssociationLabels($table);
         $fieldLabels = self::getFieldLabels($table, true);
@@ -198,7 +198,7 @@ final class Export
         return self::toCsv(
             $query->all(),
             array_map('strval', $this->data['fields']),
-            TableRegistry::get($this->search->get('model'))
+            TableRegistry::getTableLocator()->get($this->search->get('model'))
         );
     }
 

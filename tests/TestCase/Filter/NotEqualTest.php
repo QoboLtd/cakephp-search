@@ -28,7 +28,7 @@ class NotEqualTest extends TestCase
     {
         parent::setUp();
 
-        $this->query = TableRegistry::get('Articles')->query();
+        $this->query = TableRegistry::getTableLocator()->get('Articles')->query();
     }
 
     public function tearDown(): void

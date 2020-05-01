@@ -43,11 +43,11 @@ class DashboardsTableTest extends TestCase
     {
         parent::setUp();
 
-        $config = TableRegistry::exists('Search.Dashboards') ? [] : ['className' => 'Search\Model\Table\DashboardsTable'];
+        $config = TableRegistry::getTableLocator()->exists('Search.Dashboards') ? [] : ['className' => 'Search\Model\Table\DashboardsTable'];
         /**
          * @var \Search\Model\Table\DashboardsTable $table
          */
-        $table = TableRegistry::get('Search.Dashboards', $config);
+        $table = TableRegistry::getTableLocator()->get('Search.Dashboards', $config);
         $this->Dashboards = $table;
     }
 
