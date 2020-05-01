@@ -27,12 +27,16 @@
 	"repositories": [
         {
             "type": "git",
-            "url": "https://github.com/QoboLtd/cakephp-file-storage.git"
+            "url": "https://github.com/QoboLtd/cakephp-utils.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/QoboLtd/cakephp-roles-capabilities.git"
         }
     ],
     "require": {
-        "qobo/cakephp-roles-capabilities": "^18.0",
-        "qobo/cakephp-utils": "^13.0"
+        "qobo/cakephp-roles-capabilities": "dev-cakephp-v38",
+        "qobo/cakephp-utils": "dev-cakephp-v38a"
     },
     "require-dev": {
         "qobo/cakephp-composer-dev": "^v1.0"
