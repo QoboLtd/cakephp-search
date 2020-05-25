@@ -69,7 +69,7 @@ class WidgetsListener implements EventListenerInterface
         if ($query->isEmpty()) {
             return [];
         }
-        // dd($query->toArray());
+
         return [
             ['type' => 'saved_search', 'data' => $query->toArray()],
         ];
