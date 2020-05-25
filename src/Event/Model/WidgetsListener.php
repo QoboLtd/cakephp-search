@@ -27,7 +27,6 @@ class WidgetsListener implements EventListenerInterface
         return [
             (string)EventName::MODEL_DASHBOARDS_GET_WIDGETS() => [
                 'callable' => 'getWidgets',
-                'priority' => PHP_INT_MAX, // this listener should be called last
             ],
         ];
     }
@@ -70,7 +69,7 @@ class WidgetsListener implements EventListenerInterface
         if ($query->isEmpty()) {
             return [];
         }
-
+        // dd($query->toArray());
         return [
             ['type' => 'saved_search', 'data' => $query->toArray()],
         ];
