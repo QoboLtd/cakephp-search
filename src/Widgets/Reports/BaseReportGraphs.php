@@ -203,15 +203,19 @@ abstract class BaseReportGraphs implements ReportGraphsInterface
     {
         $grad = [];
 
-        // Generate first color
         if ($shade && $count > 0) {
-            $color = substr(dechex(crc32($myString)), 0, 6);
+            $my_palette = Configure::read("Widget.gradation");
+            $my_colors = crc32($myString) % count($my_palette);
+
+            // First color
+            $color1 = empty($my_palette[$my_colors]) ? substr(dechex(crc32($myString)), 0, 6) : $my_palette[$my_colors][0];
+            // Second color
+            $color2 = empty($my_palette[$my_colors]) ? substr(dechex(crc32($myString . ' ')), 0, 6) : $my_palette[$my_colors][1];
+
             list($r, $g, $b) = array_map(function ($n) {
                 return hexdec($n);
-            }, str_split($color, 2));
+            }, str_split($color1, 2));
 
-            // Generate second color
-            $color2 = substr(dechex(crc32($myString . ' ')), 0, 6);
             list($r2, $g2, $b2) = array_map(function ($n) {
                 return hexdec($n);
             }, str_split($color2, 2));
@@ -222,7 +226,10 @@ abstract class BaseReportGraphs implements ReportGraphsInterface
 
             // Create a shade from the first color to the second
             for ($i = 0; $i < $count; $i++) {
-                $grad[] = '#' . str_pad(dechex($r + $rl * $i), 2, "0", 0) . str_pad(dechex($g + $gl * $i), 2, "0", 0) . str_pad(dechex($b + $bl * $i), 2, "0", 0);
+                $result_r = str_pad(dechex($r + $rl * $i), 2, "0", 0);
+                $result_g = str_pad(dechex($g + $gl * $i), 2, "0", 0);
+                $result_b = str_pad(dechex($b + $bl * $i), 2, "0", 0);
+                $grad[] = '#' . $result_r . $result_g . $result_b;
             }
 
             return $grad;

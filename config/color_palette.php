@@ -2,6 +2,14 @@
 // Set of different colors from https://colorhunt.co/palettes/popular
 return [
     'Widget' => [
+        'gradation' => [
+            ["BC1B68", "486CFA"],
+            ["006EB3", "2FEDE0"],
+            ["5CB270", "F4F269"],
+            ["F53D3D", "EDC363"],
+            ["8D0B73", "E37A7A"],
+            ["0B8C0D", "7ACEE2"],
+        ],
         'colors' => [
             "#ff9a00",
             "#ff165d",
