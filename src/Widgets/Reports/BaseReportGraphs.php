@@ -255,9 +255,19 @@ abstract class BaseReportGraphs implements ReportGraphsInterface
     public function getList(string $model, string $field): array
     {
         $type = !empty((new ModuleConfig(ConfigType::MIGRATION(), $model))->parseToArray()[$field]['type']) ? (new ModuleConfig(ConfigType::MIGRATION(), $model))->parseToArray()[$field]['type'] : '';
-        $is_list = preg_match("/^list\(([^\)]+)\)/", $type, $list);
+        $is_list = preg_match("/^list\(([^\)]+)\)/", $type, $matchedList);
+        if (!$is_list) {
+            return [];
+        }
 
-        return $is_list ? (new ModuleConfig(ConfigType::LISTS(), $model, $list[1]))->parseToArray()['items'] : [];
+        $list = $matchedList[1];
+        if (strpos($list, '.') === false) {
+            return (new ModuleConfig(ConfigType::LISTS(), $model, $list))->parseToArray()['items'];
+        }
+
+        list($model, $list) = explode('.', $list, 2);
+
+        return (new ModuleConfig(ConfigType::LISTS(), $model, $list))->parseToArray()['items'];
     }
 
     /**
