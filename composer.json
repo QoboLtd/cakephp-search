@@ -24,19 +24,9 @@
             "php": "7.1"
         }
     },
-	"repositories": [
-        {
-            "type": "git",
-            "url": "https://github.com/QoboLtd/cakephp-utils.git"
-        },
-        {
-            "type": "git",
-            "url": "https://github.com/QoboLtd/cakephp-roles-capabilities.git"
-        }
-    ],
     "require": {
-        "qobo/cakephp-roles-capabilities": "dev-cakephp-v38",
-        "qobo/cakephp-utils": "dev-cakephp-v38a"
+        "qobo/cakephp-roles-capabilities": "^18.0",
+        "qobo/cakephp-utils": "^13.0"
     },
     "require-dev": {
         "qobo/cakephp-composer-dev": "^v1.0"
@@ -70,6 +60,5 @@
         "test": "Runs phpcs and phpunit without coverage",
         "test-coverage": "Runs phpcs and phpunit with coverage enabled"
     },
-    "prefer-stable": true,
-    "minimum-stability": "dev"
+    "prefer-stable": true
 }
