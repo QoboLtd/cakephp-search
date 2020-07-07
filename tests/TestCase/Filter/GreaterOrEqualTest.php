@@ -20,7 +20,7 @@ use Search\Filter\GreaterOrEqual;
 
 class GreaterOrEqualTest extends TestCase
 {
-    public $fixtures = ['plugin.Search.articles'];
+    public $fixtures = ['plugin.Search.Articles'];
 
     private $query;
 

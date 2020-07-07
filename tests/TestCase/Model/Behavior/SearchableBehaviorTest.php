@@ -19,8 +19,8 @@ use Search\Filter\StartsWith;
 class SearchableBehaviorTest extends TestCase
 {
     public $fixtures = [
-        'plugin.Search.articles',
-        'plugin.Search.authors',
+        'plugin.Search.Articles',
+        'plugin.Search.Authors',
     ];
 
     private $articles;

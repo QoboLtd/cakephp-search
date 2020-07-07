@@ -20,7 +20,7 @@ use Search\Filter\Equal;
 
 class EqualTest extends TestCase
 {
-    public $fixtures = ['plugin.Search.articles'];
+    public $fixtures = ['plugin.Search.Articles'];
 
     private $query;
 

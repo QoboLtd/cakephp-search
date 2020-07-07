@@ -20,7 +20,7 @@ use Search\Filter\Less;
 
 class LessTest extends TestCase
 {
-    public $fixtures = ['plugin.Search.articles'];
+    public $fixtures = ['plugin.Search.Articles'];
 
     private $query;
 

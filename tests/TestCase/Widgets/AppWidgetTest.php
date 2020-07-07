@@ -13,8 +13,8 @@ use Search\Widgets\AppWidget;
 class AppWidgetTest extends TestCase
 {
     public $fixtures = [
-        'plugin.search.app_widgets',
-        'plugin.search.widgets',
+        'plugin.Search.AppWidgets',
+        'plugin.Search.Widgets',
     ];
 
     public $widget;

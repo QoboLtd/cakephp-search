@@ -24,10 +24,10 @@ class WidgetsTableTest extends TestCase
      * @var array
      */
     public $fixtures = [
-        'plugin.search.widgets',
-        'plugin.search.app_widgets',
-        'plugin.search.dashboards',
-        'plugin.search.saved_searches',
+        'plugin.Search.Widgets',
+        'plugin.Search.AppWidgets',
+        'plugin.Search.Dashboards',
+        'plugin.Search.SavedSearches',
     ];
 
     /**

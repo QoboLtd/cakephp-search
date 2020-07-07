@@ -15,8 +15,8 @@ class SavedSearchesControllerTest extends IntegrationTestCase
      * @var array
      */
     public $fixtures = [
-        'plugin.CakeDC/Users.users',
-        'plugin.search.saved_searches',
+        'plugin.CakeDC/Users.Users',
+        'plugin.Search.SavedSearches',
     ];
 
     public function setUp()

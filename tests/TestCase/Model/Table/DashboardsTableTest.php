@@ -26,12 +26,12 @@ class DashboardsTableTest extends TestCase
      * @var array
      */
     public $fixtures = [
-        'plugin.search.dashboards',
-        'plugin.CakeDC/Users.users',
-        'plugin.groups.groups',
-        'plugin.groups.groups_users',
-        'plugin.roles_capabilities.groups_roles',
-        'plugin.roles_capabilities.roles',
+        'plugin.Search.Dashboards',
+        'plugin.CakeDC/Users.Users',
+        'plugin.Groups.Groups',
+        'plugin.Groups.GroupsUsers',
+        'plugin.RolesCapabilities.GroupsRoles',
+        'plugin.RolesCapabilities.Roles',
     ];
 
     /**
