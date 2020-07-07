@@ -20,7 +20,7 @@ use Search\Filter\NotContains;
 
 class NotContainsTest extends TestCase
 {
-    public $fixtures = ['plugin.Search.articles'];
+    public $fixtures = ['plugin.Search.Articles'];
 
     private $query;
 
@@ -28,7 +28,7 @@ class NotContainsTest extends TestCase
     {
         parent::setUp();
 
-        $this->query = TableRegistry::get('Articles')->query();
+        $this->query = TableRegistry::getTableLocator()->get('Articles')->query();
     }
 
     public function tearDown(): void

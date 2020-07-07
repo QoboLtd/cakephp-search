@@ -13,8 +13,8 @@ use Search\Widgets\AppWidget;
 class AppWidgetTest extends TestCase
 {
     public $fixtures = [
-        'plugin.search.app_widgets',
-        'plugin.search.widgets',
+        'plugin.Search.AppWidgets',
+        'plugin.Search.Widgets',
     ];
 
     public $widget;
@@ -28,18 +28,18 @@ class AppWidgetTest extends TestCase
     {
         $this->widget = new AppWidget(['foo' => 'bar']);
 
-        $config = TableRegistry::exists('Search.AppWidgets') ? [] : ['className' => 'Search\Model\Table\AppWidgetsTable'];
+        $config = TableRegistry::getTableLocator()->exists('Search.AppWidgets') ? [] : ['className' => 'Search\Model\Table\AppWidgetsTable'];
         /**
          * @var \Search\Model\Table\AppWidgetsTable $table
          */
-        $table = TableRegistry::get('Search.AppWidgets', $config);
+        $table = TableRegistry::getTableLocator()->get('Search.AppWidgets', $config);
         $this->AppWidgets = $table;
 
-        $config = TableRegistry::exists('Search.Widgets') ? [] : ['className' => 'Search\Model\Table\WidgetsTable'];
+        $config = TableRegistry::getTableLocator()->exists('Search.Widgets') ? [] : ['className' => 'Search\Model\Table\WidgetsTable'];
         /**
          * @var \Search\Model\Table\WidgetsTable $table
          */
-        $table = TableRegistry::get('Search.Widgets', $config);
+        $table = TableRegistry::getTableLocator()->get('Search.Widgets', $config);
         $this->Widgets = $table;
     }
 

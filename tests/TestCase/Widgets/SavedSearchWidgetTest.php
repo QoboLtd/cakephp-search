@@ -9,8 +9,8 @@ use Search\Widgets\SavedSearchWidget;
 class SavedSearchWidgetTest extends TestCase
 {
     public $fixtures = [
-        'plugin.Search.saved_searches',
-        'plugin.Search.widgets',
+        'plugin.Search.SavedSearches',
+        'plugin.Search.Widgets',
     ];
 
     private $SavedSearches;

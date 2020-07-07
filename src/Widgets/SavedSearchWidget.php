@@ -85,7 +85,7 @@ final class SavedSearchWidget extends BaseWidget
     {
         $this->setContainerId($options['entity']);
 
-        $table = TableRegistry::get('Search.SavedSearches');
+        $table = TableRegistry::getTableLocator()->get('Search.SavedSearches');
 
         /** @var \Search\Model\Entity\SavedSearch|null */
         $savedSearch = $table->find()

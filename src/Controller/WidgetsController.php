@@ -30,7 +30,7 @@ class WidgetsController extends AppController
         /**
          * @var \Search\Model\Table\WidgetsTable $table
          */
-        $table = TableRegistry::get('Search.Widgets');
+        $table = TableRegistry::getTableLocator()->get('Search.Widgets');
 
         $widgets = $table->getWidgets();
 

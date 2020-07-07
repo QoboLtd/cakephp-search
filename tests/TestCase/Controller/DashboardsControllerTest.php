@@ -20,16 +20,16 @@ class DashboardsControllerTest extends IntegrationTestCase
      * @var array
      */
     public $fixtures = [
-        'plugin.CakeDC/Users.users',
-        'plugin.groups.groups',
-        'plugin.groups.groups_users',
-        'plugin.search.app_widgets',
-        'plugin.search.articles',
-        'plugin.search.dashboards',
-        'plugin.search.saved_searches',
-        'plugin.search.widgets',
-        'plugin.roles_capabilities.groups_roles',
-        'plugin.roles_capabilities.roles',
+        'plugin.CakeDC/Users.Users',
+        'plugin.Groups.Groups',
+        'plugin.Groups.GroupsUsers',
+        'plugin.Search.AppWidgets',
+        'plugin.Search.Articles',
+        'plugin.Search.Dashboards',
+        'plugin.Search.SavedSearches',
+        'plugin.Search.Widgets',
+        'plugin.RolesCapabilities.GroupsRoles',
+        'plugin.RolesCapabilities.Roles',
     ];
 
     public function setUp()

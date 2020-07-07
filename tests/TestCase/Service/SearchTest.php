@@ -26,10 +26,10 @@ use Webmozart\Assert\Assert;
 class SearchTest extends TestCase
 {
     public $fixtures = [
-        'plugin.Search.articles',
-        'plugin.Search.articles_tags',
-        'plugin.Search.authors',
-        'plugin.Search.tags',
+        'plugin.Search.Articles',
+        'plugin.Search.ArticlesTags',
+        'plugin.Search.Authors',
+        'plugin.Search.Tags',
     ];
 
     private $table;
@@ -104,7 +104,7 @@ class SearchTest extends TestCase
 
         $result = $query->firstOrFail();
         Assert::isInstanceOf($result, \Cake\Datasource\EntityInterface::class);
-        $this->assertEquals([], array_diff(['title', 'content'], $result->visibleProperties()));
+        $this->assertEquals([], array_diff(['title', 'content'], $result->getVisible()));
     }
 
     public function testShouldExecuteWithGroupBy(): void

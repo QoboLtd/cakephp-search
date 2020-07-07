@@ -13,9 +13,9 @@ use Search\Utility\Export;
 class ExportTest extends TestCase
 {
     public $fixtures = [
-        'plugin.search.articles',
-        'plugin.search.authors',
-        'plugin.search.saved_searches',
+        'plugin.Search.Articles',
+        'plugin.Search.Authors',
+        'plugin.Search.SavedSearches',
     ];
 
     private $user;

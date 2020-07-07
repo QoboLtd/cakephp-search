@@ -10,8 +10,8 @@ use Cake\TestSuite\ConsoleIntegrationTestCase;
 class SearchShellTest extends ConsoleIntegrationTestCase
 {
     public $fixtures = [
-        'plugin.CakeDC/Users.users',
-        'plugin.Search.saved_searches',
+        'plugin.CakeDC/Users.Users',
+        'plugin.Search.SavedSearches',
     ];
 
     private $table;

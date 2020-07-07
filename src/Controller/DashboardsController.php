@@ -59,7 +59,7 @@ class DashboardsController extends AppController
         /**
          * @var \Search\Model\Table\WidgetsTable $widgetsTable
          */
-        $widgetsTable = TableRegistry::get('Search.Widgets');
+        $widgetsTable = TableRegistry::getTableLocator()->get('Search.Widgets');
 
         $userDashboards = $query->find('list')->toArray();
         if (!array_key_exists($dashboard->id, $userDashboards)) {
@@ -124,7 +124,7 @@ class DashboardsController extends AppController
         /**
          * @var \Search\Model\Table\WidgetsTable $widgetsTable
          */
-        $widgetsTable = TableRegistry::get('Search.Widgets');
+        $widgetsTable = TableRegistry::getTableLocator()->get('Search.Widgets');
         $widgets = $widgetsTable->getWidgets();
 
         if ($this->request->is('post')) {
@@ -183,7 +183,7 @@ class DashboardsController extends AppController
         /**
          * @var \Search\Model\Table\WidgetsTable $widgetsTable
          */
-        $widgetsTable = TableRegistry::get('Search.Widgets');
+        $widgetsTable = TableRegistry::getTableLocator()->get('Search.Widgets');
         $widgets = $widgetsTable->getWidgets();
 
         $sequence = 0;
@@ -228,7 +228,7 @@ class DashboardsController extends AppController
             if ($this->Dashboards->save($dashboard)) {
                 $this->Flash->success((string)__d('Qobo/Search', 'The dashboard has been saved.'));
                 /** @var \Search\Model\Table\WidgetsTable */
-                $widgetTable = TableRegistry::get('Search.Widgets');
+                $widgetTable = TableRegistry::getTableLocator()->get('Search.Widgets');
                 $widgetTable->trashAll([
                     'dashboard_id' => $dashboard->id,
                 ]);
@@ -264,7 +264,7 @@ class DashboardsController extends AppController
 
         if ($this->Dashboards->delete($dashboard)) {
             /** @var \Search\Model\Table\WidgetsTable */
-            $widgetTable = TableRegistry::get('Search.Widgets');
+            $widgetTable = TableRegistry::getTableLocator()->get('Search.Widgets');
             $widgetTable->trashAll([
                 'dashboard_id' => $id,
             ]);

@@ -22,7 +22,7 @@ use Search\Transformer\QueryDataTransformer;
 class QueryDataTransformerTest extends TestCase
 {
     public $fixtures = [
-        'plugin.Search.articles',
+        'plugin.Search.Articles',
     ];
 
     private $table;

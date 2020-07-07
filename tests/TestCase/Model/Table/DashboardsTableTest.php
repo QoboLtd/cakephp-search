@@ -26,12 +26,12 @@ class DashboardsTableTest extends TestCase
      * @var array
      */
     public $fixtures = [
-        'plugin.search.dashboards',
-        'plugin.CakeDC/Users.users',
-        'plugin.groups.groups',
-        'plugin.groups.groups_users',
-        'plugin.roles_capabilities.groups_roles',
-        'plugin.roles_capabilities.roles',
+        'plugin.Search.Dashboards',
+        'plugin.CakeDC/Users.Users',
+        'plugin.Groups.Groups',
+        'plugin.Groups.GroupsUsers',
+        'plugin.RolesCapabilities.GroupsRoles',
+        'plugin.RolesCapabilities.Roles',
     ];
 
     /**
@@ -43,11 +43,11 @@ class DashboardsTableTest extends TestCase
     {
         parent::setUp();
 
-        $config = TableRegistry::exists('Search.Dashboards') ? [] : ['className' => 'Search\Model\Table\DashboardsTable'];
+        $config = TableRegistry::getTableLocator()->exists('Search.Dashboards') ? [] : ['className' => 'Search\Model\Table\DashboardsTable'];
         /**
          * @var \Search\Model\Table\DashboardsTable $table
          */
-        $table = TableRegistry::get('Search.Dashboards', $config);
+        $table = TableRegistry::getTableLocator()->get('Search.Dashboards', $config);
         $this->Dashboards = $table;
     }
 

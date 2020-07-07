@@ -16,8 +16,8 @@ class ReportWidgetTest extends TestCase
     private const DEFAULT_OPTIONS = ['config' => ['info' => ['renderAs' => 'barChart']]];
 
     public $fixtures = [
-        'plugin.search.widgets',
-        'plugin.search.articles',
+        'plugin.Search.Widgets',
+        'plugin.Search.Articles',
     ];
 
     private $widget;

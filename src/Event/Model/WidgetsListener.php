@@ -56,7 +56,7 @@ class WidgetsListener implements EventListenerInterface
      */
     private function getSavedSearchWidgets(): array
     {
-        $table = TableRegistry::get('Search.SavedSearches');
+        $table = TableRegistry::getTableLocator()->get('Search.SavedSearches');
 
         $query = $table->find('all')
             ->where([
@@ -113,7 +113,7 @@ class WidgetsListener implements EventListenerInterface
      */
     private function getAppWidgets(): array
     {
-        $table = TableRegistry::get('Search.AppWidgets');
+        $table = TableRegistry::getTableLocator()->get('Search.AppWidgets');
 
         $query = $table->find('all')
             ->select(['id', 'name', 'content']);
