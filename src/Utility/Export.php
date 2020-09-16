@@ -21,10 +21,10 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Inflector;
 use Psr\Log\LogLevel;
-use Qobo\Utils\ModuleConfig\ConfigType;
-use Qobo\Utils\ModuleConfig\ModuleConfig;
 use Qobo\Search\Aggregate\AbstractAggregate;
 use Qobo\Search\Model\Entity\SavedSearch;
+use Qobo\Utils\ModuleConfig\ConfigType;
+use Qobo\Utils\ModuleConfig\ModuleConfig;
 use Webmozart\Assert\Assert;
 
 final class Export

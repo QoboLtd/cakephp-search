@@ -50,7 +50,6 @@ class DashboardsControllerTest extends IntegrationTestCase
 
         $this->get('/search/dashboards');
         $this->_response->getBody()->rewind();
-        dd($this->_response->getBody()->getContents());
         $this->assertResponseOk();
         $this->assertResponseContains(
             'There are no configured Dashboards for you. Please contact the system administrator.'
