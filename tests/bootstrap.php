@@ -2,7 +2,7 @@
 use Cake\Core\Configure;
 use Cake\Filesystem\Folder;
 
-$pluginName = 'Search';
+$pluginName = 'Qobo\Search';
 if (empty($pluginName)) {
     throw new \RuntimeException("Plugin name is not configured");
 }
