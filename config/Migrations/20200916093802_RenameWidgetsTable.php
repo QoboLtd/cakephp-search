@@ -13,6 +13,7 @@ class RenameWidgetsTable extends AbstractMigration
     public function change()
     {
         $this->table('widgets')
-            ->rename('qobo_search_widgets');
+            ->rename('qobo_search_widgets')
+            ->save();
     }
 }

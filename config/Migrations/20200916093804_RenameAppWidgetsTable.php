@@ -1,7 +1,7 @@
 <?php
 use Migrations\AbstractMigration;
 
-class RenameDashboardsTable extends AbstractMigration
+class RenameAppWidgetsTable extends AbstractMigration
 {
     /**
      * Change Method.
@@ -12,7 +12,8 @@ class RenameDashboardsTable extends AbstractMigration
      */
     public function change()
     {
-        $this->table('dashboards')
-            ->rename('qobo_search_dashboards');
+        $this->table('app_widgets')
+            ->rename('qobo_search_app_widgets')
+            ->save();
     }
 }

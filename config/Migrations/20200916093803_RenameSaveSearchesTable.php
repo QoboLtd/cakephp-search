@@ -1,7 +1,7 @@
 <?php
 use Migrations\AbstractMigration;
 
-class RenameAppWidgetsTable extends AbstractMigration
+class RenameSaveSearchesTable extends AbstractMigration
 {
     /**
      * Change Method.
@@ -12,7 +12,8 @@ class RenameAppWidgetsTable extends AbstractMigration
      */
     public function change()
     {
-        $this->table('app_widgets')
-            ->rename('qobo_search_app_widgets');
+        $this->table('saved_searches')
+            ->rename('qobo_search_saved_searches')
+            ->save();
     }
 }
