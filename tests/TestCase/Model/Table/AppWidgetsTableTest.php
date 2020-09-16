@@ -17,7 +17,7 @@ class AppWidgetsTableTest extends TestCase
     {
         parent::setUp();
 
-        $this->table = TableRegistry::getTableLocator()->get('Search.AppWidgets');
+        $this->table = TableRegistry::getTableLocator()->get('Qobo/Search.AppWidgets');
     }
 
     public function tearDown(): void
@@ -45,7 +45,7 @@ class AppWidgetsTableTest extends TestCase
         $this->assertCount(1, $this->table->find(), sprintf('Widget with id %s was not trashed', $widgetId));
 
         TableRegistry::getTableLocator()->clear();
-        TableRegistry::getTableLocator()->get('Search.AppWidgets');
+        TableRegistry::getTableLocator()->get('Qobo/Search.AppWidgets');
 
         // validate that the widget was restored
         $this->assertCount(2, $this->table->find(), sprintf('Widget with id %s was not restored', $widgetId));

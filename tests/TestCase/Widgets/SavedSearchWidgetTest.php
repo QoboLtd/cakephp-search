@@ -21,8 +21,8 @@ class SavedSearchWidgetTest extends TestCase
     {
         parent::setUp();
 
-        $this->SavedSearches = TableRegistry::getTableLocator()->get('Search.SavedSearches');
-        $this->Widgets = TableRegistry::getTableLocator()->get('Search.Widgets');
+        $this->SavedSearches = TableRegistry::getTableLocator()->get('Qobo/Search.SavedSearches');
+        $this->Widgets = TableRegistry::getTableLocator()->get('Qobo/Search.Widgets');
         $this->widget = new SavedSearchWidget(['entity' => $this->Widgets->get('00000000-0000-0000-0000-000000000002')]);
     }
 

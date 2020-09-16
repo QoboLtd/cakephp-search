@@ -17,17 +17,17 @@ namespace Qobo\Search\Criteria;
 final class Criteria
 {
     /**
-     * @var \Search\Criteria\Field
+     * @var \Qobo\Search\Criteria\Field
      */
     private $field;
 
     /**
-     * @var \Search\Criteria\Filter
+     * @var \Qobo\Search\Criteria\Filter
      */
     private $filter = null;
 
     /**
-     * @var \Search\Criteria\Aggregate
+     * @var \Qobo\Search\Criteria\Aggregate
      */
     private $aggregate = null;
 

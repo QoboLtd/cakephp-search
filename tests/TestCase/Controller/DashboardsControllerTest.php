@@ -214,7 +214,7 @@ class DashboardsControllerTest extends IntegrationTestCase
         $this->assertRedirect();
         $this->assertRedirectContains('/search/dashboards/view');
 
-        $table = TableRegistry::getTableLocator()->get('Search.Dashboards');
+        $table = TableRegistry::getTableLocator()->get('Qobo/Search.Dashboards');
         $entity = $table->get('00000000-0000-0000-0000-000000000001');
 
         $this->assertEquals('Test Dashboard', $entity->get('name'));
@@ -228,7 +228,7 @@ class DashboardsControllerTest extends IntegrationTestCase
         $this->assertRedirect();
         $this->assertRedirectContains('/search/dashboards');
 
-        $table = TableRegistry::getTableLocator()->get('Search.Dashboards');
+        $table = TableRegistry::getTableLocator()->get('Qobo/Search.Dashboards');
         $query = $table->find()->where(['Dashboards.id' => '00000000-0000-0000-0000-000000000001']);
 
         $this->assertTrue($query->isEmpty());
@@ -250,7 +250,7 @@ class DashboardsControllerTest extends IntegrationTestCase
 
         $this->assertSession('The dashboard could not be deleted. Please, try again.', 'Flash.flash.0.message');
 
-        $table = TableRegistry::getTableLocator()->get('Search.Dashboards');
+        $table = TableRegistry::getTableLocator()->get('Qobo/Search.Dashboards');
         $this->assertInstanceOf(Dashboard::class, $table->get('00000000-0000-0000-0000-000000000001'));
     }
 }

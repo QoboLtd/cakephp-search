@@ -12,15 +12,15 @@
 
 use Cake\Core\Configure;
 
-echo $this->Html->css(['Search.dashboard', 'Search.grid'], ['block' => 'css']);
+echo $this->Html->css(['Qobo/Search.dashboard', 'Qobo/Search.grid'], ['block' => 'css']);
 echo $this->Html->script('AdminLTE./bower_components/jquery-ui/jquery-ui.min', ['block' => 'script']);
-echo $this->Html->script('Search.dashboard', ['block' => 'scriptBottom']);
-echo $this->Html->script('Search./plugins/vue.min', ['block' => 'scriptBottom']);
-echo $this->Html->script('Search./plugins/vue-grid-layout.min', ['block' => 'scriptBottom']);
+echo $this->Html->script('Qobo/Search.dashboard', ['block' => 'scriptBottom']);
+echo $this->Html->script('Qobo/Search./plugins/vue.min', ['block' => 'scriptBottom']);
+echo $this->Html->script('Qobo/Search./plugins/vue-grid-layout.min', ['block' => 'scriptBottom']);
 echo $this->Html->scriptBlock('var api_token = "' . Configure::read('Search.api.token') . '";', ['block' => 'scriptBottom']);
 echo $this->Html->scriptBlock("var grid_layout = '" . addslashes(json_encode($savedWidgetData)) . "';", ['block' => 'scriptBottom']);
 
-echo $this->Html->script('Search./plugins/qobo.grid', ['block' => 'scriptBottom']);
+echo $this->Html->script('Qobo/Search./plugins/qobo.grid', ['block' => 'scriptBottom']);
 ?>
 <section class="content-header">
     <div class="row">
@@ -44,7 +44,7 @@ echo $this->Html->script('Search./plugins/qobo.grid', ['block' => 'scriptBottom'
         </div>
     </div>
     <?php
-    echo $this->element('Search.dashboard_form');
+    echo $this->element('Qobo/Search.dashboard_form');
     echo $this->Form->button(__d('Qobo/Search', 'Submit'), ['class' => 'btn btn-primary']);
     echo $this->Form->end();
     ?>

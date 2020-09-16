@@ -60,7 +60,7 @@ class WidgetsTable extends Table
         $this->belongsTo('Dashboards', [
             'foreignKey' => 'dashboard_id',
             'joinType' => 'INNER',
-            'className' => 'Search.Dashboards',
+            'className' => 'Qobo/Search.Dashboards',
         ]);
     }
 

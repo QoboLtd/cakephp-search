@@ -55,7 +55,7 @@ final class QueryDataTransformer
 
     /**
      * Order by conditions
-     * @var \Search\Criteria\OrderBy[]
+     * @var \Qobo\Search\Criteria\OrderBy[]
      */
     private $order = [];
     private $conjunction;

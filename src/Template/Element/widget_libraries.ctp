@@ -36,7 +36,7 @@ if (!empty($scripts)) {
         }
     }
 
-    echo $this->Html->script('Search.reportGraphs', ['block' => 'scriptBottom']);
+    echo $this->Html->script('Qobo/Search.reportGraphs', ['block' => 'scriptBottom']);
 }
 
 if (isset($chartData) && !empty($chartData)) {

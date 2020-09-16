@@ -23,18 +23,18 @@ final class SavedSearchWidget extends BaseWidget
     /**
      * Widget entity.
      *
-     * @var \Search\Model\Entity\Widget
+     * @var \Qobo\Search\Model\Entity\Widget
      */
     private $widget;
 
     /**
      * Saved search entity.
      *
-     * @var \Search\Model\Entity\SavedSearch|null
+     * @var \Qobo\Search\Model\Entity\SavedSearch|null
      */
     private $data = null;
 
-    public $renderElement = 'Search.Widgets/table';
+    public $renderElement = 'Qobo/Search.Widgets/table';
 
     public $type = 'saved_search';
     public $errors = [];
@@ -85,9 +85,9 @@ final class SavedSearchWidget extends BaseWidget
     {
         $this->setContainerId($options['entity']);
 
-        $table = TableRegistry::getTableLocator()->get('Search.SavedSearches');
+        $table = TableRegistry::getTableLocator()->get('Qobo/Search.SavedSearches');
 
-        /** @var \Search\Model\Entity\SavedSearch|null */
+        /** @var \Qobo\Search\Model\Entity\SavedSearch|null */
         $savedSearch = $table->find()
             ->where(['id' => $this->widget->get('widget_id')])
             ->enableHydration(true)

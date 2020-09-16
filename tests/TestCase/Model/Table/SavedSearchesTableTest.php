@@ -33,7 +33,7 @@ class SavedSearchesTableTest extends TestCase
     {
         parent::setUp();
 
-        $this->SavedSearches = TableRegistry::getTableLocator()->get('Search.SavedSearches');
+        $this->SavedSearches = TableRegistry::getTableLocator()->get('Qobo/Search.SavedSearches');
     }
 
     /**

@@ -41,7 +41,7 @@ class ReportWidgetTest extends TestCase
 
     public function testGetRenderElement(): void
     {
-        $this->assertSame('Search.Widgets/graph', $this->widget->getRenderElement());
+        $this->assertSame('Qobo/Search.Widgets/graph', $this->widget->getRenderElement());
     }
 
     public function testGetConfig(): void
@@ -253,7 +253,7 @@ class ReportWidgetTest extends TestCase
 
         $this->widget->getReport(['entity' => $entity]);
 
-        $this->assertEventFired('Search.Report.getReports');
+        $this->assertEventFired('Qobo/Search.Report.getReports');
     }
 
     public function testValidatesWithoutRequiredFields(): void
@@ -415,7 +415,7 @@ class ReportWidgetTest extends TestCase
             'widget_id' => '00000000-0000-0000-0000-000000000002',
         ];
 
-        /** @var \Search\Widgets\ReportWidget&\PHPUnit\Framework\MockObject\MockObject */
+        /** @var \Qobo\Search\Widgets\ReportWidget&\PHPUnit\Framework\MockObject\MockObject */
         $widget = $this->getMockBuilder(ReportWidget::class)->getMock();
 
         $widget->expects($this->any())

@@ -51,7 +51,7 @@ final class Export
     /**
      * Search entity
      *
-     * @var \Search\Model\Entity\SavedSearch
+     * @var \Qobo\Search\Model\Entity\SavedSearch
      */
     protected $search;
 
@@ -84,7 +84,7 @@ final class Export
     {
         $this->user = $user;
 
-        $savedSearch = TableRegistry::getTableLocator()->get('Search.SavedSearches')->get($id);
+        $savedSearch = TableRegistry::getTableLocator()->get('Qobo/Search.SavedSearches')->get($id);
         Assert::isInstanceOf($savedSearch, SavedSearch::class);
 
         $options = $this->getOptionsFromSavedSearch($savedSearch);

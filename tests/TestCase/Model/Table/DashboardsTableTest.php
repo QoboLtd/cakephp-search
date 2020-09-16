@@ -16,7 +16,7 @@ class DashboardsTableTest extends TestCase
     /**
      * Test subject
      *
-     * @var \Search\Model\Table\DashboardsTable
+     * @var \Qobo\Search\Model\Table\DashboardsTable
      */
     public $Dashboards;
 
@@ -43,11 +43,11 @@ class DashboardsTableTest extends TestCase
     {
         parent::setUp();
 
-        $config = TableRegistry::getTableLocator()->exists('Search.Dashboards') ? [] : ['className' => 'Search\Model\Table\DashboardsTable'];
+        $config = TableRegistry::getTableLocator()->exists('Qobo/Search.Dashboards') ? [] : ['className' => 'Search\Model\Table\DashboardsTable'];
         /**
-         * @var \Search\Model\Table\DashboardsTable $table
+         * @var \Qobo\Search\Model\Table\DashboardsTable $table
          */
-        $table = TableRegistry::getTableLocator()->get('Search.Dashboards', $config);
+        $table = TableRegistry::getTableLocator()->get('Qobo/Search.Dashboards', $config);
         $this->Dashboards = $table;
     }
 

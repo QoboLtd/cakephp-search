@@ -39,29 +39,29 @@ final class Search
     /**
      * Search conjunction.
      *
-     * @var \Search\Criteria\Conjunction
+     * @var \Qobo\Search\Criteria\Conjunction
      */
     private $conjunction;
 
     /**
      * Search criteria list.
      *
-     * @var \Search\Criteria\Criteria[]
+     * @var \Qobo\Search\Criteria\Criteria[]
      */
     private $criteria = [];
 
     /**
-     * @var \Search\Criteria\Field|null
+     * @var \Qobo\Search\Criteria\Field|null
      */
     private $groupBy = null;
 
     /**
-     * @var \Search\Criteria\OrderBy[]
+     * @var \Qobo\Search\Criteria\OrderBy[]
      */
     private $orderBy = [];
 
     /**
-     * @var \Search\Criteria\Field[]
+     * @var \Qobo\Search\Criteria\Field[]
      */
     private $select = [];
 

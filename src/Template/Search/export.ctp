@@ -22,8 +22,8 @@ $url = $this->Url->build([
 
 echo $this->Html->script(
     [
-        'Search.exporter',
-        'Search.export.init'
+        'Qobo/Search.exporter',
+        'Qobo/Search.export.init'
     ],
     [
         'block' => 'scriptBottom'

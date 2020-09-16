@@ -28,18 +28,18 @@ class AppWidgetTest extends TestCase
     {
         $this->widget = new AppWidget(['foo' => 'bar']);
 
-        $config = TableRegistry::getTableLocator()->exists('Search.AppWidgets') ? [] : ['className' => 'Search\Model\Table\AppWidgetsTable'];
+        $config = TableRegistry::getTableLocator()->exists('Qobo/Search.AppWidgets') ? [] : ['className' => 'Search\Model\Table\AppWidgetsTable'];
         /**
-         * @var \Search\Model\Table\AppWidgetsTable $table
+         * @var \Qobo\Search\Model\Table\AppWidgetsTable $table
          */
-        $table = TableRegistry::getTableLocator()->get('Search.AppWidgets', $config);
+        $table = TableRegistry::getTableLocator()->get('Qobo/Search.AppWidgets', $config);
         $this->AppWidgets = $table;
 
-        $config = TableRegistry::getTableLocator()->exists('Search.Widgets') ? [] : ['className' => 'Search\Model\Table\WidgetsTable'];
+        $config = TableRegistry::getTableLocator()->exists('Qobo/Search.Widgets') ? [] : ['className' => 'Search\Model\Table\WidgetsTable'];
         /**
-         * @var \Search\Model\Table\WidgetsTable $table
+         * @var \Qobo\Search\Model\Table\WidgetsTable $table
          */
-        $table = TableRegistry::getTableLocator()->get('Search.Widgets', $config);
+        $table = TableRegistry::getTableLocator()->get('Qobo/Search.Widgets', $config);
         $this->Widgets = $table;
     }
 

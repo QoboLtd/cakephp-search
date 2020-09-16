@@ -28,9 +28,9 @@ class WidgetsController extends AppController
     public function index()
     {
         /**
-         * @var \Search\Model\Table\WidgetsTable $table
+         * @var \Qobo\Search\Model\Table\WidgetsTable $table
          */
-        $table = TableRegistry::getTableLocator()->get('Search.Widgets');
+        $table = TableRegistry::getTableLocator()->get('Qobo/Search.Widgets');
 
         $widgets = $table->getWidgets();
 

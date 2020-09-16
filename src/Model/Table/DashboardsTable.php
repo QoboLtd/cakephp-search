@@ -49,7 +49,7 @@ class DashboardsTable extends Table
 
         $this->hasMany('Widgets', [
             'foreignKey' => 'dashboard_id',
-            'className' => 'Search.Widgets',
+            'className' => 'Qobo/Search.Widgets',
         ]);
     }
 

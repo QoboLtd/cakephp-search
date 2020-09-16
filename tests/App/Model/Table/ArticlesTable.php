@@ -15,7 +15,7 @@ class ArticlesTable extends Table
         $this->setDisplayField('title');
 
         $this->addBehavior('Timestamp');
-        $this->addBehavior('Search.Searchable');
+        $this->addBehavior('Qobo/Search.Searchable');
 
         $this->belongsTo('Authors');
         $this->belongsToMany('Tags');

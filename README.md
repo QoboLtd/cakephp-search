@@ -41,5 +41,5 @@ Load Component
 
 In your AppController add the following:
 ```php
-    $this->loadComponent('Search.Searchable');
+    $this->loadComponent('Qobo/Search.Searchable');
 ```

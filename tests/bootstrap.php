@@ -113,7 +113,7 @@ Cake\Core\Plugin::load('CakeDC/Users', ['routes' => true, 'bootstrap' => true]);
 Cake\Core\Plugin::load('Qobo/Utils', ['bootstrap' => true]);
 Cake\Core\Plugin::load('RolesCapabilities', ['bootstrap' => true]);
 
-Configure::load('Search.search');
+Configure::load('Qobo/Search.search');
 Configure::load('RolesCapabilities.roles_capabilities');
 
 // Enable test App Widgets
