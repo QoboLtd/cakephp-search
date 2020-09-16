@@ -1,5 +1,5 @@
 <?php
-namespace Search\Shell;
+namespace Qobo\Search\Shell;
 
 use Cake\Console\ConsoleOptionParser;
 use Cake\Console\Shell;

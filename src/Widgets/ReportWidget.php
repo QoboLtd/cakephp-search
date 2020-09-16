@@ -9,7 +9,7 @@
  * @copyright     Copyright (c) Qobo Ltd. (https://www.qobo.biz)
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
-namespace Search\Widgets;
+namespace Qobo\Search\Widgets;
 
 use Cake\Datasource\ConnectionManager;
 use Cake\Event\Event;
@@ -17,8 +17,8 @@ use Cake\Event\EventManager;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
-use Search\Event\EventName;
-use Search\Widgets\Reports\ReportGraphsInterface;
+use Qobo\Search\Event\EventName;
+use Qobo\Search\Widgets\Reports\ReportGraphsInterface;
 
 class ReportWidget extends BaseWidget
 {

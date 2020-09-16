@@ -1,9 +1,9 @@
 <?php
-namespace Search\Test\TestCase\Widgets;
+namespace Qobo\Search\Test\TestCase\Widgets;
 
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
-use Search\Widgets\AppWidget;
+use Qobo\Search\Widgets\AppWidget;
 
 /**
  * @property \Search\Model\Table\AppWidgetsTable $AppWidgets

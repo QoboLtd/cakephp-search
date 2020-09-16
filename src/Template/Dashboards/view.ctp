@@ -10,7 +10,7 @@
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
 
-use Search\Widgets\WidgetFactory;
+use Qobo\Search\Widgets\WidgetFactory;
 
 $scripts = [];
 $chartData = [];

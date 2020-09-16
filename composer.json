@@ -33,12 +33,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Search\\": "src/"
+            "Qobo\\Search\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Search\\Test\\": "tests/",
+            "Qobo\\Search\\Test\\": "tests/",
             "Groups\\Test\\": "vendor/qobo/cakephp-groups/tests/",
             "RolesCapabilities\\Test\\": "vendor/qobo/cakephp-roles-capabilities/tests/",
             "CakeDC\\Users\\Test\\": "vendor/cakedc/users/tests/",

@@ -9,12 +9,12 @@
  * @copyright     Copyright (c) Qobo Ltd. (https://www.qobo.biz)
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
-namespace Search\Test\TestCase\Model\Behavior;
+namespace Qobo\Search\Test\TestCase\Model\Behavior;
 
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
-use Search\Filter\Equal;
-use Search\Filter\StartsWith;
+use Qobo\Search\Filter\Equal;
+use Qobo\Search\Filter\StartsWith;
 
 class SearchableBehaviorTest extends TestCase
 {

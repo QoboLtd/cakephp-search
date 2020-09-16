@@ -1,10 +1,10 @@
 <?php
-namespace Search\Test\TestCase\Widgets;
+namespace Qobo\Search\Test\TestCase\Widgets;
 
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
-use Search\Model\Entity\SavedSearch;
-use Search\Widgets\SavedSearchWidget;
+use Qobo\Search\Model\Entity\SavedSearch;
+use Qobo\Search\Widgets\SavedSearchWidget;
 
 class SavedSearchWidgetTest extends TestCase
 {

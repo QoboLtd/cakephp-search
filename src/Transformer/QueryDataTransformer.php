@@ -9,18 +9,18 @@
  * @copyright     Copyright (c) Qobo Ltd. (https://www.qobo.biz)
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
-namespace Search\Transformer;
+namespace Qobo\Search\Transformer;
 
 use Cake\ORM\Query;
 use Cake\Utility\Hash;
-use Search\Aggregate\AbstractAggregate;
-use Search\Criteria\Aggregate;
-use Search\Criteria\Conjunction;
-use Search\Criteria\Criteria;
-use Search\Criteria\Direction;
-use Search\Criteria\Field;
-use Search\Criteria\Filter;
-use Search\Criteria\OrderBy;
+use Qobo\Search\Aggregate\AbstractAggregate;
+use Qobo\Search\Criteria\Aggregate;
+use Qobo\Search\Criteria\Conjunction;
+use Qobo\Search\Criteria\Criteria;
+use Qobo\Search\Criteria\Direction;
+use Qobo\Search\Criteria\Field;
+use Qobo\Search\Criteria\Filter;
+use Qobo\Search\Criteria\OrderBy;
 use Webmozart\Assert\Assert;
 
 /**

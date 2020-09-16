@@ -1,5 +1,5 @@
 <?php
-namespace Search\Test\TestCase\Shell;
+namespace Qobo\Search\Test\TestCase\Shell;
 
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\ConsoleIntegrationTestCase;

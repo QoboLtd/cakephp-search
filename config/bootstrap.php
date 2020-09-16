@@ -1,7 +1,7 @@
 <?php
 use Cake\Core\Configure;
 use Cake\Event\EventManager;
-use Search\Event\Model\WidgetsListener;
+use Qobo\Search\Event\Model\WidgetsListener;
 
 /**
  * Plugin configuration

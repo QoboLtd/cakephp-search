@@ -1,9 +1,9 @@
 <?php
-namespace Search\Test\TestCase\Widgets;
+namespace Qobo\Search\Test\TestCase\Widgets;
 
 use Cake\Core\Configure;
 use Cake\TestSuite\TestCase;
-use Search\Widgets\Reports\HorizontalBarReportWidget;
+use Qobo\Search\Widgets\Reports\HorizontalBarReportWidget;
 
 class HorizontalBarReportWidgetTest extends TestCase
 {

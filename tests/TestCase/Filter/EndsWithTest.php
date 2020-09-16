@@ -10,14 +10,14 @@
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
 
-namespace Search\Test\TestCase\Filter;
+namespace Qobo\Search\Test\TestCase\Filter;
 
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use Cake\Utility\Hash;
-use Search\Criteria\Aggregate;
-use Search\Criteria\Field;
-use Search\Filter\EndsWith;
+use Qobo\Search\Criteria\Aggregate;
+use Qobo\Search\Criteria\Field;
+use Qobo\Search\Filter\EndsWith;
 
 class EndsWithTest extends TestCase
 {

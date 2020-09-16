@@ -9,7 +9,7 @@
  * @copyright     Copyright (c) Qobo Ltd. (https://www.qobo.biz)
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
-namespace Search\Utility;
+namespace Qobo\Search\Utility;
 
 use Cake\Core\App;
 use Cake\Core\Configure;
@@ -23,8 +23,8 @@ use Cake\Utility\Inflector;
 use Psr\Log\LogLevel;
 use Qobo\Utils\ModuleConfig\ConfigType;
 use Qobo\Utils\ModuleConfig\ModuleConfig;
-use Search\Aggregate\AbstractAggregate;
-use Search\Model\Entity\SavedSearch;
+use Qobo\Search\Aggregate\AbstractAggregate;
+use Qobo\Search\Model\Entity\SavedSearch;
 use Webmozart\Assert\Assert;
 
 final class Export

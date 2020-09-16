@@ -9,15 +9,15 @@
  * @copyright     Copyright (c) Qobo Ltd. (https://www.qobo.biz)
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
-namespace Search\Service;
+namespace Qobo\Search\Service;
 
 use Cake\ORM\Association;
 use Cake\ORM\Query;
 use Cake\ORM\Table;
-use Search\Criteria\Conjunction;
-use Search\Criteria\Criteria;
-use Search\Criteria\Field;
-use Search\Criteria\OrderBy;
+use Qobo\Search\Criteria\Conjunction;
+use Qobo\Search\Criteria\Criteria;
+use Qobo\Search\Criteria\Field;
+use Qobo\Search\Criteria\OrderBy;
 use Webmozart\Assert\Assert;
 
 final class Search

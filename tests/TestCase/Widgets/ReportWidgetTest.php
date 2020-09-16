@@ -1,15 +1,15 @@
 <?php
-namespace Search\Test\TestCase\Widgets;
+namespace Qobo\Search\Test\TestCase\Widgets;
 
 use Cake\Core\Configure;
 use Cake\Event\EventList;
 use Cake\Event\EventManager;
 use Cake\TestSuite\TestCase;
-use Search\Widgets\Reports\BarChartReportWidget;
-use Search\Widgets\Reports\DonutChartReportWidget;
-use Search\Widgets\Reports\KnobChartReportWidget;
-use Search\Widgets\Reports\LineChartReportWidget;
-use Search\Widgets\ReportWidget;
+use Qobo\Search\Widgets\Reports\BarChartReportWidget;
+use Qobo\Search\Widgets\Reports\DonutChartReportWidget;
+use Qobo\Search\Widgets\Reports\KnobChartReportWidget;
+use Qobo\Search\Widgets\Reports\LineChartReportWidget;
+use Qobo\Search\Widgets\ReportWidget;
 
 class ReportWidgetTest extends TestCase
 {
@@ -556,7 +556,7 @@ class ReportWidgetTest extends TestCase
     }
 }
 
-namespace Search\Widgets\Reports;
+namespace Qobo\Search\Widgets\Reports;
 
 class FakeInvalidReportWidget
 {

@@ -9,10 +9,10 @@
  * @copyright     Copyright (c) Qobo Ltd. (https://www.qobo.biz) : void
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
-namespace Search\Test\TestCase\Criteria;
+namespace Qobo\Search\Test\TestCase\Criteria;
 
 use PHPUnit\Framework\TestCase;
-use Search\Criteria\Aggregate;
+use Qobo\Search\Criteria\Aggregate;
 
 class AggregateTest extends TestCase
 {

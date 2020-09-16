@@ -1,8 +1,8 @@
 <?php
 use Migrations\AbstractMigration;
 use Phinx\Db\Adapter\MysqlAdapter;
-use Search\Criteria\Conjunction;
-use Search\Criteria\Direction;
+use Qobo\Search\Criteria\Conjunction;
+use Qobo\Search\Criteria\Direction;
 
 class ExtendSavedSearchColumns extends AbstractMigration
 {

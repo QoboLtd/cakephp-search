@@ -1,9 +1,9 @@
 <?php
-namespace Search\Test\TestCase\Utility;
+namespace Qobo\Search\Test\TestCase\Utility;
 
 use Cake\Core\Configure;
 use Cake\TestSuite\TestCase;
-use Search\Utility\Export;
+use Qobo\Search\Utility\Export;
 
 /**
  * Search\Utility\Export Test Case

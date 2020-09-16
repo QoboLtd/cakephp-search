@@ -9,12 +9,12 @@
  * @copyright     Copyright (c) Qobo Ltd. (https://www.qobo.biz) : void
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
-namespace Search\Test\TestCase\Criteria;
+namespace Qobo\Search\Test\TestCase\Criteria;
 
 use PHPUnit\Framework\TestCase;
-use Search\Criteria\Direction;
-use Search\Criteria\Field;
-use Search\Criteria\OrderBy;
+use Qobo\Search\Criteria\Direction;
+use Qobo\Search\Criteria\Field;
+use Qobo\Search\Criteria\OrderBy;
 
 class OrderByTest extends TestCase
 {

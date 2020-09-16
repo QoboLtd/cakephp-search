@@ -9,12 +9,12 @@
  * @copyright     Copyright (c) Qobo Ltd. (https://www.qobo.biz)
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
-namespace Search\Widgets;
+namespace Qobo\Search\Widgets;
 
 use Cake\Datasource\EntityInterface;
 use Cake\ORM\TableRegistry;
-use Search\Model\Entity\SavedSearch;
-use Search\Model\Entity\Widget;
+use Qobo\Search\Model\Entity\SavedSearch;
+use Qobo\Search\Model\Entity\Widget;
 
 final class SavedSearchWidget extends BaseWidget
 {

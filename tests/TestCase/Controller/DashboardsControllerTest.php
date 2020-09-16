@@ -1,12 +1,12 @@
 <?php
-namespace Search\Test\TestCase\Controller;
+namespace Qobo\Search\Test\TestCase\Controller;
 
 use Cake\Core\Configure;
 use Cake\Event\EventManager;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\IntegrationTestCase;
-use Search\Event\Model\WidgetsListener;
-use Search\Model\Entity\Dashboard;
+use Qobo\Search\Event\Model\WidgetsListener;
+use Qobo\Search\Model\Entity\Dashboard;
 
 /**
  * Search\Controller\DashboardsController Test Case
@@ -49,7 +49,8 @@ class DashboardsControllerTest extends IntegrationTestCase
         }
 
         $this->get('/search/dashboards');
-
+        $this->_response->getBody()->rewind();
+        dd($this->_response->getBody()->getContents());
         $this->assertResponseOk();
         $this->assertResponseContains(
             'There are no configured Dashboards for you. Please contact the system administrator.'

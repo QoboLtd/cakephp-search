@@ -9,15 +9,15 @@
  * @copyright     Copyright (c) Qobo Ltd. (https://www.qobo.biz)
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
-namespace Search\Model\Table;
+namespace Qobo\Search\Model\Table;
 
 use Cake\Event\Event;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
-use Search\Event\EventName;
-use Search\Model\Entity\Widget;
-use Search\Widgets\WidgetFactory;
+use Qobo\Search\Event\EventName;
+use Qobo\Search\Model\Entity\Widget;
+use Qobo\Search\Widgets\WidgetFactory;
 
 /**
  * Widgets Model

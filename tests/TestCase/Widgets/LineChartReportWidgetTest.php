@@ -1,8 +1,8 @@
 <?php
-namespace Search\Test\TestCase\Widgets;
+namespace Qobo\Search\Test\TestCase\Widgets;
 
 use Cake\TestSuite\TestCase;
-use Search\Widgets\Reports\LineChartReportWidget;
+use Qobo\Search\Widgets\Reports\LineChartReportWidget;
 
 class LineChartReportWidgetTest extends TestCase
 {

@@ -9,9 +9,9 @@
  * @copyright     Copyright (c) Qobo Ltd. (https://www.qobo.biz)
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
-namespace Search\Criteria;
+namespace Qobo\Search\Criteria;
 
-use Search\Aggregate\AggregateInterface;
+use Qobo\Search\Aggregate\AggregateInterface;
 use Webmozart\Assert\Assert;
 
 final class Aggregate

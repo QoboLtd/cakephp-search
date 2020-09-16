@@ -1,11 +1,11 @@
 <?php
-namespace Search\Test\TestCase\Model\Table;
+namespace Qobo\Search\Test\TestCase\Model\Table;
 
 use Cake\ORM\RulesChecker;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use Cake\Validation\Validator;
-use Search\Model\Entity\SavedSearch;
+use Qobo\Search\Model\Entity\SavedSearch;
 
 /**
  * Search\Model\Table\SavedSearchesTable Test Case

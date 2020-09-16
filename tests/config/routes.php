@@ -1,5 +1,5 @@
 <?php
-namespace Search\Test\App\Config;
+namespace Qobo\Search\Test\App\Config;
 
 use Cake\Routing\Router;
 use Cake\Routing\Route\DashedRoute;

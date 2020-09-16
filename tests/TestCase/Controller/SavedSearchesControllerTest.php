@@ -1,5 +1,5 @@
 <?php
-namespace Search\Test\TestCase\Controller;
+namespace Qobo\Search\Test\TestCase\Controller;
 
 use Cake\TestSuite\IntegrationTestCase;
 

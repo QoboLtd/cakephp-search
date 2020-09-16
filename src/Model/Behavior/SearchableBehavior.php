@@ -9,13 +9,13 @@
  * @copyright     Copyright (c) Qobo Ltd. (https://www.qobo.biz)
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
-namespace Search\Model\Behavior;
+namespace Qobo\Search\Model\Behavior;
 
 use Cake\ORM\Behavior;
 use Cake\ORM\Query;
 use Cake\Utility\Hash;
-use Search\Service\Search;
-use Search\Transformer\QueryDataTransformer;
+use Qobo\Search\Service\Search;
+use Qobo\Search\Transformer\QueryDataTransformer;
 
 class SearchableBehavior extends Behavior
 {

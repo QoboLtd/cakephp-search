@@ -1,5 +1,5 @@
 <?php
-namespace Search\Test\TestCase\Model\Table;
+namespace Qobo\Search\Test\TestCase\Model\Table;
 
 use Cake\Event\EventList;
 use Cake\Event\EventManager;
@@ -7,8 +7,8 @@ use Cake\ORM\RulesChecker;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use Cake\Validation\Validator;
-use Search\Event\EventName;
-use Search\Event\Model\WidgetsListener;
+use Qobo\Search\Event\EventName;
+use Qobo\Search\Event\Model\WidgetsListener;
 use Webmozart\Assert\Assert;
 
 /**

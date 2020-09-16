@@ -1,9 +1,9 @@
 <?php
-namespace Search\Test\TestCase\Controller;
+namespace Qobo\Search\Test\TestCase\Controller;
 
 use Cake\Event\EventManager;
 use Cake\TestSuite\IntegrationTestCase;
-use Search\Event\Model\WidgetsListener;
+use Qobo\Search\Event\Model\WidgetsListener;
 
 class WidgetsControllerTest extends IntegrationTestCase
 {

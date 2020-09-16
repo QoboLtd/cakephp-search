@@ -1,10 +1,10 @@
 <?php
-namespace Search\Test\TestCase\Widgets;
+namespace Qobo\Search\Test\TestCase\Widgets;
 
 use Cake\TestSuite\TestCase;
-use Search\Widgets\ReportWidget;
-use Search\Widgets\SavedSearchWidget;
-use Search\Widgets\WidgetFactory;
+use Qobo\Search\Widgets\ReportWidget;
+use Qobo\Search\Widgets\SavedSearchWidget;
+use Qobo\Search\Widgets\WidgetFactory;
 
 class WidgetFactoryTest extends TestCase
 {
@@ -85,7 +85,7 @@ class WidgetFactoryTest extends TestCase
     }
 }
 
-namespace Search\Widgets;
+namespace Qobo\Search\Widgets;
 
 class FakeInvalidWidget
 {

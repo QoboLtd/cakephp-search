@@ -9,18 +9,18 @@
  * @copyright     Copyright (c) Qobo Ltd. (https://www.qobo.biz)
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
-namespace Search\Test\TestCase\Service;
+namespace Qobo\Search\Test\TestCase\Service;
 
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
-use Search\Criteria\Aggregate;
-use Search\Criteria\Conjunction;
-use Search\Criteria\Criteria;
-use Search\Criteria\Direction;
-use Search\Criteria\Field;
-use Search\Criteria\Filter;
-use Search\Criteria\OrderBy;
-use Search\Service\Search;
+use Qobo\Search\Criteria\Aggregate;
+use Qobo\Search\Criteria\Conjunction;
+use Qobo\Search\Criteria\Criteria;
+use Qobo\Search\Criteria\Direction;
+use Qobo\Search\Criteria\Field;
+use Qobo\Search\Criteria\Filter;
+use Qobo\Search\Criteria\OrderBy;
+use Qobo\Search\Service\Search;
 use Webmozart\Assert\Assert;
 
 class SearchTest extends TestCase

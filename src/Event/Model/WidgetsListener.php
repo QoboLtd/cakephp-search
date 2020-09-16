@@ -9,13 +9,13 @@
  * @copyright     Copyright (c) Qobo Ltd. (https://www.qobo.biz)
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
-namespace Search\Event\Model;
+namespace Qobo\Search\Event\Model;
 
 use Cake\Event\Event;
 use Cake\Event\EventListenerInterface;
 use Cake\Event\EventManager;
 use Cake\ORM\TableRegistry;
-use Search\Event\EventName;
+use Qobo\Search\Event\EventName;
 
 class WidgetsListener implements EventListenerInterface
 {

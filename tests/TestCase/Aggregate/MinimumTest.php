@@ -9,12 +9,12 @@
  * @copyright     Copyright (c) Qobo Ltd. (https://www.qobo.biz)
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
-namespace Search\Test\TestCase\Aggregate;
+namespace Qobo\Search\Test\TestCase\Aggregate;
 
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
-use Search\Aggregate\Minimum;
-use Search\Criteria\Field;
+use Qobo\Search\Aggregate\Minimum;
+use Qobo\Search\Criteria\Field;
 
 class MinimumTest extends TestCase
 {
