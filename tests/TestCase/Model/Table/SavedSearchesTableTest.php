@@ -13,20 +13,16 @@ use Search\Model\Entity\SavedSearch;
 class SavedSearchesTableTest extends TestCase
 {
     /**
-     * Test subject
-     *
-     * @var \Search\Model\Table\SavedSearchesTable
-     */
-    public $SavedSearches;
-
-    /**
      * Fixtures
      *
      * @var array
      */
     public $fixtures = [
-        'plugin.search.saved_searches'
+        'plugin.CakeDC/Users.Users',
+        'plugin.Search.SavedSearches',
     ];
+
+    private $SavedSearches;
 
     /**
      * setUp method
@@ -37,8 +33,7 @@ class SavedSearchesTableTest extends TestCase
     {
         parent::setUp();
 
-        $config = TableRegistry::exists('SavedSearches') ? [] : ['className' => 'Search\Model\Table\SavedSearchesTable'];
-        $this->SavedSearches = TableRegistry::get('SavedSearches', $config);
+        $this->SavedSearches = TableRegistry::getTableLocator()->get('Search.SavedSearches');
     }
 
     /**
@@ -53,7 +48,7 @@ class SavedSearchesTableTest extends TestCase
         parent::tearDown();
     }
 
-    public function testValidationDefault()
+    public function testValidationDefault(): void
     {
         $validator = new Validator();
         $result = $this->SavedSearches->validationDefault($validator);
@@ -61,7 +56,7 @@ class SavedSearchesTableTest extends TestCase
         $this->assertInstanceOf(Validator::class, $result);
     }
 
-    public function testBuildRules()
+    public function testBuildRules(): void
     {
         $rules = new RulesChecker();
         $result = $this->SavedSearches->buildRules($rules);
@@ -69,51 +64,86 @@ class SavedSearchesTableTest extends TestCase
         $this->assertInstanceOf(RulesChecker::class, $result);
     }
 
-    public function testIsEditable()
+    public function testSave(): void
     {
-        $entity = $this->SavedSearches->get('00000000-0000-0000-0000-000000000001');
-        $result = $this->SavedSearches->isEditable($entity);
+        $data = [
+            'name' => 'withName',
+            'model' => 'Foobar',
+            'user_id' => '00000000-0000-0000-0000-000000000002',
+        ];
 
-        $this->assertTrue($result);
+        $entity = $this->SavedSearches->newEntity($data);
+        $saved = $this->SavedSearches->save($entity);
+
+        $this->assertInstanceOf(SavedSearch::class, $saved);
     }
 
-    public function dataProviderGetBasicSearchCriteria()
+    public function testUpdate(): void
+    {
+        $data = [
+            'name' => 'withName',
+            'model' => 'Foobar',
+            'user_id' => '00000000-0000-0000-0000-000000000002',
+        ];
+
+        $entity = $this->SavedSearches->newEntity($data);
+        $this->SavedSearches->save($entity);
+
+        $this->SavedSearches->patchEntity($entity, ['user_id' => '00000000-0000-0000-0000-000000000001']);
+        $this->SavedSearches->save($entity);
+
+        $savedSearch = $this->SavedSearches->get($entity->get('id'));
+        $this->assertSame('00000000-0000-0000-0000-000000000002', $savedSearch->get('user_id'));
+    }
+
+    public function testSaveWithInvalidData(): void
+    {
+        $entity = $this->SavedSearches->newEntity([]);
+
+        $saved = (bool)$this->SavedSearches->save($entity);
+        $this->assertFalse($saved);
+
+        $expected = [
+            'name' => [
+                '_required' => 'This field is required',
+            ],
+            'model' => [
+                '_required' => 'This field is required',
+            ],
+            'user_id' => [
+                '_required' => 'This field is required',
+            ],
+        ];
+
+        $this->assertEquals($expected, $entity->getErrors());
+    }
+
+    public function testIsEditable(): void
+    {
+        $data = [
+            'name' => 'withName',
+            'model' => 'Foobar',
+            'user_id' => '00000000-0000-0000-0000-000000000001',
+        ];
+
+        $entity = $this->SavedSearches->newEntity($data);
+
+        $this->assertTrue($entity->get('is_editable'));
+
+        // reset name
+        $data['name'] = null;
+        $entity = $this->SavedSearches->newEntity($data);
+
+        $this->assertFalse($entity->get('is_editable'));
+    }
+
+    /**
+     * @return mixed[]
+     */
+    public function dataProviderGetBasicSearchCriteria(): array
     {
         return [
             [['query' => 'SELECT id,created FROM dashboards LIMIT 2', 'table' => 'Dashboards']],
         ];
-    }
-
-    public function testGetSavedSearchesFindAll()
-    {
-        $resultset = $this->SavedSearches->getSavedSearches();
-        $this->assertInternalType('array', $resultset);
-        $this->assertInstanceOf(SavedSearch::class, current($resultset));
-    }
-
-    public function testGetSavedSearchesByUser()
-    {
-        $records = $this->fixtureManager->loaded()['plugin.search.saved_searches']->records;
-        $userId = current($records)['user_id'];
-        $resultset = $this->SavedSearches->getSavedSearches([$userId]);
-        $this->assertInternalType('array', $resultset);
-        $this->assertInstanceOf(SavedSearch::class, current($resultset));
-
-        foreach ($resultset as $entity) {
-            $this->assertEquals($userId, $entity->user_id);
-        }
-    }
-
-    public function testGetSavedSearchesByModel()
-    {
-        $records = $this->fixtureManager->loaded()['plugin.search.saved_searches']->records;
-        $model = current($records)['model'];
-        $resultset = $this->SavedSearches->getSavedSearches([], [$model]);
-        $this->assertInternalType('array', $resultset);
-        $this->assertInstanceOf(SavedSearch::class, current($resultset));
-
-        foreach ($resultset as $entity) {
-            $this->assertEquals($model, $entity->model);
-        }
     }
 }

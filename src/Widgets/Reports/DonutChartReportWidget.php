@@ -11,49 +11,62 @@
  */
 namespace Search\Widgets\Reports;
 
-use Cake\Utility\Inflector;
-use Search\Widgets\Reports\BaseReportGraphs;
+use Cake\Utility\Hash;
 
 class DonutChartReportWidget extends BaseReportGraphs
 {
-    public $type = 'donutChart';
+    public $type = 'doughnut';
 
-    public $requiredFields = ['query', 'label', 'value', 'columns'];
+    public $requiredFields = ['query', 'columns', 'label'];
 
     /**
      * getChartData method
      *
-     * Specifies chart data/config of the DonutChart.
+     * Assembles graphs data from the reports config and data.
      *
-     * @param array $data containing configs.
-     * @return array $chartData for graph rendering.
+     * @param array $data containing report configs and data.
+     * @return array $chartData with defined chart information.
      */
-    public function getChartData(array $data = [])
+    public function getChartData(array $data = []): array
     {
         $report = $this->config;
 
-        $chartData = [
-            'chart' => $this->type,
-            'options' => [
-                'element' => $this->getContainerId(),
-                'resize' => true,
+        $columns = explode(',', $report['info']['columns']);
+
+        // Check which index colums is the label and the data
+        $label_index = array_key_exists(0, $data) && is_numeric($data[0][$columns[0]]) ? $columns[1] : $columns[0];
+        $data_index = array_key_exists(0, $data) && is_numeric($data[0][$columns[0]]) ? $columns[0] : $columns[1];
+
+        $label = Hash::extract($data, '{n}.' . $label_index);
+        $data = (array)Hash::extract($data, '{n}.' . $data_index);
+
+        $colors = $this->getChartColors(count($data), $this->getContainerId(), false);
+
+        $chartjs = [
+            "type" => $this->type,
+            "data" =>
+            [
+                "labels" => $label,
+                "datasets" => [
+                    [
+                        "backgroundColor" => $colors,
+                        "data" => $data,
+                    ],
+                ],
             ],
         ];
 
-        $options = [
-            'data' => []
+        $chartData = [
+            'chart' => $this->type,
+            'id' => $this->getContainerId(),
+            'options' => [
+                'resize' => true,
+                'hideHover' => true,
+                'dataChart' => $chartjs,
+            ],
         ];
 
-        foreach ($data as $item) {
-            array_push($options['data'], [
-                'label' => $item[$report['info']['label']],
-                'value' => $item[$report['info']['value']],
-            ]);
-        }
-
-        $chartData['options'] = array_merge($chartData['options'], $options);
-
-        if (!empty($options['data'])) {
+        if (!empty($data)) {
             $this->setData($chartData);
         }
 
@@ -61,33 +74,26 @@ class DonutChartReportWidget extends BaseReportGraphs
     }
 
     /**
-     * getScripts method
+     * prepareChartOptions method
      *
-     * Assembles JS/CSS libs for the graph rendering.
+     * Specifies JS/CSS libs for the content loading
      *
-     * @param array $data containing widgetHandler info.
-     * @return array $content with the scripts.
+     * @param mixed[] $data passed from the widgetHandler.
+     * @return mixed[] $content with the libs.
      */
-    public function getScripts(array $data = [])
+    public function getScripts(array $data = []): array
     {
         return [
             'post' => [
-                'css' => [
-                    'type' => 'css',
-                    'content' => [
-                        'AdminLTE./plugins/morris/morris',
-                    ],
-                    'block' => 'css',
-                ],
                 'javascript' => [
                     'type' => 'script',
                     'content' => [
                         'https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js',
-                        'AdminLTE./plugins/morris/morris.min',
+                        'Search./plugins/Chart.min.js',
                     ],
                     'block' => 'scriptBottom',
                 ],
-            ]
+            ],
         ];
     }
 }

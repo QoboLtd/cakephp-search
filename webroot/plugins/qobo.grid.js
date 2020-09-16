@@ -89,11 +89,11 @@ new Vue({
             let types = [];
             let models = [];
             $.ajax({
-                type: 'post',
+                type: 'get',
                 dataType: 'json',
                 url: '/search/widgets/index',
                 headers: {
-                    'Authorization': 'Bearer ' + this.token
+                    'Authorization': 'Bearer ' + this.token,
                 }
             }).then(function (response) {
                 that.elements = response;

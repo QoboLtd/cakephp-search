@@ -11,68 +11,92 @@
  */
 namespace Search\Utility;
 
+use Cake\Core\App;
 use Cake\Core\Configure;
-use Cake\Event\Event;
-use Cake\Event\EventManager;
+use Cake\Datasource\ResultSetInterface;
 use Cake\Filesystem\File;
+use Cake\Log\LogTrait;
+use Cake\ORM\Association;
+use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
-use Search\Event\EventName;
-use Search\Utility;
-use Search\Utility\Search;
+use Cake\Utility\Inflector;
+use Psr\Log\LogLevel;
+use Qobo\Utils\ModuleConfig\ConfigType;
+use Qobo\Utils\ModuleConfig\ModuleConfig;
+use Search\Aggregate\AbstractAggregate;
+use Search\Model\Entity\SavedSearch;
+use Webmozart\Assert\Assert;
 
-class Export
+final class Export
 {
+    use LogTrait;
+
+    /**
+     * @var string
+     */
     protected $id;
 
     /**
-     * Filename.
+     * Search query
      *
-     * @var string
+     * @var \Cake\Datasource\QueryInterface
      */
-    protected $filename;
+    protected $query;
 
     /**
-     * Search query.
-     *
-     * @var \Cake\ORM\Query|null
+     * @var array $data
      */
-    protected $query = null;
-
     protected $data = [];
 
     /**
-     * Search entity.
+     * Search entity
      *
      * @var \Search\Model\Entity\SavedSearch
      */
     protected $search;
 
     /**
-     * Current logged in user.
+     * Current user
      *
      * @var array
      */
     protected $user = [];
 
-    protected $path = null;
+    /**
+     * @var string
+     */
+    protected $path;
+
+    /**
+     * @var string
+     */
+    protected $url;
 
     /**
      * Constructor.
      *
      * @param string $id Saved search id
      * @param string $filename Search name
-     * @param array $user Current user
-     * @param string|null $extension Extension name
+     * @param mixed[] $user Current user
+     * @param string $extension Extension name
      */
-    public function __construct($id, $filename, $user, $extension = 'csv')
+    public function __construct(string $id, string $filename, array $user, string $extension = 'csv')
     {
-        $this->setSearch($id);
-        $this->setFilename($filename, $extension);
-        $this->setData();
-        $this->setUser($user);
-        $this->setQuery();
-        $this->setUrl();
-        $this->setPath();
+        $this->user = $user;
+
+        $savedSearch = TableRegistry::getTableLocator()->get('Search.SavedSearches')->get($id);
+        Assert::isInstanceOf($savedSearch, SavedSearch::class);
+
+        $options = $this->getOptionsFromSavedSearch($savedSearch);
+
+        $table = TableRegistry::getTableLocator()->get($savedSearch->get('model'));
+        $this->query = $table->find('search', $options);
+        $this->data = $options;
+        $this->search = $savedSearch;
+
+        $exportUrl = Configure::read('Search.export.url');
+        $this->url = sprintf('/%s/%s.%s', trim($exportUrl, '/'), $filename, $extension);
+        $this->path = WWW_ROOT . trim($exportUrl, DS) . DS . $filename . '.' . $extension;
     }
 
     /**
@@ -80,7 +104,7 @@ class Export
      *
      * @return int
      */
-    public function count()
+    public function count(): int
     {
         return $this->query->count();
     }
@@ -92,21 +116,14 @@ class Export
      * @param int $limit Pagination limit
      * @return void
      */
-    public function execute($page, $limit)
+    public function execute(int $page, int $limit): void
     {
-        $page = (int)$page;
-        $limit = (int)$limit;
+        $page = $page <= 1 ? 1 : $page;
+        $headers = 1 === $page ? $this->getHeaders() : [];
+        $mode = 1 === $page ? 'w' : 'a';
         $rows = $this->getRows($page, $limit);
 
-        $headers = [];
-        $mode = 'a';
-        if (1 === (int)$page) {
-            $headers = $this->getHeaders();
-            $mode = 'w';
-        }
-
-        // Prepend columns to result
-        if (!empty($headers)) {
+        if ([] !== $headers) {
             array_unshift($rows, $headers);
         }
 
@@ -114,96 +131,50 @@ class Export
     }
 
     /**
-     * Get export path.
+     * Get export URL.
      *
      * @return string
      */
-    public function getUrl()
+    public function getUrl(): string
     {
         return $this->url;
     }
 
     /**
-     * Set search entity.
+     * Get export headers.
      *
-     * @param string $id Saved search id
-     * @return void
+     * @return mixed[]
      */
-    protected function setSearch($id)
+    private function getHeaders(): array
     {
-        $table = TableRegistry::get('Search.SavedSearches');
+        if (empty($this->data['fields'])) {
+            return [];
+        }
 
-        $this->search = $table->get($id);
-    }
+        $table = TableRegistry::getTableLocator()->get($this->search->get('model'));
 
-    /**
-     * Set filename.
-     *
-     * @param string $filename Filename
-     * @param string $extension File extension
-     * @return void
-     */
-    protected function setFilename($filename, $extension = 'csv')
-    {
-        $this->filename = $filename . '.' . $extension;
-    }
+        $associationLabels = self::getAssociationLabels($table);
+        $fieldLabels = self::getFieldLabels($table, true);
 
-    /**
-     * Set search data.
-     *
-     * @return void
-     */
-    protected function setData()
-    {
-        $data = json_decode($this->search->content, true);
-        $this->data = $data['latest'];
-    }
+        $result = [];
+        foreach ($this->data['fields'] as $field) {
+            $extraInfo = [];
+            if (AbstractAggregate::isAggregate($field)) {
+                $extraInfo[] = AbstractAggregate::extractAggregate($field);
+                $field = AbstractAggregate::extractFieldName($field);
+            }
 
-    /**
-     * Set current user.
-     *
-     * @param array $user Current user
-     * @return void
-     */
-    protected function setUser($user)
-    {
-        $this->user = $user;
-    }
+            $label = array_key_exists($field, $fieldLabels) ? $fieldLabels[$field] : $field;
 
-    /**
-     * Set search query.
-     *
-     * @return void
-     */
-    protected function setQuery()
-    {
-        $table = TableRegistry::get($this->search->get('model'));
-        $search = new Search($table, $this->user);
-        $this->query = $search->execute($this->data);
-    }
+            list($fieldModel, ) = pluginSplit($field);
+            if (array_key_exists($fieldModel, $associationLabels)) {
+                $extraInfo[] = $associationLabels[$fieldModel];
+            }
 
-    /**
-     * Set export url.
-     *
-     * @return void
-     */
-    protected function setUrl()
-    {
-        $url = trim(Configure::read('Search.export.url'), '/');
+            $result[] = [] !== $extraInfo ? $label . ' (' . implode(' - ', $extraInfo) . ')' : $label;
+        }
 
-        $this->url = '/' . $url . '/' . $this->filename;
-    }
-
-    /**
-     * Set export path.
-     *
-     * @return void
-     */
-    protected function setPath()
-    {
-        $path = trim(Configure::read('Search.export.url'), DS);
-
-        $this->path = WWW_ROOT . $path . DS . $this->filename;
+        return $result;
     }
 
     /**
@@ -211,46 +182,54 @@ class Export
      *
      * @param int $page Pagination page
      * @param int $limit Pagination limit
-     * @return array
+     * @return mixed[]
      */
-    protected function getRows($page, $limit)
+    private function getRows(int $page, int $limit): array
     {
-        $displayColumns = $this->getDisplayColumns();
-        if (empty($displayColumns)) {
+        if (empty($this->data['fields'])) {
             return [];
         }
 
         $query = $this->query->page($page, $limit);
-        if ($query->isEmpty()) {
+        if (0 === $query->count()) {
             return [];
         }
 
-        $entities = $query->all();
-        $table = TableRegistry::get($this->search->model);
+        return self::toCsv(
+            $query->all(),
+            array_map('strval', $this->data['fields']),
+            TableRegistry::getTableLocator()->get($this->search->get('model'))
+        );
+    }
 
-        $event = new Event((string)EventName::MODEL_SEARCH_AFTER_FIND(), $this, [
-            'entities' => $entities,
-            'table' => $table
-        ]);
-        EventManager::instance()->dispatch($event);
-        if ($event->result) {
-            $entities = $event->result;
-        }
-
-        $entities = $entities ? Utility::instance()->toCsv($entities, $displayColumns, $table) : [];
-
-        if (empty($entities)) {
-            return [];
-        }
-
+    /**
+     * Method that formats entities for CSV export.
+     *
+     * @param \Cake\Datasource\ResultSetInterface $resultSet ResultSet
+     * @param string[] $fields Display fields
+     * @param \Cake\ORM\Table $table Table instance
+     * @return mixed[]
+     */
+    private static function toCsv(ResultSetInterface $resultSet, array $fields, Table $table): array
+    {
         $result = [];
-        foreach ($entities as $k => $entity) {
-            $result[$k] = [];
-            foreach ($displayColumns as $column) {
-                // @todo this is temporary fix to stripping out html tags from results columns
-                $value = trim(strip_tags($entity[$column]));
-                // end of temporary fix
-                $result[$k][] = $value;
+        foreach ($resultSet as $key => $entity) {
+            foreach ($fields as $field) {
+                if (AbstractAggregate::isAggregate($field)) {
+                    $result[$key][] = $entity->get($field);
+                    continue;
+                }
+
+                list($tableName, $fieldName) = explode('.', $field);
+
+                $targetEntity = $entity;
+                $targetTable = $table;
+                if ($table->getAlias() !== $tableName) {
+                    $targetTable = $table->getAssociation($tableName)->getTarget();
+                    $targetEntity = $entity->get('_matchingData')[$tableName];
+                }
+
+                $result[$key][] = self::formatValue($targetTable, $fieldName, $targetEntity->get($fieldName));
             }
         }
 
@@ -258,83 +237,365 @@ class Export
     }
 
     /**
-     * Get export headers.
-     *
-     * @return array
+     * Extracts search options from saved search.
+
+     * @param \Search\Model\Entity\SavedSearch $savedSearch SavedSearch
+     * @return mixed[]
      */
-    protected function getHeaders()
+    private function getOptionsFromSavedSearch(SavedSearch $savedSearch): array
     {
-        $displayColumns = $this->getDisplayColumns();
+        $options = [];
 
-        if (empty($displayColumns)) {
-            return [];
+        if ($savedSearch->get('criteria')) {
+            foreach ($savedSearch->get('criteria') as $field => $items) {
+                foreach ($items as $item) {
+                    $value = $item['value'];
+                    if (is_string($value)) {
+                        $value = $this->getMagicValue($value);
+                    }
+
+                    if (is_array($value)) {
+                        $value = array_map(function ($item) {
+                            return $this->getMagicValue($item);
+                        }, $value);
+                    }
+
+                    $options['data'][] = ['field' => $field, 'operator' => $item['operator'], 'value' => $value];
+                }
+            }
+        }
+        if ($savedSearch->get('fields')) {
+            $options['fields'] = $savedSearch->get('fields');
+        }
+        if ($savedSearch->get('conjunction')) {
+            $options['conjunction'] = $savedSearch->get('conjunction');
+        }
+        if ($savedSearch->get('order_by_field') && $savedSearch->get('order_by_direction')) {
+            $options['order'] = [$savedSearch->get('order_by_field') => $savedSearch->get('order_by_direction') ];
+        }
+        if ($savedSearch->get('group_by')) {
+            $options['group'] = $savedSearch->get('group_by');
         }
 
-        $table = TableRegistry::get($this->search->model);
-
-        $associationLabels = Utility::instance()->getAssociationLabels($table);
-        $searchableFields = Utility::instance()->getSearchableFields($table, $this->user);
-
-        $result = [];
-        foreach ($displayColumns as $column) {
-            $label = $column;
-            if (array_key_exists($label, $searchableFields)) {
-                $label = $searchableFields[$label]['label'];
-            }
-
-            list($fieldModel, ) = pluginSplit($column);
-            if (array_key_exists($fieldModel, $associationLabels)) {
-                $label .= ' (' . $associationLabels[$fieldModel] . ')';
-            }
-
-            $result[] = $label;
-        }
-
-        return $result;
+        return $options;
     }
 
     /**
-     * Display columns getter.
+     * Formats value before extracing to CSV.
      *
-     * @return array
+     * @param \Cake\ORM\Table $table ORM table
+     * @param string $field Field name
+     * @param mixed $value Field value
+     * @return mixed
      */
-    protected function getDisplayColumns()
+    private static function formatValue(Table $table, string $field, $value)
     {
-        if (property_exists($this, 'displayColumns')) {
-            return $this->displayColumns;
+        $association = self::getAssociationFromField($table, $field);
+        if (null !== $association) {
+            $value = self::getDisplayValueFromAssociation($association, $field, $value);
         }
 
-        $this->displayColumns = !empty($this->data['display_columns']) ? $this->data['display_columns'] : [];
-
-        $groupByField = !empty($this->data['group_by']) ? $this->data['group_by'] : '';
-
-        if ($groupByField) {
-            list($prefix, ) = pluginSplit($groupByField);
-            $countField = $prefix . '.' . Search::GROUP_BY_FIELD;
-
-            $this->displayColumns = [$groupByField, $countField];
+        $listName = self::getListNameFromField($table, $field);
+        if ('' !== $listName) {
+            $value = self::getLabelFromList($table, $listName, $value);
         }
 
-        return $this->displayColumns;
+        if ($value instanceof \Cake\I18n\Date) {
+            $value = $value->format('Y-m-d');
+        }
+
+        if ($value instanceof \Cake\I18n\Time) {
+            $value = $value->format('Y-m-d H:i:s');
+        }
+
+        $value = trim(strip_tags(html_entity_decode($value, ENT_QUOTES)), " \t\n\r\0\x0B\xC2\xA0");
+
+        return $value;
+    }
+
+    /**
+     * Retrieves corresponding label from provided list.
+     *
+     * @param \Cake\ORM\Table $table ORM table
+     * @param string $listName List name
+     * @param mixed $value Field value
+     * @return mixed
+     */
+    private static function getLabelFromList(Table $table, string $listName, $value)
+    {
+        list(, $module) = pluginSplit(App::shortName(get_class($table), 'Model/Table', 'Table'));
+        try {
+            $options = (new ModuleConfig(ConfigType::LISTS(), $module, $listName))->parseToArray();
+        } catch (\InvalidArgumentException $e) {
+            return $value;
+        }
+
+        if (! array_key_exists('items', $options)) {
+            return $value;
+        }
+
+        return array_key_exists($value, $options['items']) ? $options['items'][$value]['label'] : $value;
+    }
+
+    /**
+     * Extracts list name from field.
+     *
+     * @param \Cake\ORM\Table $table ORM table
+     * @param string $field Field name
+     * @return string
+     */
+    private static function getListNameFromField(Table $table, string $field): string
+    {
+        list(, $module) = pluginSplit(App::shortName(get_class($table), 'Model/Table', 'Table'));
+        $config = (new ModuleConfig(ConfigType::MIGRATION(), $module))->parseToArray();
+        foreach ($config as $fieldName => $params) {
+            if (! is_array($params) || ! array_key_exists('type', $params)) {
+                continue;
+            }
+
+            if ($fieldName !== $field) {
+                continue;
+            }
+
+            if (! preg_match('/(.*?)\((.*?)\)/', $params['type'], $matches)) {
+                continue;
+            }
+
+            if (! in_array($matches[1], ['list', 'sublist', 'country', 'currency'])) {
+                continue;
+            }
+
+            return $matches[2];
+        }
+
+        return '';
+    }
+
+    /**
+     * Extracts association instance from field.
+     *
+     * @param \Cake\ORM\Table $table ORM table
+     * @param string $field Field name
+     * @return \Cake\ORM\Association|null
+     */
+    private static function getAssociationFromField(Table $table, string $field): ?Association
+    {
+        foreach ($table->associations() as $association) {
+            if ($association->getForeignKey() === $field) {
+                return $association;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Retrieves corresponding display value from related record.
+     *
+     * This method will recurse until it retrieves a non-primary-key value.
+     *
+     * @param \Cake\ORM\Association $association Association
+     * @param string $field Field name
+     * @param mixed $value Field value
+     * @return mixed
+     */
+    private static function getDisplayValueFromAssociation(Association $association, string $field, $value)
+    {
+        $targetTable = $association->getTarget();
+        $displayField = $targetTable->getDisplayField();
+        $primaryKey = $targetTable->getPrimaryKey();
+        Assert::string($primaryKey);
+
+        if (!$targetTable->getSchema()->hasColumn($displayField)) {
+            $entity = $targetTable->find()->where([$primaryKey => $value])->first();
+        } else {
+            $entity = $targetTable->find()->select($displayField)->where([$primaryKey => $value])->first();
+        }
+
+        if (null === $entity) {
+            return $value;
+        }
+
+        Assert::isInstanceOf($entity, \Cake\Datasource\EntityInterface::class);
+        $value = $entity->get($displayField);
+
+        $association = self::getAssociationFromField($targetTable, $displayField);
+        if (null !== $association) {
+            $value = self::getDisplayValueFromAssociation($association, $displayField, $value);
+        }
+
+        return $value;
     }
 
     /**
      * Create export file.
      *
-     * @param array $data CSV data
+     * @param mixed[] $data CSV data
      * @param string $mode File mode
      * @return void
      */
-    protected function create(array $data, $mode = 'a')
+    private function create(array $data, string $mode = 'a'): void
     {
         // create file path
         $file = new File($this->path, true);
 
-        // write to file
-        $handler = fopen($file->path, $mode);
-        foreach ($data as $row) {
-            fputcsv($handler, $row);
+        // skip if file is not writable
+        if (! $file->writable()) {
+            $this->log(sprintf('Export file is not writable: %s', $file->pwd()), LogLevel::ERROR);
+
+            return;
         }
+
+        /**
+         * @var resource
+         */
+        $handler = fopen($file->pwd(), $mode);
+        if (! is_resource($handler)) {
+            $this->log(sprintf('Export interrupted: failed to bind resource to a stream'), LogLevel::ERROR);
+        }
+
+        foreach ($data as $row) {
+            if (false === fputcsv($handler, $row)) {
+                $this->log(sprintf('Export interrupted: failed to write data into the file'), LogLevel::ERROR);
+
+                return;
+            }
+        }
+
         fclose($handler);
+    }
+
+    /**
+     * Associations labels getter.
+     *
+     * @param \Cake\ORM\Table $table Table instance
+     * @return mixed[]
+     */
+    private static function getAssociationLabels(Table $table): array
+    {
+        $result = [];
+        foreach ($table->associations() as $association) {
+            if (Association::MANY_TO_ONE === $association->type()) {
+                $result[$association->getName()] = Inflector::humanize(current((array)$association->getForeignKey()));
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Method that retrieves target table field labels.
+     *
+     * @param \Cake\ORM\Table $table Table instance
+     * @param bool $withAssociated flag for including associations fields
+     * @return mixed[]
+     */
+    private static function getFieldLabels(Table $table, bool $withAssociated = true): array
+    {
+        list(, $module) = pluginSplit(App::shortName(get_class($table), 'Model/Table', 'Table'));
+        $config = (new ModuleConfig(ConfigType::FIELDS(), $module))->parseToArray();
+
+        $filtered = array_filter($config, function ($item) {
+            return array_key_exists('label', $item);
+        });
+
+        $result = (array)array_combine(
+            array_map(function ($item) use ($table) {
+                return $table->aliasField($item);
+            }, array_keys($filtered)),
+            array_column($filtered, 'label')
+        );
+
+        foreach ($table->getSchema()->columns() as $column) {
+            if (! array_key_exists($table->aliasField($column), $result)) {
+                $result[$table->aliasField($column)] = Inflector::humanize(Inflector::underscore($column));
+            }
+        }
+
+        if ($withAssociated) {
+            $result = array_merge($result, self::includeAssociated($table));
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get associated tables searchable fields.
+     *
+     * @param \Cake\ORM\Table $table Table instance
+     * @return mixed[]
+     */
+    private static function includeAssociated(Table $table): array
+    {
+        $result = [];
+        foreach ($table->associations() as $association) {
+            if (Association::MANY_TO_ONE !== $association->type()) {
+                continue;
+            }
+            if ($association->getTarget()->getTable() === $table->getTable()) {
+                continue;
+            }
+
+            $result = array_merge($result, self::getFieldLabels($association->getTarget(), false));
+        }
+
+        return $result;
+    }
+
+    /**
+     * Magic value getter.
+     *
+     * @param string $value Field value
+     * @return mixed
+     */
+    public function getMagicValue(string $value)
+    {
+        $method = str_replace('%%', '', $value);
+
+        if (! method_exists($this, $method)) {
+            return $value;
+        }
+
+        return $this->{$method}();
+    }
+
+    /**
+     * Current user id magic value getter.
+     *
+     * @return string
+     */
+    private function me(): string
+    {
+        return $this->user['id'];
+    }
+
+    /**
+     * Today's date magic value getter.
+     *
+     * @return string
+     */
+    private function today(): string
+    {
+        return (new \DateTimeImmutable('today'))->format('Y-m-d');
+    }
+
+    /**
+     * Yesterday's date magic value getter.
+     *
+     * @return string
+     */
+    private function yesterday(): string
+    {
+        return (new \DateTimeImmutable('yesterday'))->format('Y-m-d');
+    }
+
+    /**
+     * Tomorrow's date magic value getter.
+     *
+     * @return string
+     */
+    private function tomorrow(): string
+    {
+        return (new \DateTimeImmutable('tomorrow'))->format('Y-m-d');
     }
 }

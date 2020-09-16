@@ -1,37 +1,34 @@
 <?php
-// @codingStandardsIgnoreFile
-
 use Cake\Core\Configure;
 use Cake\Filesystem\Folder;
 
 $pluginName = 'Search';
 if (empty($pluginName)) {
-    throw new \Exception("Plugin name is not configured");
+    throw new \RuntimeException("Plugin name is not configured");
 }
 
-$findRoot = function () {
-    $root = dirname(__DIR__);
-    if (is_dir($root . '/vendor/cakephp/cakephp')) {
-        return $root;
-    }
-
-    $root = dirname(dirname(__DIR__));
-    if (is_dir($root . '/vendor/cakephp/cakephp')) {
-        return $root;
-    }
-
-    $root = dirname(dirname(dirname(__DIR__)));
-    if (is_dir($root . '/vendor/cakephp/cakephp')) {
-        return $root;
-    }
-
-    throw new \Exception("Failed to find CakePHP");
+/*
+ * Test suite bootstrap
+ *
+ * This function is used to find the location of CakePHP whether CakePHP
+ * has been installed as a dependency of the plugin, or the plugin is itself
+ * installed as a dependency of an application.
+ */
+$findRoot = function ($root) {
+    do {
+        $lastRoot = $root;
+        $root = dirname($root);
+        if (is_dir($root . '/vendor/cakephp/cakephp')) {
+            return $root;
+        }
+    } while ($root !== $lastRoot);
+    throw new \RuntimeException("Failed to find CakePHP");
 };
 
 if (!defined('DS')) {
     define('DS', DIRECTORY_SEPARATOR);
 }
-define('ROOT', $findRoot());
+define('ROOT', $findRoot(__FILE__));
 define('APP_DIR', 'App');
 define('WEBROOT_DIR', 'webroot');
 define('APP', ROOT . '/tests/App/');
@@ -52,9 +49,9 @@ Configure::write('App', [
     'namespace' => $pluginName . '\Test\App',
     'paths' => [
         'templates' => [
-            APP . 'Template' . DS
-        ]
-    ]
+            APP . 'Template' . DS,
+        ],
+    ],
 ]);
 Configure::write('debug', true);
 
@@ -65,27 +62,27 @@ $TMP->create(TMP . 'cache/views', 0777);
 
 $cache = [
     'default' => [
-        'engine' => 'File'
+        'engine' => 'File',
     ],
     '_cake_core_' => [
         'className' => 'File',
         'prefix' => strtolower($pluginName) . '_myapp_cake_core_',
         'path' => CACHE . 'persistent/',
         'serialize' => true,
-        'duration' => '+10 seconds'
+        'duration' => '+10 seconds',
     ],
     '_cake_model_' => [
         'className' => 'File',
         'prefix' => strtolower($pluginName) . '_my_app_cake_model_',
         'path' => CACHE . 'models/',
         'serialize' => 'File',
-        'duration' => '+10 seconds'
-    ]
+        'duration' => '+10 seconds',
+    ],
 ];
 
-Cake\Cache\Cache::config($cache);
+Cake\Cache\Cache::setConfig($cache);
 Cake\Core\Configure::write('Session', [
-    'defaults' => 'php'
+    'defaults' => 'php',
 ]);
 
 // Ensure default test connection is defined
@@ -93,29 +90,32 @@ if (!getenv('db_dsn')) {
     putenv('db_dsn=sqlite:///:memory:');
 }
 
-Cake\Datasource\ConnectionManager::config('default', [
+Cake\Datasource\ConnectionManager::setConfig('default', [
     'url' => getenv('db_dsn'),
     'quoteIdentifiers' => true,
-    'timezone' => 'UTC'
+    'timezone' => 'UTC',
 ]);
 
-Cake\Datasource\ConnectionManager::config('test', [
+Cake\Datasource\ConnectionManager::setConfig('test', [
     'url' => getenv('db_dsn'),
     'quoteIdentifiers' => true,
-    'timezone' => 'UTC'
+    'timezone' => 'UTC',
 ]);
 
 // Alias AppController to the test App
 class_alias($pluginName . '\Test\App\Controller\AppController', 'App\Controller\AppController');
 // If plugin has routes.php/bootstrap.php then load them, otherwise don't.
-$loadPluginRoutes = file_exists(dirname(__FILE__) . DS . 'config' . DS . 'routes.php');
-$loadPluginBootstrap = file_exists(dirname(__FILE__) . DS . 'config' . DS . 'bootstrap.php');
-Cake\Core\Plugin::load('Qobo/Utils', ['bootstrap' => true]);
-Cake\Core\Plugin::load('RolesCapabilities', ['bootstrap' => true]);
+$loadPluginRoutes = file_exists(ROOT . DS . 'config' . DS . 'routes.php');
+$loadPluginBootstrap = file_exists(ROOT . DS . 'config' . DS . 'bootstrap.php');
 Cake\Core\Plugin::load($pluginName, ['path' => ROOT . DS, 'autoload' => true, 'routes' => $loadPluginRoutes, 'bootstrap' => $loadPluginBootstrap]);
 
-Cake\Routing\DispatcherFactory::add('Routing');
-Cake\Routing\DispatcherFactory::add('ControllerFactory');
+Cake\Core\Plugin::load('CakeDC/Users', ['routes' => true, 'bootstrap' => true]);
+Cake\Core\Plugin::load('Qobo/Utils', ['bootstrap' => true]);
+Cake\Core\Plugin::load('RolesCapabilities', ['bootstrap' => true]);
 
 Configure::load('Search.search');
 Configure::load('RolesCapabilities.roles_capabilities');
+
+// Enable test App Widgets
+$config = array_merge(Configure::read('Search.enabledWidgets'), ['Hello World', 'Another Test Widget']);
+Configure::write('Search.enabledWidgets', $config);

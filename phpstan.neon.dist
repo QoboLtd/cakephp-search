@@ -1,0 +1,15 @@
+parameters:
+    level: 7
+    paths:
+        - src
+        - tests
+        - webroot
+    autoload_files:
+        - tests/bootstrap.php
+    earlyTerminatingMethodCalls:
+        Cake\Console\Shell:
+            - abort
+includes:
+    - vendor/phpstan/phpstan-webmozart-assert/extension.neon
+    - vendor/thecodingmachine/phpstan-strict-rules/phpstan-strict-rules.neon
+    - vendor/timeweb/phpstan-enum/extension.neon

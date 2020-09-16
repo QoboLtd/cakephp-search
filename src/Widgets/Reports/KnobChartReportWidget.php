@@ -11,8 +11,6 @@
  */
 namespace Search\Widgets\Reports;
 
-use Search\Widgets\Reports\BaseReportGraphs;
-
 class KnobChartReportWidget extends BaseReportGraphs
 {
     public $type = 'knobChart';
@@ -27,7 +25,7 @@ class KnobChartReportWidget extends BaseReportGraphs
      * @param array $data containing report configs and data.
      * @return array $chartData with defined chart information.
      */
-    public function getChartData(array $data = [])
+    public function getChartData(array $data = []): array
     {
         $report = $this->config;
 
@@ -66,17 +64,17 @@ class KnobChartReportWidget extends BaseReportGraphs
      *
      * Specifies JS/CSS libs for the content loading
      *
-     * @param array $data passed from the widgetHandler.
-     * @return array $content with the libs.
+     * @param mixed[] $data passed from the widgetHandler.
+     * @return mixed[] $content with the libs.
      */
-    public function getScripts(array $data = [])
+    public function getScripts(array $data = []): array
     {
         return [
             'post' => [
                 'css' => [
                     'type' => 'css',
                     'content' => [
-                        'AdminLTE./plugins/morris/morris',
+                        'AdminLTE./bower_components/morris.js/morris',
                     ],
                     'block' => 'css',
                 ],
@@ -84,11 +82,11 @@ class KnobChartReportWidget extends BaseReportGraphs
                     'type' => 'script',
                     'content' => [
                         'https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js',
-                        'AdminLTE./plugins/knob/jquery.knob',
+                        'AdminLTE./bower_components/jquery-knob/dist/jquery.knob.min',
                     ],
                     'block' => 'scriptBottom',
                 ],
-            ]
+            ],
         ];
     }
 }

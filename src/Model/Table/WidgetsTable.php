@@ -11,16 +11,9 @@
  */
 namespace Search\Model\Table;
 
-use Cake\Core\App;
-use Cake\Core\Configure;
 use Cake\Event\Event;
-use Cake\Filesystem\Folder;
-use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
-use Cake\ORM\TableRegistry;
-use Cake\Utility\Inflector;
-use Cake\Utility\Text;
 use Cake\Validation\Validator;
 use Search\Event\EventName;
 use Search\Model\Entity\Widget;
@@ -40,6 +33,7 @@ use Search\Widgets\WidgetFactory;
  * @method \Search\Model\Entity\Widget patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
  * @method \Search\Model\Entity\Widget[] patchEntities($entities, array $data, array $options = [])
  * @method \Search\Model\Entity\Widget findOrCreate($search, callable $callback = null)
+ * @method \Muffin\Trash\Model\Behavior\TrashBehavior trashAll($conditions)
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
@@ -56,9 +50,9 @@ class WidgetsTable extends Table
     {
         parent::initialize($config);
 
-        $this->table('qobo_search_widgets');
-        $this->displayField('id');
-        $this->primaryKey('id');
+        $this->setTable('qobo_search_widgets');
+        $this->setDisplayField('id');
+        $this->setPrimaryKey('id');
 
         $this->addBehavior('Timestamp');
         $this->addBehavior('Muffin/Trash.Trash');
@@ -66,7 +60,7 @@ class WidgetsTable extends Table
         $this->belongsTo('Dashboards', [
             'foreignKey' => 'dashboard_id',
             'joinType' => 'INNER',
-            'className' => 'Search.Dashboards'
+            'className' => 'Search.Dashboards',
         ]);
     }
 
@@ -124,21 +118,21 @@ class WidgetsTable extends Table
     /**
      * getWidgets method.
      *
-     * @return array $result containing all widgets
+     * @return mixed[] $result containing all widgets
      */
-    public function getWidgets()
+    public function getWidgets(): array
     {
         // get widgets through Event broadcast
         $event = new Event((string)EventName::MODEL_DASHBOARDS_GET_WIDGETS(), $this);
-        $this->eventManager()->dispatch($event);
+        $this->getEventManager()->dispatch($event);
 
-        if (empty($event->result)) {
+        if (empty($event->getResult())) {
             return [];
         }
 
         // assembling all widgets in one
         $result = [];
-        foreach ((array)$event->result as $widget) {
+        foreach ((array)$event->getResult() as $widget) {
             if (empty($widget['data'])) {
                 continue;
             }
@@ -151,7 +145,7 @@ class WidgetsTable extends Table
                     'title' => $instance->getTitle(),
                     'icon' => $instance->getIcon(),
                     'color' => $instance->getColor(),
-                    'data' => $data
+                    'data' => $data,
                 ]);
             }
         }
@@ -163,18 +157,18 @@ class WidgetsTable extends Table
      * getWidgetOptions method
      *
      * @param \Search\Model\Entity\Widget $entity Widget entity
-     * @param array $options Optional extra configuration
+     * @param mixed[] $options Optional extra configuration
      *
-     * @return array $options
+     * @return mixed[] $options
      */
-    public function getWidgetOptions(Widget $entity, array $options = [])
+    public function getWidgetOptions(Widget $entity, array $options = []): array
     {
         $widget = WidgetFactory::create($entity->get('widget_type'));
 
         $defaults = [
             'title' => $widget->getTitle(),
             'icon' => $widget->getIcon(),
-            'color' => $widget->getColor()
+            'color' => $widget->getColor(),
         ];
 
         if ($entity->get('widget_options')) {
@@ -191,19 +185,19 @@ class WidgetsTable extends Table
             'h' => 3,
             'w' => 6,
             'id' => $entity->get('id'),
-            'type' => $entity->get('widget_type')
+            'type' => $entity->get('widget_type'),
         ]);
     }
 
     /**
      * Save Dashboard Widgets
      *
-     * @param uuid $dashboardId of the instance
-     * @param array $widgets of the dashboard
+     * @param string $dashboardId of the instance
+     * @param mixed[] $widgets of the dashboard
      *
      * @return bool $result of the save operation.
      */
-    public function saveDashboardWidgets($dashboardId, $widgets = [])
+    public function saveDashboardWidgets(string $dashboardId, array $widgets = []): bool
     {
         $result = false;
 
@@ -211,7 +205,7 @@ class WidgetsTable extends Table
             return $result;
         }
 
-        foreach ($widgets as $k => $item) {
+        foreach ($widgets as $item) {
             $widget = [
                 'dashboard_id' => $dashboardId,
                 'widget_id' => $item['id'],

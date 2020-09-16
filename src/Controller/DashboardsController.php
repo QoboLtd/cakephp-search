@@ -12,11 +12,9 @@
 namespace Search\Controller;
 
 use Cake\Core\Configure;
-use Cake\Event\Event;
-use Cake\Network\Exception\ForbiddenException;
+use Cake\Http\Exception\ForbiddenException;
 use Cake\ORM\TableRegistry;
-use Search\Controller\AppController;
-use Search\Model\Entity\Widget;
+use Cake\Utility\Hash;
 
 /**
  * Dashboards Controller
@@ -29,36 +27,39 @@ class DashboardsController extends AppController
     /**
      * Index method
      *
-     * @return \Cake\Network\Response|null
+     * @return \Cake\Http\Response|void|null
      */
     public function index()
     {
         $query = $this->Dashboards->getUserDashboards($this->Auth->user());
+        $entity = $query->first();
 
-        if (!$query->isEmpty()) {
-            return $this->redirect(['action' => 'view', $query->first()->id]);
+        if (null !== $entity) {
+            return $this->redirect(['action' => 'view', $entity->get('id')]);
         }
     }
 
     /**
      * View method
      *
-     * @param string|null $id Dashboard id.
-     * @return void
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     * @throws \Cake\Network\Exception\ForbiddenException
+     * @param string $id Dashboard id.
+     * @return \Cake\Http\Response|void|null
+     * @throws \Cake\Http\Exception\ForbiddenException
      */
-    public function view($id = null)
+    public function view(string $id)
     {
         $dashboard = $this->Dashboards->get($id, [
             'contain' => [
                 'Roles',
-                'Widgets'
-            ]
+                'Widgets',
+            ],
         ]);
 
         $query = $this->Dashboards->getUserDashboards($this->Auth->user());
-        $widgetsTable = TableRegistry::get('Search.Widgets');
+        /**
+         * @var \Search\Model\Table\WidgetsTable $widgetsTable
+         */
+        $widgetsTable = TableRegistry::getTableLocator()->get('Search.Widgets');
 
         $userDashboards = $query->find('list')->toArray();
         if (!array_key_exists($dashboard->id, $userDashboards)) {
@@ -67,11 +68,11 @@ class DashboardsController extends AppController
 
         $widgets = [];
 
-        foreach ($dashboard->widgets as $k => $item) {
+        foreach ($dashboard->get('widgets') as $k => $item) {
             $opts = $widgetsTable->getWidgetOptions($item);
 
-            $x = (int)$opts['x'];
-            $y = (int)$opts['y'];
+            $x = (int)Hash::get($opts, 'x', 0);
+            $y = (int)Hash::get($opts, 'y', 0);
 
             if (isset($widgets[$y][$x])) {
                 $widgets[$y][] = $item;
@@ -88,11 +89,11 @@ class DashboardsController extends AppController
             }
 
             usort($widgets[$k], function ($a, $b) {
-                $opts_a = json_decode($a->widget_options, true);
-                $opts_b = json_decode($b->widget_options, true);
+                $opts_a = (array)json_decode($a->widget_options, true);
+                $opts_b = (array)json_decode($b->widget_options, true);
 
-                $x_a = (int)$opts_a['x'];
-                $x_b = (int)$opts_b['x'];
+                $x_a = (int)Hash::get($opts_a, 'x', 0);
+                $x_b = (int)Hash::get($opts_b, 'x', 0);
 
                 if ($x_a == $x_b) {
                     return 0;
@@ -114,17 +115,20 @@ class DashboardsController extends AppController
      *
      * @TODO: refactor the code. Eyez bleeedzz
      *
-     * @return \Cake\Network\Response|void Redirects on successful add, renders view otherwise.
+     * @return \Cake\Http\Response|void|null Redirects on successful add, renders view otherwise.
      */
     public function add()
     {
         $dashboard = $this->Dashboards->newEntity();
 
-        $widgetsTable = TableRegistry::get('Search.Widgets');
+        /**
+         * @var \Search\Model\Table\WidgetsTable $widgetsTable
+         */
+        $widgetsTable = TableRegistry::getTableLocator()->get('Search.Widgets');
         $widgets = $widgetsTable->getWidgets();
 
         if ($this->request->is('post')) {
-            $data = $this->request->getData();
+            $data = (array)$this->request->getData();
 
             $widgets = [];
 
@@ -136,19 +140,19 @@ class DashboardsController extends AppController
             $resultedDashboard = $this->Dashboards->save($dashboard);
 
             if ($resultedDashboard) {
-                $this->Flash->success(__('The dashboard has been saved.'));
+                $this->Flash->success((string)__d('Qobo/Search', 'The dashboard has been saved.'));
 
                 $dashboardId = $resultedDashboard->id;
 
                 $data['widgets'] = !empty($data['options']) ? json_decode($data['options'], true) : [];
 
                 if (!empty($data['widgets'])) {
-                    $saved = $widgetsTable->saveDashboardWidgets($dashboardId, $data['widgets']);
+                    $widgetsTable->saveDashboardWidgets($dashboardId, $data['widgets']);
                 }
 
                 return $this->redirect(['action' => 'view', $dashboard->id]);
             } else {
-                $this->Flash->error(__('The dashboard could not be saved. Please, try again.'));
+                $this->Flash->error((string)__d('Qobo/Search', 'The dashboard could not be saved. Please, try again.'));
             }
         }
 
@@ -163,27 +167,29 @@ class DashboardsController extends AppController
     /**
      * Edit method
      *
-     * @param string|null $id Dashboard id.
-     * @return \Cake\Network\Response|void Redirects on successful edit, renders view otherwise.
-     * @throws \Cake\Network\Exception\NotFoundException When record not found.
+     * @param string $id Dashboard id.
+     * @return \Cake\Http\Response|void|null Redirects on successful edit, renders view otherwise.
      */
-    public function edit($id = null)
+    public function edit(string $id)
     {
         $savedWidgetData = [];
         $dashboard = $this->Dashboards->get($id, [
-            'contain' => ['Widgets']
+            'contain' => ['Widgets'],
         ]);
 
-        $dashboardWidgets = $dashboard->widgets;
-        unset($dashboard->widgets);
+        $dashboardWidgets = $dashboard->get('widgets');
+        $dashboard->unsetProperty('widgets');
 
-        $widgetsTable = TableRegistry::get('Search.Widgets');
+        /**
+         * @var \Search\Model\Table\WidgetsTable $widgetsTable
+         */
+        $widgetsTable = TableRegistry::getTableLocator()->get('Search.Widgets');
         $widgets = $widgetsTable->getWidgets();
 
         $sequence = 0;
 
         foreach ($dashboardWidgets as $dw) {
-            foreach ($widgets as $k => $widget) {
+            foreach ($widgets as $widget) {
                 if ($dw->widget_id !== $widget['data']['id']) {
                     continue;
                 }
@@ -192,10 +198,10 @@ class DashboardsController extends AppController
 
                 $item = array_merge(
                     [
-                        'id' => $widget['data']['id']
+                        'id' => $widget['data']['id'],
                     ],
                     [
-                        'data' => $widget['data']
+                        'data' => $widget['data'],
                     ],
                     $widgetOptions
                 );
@@ -210,31 +216,31 @@ class DashboardsController extends AppController
         }
 
         if ($this->request->is(['patch', 'post', 'put'])) {
-            $data = $this->request->getData();
+            $data = (array)$this->request->getData();
 
-            unset($dashboard->widgets);
+            $dashboard->unsetProperty('widgets');
 
             $dashboard = $this->Dashboards->patchEntity($dashboard, [
                 'name' => $data['name'],
-                'role_id' => $data['role_id']
+                'role_id' => $data['role_id'],
             ]);
 
             if ($this->Dashboards->save($dashboard)) {
-                $this->Flash->success(__('The dashboard has been saved.'));
-
-                $widgetTable = TableRegistry::get('Search.Widgets');
+                $this->Flash->success((string)__d('Qobo/Search', 'The dashboard has been saved.'));
+                /** @var \Search\Model\Table\WidgetsTable */
+                $widgetTable = TableRegistry::getTableLocator()->get('Search.Widgets');
                 $widgetTable->trashAll([
-                    'dashboard_id' => $dashboard->id
+                    'dashboard_id' => $dashboard->id,
                 ]);
 
                 $data['widgets'] = !empty($data['options']) ? json_decode($data['options'], true) : [];
                 if (!empty($data['widgets'])) {
-                    $saved = $widgetsTable->saveDashboardWidgets($id, $data['widgets']);
+                    $widgetsTable->saveDashboardWidgets($id, $data['widgets']);
                 }
 
                 return $this->redirect(['action' => 'view', $id]);
             } else {
-                $this->Flash->error(__('The dashboard could not be saved. Please, try again.'));
+                $this->Flash->error((string)__d('Qobo/Search', 'The dashboard could not be saved. Please, try again.'));
             }
         }
 
@@ -248,24 +254,24 @@ class DashboardsController extends AppController
     /**
      * Delete method
      *
-     * @param string|null $id Dashboard id.
-     * @return \Cake\Network\Response|null Redirects to index.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     * @param string $id Dashboard id.
+     * @return \Cake\Http\Response|void|null Redirects to index.
      */
-    public function delete($id = null)
+    public function delete(string $id)
     {
         $this->request->allowMethod(['post', 'delete']);
         $dashboard = $this->Dashboards->get($id);
 
         if ($this->Dashboards->delete($dashboard)) {
-            $widgetTable = TableRegistry::get('Search.Widgets');
+            /** @var \Search\Model\Table\WidgetsTable */
+            $widgetTable = TableRegistry::getTableLocator()->get('Search.Widgets');
             $widgetTable->trashAll([
-                'dashboard_id' => $id
+                'dashboard_id' => $id,
             ]);
 
-            $this->Flash->success(__('The dashboard has been deleted.'));
+            $this->Flash->success((string)__d('Qobo/Search', 'The dashboard has been deleted.'));
         } else {
-            $this->Flash->error(__('The dashboard could not be deleted. Please, try again.'));
+            $this->Flash->error((string)__d('Qobo/Search', 'The dashboard could not be deleted. Please, try again.'));
         }
 
         return $this->redirect(['action' => 'index']);

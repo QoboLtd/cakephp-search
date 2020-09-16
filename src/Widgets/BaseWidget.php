@@ -11,8 +11,6 @@
  */
 namespace Search\Widgets;
 
-use Search\Widgets\WidgetInterface;
-
 abstract class BaseWidget implements WidgetInterface
 {
     const WIDGET_INTERFACE = 'WidgetInterface';
@@ -29,6 +27,19 @@ abstract class BaseWidget implements WidgetInterface
     protected $title = 'App';
 
     /**
+     * Widget type
+     * @var string
+     */
+    public $type = '';
+
+    /**
+     * Widget renderable element
+     *
+     * @var string
+     */
+    public $renderElement = '';
+
+    /**
      * Widget's icon.
      *
      * @var string
@@ -43,6 +54,13 @@ abstract class BaseWidget implements WidgetInterface
     protected $color = 'warning';
 
     /**
+     * Widget options.
+     *
+     * @var mixed[]
+     */
+    protected $options = [];
+
+    /**
      * getType method
      *
      * Widget $type specifies the type of handler
@@ -50,7 +68,7 @@ abstract class BaseWidget implements WidgetInterface
      *
      * @return string $type of the WidgetHandler.
      */
-    public function getType()
+    public function getType(): string
     {
         return $this->type;
     }
@@ -63,16 +81,17 @@ abstract class BaseWidget implements WidgetInterface
      *
      * @return string $renderElement name.
      */
-    public function getRenderElement()
+    public function getRenderElement(): string
     {
         return $this->renderElement;
     }
 
     /**
      * getContainerId method.
+     *
      * @return string $containerId of the widget.
      */
-    public function getContainerId()
+    public function getContainerId(): string
     {
         return $this->containerId;
     }
@@ -80,7 +99,7 @@ abstract class BaseWidget implements WidgetInterface
     /**
      * {@inheritDoc}
      */
-    public function getTitle()
+    public function getTitle(): string
     {
         return $this->title;
     }
@@ -88,7 +107,7 @@ abstract class BaseWidget implements WidgetInterface
     /**
      * {@inheritDoc}
      */
-    public function getIcon()
+    public function getIcon(): string
     {
         return $this->icon;
     }
@@ -96,8 +115,16 @@ abstract class BaseWidget implements WidgetInterface
     /**
      * {@inheritDoc}
      */
-    public function getColor()
+    public function getColor(): string
     {
         return $this->color;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getOptions(): array
+    {
+        return $this->options;
     }
 }

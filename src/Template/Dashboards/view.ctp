@@ -35,10 +35,10 @@ $chartData = [];
     <?php foreach ($dashboardWidgets as $row => $column) : ?>
         <div class="row">
         <?php foreach ($column as $k => $dw) : ?>
-        <?php
+            <?php
             $options = json_decode($dw->widget_options, true);
             $width = (!empty($options['w'])) ? $options['w'] : '6';
-        ?>
+            ?>
             <div class="col-md-<?=$width;?>">
             <?php
             try {
@@ -63,7 +63,7 @@ $chartData = [];
                 );
 
                 if (empty($widgetContent)) {
-                    throw new \Exception(__('Widget is unavailable'));
+                    throw new \Exception(__d('Qobo/Search', 'Widget is unavailable'));
                 }
                 echo $widgetContent;
             } catch (\Exception $e) {

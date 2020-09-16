@@ -11,13 +11,14 @@
  */
 namespace Search\Model\Table;
 
+use CakeDC\Users\Controller\Traits\CustomUsersTableTrait;
+use Cake\Database\Schema\TableSchema;
+use Cake\Datasource\EntityInterface;
+use Cake\Event\Event;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
-use InvalidArgumentException;
-use Qobo\Utils\ModuleConfig\ConfigType;
-use Qobo\Utils\ModuleConfig\ModuleConfig;
-use Search\Model\Entity\SavedSearch;
+use Webmozart\Assert\Assert;
 
 /**
  * SavedSearches Model
@@ -26,26 +27,41 @@ use Search\Model\Entity\SavedSearch;
  */
 class SavedSearchesTable extends Table
 {
+    use CustomUsersTableTrait;
+
     /**
      * Initialize method
      *
-     * @param array $config The configuration for the Table.
+     * @param mixed[] $config The configuration for the Table.
      * @return void
      */
     public function initialize(array $config)
     {
         parent::initialize($config);
 
-        $this->table('qobo_search_saved_searches');
-        $this->displayField('name');
-        $this->primaryKey('id');
+        $this->setTable('qobo_search_saved_searches');
+        $this->setDisplayField('name');
+        $this->setPrimaryKey('id');
+
         $this->addBehavior('Timestamp');
         $this->addBehavior('Muffin/Trash.Trash');
 
         $this->belongsTo('Users', [
+            'className' => $this->getUsersTable()->getRegistryAlias(),
             'foreignKey' => 'user_id',
-            'className' => 'Search.Users'
         ]);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function _initializeSchema(TableSchema $schema): TableSchema
+    {
+        $schema->setColumnType('content', 'json');
+        $schema->setColumnType('criteria', 'json');
+        $schema->setColumnType('fields', 'json');
+
+        return $schema;
     }
 
     /**
@@ -70,8 +86,19 @@ class SavedSearchesTable extends Table
             ->notEmpty('model');
 
         $validator
-            ->requirePresence('content', 'create')
-            ->notEmpty('content');
+            ->requirePresence('user_id', 'create')
+            ->notEmpty('user_id');
+
+        $validator
+            ->allowEmpty('criteria')
+            ->isArray('criteria')
+
+            ->inList('conjunction', \Search\Criteria\Conjunction::CONJUNCTIONS)
+
+            ->allowEmpty('fields')
+            ->isArray('fields')
+
+            ->inList('sort_by_order', \Search\Criteria\Direction::DIRECTIONS);
 
         return $validator;
     }
@@ -85,70 +112,20 @@ class SavedSearchesTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
-        # TODO : Temporary disabled
-        #$rules->add($rules->existsIn(['user_id'], 'Users'));
+        $rules->add($rules->existsIn(['user_id'], $this->getUsersTable()));
 
         return $rules;
     }
 
     /**
-     * Returns saved searches filtered by users and models.
-     *
-     * @param  array  $users  users ids
-     * @param  array  $models models names
-     * @return \Cake\ORM\ResultSet
+     * {@inheritDoc}
      */
-    public function getSavedSearches(array $users = [], array $models = [])
+    public function beforeSave(Event $event, EntityInterface $entity, \ArrayObject $options): void
     {
-        $conditions = [
-            'SavedSearches.name IS NOT' => null,
-            'SavedSearches.system' => false
-        ];
-
-        if (!empty($users)) {
-            $conditions['SavedSearches.user_id IN'] = $users;
+        if (! $entity->isNew()) {
+            Assert::isInstanceOf($entity, \Cake\ORM\Entity::class);
+            // prevent user id change.
+            $entity->set('user_id', $entity->getOriginal('user_id'));
         }
-
-        if (!empty($models)) {
-            $conditions['SavedSearches.model IN'] = $models;
-        }
-
-        $query = $this->find('all', [
-            'conditions' => $conditions
-        ]);
-
-        return $query->toArray();
-    }
-
-    /**
-     * Validate if search is editable.
-     *
-     * @param \Search\Model\Entity\SavedSearch $entity Search entity
-     * @return bool
-     */
-    public function isEditable(SavedSearch $entity)
-    {
-        return (bool)$entity->get('name');
-    }
-
-    /**
-     * Returns true if table is searchable, false otherwise.
-     *
-     * @param  string $tableName Table name.
-     * @return bool
-     */
-    public function isSearchable($tableName)
-    {
-        if (!is_string($tableName)) {
-            throw new InvalidArgumentException('Provided variable [tableName] must be a string.');
-        }
-
-        list(, $tableName) = pluginSplit($tableName);
-
-        $config = new ModuleConfig(ConfigType::MODULE(), $tableName);
-
-        $result = (bool)$config->parse()->table->searchable;
-
-        return $result;
     }
 }

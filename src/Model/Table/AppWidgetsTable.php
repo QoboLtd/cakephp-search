@@ -11,14 +11,18 @@
  */
 namespace Search\Model\Table;
 
+use ArrayObject;
 use Cake\Core\App;
+use Cake\Core\Configure;
 use Cake\Database\Schema\TableSchema;
+use Cake\Datasource\QueryInterface;
+use Cake\Event\Event;
 use Cake\Filesystem\Folder;
-use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Utility\Inflector;
 use Cake\Validation\Validator;
+use Webmozart\Assert\Assert;
 
 /**
  * AppWidgets Model
@@ -30,6 +34,9 @@ use Cake\Validation\Validator;
  * @method \Search\Model\Entity\AppWidget patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
  * @method \Search\Model\Entity\AppWidget[] patchEntities($entities, array $data, array $options = [])
  * @method \Search\Model\Entity\AppWidget findOrCreate($search, callable $callback = null, $options = [])
+ * @method \Muffin\Trash\Model\Behavior\TrashBehavior trashAll($conditions)
+ * @method \Muffin\Trash\Model\Behavior\TrashBehavior restoreTrash(\Cake\Datasource\EntityInterface $entity, $options = [])
+ *
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
@@ -114,7 +121,7 @@ class AppWidgetsTable extends Table
      */
     protected function _initializeSchema(TableSchema $schema)
     {
-        $schema->columnType('content', 'json');
+        $schema->setColumnType('content', 'json');
 
         return $schema;
     }
@@ -124,7 +131,7 @@ class AppWidgetsTable extends Table
      *
      * @return void
      */
-    protected function _saveAppWidgets()
+    protected function _saveAppWidgets(): void
     {
         $widgets = $this->_getAppWidgets();
 
@@ -132,8 +139,11 @@ class AppWidgetsTable extends Table
         foreach ($widgets as $widget) {
             $found[] = $widget['name'];
 
-            // skip adding existing app widgets
-            if ($this->exists(['AppWidgets.name' => $widget['name']])) {
+            // skip adding existing app widgets.
+            $appWidgetEntity = $this->find('withTrashed')->where(['AppWidgets.name' => $widget['name']])->first();
+            Assert::nullOrIsInstanceOf($appWidgetEntity, \Search\Model\Entity\AppWidget::class);
+            if (!empty($appWidgetEntity) && !empty($appWidgetEntity->get('trashed'))) {
+                $this->restoreTrash($appWidgetEntity);
                 continue;
             }
 
@@ -149,9 +159,9 @@ class AppWidgetsTable extends Table
     /**
      * Get widgets defined in the Application level (src/Template/Plugin/Search/AppWidgets).
      *
-     * @return array
+     * @return mixed[]
      */
-    protected function _getAppWidgets()
+    protected function _getAppWidgets(): array
     {
         $result = [];
 
@@ -175,14 +185,34 @@ class AppWidgetsTable extends Table
                     'name' => $name,
                     'type' => static::WIDGET_TYPE,
                     'content' => [
-                        'model' => $this->alias(),
-                        'path' => $path . $file,
-                        'element' => $element
-                    ]
+                        'model' => $this->getAlias(),
+                        'path' => str_replace(APP, '', $path) . $file,
+                        'element' => $element,
+                    ],
                 ];
             }
         }
 
         return $result;
+    }
+
+    /**
+     * @param \Cake\Event\Event $event Event object
+     * @param \Cake\Datasource\QueryInterface $query Query object
+     * @param \ArrayObject $options Query options
+     * @param bool $primary Primary Standalone Query flag
+     * @return void
+     */
+    public function beforeFind(Event $event, QueryInterface $query, ArrayObject $options, bool $primary): void
+    {
+        $enable = Configure::read('Search.enabledWidgets');
+
+        if (!empty($enable) && is_array($enable)) {
+            $query->where(["name in" => $enable]);
+
+            return;
+        }
+
+        $query->limit(0);
     }
 }

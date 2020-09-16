@@ -13,14 +13,16 @@ namespace Search\Widgets;
 
 use Cake\Datasource\ConnectionManager;
 use Cake\Event\Event;
+use Cake\Event\EventManager;
+use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
 use Search\Event\EventName;
-use Search\Widgets\BaseWidget;
+use Search\Widgets\Reports\ReportGraphsInterface;
 
 class ReportWidget extends BaseWidget
 {
     public $renderElement = 'Search.Widgets/graph';
-    public $options = [];
 
     /** @const WIDGET_REPORT_SUFFIX file naming suffix of widget files */
     const WIDGET_REPORT_SUFFIX = 'ReportWidget';
@@ -40,36 +42,38 @@ class ReportWidget extends BaseWidget
      */
     protected $color = 'primary';
 
+    protected $_instance;
+
     /**
-     * @return array $report configuration.
+     * @return mixed[] $report configuration.
      */
-    public function getConfig()
+    public function getConfig(): array
     {
         return $this->_instance->getConfig();
     }
 
     /**
-     * @param array $data for extra setup
-     * @return array $data of the report.
+     * @param mixed[] $data for extra setup
+     * @return mixed[] $data of the report.
      */
-    public function getChartData($data = [])
+    public function getChartData(array $data = []): array
     {
         return $this->_instance->getChartData($data);
     }
 
     /**
-     * @param array $data for extra settings
-     * @return array $validated with errors and validation check.
+     * @param mixed[] $data for extra settings
+     * @return mixed[] $validated with errors and validation check.
      */
-    public function validate(array $data = [])
+    public function validate(array $data = []): array
     {
         return $this->_instance->validate($data);
     }
 
     /**
-     * @return array $options of widget instance.
+     * @return mixed[] $options of widget instance.
      */
-    public function getOptions()
+    public function getOptions(): array
     {
         return $this->_instance->getOptions();
     }
@@ -77,7 +81,7 @@ class ReportWidget extends BaseWidget
     /**
      * @return string $type of the Report widget.
      */
-    public function getType()
+    public function getType(): string
     {
         return $this->_instance->getType();
     }
@@ -85,12 +89,23 @@ class ReportWidget extends BaseWidget
     /**
      * Setting report configuration to the report instance.
      *
-     * @param array $config to be set for config property.
-     * @return array $config config of the widget.
+     * @param mixed[] $config to be set for config property.
+     * @return void
      */
-    public function setConfig($config)
+    public function setConfig(array $config): void
     {
-        return $this->_instance->setConfig($config);
+        $this->_instance->setConfig($config);
+    }
+
+    /**
+     * Setting report options to the report instance.
+     *
+     * @param mixed[] $options to be set for config property.
+     * @return void
+     */
+    public function setOptions(array $options): void
+    {
+        $this->_instance->setOptions($options);
     }
 
     /**
@@ -99,62 +114,50 @@ class ReportWidget extends BaseWidget
      * Basic reports getter that uses Events
      * to get reports application-wise.
      *
-     * @param array $options containing \Cake\View\View.
-     * @return array $result with reports array.
+     * @return mixed[] $result with reports array.
      */
-    public function getReports($options = [])
+    public function getReports(): array
     {
-        $result = [];
+        $event = new Event((string)EventName::MODEL_DASHBOARDS_GET_REPORTS());
+        EventManager::instance()->dispatch($event);
 
-        if (empty($options['rootView'])) {
-            return $result;
-        }
-
-        $event = new Event((string)EventName::MODEL_DASHBOARDS_GET_REPORTS(), $options['rootView']->request);
-        $options['rootView']->EventManager()->dispatch($event);
-
-        $result = $event->result;
-
-        return $result;
+        return (array)$event->getResult();
     }
 
     /**
      * Parses the config of the report for widgetHandler
      *
-     * @param array $options with entity data.
-     * @return array $config of the widget.
+     * @param mixed[] $options with entity data.
+     * @return mixed[]
      */
-    public function getReport($options = [])
+    public function getReport(array $options = []): array
     {
-        $config = [];
-
         if (empty($options['entity'])) {
-            return $config;
+            return [];
         }
 
         if (empty($options['reports'])) {
-            $options['reports'] = $this->getReports($options);
+            $options['reports'] = $this->getReports();
+        }
+
+        if (empty($options['reports'])) {
+            return [];
         }
 
         $widgetId = $options['entity']->widget_id;
 
-        if (empty($options['reports'])) {
-            return $config;
-        }
-
+        $result = [];
         foreach ($options['reports'] as $modelName => $reports) {
             foreach ($reports as $slug => $reportInfo) {
-                if ($reportInfo['id'] == $widgetId) {
-                    $config = [
-                        'modelName' => $modelName,
-                        'slug' => $slug,
-                        'info' => $reportInfo
-                    ];
+                if ($reportInfo['id'] !== $widgetId) {
+                    continue;
                 }
+
+                $result = ['modelName' => $modelName, 'slug' => $slug, 'info' => $reportInfo];
             }
         }
 
-        return $config;
+        return $result;
     }
 
     /**
@@ -163,34 +166,34 @@ class ReportWidget extends BaseWidget
      * ReportWidgetHandler operates via $_instance variable
      * that we set based on the renderAs parameter of the report.
      *
-     * @param array $options containing reports
-     * @return mixed $className of the $_instance.
+     * @param mixed[] $options containing reports
+     * @return \Search\Widgets\Reports\ReportGraphsInterface|null
      */
-    public function getReportInstance($options = [])
+    public function getReportInstance(array $options = []): ?ReportGraphsInterface
     {
-        $result = null;
-
         if (empty($options['config'])) {
             $options['config'] = $this->getReport($options);
         }
 
         if (empty($options['config'])) {
-            return $result;
+            return null;
         }
+
+        if (empty($options['config']['info']['renderAs'])) {
+            return null;
+        }
+
         $renderAs = $options['config']['info']['renderAs'];
-
-        if (!empty($renderAs)) {
-            $handlerName = Inflector::camelize($renderAs);
-
-            $className = __NAMESPACE__ . '\\Reports\\' . $handlerName . self::WIDGET_REPORT_SUFFIX;
-            $interface = __NAMESPACE__ . '\\Reports\\' . 'ReportGraphsInterface';
-
-            if (class_exists($className) && in_array($interface, class_implements($className))) {
-                $result = new $className($options);
-            }
+        $className = __NAMESPACE__ . '\\Reports\\' . Inflector::camelize($renderAs) . self::WIDGET_REPORT_SUFFIX;
+        if (! class_exists($className)) {
+            return null;
         }
 
-        return $result;
+        if (! in_array(__NAMESPACE__ . '\\Reports\\' . 'ReportGraphsInterface', class_implements($className))) {
+            return null;
+        }
+
+        return new $className($options);
     }
 
     /**
@@ -198,19 +201,20 @@ class ReportWidget extends BaseWidget
      *
      * Establish report data for the widgetHandler.
      *
-     * @param array $options with entity and view data.
+     * @param mixed[] $options with entity and view data.
      * @throws \RuntimeException
-     * @return array $result containing $_data.
+     * @return mixed[] $result containing $_data.
      */
-    public function getResults(array $options = [])
+    public function getResults(array $options = []): array
     {
-        $result = [];
-
         $this->_instance = $this->getReportInstance($options);
-        $config = $this->getReport($options);
+        if (null === $this->_instance) {
+            return [];
+        }
 
+        $config = $this->getReport($options);
         if (empty($config)) {
-            return $result;
+            return [];
         }
 
         $this->setConfig($config);
@@ -218,17 +222,15 @@ class ReportWidget extends BaseWidget
 
         $validated = $this->validate($config);
 
-        if (!$validated['status']) {
-            $result = $validated;
+        if (! $validated['status']) {
+            throw new \RuntimeException('Report validation failed');
+        }
 
-            throw new \RuntimeException("Report validation failed");
-        } else {
-            $result = $this->getQueryData($config);
+        $result = $this->getQueryData($config);
 
-            if (!empty($result)) {
-                $this->_instance->getChartData($result);
-                $this->_instance->options['scripts'] = $this->_instance->getScripts();
-            }
+        if (!empty($result)) {
+            $this->_instance->getChartData($result);
+            $this->setOptions(['scripts' => $this->_instance->getScripts()]);
         }
 
         return $result;
@@ -240,27 +242,35 @@ class ReportWidget extends BaseWidget
      * Executes Query statement from the report.ini
      * to retrieve actual report resultSet.
      *
-     * @param array $config of the report.ini
-     * @return array $result containing required resultset fields.
+     * @param mixed[] $config of the report.ini
+     * @return mixed[] $result containing required resultset fields.
      */
-    public function getQueryData($config = [])
+    public function getQueryData(array $config = []): array
     {
-        $result = [];
-
         if (empty($config)) {
-            return $result;
+            return [];
         }
 
-        $resultSet = ConnectionManager::get('default')
-            ->execute($config['info']['query'])
-            ->fetchAll('assoc');
+        $resultSet = [];
 
-        if (empty($resultSet)) {
-            return $result;
+        if (!empty($config['info']['finder'])) {
+            $table = $config['info']['model'];
+
+            $finder = $config['info']['finder']['name'];
+            $options = Hash::get($config, 'info.finder.options', []);
+
+            $resultSet = TableRegistry::getTableLocator()->get($table)->find($finder, $options);
+        }
+
+        if (empty($config['info']['finder']) && !empty($config['info']['query'])) {
+            $resultSet = ConnectionManager::get('default')
+                ->execute($config['info']['query'])
+                ->fetchAll('assoc');
         }
 
         $columns = explode(',', $config['info']['columns']);
 
+        $result = [];
         foreach ($resultSet as $item) {
             $row = [];
             foreach ($item as $column => $value) {
@@ -277,9 +287,9 @@ class ReportWidget extends BaseWidget
     /**
      * Wrapper of report widget data.
      *
-     * @return array $data of the report widget instance.
+     * @return mixed[] $data of the report widget instance.
      */
-    public function getData()
+    public function getData(): array
     {
         return $this->_instance->getData();
     }
@@ -287,18 +297,18 @@ class ReportWidget extends BaseWidget
     /**
      * setData for the widget.
      *
-     * @param array $data with information related
-     * @return void.
+     * @param mixed[] $data with information related
+     * @return void
      */
-    public function setData($data = [])
+    public function setData(array $data = []): void
     {
-        return $this->_instance->setData($data);
+        $this->_instance->setData($data);
     }
 
     /**
      * @return string $containerId of the widget instance.
      */
-    public function getContainerId()
+    public function getContainerId(): string
     {
         return $this->_instance->getContainerId();
     }
@@ -308,18 +318,18 @@ class ReportWidget extends BaseWidget
      *
      * Setting unique identifier of the Widget object.
      *
-     * @param array $config of the widget.
-     * @return string $containerId property of widget instance.
+     * @param mixed[] $config of the widget.
+     * @return void
      */
-    public function setContainerId($config = [])
+    public function setContainerId(array $config = []): void
     {
-        return $this->_instance->setContainerId($config);
+        $this->_instance->setContainerId($config);
     }
 
     /**
-     * @return array $errors in case validation failed
+     * @return string[] $errors in case validation failed
      */
-    public function getErrors()
+    public function getErrors(): array
     {
         return $this->_instance->getErrors();
     }

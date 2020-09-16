@@ -20,47 +20,46 @@ class DonutChartReportWidgetTest extends TestCase
         parent::tearDown();
     }
 
-    public function testGetType()
+    public function testGetType(): void
     {
-        $this->assertEquals('donutChart', $this->widget->getType());
+        $this->assertEquals('doughnut', $this->widget->getType());
     }
 
-    public function testGetScripts()
+    public function testGetScripts(): void
     {
         $content = $this->widget->getScripts([]);
         $this->assertInternalType('array', $content);
         $this->assertNotEmpty($content);
         $this->assertArrayHasKey('post', $content);
-        $this->assertArrayHasKey('css', $content['post']);
         $this->assertArrayHasKey('javascript', $content['post']);
     }
 
-    public function testSetContainerId()
+    public function testGetContainerId(): void
     {
         $config = [
             'slug' => 'barChart',
         ];
 
-        $containerId = $this->widget->setContainerId($config);
-        $this->assertEquals($containerId, 'graph_' . $config['slug']);
+        $this->widget->setContainerId($config);
+        $this->assertEquals('graph_barChart', $this->widget->getContainerId());
     }
 
-    public function testGetChartData()
+    public function testGetChartData(): void
     {
         $data = [
             [
                 'name' => 'foo',
-                'place' => 'bar'
-            ]
+                'place' => 'bar',
+            ],
         ];
 
         $expected = [
-            'chart' => 'donutChart',
+            'chart' => 'doughnut',
             'options' => [
                 'element' => 'graph_bar_assigned_by_year',
                 'resize' => true,
-                'data' => [['value' => 'bar', 'label' => 'foo']]
-            ]
+                'data' => [['value' => 'bar', 'label' => 'foo']],
+            ],
         ];
 
         $config = [
@@ -74,19 +73,66 @@ class DonutChartReportWidgetTest extends TestCase
                 'widget_type' => 'report',
                 'name' => 'Report Bar',
                 'query' => '',
-                'columns' => '',
+                'columns' => 'name,place',
                 'renderAs' => 'donutChart',
                 'y_axis' => '',
-                'x_axis' => ''
-            ]
+                'x_axis' => '',
+            ],
         ];
 
         $this->widget->setConfig($config);
         $this->widget->setContainerId($config);
 
         $result = $this->widget->getChartData($data);
-        $this->assertNotEmpty($result['options']['element']);
 
-        $this->assertEquals($expected, $this->widget->getData());
+        $this->assertNotEmpty($result['id']);
+        $this->assertNotEmpty($result['options']['dataChart']['data']['labels']);
+        $this->assertNotEmpty($result['options']['dataChart']['data']['datasets']);
+
+        //as the data passed in the method is empty
+        $this->assertNotEmpty($this->widget->getData());
+        $this->assertEquals(['foo'], $result['options']['dataChart']['data']['labels']);
+    }
+
+    public function testGetChartDataWithoutData(): void
+    {
+        $expected = [
+            'chart' => 'doughnut',
+            'options' => [
+                'element' => 'graph_bar_assigned_by_year',
+                'resize' => true,
+                'data' => [['value' => 'bar', 'label' => 'foo']],
+            ],
+        ];
+
+        $config = [
+            'modelName' => 'Reports',
+            'slug' => 'bar_assigned_by_year',
+            'info' => [
+                'label' => 'name',
+                'value' => 'place',
+                'id' => '00000000-0000-0000-0000-000000000002',
+                'model' => 'Bar',
+                'widget_type' => 'report',
+                'name' => 'Report Bar',
+                'query' => '',
+                'columns' => 'name,place',
+                'renderAs' => 'donutChart',
+                'y_axis' => '',
+                'x_axis' => '',
+            ],
+        ];
+
+        $this->widget->setConfig($config);
+        $this->widget->setContainerId($config);
+
+        $result = $this->widget->getChartData([]);
+
+        $this->assertNotEmpty($result['id']);
+        $this->assertEmpty($result['options']['dataChart']['data']['labels']);
+        $this->assertNotEmpty($result['options']['dataChart']['data']['datasets']);
+
+        //as the data passed in the method is empty
+        $this->assertEmpty($this->widget->getData());
     }
 }

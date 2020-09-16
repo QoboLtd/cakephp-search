@@ -13,20 +13,19 @@
 use Cake\Core\Configure;
 
 echo $this->Html->css(['Search.dashboard', 'Search.grid'], ['block' => 'css']);
-echo $this->Html->script('AdminLTE./plugins/jQueryUI/jquery-ui.min', ['block' => 'script']);
+echo $this->Html->script('AdminLTE./bower_components/jquery-ui/jquery-ui.min', ['block' => 'script']);
 echo $this->Html->script('Search.dashboard', ['block' => 'scriptBottom']);
 echo $this->Html->script('Search./plugins/vue.min', ['block' => 'scriptBottom']);
 echo $this->Html->script('Search./plugins/vue-grid-layout.min', ['block' => 'scriptBottom']);
-
 echo $this->Html->scriptBlock('var api_token = "' . Configure::read('Search.api.token') . '";', ['block' => 'scriptBottom']);
-echo $this->Html->scriptBlock("var grid_layout = '" . json_encode($savedWidgetData) . "';", ['block' => 'scriptBottom']);
+echo $this->Html->scriptBlock("var grid_layout = '" . addslashes(json_encode($savedWidgetData)) . "';", ['block' => 'scriptBottom']);
 
 echo $this->Html->script('Search./plugins/qobo.grid', ['block' => 'scriptBottom']);
 ?>
 <section class="content-header">
     <div class="row">
         <div class="col-xs-12 col-md-6">
-            <h4><?= __('Create {0}', ['Dashboard']) ?></h4>
+            <h4><?= __d('Qobo/Search', 'Create {0}', ['Dashboard']) ?></h4>
         </div>
     </div>
 </section>
@@ -36,17 +35,17 @@ echo $this->Html->script('Search./plugins/qobo.grid', ['block' => 'scriptBottom'
         <div class="box-body">
             <div class="row">
                 <div class="col-xs-12 col-md-6">
-                    <?= $this->Form->input('name'); ?>
+                    <?= $this->Form->control('name'); ?>
                 </div>
                 <div class="col-xs-12 col-md-6">
-                    <?= $this->Form->input('role_id', ['options' => $roles, 'empty' => true]); ?>
+                    <?= $this->Form->control('role_id', ['options' => $roles, 'empty' => true]); ?>
                 </div>
             </div>
         </div>
     </div>
     <?php
     echo $this->element('Search.dashboard_form');
-    echo $this->Form->button(__('Submit'), ['class' => 'btn btn-primary']);
+    echo $this->Form->button(__d('Qobo/Search', 'Submit'), ['class' => 'btn btn-primary']);
     echo $this->Form->end();
     ?>
 </section>

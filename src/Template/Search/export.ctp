@@ -13,10 +13,10 @@
 use Cake\Core\Configure;
 
 $url = $this->Url->build([
-    'plugin' => $this->request->param('plugin'),
-    'controller' => $this->request->param('controller'),
-    'action' => $this->request->param('action'),
-    $this->request->param('pass.0'),
+    'plugin' => $this->request->getParam('plugin'),
+    'controller' => $this->request->getParam('controller'),
+    'action' => $this->request->getParam('action'),
+    $this->request->getParam('pass.0'),
     $filename
 ]);
 
@@ -35,14 +35,14 @@ echo $this->Html->scriptBlock(
         count: ' . $count . ',
         limit: "' . Configure::read('Search.export.limit') . '",
         token: "' . Configure::read('Search.api.token') . '",
-        completed_message: "' . __('completed') . '"
+        completed_message: "' . __d('Qobo/Search', 'completed') . '"
     })',
     ['block' => 'scriptBottom']
 );
 ?>
 <section class="content-header">
     <h4>Export &raquo; <?= $this->Html->link($filename, [
-        'plugin' => $this->plugin, 'controller' => $this->name, 'action' => 'search', $this->request->param('pass.0')
+        'plugin' => $this->plugin, 'controller' => $this->name, 'action' => 'search', $this->request->getParam('pass.0')
     ]) ?></h4>
 </section>
 <section class="content">
@@ -55,16 +55,16 @@ echo $this->Html->scriptBlock(
                         <span class="info-box-icon"><i class="fa fa-spinner fa-pulse"></i></span>
                         <div class="info-box-content">
                             <span class="info-box-text">
-                                <?= __('Export') ?>
-                                <span class="progress-status"><?= __('in progress') ?></span>
+                                <?= __d('Qobo/Search', 'Export') ?>
+                                <span class="progress-status"><?= __d('Qobo/Search', 'in progress') ?></span>
                             </span>
-                            <span class="info-box-number"><?= $count ?> <?= __('records') ?></span>
+                            <span class="info-box-number"><?= $count ?> <?= __d('Qobo/Search', 'records') ?></span>
                             <!-- The progress section is optional -->
                             <div class="progress">
                                 <div class="progress-bar" style="width: 0%"></div>
                             </div>
                             <span class="progress-description">
-                                <span class="progress-percent">0%</span> <?= __('completed') ?>
+                                <span class="progress-percent">0%</span> <?= __d('Qobo/Search', 'completed') ?>
                             </span>
                         </div><!-- /.info-box-content -->
                     </div><!-- /.info-box -->

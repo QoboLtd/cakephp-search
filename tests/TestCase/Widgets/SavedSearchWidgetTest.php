@@ -1,118 +1,116 @@
 <?php
 namespace Search\Test\TestCase\Widgets;
 
-use Cake\Event\EventManager;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
+use Search\Model\Entity\SavedSearch;
 use Search\Widgets\SavedSearchWidget;
 
 class SavedSearchWidgetTest extends TestCase
 {
-    protected $widget;
-
-    public $Widgets;
-
     public $fixtures = [
-        'plugin.search.widgets',
-        'plugin.search.saved_searches',
-        'plugin.CakeDC/Users.users',
+        'plugin.Search.SavedSearches',
+        'plugin.Search.Widgets',
     ];
+
+    private $SavedSearches;
+    private $Widgets;
+    private $widget;
 
     public function setUp()
     {
         parent::setUp();
 
-        $config = TableRegistry::exists('SavedSearches') ? [] : ['className' => 'Search\Model\Table\SavedSearchesTable'];
-        $this->SavedSearches = TableRegistry::get('SavedSearches', $config);
-
-        $config = TableRegistry::exists('Widgets') ? [] : ['className' => 'Search\Model\Table\WidgetsTable'];
-        $this->Widgets = TableRegistry::get('Widgets', $config);
-
-        $widget = $this->Widgets->get('00000000-0000-0000-0000-000000000002');
-        $this->widget = new SavedSearchWidget(['entity' => $widget]);
-
-        // anonymous event listener that passes some dummy searchable fields
-        EventManager::instance()->on(
-            'Search.Model.Search.searchabeFields',
-            function ($event, $table) {
-                return [
-                    'name' => [
-                        'operators' => [
-                            'contains' => [
-                                'label' => 'contains',
-                                'operator' => 'LIKE',
-                                'pattern' => '%{{value}}%',
-                            ],
-                        ],
-                    ],
-                    'first_name' => [],
-                    'last_name' => [],
-                    'street' => [],
-                    'city' => [],
-                ];
-            }
-        );
+        $this->SavedSearches = TableRegistry::getTableLocator()->get('Search.SavedSearches');
+        $this->Widgets = TableRegistry::getTableLocator()->get('Search.Widgets');
+        $this->widget = new SavedSearchWidget(['entity' => $this->Widgets->get('00000000-0000-0000-0000-000000000002')]);
     }
 
     public function tearDown()
     {
-        unset($this->SavedSearches);
         unset($this->widget);
         unset($this->Widgets);
+        unset($this->SavedSearches);
 
         parent::tearDown();
     }
 
-    public function testGetType()
+    public function testGetTitle(): void
     {
-        $this->assertEquals('saved_search', $this->widget->getType());
+        $this->assertSame('Saved search', $this->widget->getTitle());
     }
 
-    public function testGetOptions()
+    public function testGetIcon(): void
     {
-        $this->assertEquals([], $this->widget->getOptions());
+        $this->assertSame('table', $this->widget->getIcon());
     }
 
-    public function testGetData()
+    public function testGetColor(): void
     {
-        $this->assertEquals([], $this->widget->getData());
+        $this->assertSame('info', $this->widget->getColor());
     }
 
-    public function testGetErrors()
+    public function testGetType(): void
     {
-        $this->assertEquals([], $this->widget->getErrors());
+        $this->assertSame('saved_search', $this->widget->getType());
     }
 
-    public function testGetRenderElement()
+    public function testGetOptions(): void
+    {
+        $this->assertSame([], $this->widget->getOptions());
+    }
+
+    public function testGetData(): void
+    {
+        $this->assertNull($this->widget->getData());
+
+        $this->widget->getResults(['entity' => $this->SavedSearches->get('00000000-0000-0000-0000-000000000002')]);
+
+        $this->assertInstanceOf(SavedSearch::class, $this->widget->getData());
+    }
+
+    public function testGetErrors(): void
+    {
+        $this->assertSame([], $this->widget->getErrors());
+
+        // non-persisted widget entity
+        $widget = new SavedSearchWidget(['entity' => $this->Widgets->newEntity()]);
+        $widget->getResults(['entity' => $this->SavedSearches->newEntity()]);
+
+        $this->assertSame(['No data found for this entity'], $widget->getErrors());
+    }
+
+    public function testGetRenderElement(): void
     {
         $entity = $this->SavedSearches->get('00000000-0000-0000-0000-000000000001');
 
         $result = $this->widget->getContainerId();
-        $this->assertEquals($result, 'default-widget-container');
+        $this->assertSame($result, 'default-widget-container');
 
         $this->widget->setContainerId($entity);
         $result = $this->widget->getContainerId();
 
         $expected = 'table-datatable-' . md5($entity->id);
-        $this->assertEquals($result, $expected);
+        $this->assertSame($result, $expected);
     }
 
-    public function testGetResultsSavedResult()
+    public function testGetResults(): void
     {
-        $result = $this->widget->getResults([
-            'entity' => $this->SavedSearches->get('00000000-0000-0000-0000-000000000001'),
-            'user' => ['id' => '00000000-0000-0000-0000-000000000001']
-        ]);
+        $result = $this->widget->getResults(['entity' => $this->SavedSearches->newEntity()]);
+        $this->assertInstanceOf(SavedSearch::class, $result);
+
+        // non-persisted widget entity
+        $widget = new SavedSearchWidget(['entity' => $this->Widgets->newEntity()]);
+        $this->assertNull($widget->getResults(['entity' => $this->SavedSearches->newEntity()]));
     }
 
-    public function testGetResultsSavedCriteria()
+    public function testGetContainerId(): void
     {
-        $entity = $this->Widgets->get('00000000-0000-0000-0000-000000000005');
-        $widget = new SavedSearchWidget(['entity' => $entity]);
+        $savedSearchId = '00000000-0000-0000-0000-000000000002';
+        $expected = SavedSearchWidget::TABLE_PREFIX . md5($savedSearchId);
 
-        $result = $widget->getResults([
-            'entity' => $this->SavedSearches->get('00000000-0000-0000-0000-000000000002'),
-            'user' => ['id' => '00000000-0000-0000-0000-000000000001']
-        ]);
+        $this->widget->getResults(['entity' => $this->SavedSearches->get($savedSearchId)]);
+
+        $this->assertSame($expected, $this->widget->getContainerId());
     }
 }

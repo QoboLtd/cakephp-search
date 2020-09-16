@@ -11,12 +11,12 @@
  */
 namespace Search\Widgets\Reports;
 
+use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
-use Search\Widgets\Reports\BaseReportGraphs;
 
 class BarChartReportWidget extends BaseReportGraphs
 {
-    public $type = 'barChart';
+    public $type = 'bar';
 
     public $requiredFields = ['query', 'columns', 'x_axis', 'y_axis'];
 
@@ -28,35 +28,80 @@ class BarChartReportWidget extends BaseReportGraphs
      * @param array $data containing report configs and data.
      * @return array $chartData with defined chart information.
      */
-    public function getChartData(array $data = [])
+    public function getChartData(array $data = []): array
     {
-        $labels = [];
         $report = $this->config;
 
-        $chartData = [
-            'chart' => $this->type,
-            'options' => [
-                'element' => $this->getContainerId(),
-                'resize' => true,
-                'hideHover' => true
+        // We suppose that in the x_axis are the values with labels
+        $label_column_name = $report['info']['x_axis'];
+        $list = $this->getList($report['modelName'], $label_column_name);
+
+        if ($list) {
+            $data = $this->sortListByLabel($data, $list, $label_column_name);
+        }
+
+        $label = Hash::extract($data, '{n}.' . $label_column_name);
+        $columns = explode(',', $report['info']['columns']);
+        $columns = array_diff($columns, [$label_column_name]);
+
+        // Check if is a multiple set of data.
+        $datasets = [];
+        $is_multicolums = count($columns) > 1;
+
+        foreach ($columns as $key => $value) {
+            $colors = $this->getChartColors(count($data), $this->getContainerId() . (string)$key, !$is_multicolums);
+            $datasets[] = [
+                "label" => Inflector::humanize($value),
+                "backgroundColor" => $is_multicolums ? $colors[0] : $colors,
+                "data" => (array)Hash::extract($data, '{n}.' . $value),
+            ];
+        }
+
+        $chartjs = [
+            "type" => $this->type,
+            "data" =>
+            [
+                "labels" => $label,
+                "datasets" => $datasets,
+            ],
+            "options" =>
+            [
+                "legend" => [
+                    "display" => false,
+                ],
+                "scales" =>
+                [
+                    "yAxes" => [
+                        [
+                            "ticks" =>
+                            [
+                                "beginAtZero" => true,
+                            ],
+                        ],
+                    ],
+                    "xAxes" => [
+                        [
+                            "ticks" =>
+                            [
+                                "autoSkip" => false,
+                            ],
+                        ],
+                    ],
+                ],
             ],
         ];
 
-        $columns = explode(',', $report['info']['columns']);
+        $chartjs['options'] = !empty($this->config['info']['options']) ? Hash::merge($chartjs['options'], $this->config['info']['options']) : $chartjs['options'];
 
-        foreach ($columns as $column) {
-            array_push($labels, Inflector::humanize($column));
-        }
-
-        $options = [
-            'data' => $data,
-            'barColors' => $this->getChartColors(),
-            'labels' => $labels,
-            'xkey' => explode(',', $report['info']['x_axis']),
-            'ykeys' => explode(',', $report['info']['y_axis'])
+        $chartData = [
+            'chart' => $this->type,
+            'id' => $this->getContainerId(),
+            'options' => [
+                'resize' => true,
+                'hideHover' => true,
+                'dataChart' => $chartjs,
+            ],
         ];
-
-        $chartData['options'] = array_merge($chartData['options'], $options);
 
         if (!empty($data)) {
             $this->setData($chartData);
@@ -70,29 +115,22 @@ class BarChartReportWidget extends BaseReportGraphs
      *
      * Specifies JS/CSS libs for the content loading
      *
-     * @param array $data passed from the widgetHandler.
-     * @return array $content with the libs.
+     * @param mixed[] $data passed from the widgetHandler.
+     * @return mixed[] $content with the libs.
      */
-    public function getScripts(array $data = [])
+    public function getScripts(array $data = []): array
     {
         return [
             'post' => [
-                'css' => [
-                    'type' => 'css',
-                    'content' => [
-                        'AdminLTE./plugins/morris/morris',
-                    ],
-                    'block' => 'css',
-                ],
                 'javascript' => [
                     'type' => 'script',
                     'content' => [
                         'https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js',
-                        'AdminLTE./plugins/morris/morris.min',
+                        'Search./plugins/Chart.min.js',
                     ],
                     'block' => 'scriptBottom',
                 ],
-            ]
+            ],
         ];
     }
 }

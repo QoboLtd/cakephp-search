@@ -18,6 +18,12 @@ use Cake\ORM\Entity;
  */
 class SavedSearch extends Entity
 {
+    /**
+     * List of virtual fields exposed in JSON and array representations of this Entity.
+     *
+     * @var array
+     */
+    protected $_virtual = ['is_editable'];
 
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
@@ -31,5 +37,19 @@ class SavedSearch extends Entity
     protected $_accessible = [
         '*' => true,
         'id' => false,
+        /**
+         * @deprecated
+         */
+        'content' => false,
     ];
+
+    /**
+     * Editable status getter.
+     *
+     * @return bool
+     */
+    protected function _getIsEditable(): bool
+    {
+        return array_key_exists('name', $this->_properties) ? (bool)$this->_properties['name'] : false;
+    }
 }

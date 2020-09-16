@@ -1,9 +1,9 @@
  <div id="grid-app">
-        <?= $this->Form->input('options', ['type' => 'hidden', 'id' => 'dashboard-options', 'value' => null]);?>
+        <?= $this->Form->control('options', ['type' => 'hidden', 'id' => 'dashboard-options', 'value' => null]);?>
         <div class="box box-primary">
             <div class="box-body">
                 <div class="box-header">
-                    <h3 class="box-title"><?= __('Widgets') ?></h3>
+                    <h3 class="box-title"><?= __d('Qobo/Search', 'Widgets') ?></h3>
                 </div>
                 <div class="box-body" style="border:1px dashed #d3d3d3;">
                     <grid-layout
@@ -40,7 +40,7 @@
         </div>
         <div class="box box-primary">
             <div class="box-header with-border">
-                <h3 class="box-title"><?= __('Available Widgets');?></h3>
+                <h3 class="box-title"><?= __d('Qobo/Search', 'Available Widgets');?></h3>
             </div>
 
             <div class="row">

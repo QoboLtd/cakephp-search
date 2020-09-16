@@ -27,8 +27,7 @@ class WidgetsListener implements EventListenerInterface
         return [
             (string)EventName::MODEL_DASHBOARDS_GET_WIDGETS() => [
                 'callable' => 'getWidgets',
-                'priority' => 9999999999 // this listener should be called last
-            ]
+            ],
         ];
     }
 
@@ -38,7 +37,7 @@ class WidgetsListener implements EventListenerInterface
      * @param \Cake\Event\Event $event Event instance
      * @return void
      */
-    public function getWidgets(Event $event)
+    public function getWidgets(Event $event): void
     {
         $result = array_merge(
             (array)$event->result,
@@ -53,15 +52,18 @@ class WidgetsListener implements EventListenerInterface
     /**
      * Fetch all saved searches from the database.
      *
-     * @return array
+     * @return mixed[]
      */
-    private function getSavedSearchWidgets()
+    private function getSavedSearchWidgets(): array
     {
-        $table = TableRegistry::get('Search.SavedSearches');
+        $table = TableRegistry::getTableLocator()->get('Search.SavedSearches');
 
         $query = $table->find('all')
-            ->where(['SavedSearches.name IS NOT' => null, 'SavedSearches.system' => false])
-            ->hydrate(false)
+            ->where([
+                'SavedSearches.name IS NOT' => null,
+                'SavedSearches.name !=' => '',
+            ])
+            ->enableHydration(false)
             ->indexBy('id');
 
         if ($query->isEmpty()) {
@@ -69,16 +71,16 @@ class WidgetsListener implements EventListenerInterface
         }
 
         return [
-            ['type' => 'saved_search', 'data' => $query->toArray()]
+            ['type' => 'saved_search', 'data' => $query->toArray()],
         ];
     }
 
     /**
      * Fetch all reports through Event broadcast.
      *
-     * @return array
+     * @return mixed[]
      */
-    private function getReportWidgets()
+    private function getReportWidgets(): array
     {
         $event = new Event((string)EventName::MODEL_DASHBOARDS_GET_REPORTS(), $this);
         EventManager::instance()->dispatch($event);
@@ -90,6 +92,10 @@ class WidgetsListener implements EventListenerInterface
         $result = [];
         foreach ($event->result as $reports) {
             foreach ($reports as $report) {
+                if (array_diff(['widget_type', 'id'], array_keys($report))) {
+                    continue;
+                }
+
                 if (! isset($result[$report['widget_type']])) {
                     $result[$report['widget_type']] = ['type' => $report['widget_type'], 'data' => []];
                 }
@@ -103,11 +109,11 @@ class WidgetsListener implements EventListenerInterface
     /**
      * Returns list of widgets defined in the application scope.
      *
-     * @return array
+     * @return mixed[]
      */
-    private function getAppWidgets()
+    private function getAppWidgets(): array
     {
-        $table = TableRegistry::get('Search.AppWidgets');
+        $table = TableRegistry::getTableLocator()->get('Search.AppWidgets');
 
         $query = $table->find('all')
             ->select(['id', 'name', 'content']);
@@ -123,12 +129,12 @@ class WidgetsListener implements EventListenerInterface
                 'id' => $entity->get('id'),
                 'model' => $entity->get('content')['model'],
                 'name' => $entity->get('name'),
-                'path' => $entity->get('content')['path']
+                'path' => $entity->get('content')['path'],
             ];
         }
 
         return [
-            ['type' => 'app', 'data' => $data]
+            ['type' => 'app', 'data' => $data],
         ];
     }
 }

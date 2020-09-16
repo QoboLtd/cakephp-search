@@ -11,51 +11,65 @@
  */
 namespace Search\Widgets\Reports;
 
+use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
-use Search\Widgets\Reports\BaseReportGraphs;
 
 class LineChartReportWidget extends BaseReportGraphs
 {
-    public $type = 'lineChart';
+    public $type = 'line';
 
-    public $requiredFields = ['query', 'columns', 'x_axis', 'y_axis'];
+    public $requiredFields = ['query', 'x_axis', 'columns'];
 
     /**
      * getChartData method
      *
-     * Assembles the chart data for the LineChart widget
+     * Assembles graphs data from the reports config and data.
      *
-     * @param array $data with report config and data.
-     * @return array $chartData.
+     * @param array $data containing report configs and data.
+     * @return array $chartData with defined chart information.
      */
-    public function getChartData(array $data = [])
+    public function getChartData(array $data = []): array
     {
-        $labels = [];
         $report = $this->config;
 
-        $chartData = [
-            'chart' => $this->type,
-            'options' => [
-                'element' => $this->getContainerId(),
-                'resize' => true,
-                'hideHover' => true
+        // We suppose that in the x_axis are the values with labels
+        $label_column_name = $report['info']['x_axis'];
+        $label = Hash::extract($data, '{n}.' . $label_column_name);
+
+        $columns = explode(',', $report['info']['columns']);
+        $columns = array_diff($columns, [$label_column_name]);
+
+        // Check if is a multiple set of data.
+        $datasets = [];
+
+        foreach ($columns as $key => $value) {
+            $colors = $this->getChartColors(1, $this->getContainerId() . (string)$key, false);
+            $datasets[] = [
+                "label" => Inflector::humanize($value),
+                "data" => (array)Hash::extract($data, '{n}.' . $value),
+                "borderColor" => $colors[0],
+                "fill" => false,
+            ];
+        }
+
+        $chartjs = [
+            "type" => $this->type,
+            "data" =>
+            [
+                "labels" => $label,
+                "datasets" => $datasets,
             ],
         ];
 
-        $columns = explode(',', $report['info']['columns']);
-
-        foreach ($columns as $column) {
-            array_push($labels, Inflector::humanize($column));
-        }
-        $options = [
-            'data' => $data,
-            'lineColors' => $this->getChartColors(),
-            'labels' => $labels,
-            'xkey' => explode(',', $report['info']['x_axis']),
-            'ykeys' => explode(',', $report['info']['y_axis'])
+        $chartData = [
+            'chart' => $this->type,
+            'id' => $this->getContainerId(),
+            'options' => [
+                'resize' => true,
+                'hideHover' => true,
+                'dataChart' => $chartjs,
+            ],
         ];
-
-        $chartData['options'] = array_merge($chartData['options'], $options);
 
         if (!empty($data)) {
             $this->setData($chartData);
@@ -65,33 +79,26 @@ class LineChartReportWidget extends BaseReportGraphs
     }
 
     /**
-     * getScripts method
+     * prepareChartOptions method
      *
-     * Specifies required JS/CSS libs for given chart
+     * Specifies JS/CSS libs for the content loading
      *
-     * @param array $data passed in the method.
-     * @return array $content with JS/CSS libs.
+     * @param mixed[] $data passed from the widgetHandler.
+     * @return mixed[] $content with the libs.
      */
-    public function getScripts(array $data = [])
+    public function getScripts(array $data = []): array
     {
         return [
             'post' => [
-                'css' => [
-                    'type' => 'css',
-                    'content' => [
-                        'AdminLTE./plugins/morris/morris',
-                    ],
-                    'block' => 'css',
-                ],
                 'javascript' => [
                     'type' => 'script',
                     'content' => [
                         'https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js',
-                        'AdminLTE./plugins/morris/morris.min',
+                        'Search./plugins/Chart.min.js',
                     ],
                     'block' => 'scriptBottom',
                 ],
-            ]
+            ],
         ];
     }
 }

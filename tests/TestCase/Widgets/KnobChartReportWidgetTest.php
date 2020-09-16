@@ -20,12 +20,12 @@ class KnobChartReportWidgetTest extends TestCase
         parent::tearDown();
     }
 
-    public function testGetType()
+    public function testGetType(): void
     {
         $this->assertEquals('knobChart', $this->widget->getType());
     }
 
-    public function testGetScripts()
+    public function testGetScripts(): void
     {
         $content = $this->widget->getScripts([]);
         $this->assertInternalType('array', $content);
@@ -35,14 +35,14 @@ class KnobChartReportWidgetTest extends TestCase
         $this->assertArrayHasKey('javascript', $content['post']);
     }
 
-    public function testGetChartData()
+    public function testGetChartData(): void
     {
         $data = [
             [
                 'name' => 'foo',
                 'place' => 'bar',
-                'amount' => 100
-            ]
+                'amount' => 100,
+            ],
         ];
 
         $expected = [
@@ -50,8 +50,8 @@ class KnobChartReportWidgetTest extends TestCase
             'options' => [
                 'element' => 'graph_bar_assigned_by_year',
                 'resize' => true,
-                'data' => [['value' => 'foo', 'label' => 'bar', 'max' => 100]]
-            ]
+                'data' => [['value' => 'foo', 'label' => 'bar', 'max' => 100]],
+            ],
         ];
 
         $config = [
@@ -69,8 +69,8 @@ class KnobChartReportWidgetTest extends TestCase
                 'x_axis' => '',
                 'max' => 'amount',
                 'value' => 'name',
-                'label' => 'place'
-            ]
+                'label' => 'place',
+            ],
         ];
 
         $this->widget->setConfig($config);
