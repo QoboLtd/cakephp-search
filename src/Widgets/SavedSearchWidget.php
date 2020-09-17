@@ -68,7 +68,7 @@ final class SavedSearchWidget extends BaseWidget
     }
 
     /**
-     * @return \Search\Model\Entity\SavedSearch|null
+     * @return \Qobo\Search\Model\Entity\SavedSearch|null
      */
     public function getData(): ?SavedSearch
     {
@@ -79,7 +79,7 @@ final class SavedSearchWidget extends BaseWidget
      * Retrieve SavedSearch results for the widget
      *
      * @param array $options containing entity and view params.
-     * @return \Search\Model\Entity\SavedSearch|null
+     * @return \Qobo\Search\Model\Entity\SavedSearch|null
      */
     public function getResults(array $options = []): ?SavedSearch
     {

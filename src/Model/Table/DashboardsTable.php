@@ -21,7 +21,7 @@ use Cake\Validation\Validator;
  * Dashboards Model
  *
  * @property \RolesCapabilities\Model\Table\RolesTable $Roles
- * @property \Search\Model\Table\SavedSearches $SavedSearches
+ * @property \Qobo\Search\Model\Table\SavedSearches $SavedSearches
  */
 class DashboardsTable extends Table
 {

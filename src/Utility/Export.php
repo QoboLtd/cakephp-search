@@ -239,7 +239,7 @@ final class Export
     /**
      * Extracts search options from saved search.
 
-     * @param \Search\Model\Entity\SavedSearch $savedSearch SavedSearch
+     * @param \Qobo\Search\Model\Entity\SavedSearch $savedSearch SavedSearch
      * @return mixed[]
      */
     private function getOptionsFromSavedSearch(SavedSearch $savedSearch): array

@@ -8,14 +8,14 @@ use Qobo\Search\Utility\Export;
 /**
  * Search\Utility\Export Test Case
  *
- * @property \Search\Utility\Export $Export
+ * @property \Qobo\Search\Utility\Export $Export
  */
 class ExportTest extends TestCase
 {
     public $fixtures = [
-        'plugin.Search.Articles',
-        'plugin.Search.Authors',
-        'plugin.Search.SavedSearches',
+        'plugin.Qobo/Search.Articles',
+        'plugin.Qobo/Search.Authors',
+        'plugin.Qobo/Search.SavedSearches',
     ];
 
     private $user;

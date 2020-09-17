@@ -18,7 +18,7 @@ use Qobo\Search\Criteria\Field;
 
 class CountTest extends TestCase
 {
-    public $fixtures = ['plugin.Search.Articles'];
+    public $fixtures = ['plugin.Qobo/Search.Articles'];
 
     private $query;
 

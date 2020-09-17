@@ -39,7 +39,7 @@ final class OrderBy
     /**
      * Order field getter.
      *
-     * @return \Search\Criteria\Field
+     * @return \Qobo\Search\Criteria\Field
      */
     public function field(): Field
     {
@@ -49,7 +49,7 @@ final class OrderBy
     /**
      * Order direction getter.
      *
-     * @return \Search\Criteria\Direction
+     * @return \Qobo\Search\Criteria\Direction
      */
     public function direction(): Direction
     {

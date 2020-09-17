@@ -20,7 +20,7 @@ use Qobo\Search\Filter\Contains;
 
 class ContainsTest extends TestCase
 {
-    public $fixtures = ['plugin.Search.Articles'];
+    public $fixtures = ['plugin.Qobo/Search.Articles'];
 
     private $query;
 
@@ -62,7 +62,7 @@ class ContainsTest extends TestCase
 
     public function testApplyWithAggregateAndGroupBy(): void
     {
-        $filter = new Contains(new Field('title'), 'foo', new Aggregate(\Search\Aggregate\Count::class), true);
+        $filter = new Contains(new Field('title'), 'foo', new Aggregate(\Qobo\Search\Aggregate\Count::class), true);
 
         $result = $filter->apply($this->query);
 

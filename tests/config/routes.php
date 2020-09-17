@@ -8,7 +8,7 @@ Router::defaultRouteClass(DashedRoute::class);
 
 Router::connect('/:controller/:action/*');
 Router::plugin(
-    'Search',
+    'Qobo/Search',
     ['path' => '/search'],
     function ($routes) {
         $routes->fallbacks('DashedRoute');

@@ -19,7 +19,7 @@ use Cake\Utility\Hash;
 /**
  * Dashboards Controller
  *
- * @property \Search\Model\Table\DashboardsTable $Dashboards
+ * @property \Qobo\Search\Model\Table\DashboardsTable $Dashboards
  */
 class DashboardsController extends AppController
 {
@@ -31,7 +31,7 @@ class DashboardsController extends AppController
      */
     public function index()
     {
-        $query = $this->Dashboards->getUserDashboards($this->Auth->user());
+       $query = $this->Dashboards->getUserDashboards($this->Auth->user());
         $entity = $query->first();
 
         if (null !== $entity) {
@@ -104,7 +104,7 @@ class DashboardsController extends AppController
         }
 
         $this->set('dashboardWidgets', $widgets);
-        $this->set('columns', Configure::readOrFail('Qobo/Search.dashboard.columns'));
+        $this->set('columns', Configure::readOrFail('Search.dashboard.columns'));
         $this->set('user', $this->Auth->user());
         $this->set('dashboard', $dashboard);
         $this->set('_serialize', ['dashboard']);

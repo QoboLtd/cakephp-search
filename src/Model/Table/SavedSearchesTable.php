@@ -93,12 +93,12 @@ class SavedSearchesTable extends Table
             ->allowEmpty('criteria')
             ->isArray('criteria')
 
-            ->inList('conjunction', \Search\Criteria\Conjunction::CONJUNCTIONS)
+            ->inList('conjunction', \Qobo\Search\Criteria\Conjunction::CONJUNCTIONS)
 
             ->allowEmpty('fields')
             ->isArray('fields')
 
-            ->inList('sort_by_order', \Search\Criteria\Direction::DIRECTIONS);
+            ->inList('sort_by_order', \Qobo\Search\Criteria\Direction::DIRECTIONS);
 
         return $validator;
     }

@@ -26,7 +26,7 @@ class DashboardsTableTest extends TestCase
      * @var array
      */
     public $fixtures = [
-        'plugin.Search.Dashboards',
+        'plugin.Qobo/Search.Dashboards',
         'plugin.CakeDC/Users.Users',
         'plugin.Groups.Groups',
         'plugin.Groups.GroupsUsers',
@@ -43,7 +43,7 @@ class DashboardsTableTest extends TestCase
     {
         parent::setUp();
 
-        $config = TableRegistry::getTableLocator()->exists('Qobo/Search.Dashboards') ? [] : ['className' => 'Search\Model\Table\DashboardsTable'];
+        $config = TableRegistry::getTableLocator()->exists('Qobo/Search.Dashboards') ? [] : ['className' => '\Qobo\Search\Model\Table\DashboardsTable'];
         /**
          * @var \Qobo\Search\Model\Table\DashboardsTable $table
          */

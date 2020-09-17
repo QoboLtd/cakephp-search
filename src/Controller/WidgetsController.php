@@ -16,7 +16,7 @@ use Cake\ORM\TableRegistry;
 /**
  * Widgets Controller
  *
- * @property \Search\Model\Table\WidgetsTable $Widgets
+ * @property \Qobo\Search\Model\Table\WidgetsTable $Widgets
  */
 class WidgetsController extends AppController
 {

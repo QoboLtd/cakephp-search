@@ -2,7 +2,7 @@
 use Cake\Core\Configure;
 use Cake\Filesystem\Folder;
 
-$pluginName = 'Qobo\Search';
+$pluginName = 'Search';
 if (empty($pluginName)) {
     throw new \RuntimeException("Plugin name is not configured");
 }
@@ -46,7 +46,7 @@ require ROOT . '/vendor/autoload.php';
 require CORE_PATH . 'config/bootstrap.php';
 
 Configure::write('App', [
-    'namespace' => $pluginName . '\Test\App',
+    'namespace' => 'Qobo\\' . $pluginName . '\Test\App',
     'paths' => [
         'templates' => [
             APP . 'Template' . DS,
@@ -103,11 +103,11 @@ Cake\Datasource\ConnectionManager::setConfig('test', [
 ]);
 
 // Alias AppController to the test App
-class_alias($pluginName . '\Test\App\Controller\AppController', 'App\Controller\AppController');
+class_alias('\Qobo\\' . $pluginName . '\Test\App\Controller\AppController', 'App\Controller\AppController');
 // If plugin has routes.php/bootstrap.php then load them, otherwise don't.
 $loadPluginRoutes = file_exists(ROOT . DS . 'config' . DS . 'routes.php');
 $loadPluginBootstrap = file_exists(ROOT . DS . 'config' . DS . 'bootstrap.php');
-Cake\Core\Plugin::load($pluginName, ['path' => ROOT . DS, 'autoload' => true, 'routes' => $loadPluginRoutes, 'bootstrap' => $loadPluginBootstrap]);
+Cake\Core\Plugin::load('Qobo/' . $pluginName, ['path' => ROOT . DS, 'autoload' => true, 'routes' => $loadPluginRoutes, 'bootstrap' => $loadPluginBootstrap]);
 
 Cake\Core\Plugin::load('CakeDC/Users', ['routes' => true, 'bootstrap' => true]);
 Cake\Core\Plugin::load('Qobo/Utils', ['bootstrap' => true]);

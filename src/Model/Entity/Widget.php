@@ -27,8 +27,8 @@ use Cake\ORM\Entity;
  * @property \Cake\I18n\Time $modified
  * @property \Cake\I18n\Time $trashed
  *
- * @property \Search\Model\Entity\Dashboard $dashboard
- * @property \Search\Model\Entity\Widget[] $widgets
+ * @property \Qobo\Search\Model\Entity\Dashboard $dashboard
+ * @property \Qobo\Search\Model\Entity\Widget[] $widgets
  */
 class Widget extends Entity
 {

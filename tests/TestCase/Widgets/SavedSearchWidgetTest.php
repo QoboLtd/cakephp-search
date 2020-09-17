@@ -9,8 +9,8 @@ use Qobo\Search\Widgets\SavedSearchWidget;
 class SavedSearchWidgetTest extends TestCase
 {
     public $fixtures = [
-        'plugin.Search.SavedSearches',
-        'plugin.Search.Widgets',
+        'plugin.Qobo/Search.SavedSearches',
+        'plugin.Qobo/Search.Widgets',
     ];
 
     private $SavedSearches;

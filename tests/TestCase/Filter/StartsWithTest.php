@@ -20,7 +20,7 @@ use Qobo\Search\Filter\StartsWith;
 
 class StartsWithTest extends TestCase
 {
-    public $fixtures = ['plugin.Search.Articles'];
+    public $fixtures = ['plugin.Qobo/Search.Articles'];
 
     private $query;
 
@@ -62,7 +62,7 @@ class StartsWithTest extends TestCase
 
     public function testApplyWithAggregateAndGroupBy(): void
     {
-        $filter = new StartsWith(new Field('title'), 'foo', new Aggregate(\Search\Aggregate\Average::class), true);
+        $filter = new StartsWith(new Field('title'), 'foo', new Aggregate(\Qobo\Search\Aggregate\Average::class), true);
 
         $result = $filter->apply($this->query);
 

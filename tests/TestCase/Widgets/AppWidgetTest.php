@@ -6,15 +6,15 @@ use Cake\TestSuite\TestCase;
 use Qobo\Search\Widgets\AppWidget;
 
 /**
- * @property \Search\Model\Table\AppWidgetsTable $AppWidgets
- * @property \Search\Model\Table\WidgetsTable $Widgets
- * @property \Search\Widgets\AppWidget $widget
+ * @property \Qobo\Search\Model\Table\AppWidgetsTable $AppWidgets
+ * @property \Qobo\Search\Model\Table\WidgetsTable $Widgets
+ * @property \Qobo\Search\Widgets\AppWidget $widget
  */
 class AppWidgetTest extends TestCase
 {
     public $fixtures = [
-        'plugin.Search.AppWidgets',
-        'plugin.Search.Widgets',
+        'plugin.Qobo/Search.AppWidgets',
+        'plugin.Qobo/Search.Widgets',
     ];
 
     public $widget;
@@ -28,14 +28,14 @@ class AppWidgetTest extends TestCase
     {
         $this->widget = new AppWidget(['foo' => 'bar']);
 
-        $config = TableRegistry::getTableLocator()->exists('Qobo/Search.AppWidgets') ? [] : ['className' => 'Search\Model\Table\AppWidgetsTable'];
+        $config = TableRegistry::getTableLocator()->exists('Qobo/Search.AppWidgets') ? [] : ['className' => '\Qobo\Search\Model\Table\AppWidgetsTable'];
         /**
          * @var \Qobo\Search\Model\Table\AppWidgetsTable $table
          */
         $table = TableRegistry::getTableLocator()->get('Qobo/Search.AppWidgets', $config);
         $this->AppWidgets = $table;
 
-        $config = TableRegistry::getTableLocator()->exists('Qobo/Search.Widgets') ? [] : ['className' => 'Search\Model\Table\WidgetsTable'];
+        $config = TableRegistry::getTableLocator()->exists('Qobo/Search.Widgets') ? [] : ['className' => '\Qobo\Search\Model\Table\WidgetsTable'];
         /**
          * @var \Qobo\Search\Model\Table\WidgetsTable $table
          */

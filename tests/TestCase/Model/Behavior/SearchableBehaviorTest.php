@@ -19,8 +19,8 @@ use Qobo\Search\Filter\StartsWith;
 class SearchableBehaviorTest extends TestCase
 {
     public $fixtures = [
-        'plugin.Search.Articles',
-        'plugin.Search.Authors',
+        'plugin.Qobo/Search.Articles',
+        'plugin.Qobo/Search.Authors',
     ];
 
     private $articles;

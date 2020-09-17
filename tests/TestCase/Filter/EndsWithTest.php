@@ -21,7 +21,7 @@ use Qobo\Search\Filter\EndsWith;
 
 class EndsWithTest extends TestCase
 {
-    public $fixtures = ['plugin.Search.Articles'];
+    public $fixtures = ['plugin.Qobo/Search.Articles'];
 
     private $query;
 
@@ -63,7 +63,7 @@ class EndsWithTest extends TestCase
 
     public function testApplyWithAggregateAndGroupBy(): void
     {
-        $filter = new EndsWith(new Field('title'), 'foo', new Aggregate(\Search\Aggregate\Maximum::class), true);
+        $filter = new EndsWith(new Field('title'), 'foo', new Aggregate(\Qobo\Search\Aggregate\Maximum::class), true);
 
         $result = $filter->apply($this->query);
 

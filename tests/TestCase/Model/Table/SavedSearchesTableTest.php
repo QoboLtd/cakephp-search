@@ -19,7 +19,7 @@ class SavedSearchesTableTest extends TestCase
      */
     public $fixtures = [
         'plugin.CakeDC/Users.Users',
-        'plugin.Search.SavedSearches',
+        'plugin.Qobo/Search.SavedSearches',
     ];
 
     private $SavedSearches;

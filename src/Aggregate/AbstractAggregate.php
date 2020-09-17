@@ -26,7 +26,7 @@ abstract class AbstractAggregate implements AggregateInterface
     /**
      * Constructor method.
      *
-     * @param \Search\Criteria\Field $field Field
+     * @param \Qobo\Search\Criteria\Field $field Field
      */
     public function __construct(Field $field)
     {

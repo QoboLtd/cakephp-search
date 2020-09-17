@@ -26,13 +26,13 @@ use Qobo\Search\Widgets\WidgetFactory;
  * @property \Cake\ORM\Association\BelongsTo $Widgets
  * @property \Cake\ORM\Association\HasMany $Widgets
  *
- * @method \Search\Model\Entity\Widget get($primaryKey, $options = [])
- * @method \Search\Model\Entity\Widget newEntity($data = null, array $options = [])
- * @method \Search\Model\Entity\Widget[] newEntities(array $data, array $options = [])
- * @method \Search\Model\Entity\Widget|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \Search\Model\Entity\Widget patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \Search\Model\Entity\Widget[] patchEntities($entities, array $data, array $options = [])
- * @method \Search\Model\Entity\Widget findOrCreate($search, callable $callback = null)
+ * @method \Qobo\Search\Model\Entity\Widget get($primaryKey, $options = [])
+ * @method \Qobo\Search\Model\Entity\Widget newEntity($data = null, array $options = [])
+ * @method \Qobo\Search\Model\Entity\Widget[] newEntities(array $data, array $options = [])
+ * @method \Qobo\Search\Model\Entity\Widget|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \Qobo\Search\Model\Entity\Widget patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
+ * @method \Qobo\Search\Model\Entity\Widget[] patchEntities($entities, array $data, array $options = [])
+ * @method \Qobo\Search\Model\Entity\Widget findOrCreate($search, callable $callback = null)
  * @method \Muffin\Trash\Model\Behavior\TrashBehavior trashAll($conditions)
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
@@ -156,7 +156,7 @@ class WidgetsTable extends Table
     /**
      * getWidgetOptions method
      *
-     * @param \Search\Model\Entity\Widget $entity Widget entity
+     * @param \Qobo\Search\Model\Entity\Widget $entity Widget entity
      * @param mixed[] $options Optional extra configuration
      *
      * @return mixed[] $options

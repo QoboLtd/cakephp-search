@@ -22,7 +22,7 @@ use Qobo\Search\Transformer\QueryDataTransformer;
 class QueryDataTransformerTest extends TestCase
 {
     public $fixtures = [
-        'plugin.Search.Articles',
+        'plugin.Qobo/Search.Articles',
     ];
 
     private $table;
@@ -52,7 +52,7 @@ class QueryDataTransformerTest extends TestCase
         $options = [
             'conjunction' => 'OR',
             'data' => [
-                ['field' => 'title', 'operator' => \Search\Filter\EndsWith::class, 'value' => 't'],
+                ['field' => 'title', 'operator' => \Qobo\Search\Filter\EndsWith::class, 'value' => 't'],
                 ['field' => 'avg(priority)', 'operator' => 'greater', 'value' => 3],
             ],
         ];

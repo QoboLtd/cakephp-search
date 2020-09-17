@@ -16,8 +16,8 @@ class ReportWidgetTest extends TestCase
     private const DEFAULT_OPTIONS = ['config' => ['info' => ['renderAs' => 'barChart']]];
 
     public $fixtures = [
-        'plugin.Search.Widgets',
-        'plugin.Search.Articles',
+        'plugin.Qobo/Search.Widgets',
+        'plugin.Qobo/Search.Articles',
     ];
 
     private $widget;
@@ -253,7 +253,7 @@ class ReportWidgetTest extends TestCase
 
         $this->widget->getReport(['entity' => $entity]);
 
-        $this->assertEventFired('Qobo/Search.Report.getReports');
+        $this->assertEventFired('Search.Report.getReports');
     }
 
     public function testValidatesWithoutRequiredFields(): void

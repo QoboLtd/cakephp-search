@@ -30,13 +30,13 @@ class AggregateTest extends TestCase
 
     public function testShouldAcceptValidAggregate(): void
     {
-        $aggregate = new Aggregate(\Search\Aggregate\Average::class);
+        $aggregate = new Aggregate(\Qobo\Search\Aggregate\Average::class);
         $this->assertInstanceOf(Aggregate::class, $aggregate);
     }
 
     public function testShouldReturnAsString(): void
     {
-        $aggregate = new Aggregate(\Search\Aggregate\Average::class);
-        $this->assertEquals(\Search\Aggregate\Average::class, (string)$aggregate);
+        $aggregate = new Aggregate(\Qobo\Search\Aggregate\Average::class);
+        $this->assertEquals(\Qobo\Search\Aggregate\Average::class, (string)$aggregate);
     }
 }

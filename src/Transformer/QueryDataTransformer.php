@@ -29,26 +29,26 @@ use Webmozart\Assert\Assert;
 final class QueryDataTransformer
 {
     private const FILTER_MAP = [
-        'is' => \Search\Filter\Equal::class,
-        '=' => \Search\Filter\Equal::class,
-        'is_not' => \Search\Filter\NotEqual::class,
-        '!=' => \Search\Filter\NotEqual::class,
-        'greater' => \Search\Filter\Greater::class,
-        '>' => \Search\Filter\Greater::class,
-        'less' => \Search\Filter\Less::class,
-        '<' => \Search\Filter\Less::class,
-        'contains' => \Search\Filter\Contains::class,
-        'not_contains' => \Search\Filter\NotContains::class,
-        'starts_with' => \Search\Filter\StartsWith::class,
-        'ends_with' => \Search\Filter\EndsWith::class,
+        'is' => \Qobo\Search\Filter\Equal::class,
+        '=' => \Qobo\Search\Filter\Equal::class,
+        'is_not' => \Qobo\Search\Filter\NotEqual::class,
+        '!=' => \Qobo\Search\Filter\NotEqual::class,
+        'greater' => \Qobo\Search\Filter\Greater::class,
+        '>' => \Qobo\Search\Filter\Greater::class,
+        'less' => \Qobo\Search\Filter\Less::class,
+        '<' => \Qobo\Search\Filter\Less::class,
+        'contains' => \Qobo\Search\Filter\Contains::class,
+        'not_contains' => \Qobo\Search\Filter\NotContains::class,
+        'starts_with' => \Qobo\Search\Filter\StartsWith::class,
+        'ends_with' => \Qobo\Search\Filter\EndsWith::class,
     ];
 
     private const AGGREGATE_MAP = [
-        'count' => \Search\Aggregate\Count::class,
-        'avg' => \Search\Aggregate\Average::class,
-        'sum' => \Search\Aggregate\Sum::class,
-        'max' => \Search\Aggregate\Maximum::class,
-        'min' => \Search\Aggregate\Minimum::class,
+        'count' => \Qobo\Search\Aggregate\Count::class,
+        'avg' => \Qobo\Search\Aggregate\Average::class,
+        'sum' => \Qobo\Search\Aggregate\Sum::class,
+        'max' => \Qobo\Search\Aggregate\Maximum::class,
+        'min' => \Qobo\Search\Aggregate\Minimum::class,
     ];
 
     private $group;
@@ -82,7 +82,7 @@ final class QueryDataTransformer
      *
      * @param \Cake\ORM\Query $query Query
      * @param mixed[] $options Query options
-     * @return \Search\Transformer\QueryDataTransformer
+     * @return \Qobo\Search\Transformer\QueryDataTransformer
      */
     public static function transform(Query $query, array $options): QueryDataTransformer
     {
@@ -92,7 +92,7 @@ final class QueryDataTransformer
     /**
      * Conjunction getter.
      *
-     * @return \Search\Criteria\Conjunction|null
+     * @return \Qobo\Search\Criteria\Conjunction|null
      */
     public function getConjunction(): ?Conjunction
     {
@@ -116,7 +116,7 @@ final class QueryDataTransformer
     /**
      * Group-by getter.
      *
-     * @return \Search\Criteria\Field|null
+     * @return \Qobo\Search\Criteria\Field|null
      */
     public function getGroup(): ?Field
     {
@@ -145,7 +145,7 @@ final class QueryDataTransformer
     /**
      * Order-by getter.
      *
-     * @return \Search\Criteria\OrderBy[]
+     * @return \Qobo\Search\Criteria\OrderBy[]
      */
     public function getOrder(): array
     {
@@ -174,7 +174,7 @@ final class QueryDataTransformer
     /**
      * Select fields getter.
      *
-     * @return \Search\Criteria\Field[]
+     * @return \Qobo\Search\Criteria\Field[]
      */
     public function getSelect(): array
     {
@@ -201,7 +201,7 @@ final class QueryDataTransformer
     /**
      * Criteria getter.
      *
-     * @return \Search\Criteria\Criteria[]
+     * @return \Qobo\Search\Criteria\Criteria[]
      */
     public function getCriteria(): array
     {

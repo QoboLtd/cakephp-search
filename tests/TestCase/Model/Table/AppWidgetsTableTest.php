@@ -9,7 +9,7 @@ use Cake\TestSuite\TestCase;
  */
 class AppWidgetsTableTest extends TestCase
 {
-    public $fixtures = ['plugin.Search.AppWidgets'];
+    public $fixtures = ['plugin.Qobo/Search.AppWidgets'];
 
     private $table;
 

@@ -27,13 +27,13 @@ use Webmozart\Assert\Assert;
 /**
  * AppWidgets Model
  *
- * @method \Search\Model\Entity\AppWidget get($primaryKey, $options = [])
- * @method \Search\Model\Entity\AppWidget newEntity($data = null, array $options = [])
- * @method \Search\Model\Entity\AppWidget[] newEntities(array $data, array $options = [])
- * @method \Search\Model\Entity\AppWidget|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \Search\Model\Entity\AppWidget patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \Search\Model\Entity\AppWidget[] patchEntities($entities, array $data, array $options = [])
- * @method \Search\Model\Entity\AppWidget findOrCreate($search, callable $callback = null, $options = [])
+ * @method \Qobo\Search\Model\Entity\AppWidget get($primaryKey, $options = [])
+ * @method \Qobo\Search\Model\Entity\AppWidget newEntity($data = null, array $options = [])
+ * @method \Qobo\Search\Model\Entity\AppWidget[] newEntities(array $data, array $options = [])
+ * @method \Qobo\Search\Model\Entity\AppWidget|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \Qobo\Search\Model\Entity\AppWidget patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
+ * @method \Qobo\Search\Model\Entity\AppWidget[] patchEntities($entities, array $data, array $options = [])
+ * @method \Qobo\Search\Model\Entity\AppWidget findOrCreate($search, callable $callback = null, $options = [])
  * @method \Muffin\Trash\Model\Behavior\TrashBehavior trashAll($conditions)
  * @method \Muffin\Trash\Model\Behavior\TrashBehavior restoreTrash(\Cake\Datasource\EntityInterface $entity, $options = [])
  *
@@ -141,7 +141,7 @@ class AppWidgetsTable extends Table
 
             // skip adding existing app widgets.
             $appWidgetEntity = $this->find('withTrashed')->where(['AppWidgets.name' => $widget['name']])->first();
-            Assert::nullOrIsInstanceOf($appWidgetEntity, \Search\Model\Entity\AppWidget::class);
+            Assert::nullOrIsInstanceOf($appWidgetEntity, \Qobo\Search\Model\Entity\AppWidget::class);
             if (!empty($appWidgetEntity) && !empty($appWidgetEntity->get('trashed'))) {
                 $this->restoreTrash($appWidgetEntity);
                 continue;

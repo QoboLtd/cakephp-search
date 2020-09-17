@@ -82,7 +82,7 @@ final class Search
     /**
      * Add group-by to Search.
      *
-     * @param \Search\Criteria\Field $field Field
+     * @param \Qobo\Search\Criteria\Field $field Field
      * @return void
      */
     public function setGroupBy(Field $field): void
@@ -93,7 +93,7 @@ final class Search
     /**
      * Add order-by to Search.
      *
-     * @param \Search\Criteria\OrderBy|\Search\Criteria\OrderBy[] $orderBy OrderBy
+     * @param \Qobo\Search\Criteria\OrderBy|\Qobo\Search\Criteria\OrderBy[] $orderBy OrderBy
      * @return void
      */
     public function setOrderBy($orderBy): void
@@ -110,7 +110,7 @@ final class Search
     /**
      * Add criteria to Search.
      *
-     * @param \Search\Criteria\Criteria $criteria Criteria object
+     * @param \Qobo\Search\Criteria\Criteria $criteria Criteria object
      * @return void
      */
     public function addCriteria(Criteria $criteria): void
@@ -121,7 +121,7 @@ final class Search
     /**
      * Add selection field to Search.
      *
-     * @param \Search\Criteria\Field $field Field
+     * @param \Qobo\Search\Criteria\Field $field Field
      * @return void
      */
     public function addSelect(Field $field): void
@@ -132,7 +132,7 @@ final class Search
     /**
      * Add conjunction to Search.
      *
-     * @param \Search\Criteria\Conjunction $conjunction Search conjunction
+     * @param \Qobo\Search\Criteria\Conjunction $conjunction Search conjunction
      * @return void
      */
     public function setConjunction(Conjunction $conjunction): void

@@ -14,9 +14,9 @@ class WidgetsControllerTest extends IntegrationTestCase
      * @var array
      */
     public $fixtures = [
-        'plugin.Search.Widgets',
-        'plugin.Search.AppWidgets',
-        'plugin.Search.SavedSearches',
+        'plugin.Qobo/Search.Widgets',
+        'plugin.Qobo/Search.AppWidgets',
+        'plugin.Qobo/Search.SavedSearches',
     ];
 
     public function setUp()

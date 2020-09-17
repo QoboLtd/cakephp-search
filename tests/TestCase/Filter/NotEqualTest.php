@@ -20,7 +20,7 @@ use Qobo\Search\Filter\NotEqual;
 
 class NotEqualTest extends TestCase
 {
-    public $fixtures = ['plugin.Search.Articles'];
+    public $fixtures = ['plugin.Qobo/Search.Articles'];
 
     private $query;
 
@@ -106,7 +106,7 @@ class NotEqualTest extends TestCase
 
     public function testApplyWithAggregateAndGroupBy(): void
     {
-        $filter = new NotEqual(new Field('title'), 'foo', new Aggregate(\Search\Aggregate\Average::class), true);
+        $filter = new NotEqual(new Field('title'), 'foo', new Aggregate(\Qobo\Search\Aggregate\Average::class), true);
 
         $result = $filter->apply($this->query);
 

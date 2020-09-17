@@ -25,7 +25,7 @@ class FilterTest extends TestCase
     public function testShouldRequireScalarOrArrayFilterValue(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $filter = new Filter(\Search\Filter\StartsWith::class, (object)['foo']);
+        $filter = new Filter(\Qobo\Search\Filter\StartsWith::class, (object)['foo']);
     }
 
     public function testShouldRequireValidFilterType(): void
@@ -36,14 +36,14 @@ class FilterTest extends TestCase
 
     public function testShouldAcceptValidFilterType(): void
     {
-        $filter = new Filter(\Search\Filter\Contains::class, 'foobar');
+        $filter = new Filter(\Qobo\Search\Filter\Contains::class, 'foobar');
         $this->assertInstanceOf(Filter::class, $filter);
     }
 
     public function testShouldReturnFilterTypeAsString(): void
     {
-        $filter = new Filter(\Search\Filter\Contains::class, 'foobar');
-        $this->assertEquals(\Search\Filter\Contains::class, $filter->type());
+        $filter = new Filter(\Qobo\Search\Filter\Contains::class, 'foobar');
+        $this->assertEquals(\Qobo\Search\Filter\Contains::class, $filter->type());
     }
 
     /**
@@ -53,7 +53,7 @@ class FilterTest extends TestCase
      */
     public function testShouldReturnFilterValueAsScalarOrArray($value): void
     {
-        $filter = new Filter(\Search\Filter\Contains::class, $value);
+        $filter = new Filter(\Qobo\Search\Filter\Contains::class, $value);
         $this->assertEquals($value, $filter->value());
     }
 

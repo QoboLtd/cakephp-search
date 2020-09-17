@@ -17,7 +17,7 @@ use Webmozart\Assert\Assert;
 /**
  * SavedSearches Controller
  *
- * @property \Search\Model\Table\SavedSearchesTable $SavedSearches
+ * @property \Qobo\Search\Model\Table\SavedSearchesTable $SavedSearches
  */
 class SavedSearchesController extends AppController
 {

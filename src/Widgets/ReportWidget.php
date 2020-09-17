@@ -22,7 +22,7 @@ use Qobo\Search\Widgets\Reports\ReportGraphsInterface;
 
 class ReportWidget extends BaseWidget
 {
-    public $renderElement = 'Search.Widgets/graph';
+    public $renderElement = 'Qobo/Search.Widgets/graph';
 
     /** @const WIDGET_REPORT_SUFFIX file naming suffix of widget files */
     const WIDGET_REPORT_SUFFIX = 'ReportWidget';
@@ -167,7 +167,7 @@ class ReportWidget extends BaseWidget
      * that we set based on the renderAs parameter of the report.
      *
      * @param mixed[] $options containing reports
-     * @return \Search\Widgets\Reports\ReportGraphsInterface|null
+     * @return \Qobo\Search\Widgets\Reports\ReportGraphsInterface|null
      */
     public function getReportInstance(array $options = []): ?ReportGraphsInterface
     {

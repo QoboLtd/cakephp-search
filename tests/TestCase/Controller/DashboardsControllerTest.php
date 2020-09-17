@@ -23,11 +23,11 @@ class DashboardsControllerTest extends IntegrationTestCase
         'plugin.CakeDC/Users.Users',
         'plugin.Groups.Groups',
         'plugin.Groups.GroupsUsers',
-        'plugin.Search.AppWidgets',
-        'plugin.Search.Articles',
-        'plugin.Search.Dashboards',
-        'plugin.Search.SavedSearches',
-        'plugin.Search.Widgets',
+        'plugin.Qobo/Search.AppWidgets',
+        'plugin.Qobo/Search.Articles',
+        'plugin.Qobo/Search.Dashboards',
+        'plugin.Qobo/Search.SavedSearches',
+        'plugin.Qobo/Search.Widgets',
         'plugin.RolesCapabilities.GroupsRoles',
         'plugin.RolesCapabilities.Roles',
     ];
@@ -49,7 +49,6 @@ class DashboardsControllerTest extends IntegrationTestCase
         }
 
         $this->get('/search/dashboards');
-        $this->_response->getBody()->rewind();
         $this->assertResponseOk();
         $this->assertResponseContains(
             'There are no configured Dashboards for you. Please contact the system administrator.'
