@@ -31,7 +31,7 @@ class DashboardsController extends AppController
      */
     public function index()
     {
-       $query = $this->Dashboards->getUserDashboards($this->Auth->user());
+        $query = $this->Dashboards->getUserDashboards($this->Auth->user());
         $entity = $query->first();
 
         if (null !== $entity) {
