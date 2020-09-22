@@ -1,5 +1,5 @@
 <?php
-namespace Search\Test\TestCase\Model\Table;
+namespace Qobo\Search\Test\TestCase\Model\Table;
 
 use Cake\Event\EventList;
 use Cake\Event\EventManager;
@@ -7,8 +7,8 @@ use Cake\ORM\RulesChecker;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use Cake\Validation\Validator;
-use Search\Event\EventName;
-use Search\Event\Model\WidgetsListener;
+use Qobo\Search\Event\EventName;
+use Qobo\Search\Event\Model\WidgetsListener;
 use Webmozart\Assert\Assert;
 
 /**
@@ -24,10 +24,10 @@ class WidgetsTableTest extends TestCase
      * @var array
      */
     public $fixtures = [
-        'plugin.Search.Widgets',
-        'plugin.Search.AppWidgets',
-        'plugin.Search.Dashboards',
-        'plugin.Search.SavedSearches',
+        'plugin.Qobo/Search.Widgets',
+        'plugin.Qobo/Search.AppWidgets',
+        'plugin.Qobo/Search.Dashboards',
+        'plugin.Qobo/Search.SavedSearches',
     ];
 
     /**
@@ -39,7 +39,7 @@ class WidgetsTableTest extends TestCase
     {
         parent::setUp();
 
-        $this->Widgets = TableRegistry::getTableLocator()->get('Search.Widgets');
+        $this->Widgets = TableRegistry::getTableLocator()->get('Qobo/Search.Widgets');
         $this->Widgets->getEventManager()->setEventList(new EventList());
     }
 
@@ -94,8 +94,8 @@ class WidgetsTableTest extends TestCase
     {
         EventManager::instance()->on(new WidgetsListener());
 
-        TableRegistry::getTableLocator()->get('Search.AppWidgets')->deleteAll([]);
-        TableRegistry::getTableLocator()->get('Search.SavedSearches')->deleteAll([]);
+        TableRegistry::getTableLocator()->get('Qobo/Search.AppWidgets')->deleteAll([]);
+        TableRegistry::getTableLocator()->get('Qobo/Search.SavedSearches')->deleteAll([]);
 
         $this->assertSame([], $this->Widgets->getWidgets());
         $this->assertEventFired(EventName::MODEL_DASHBOARDS_GET_WIDGETS, $this->Widgets->getEventManager());
@@ -105,8 +105,8 @@ class WidgetsTableTest extends TestCase
     {
         EventManager::instance()->on(new WidgetsListener());
 
-        TableRegistry::getTableLocator()->get('Search.AppWidgets')->deleteAll([]);
-        TableRegistry::getTableLocator()->get('Search.SavedSearches')->deleteAll([]);
+        TableRegistry::getTableLocator()->get('Qobo/Search.AppWidgets')->deleteAll([]);
+        TableRegistry::getTableLocator()->get('Qobo/Search.SavedSearches')->deleteAll([]);
 
         EventManager::instance()->on('Search.Report.getReports', function ($event) {
             return ['Foo' => ['bar_assigned_by_year' => []]];
@@ -214,7 +214,7 @@ class WidgetsTableTest extends TestCase
         $widgets = [['id' => 'foobaz', 'type' => 'foobar']];
 
         $dashboard = TableRegistry::getTableLocator()
-            ->get('Search.Dashboards')
+            ->get('Qobo/Search.Dashboards')
             ->find()
             ->firstOrFail();
         Assert::isInstanceOf($dashboard, \Cake\Datasource\EntityInterface::class);

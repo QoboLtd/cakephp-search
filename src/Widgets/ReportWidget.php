@@ -9,7 +9,7 @@
  * @copyright     Copyright (c) Qobo Ltd. (https://www.qobo.biz)
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
-namespace Search\Widgets;
+namespace Qobo\Search\Widgets;
 
 use Cake\Datasource\ConnectionManager;
 use Cake\Event\Event;
@@ -17,12 +17,12 @@ use Cake\Event\EventManager;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
-use Search\Event\EventName;
-use Search\Widgets\Reports\ReportGraphsInterface;
+use Qobo\Search\Event\EventName;
+use Qobo\Search\Widgets\Reports\ReportGraphsInterface;
 
 class ReportWidget extends BaseWidget
 {
-    public $renderElement = 'Search.Widgets/graph';
+    public $renderElement = 'Qobo/Search.Widgets/graph';
 
     /** @const WIDGET_REPORT_SUFFIX file naming suffix of widget files */
     const WIDGET_REPORT_SUFFIX = 'ReportWidget';
@@ -167,7 +167,7 @@ class ReportWidget extends BaseWidget
      * that we set based on the renderAs parameter of the report.
      *
      * @param mixed[] $options containing reports
-     * @return \Search\Widgets\Reports\ReportGraphsInterface|null
+     * @return \Qobo\Search\Widgets\Reports\ReportGraphsInterface|null
      */
     public function getReportInstance(array $options = []): ?ReportGraphsInterface
     {

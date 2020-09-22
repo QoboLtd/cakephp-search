@@ -9,10 +9,10 @@
  * @copyright     Copyright (c) Qobo Ltd. (https://www.qobo.biz)
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
-namespace Search\Test\TestCase\Aggregate;
+namespace Qobo\Search\Test\TestCase\Aggregate;
 
 use PHPUnit\Framework\TestCase;
-use Search\Aggregate\AbstractAggregate;
+use Qobo\Search\Aggregate\AbstractAggregate;
 
 class AbstractAggregateTest extends TestCase
 {

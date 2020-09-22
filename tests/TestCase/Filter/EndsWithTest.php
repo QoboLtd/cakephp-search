@@ -10,18 +10,18 @@
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
 
-namespace Search\Test\TestCase\Filter;
+namespace Qobo\Search\Test\TestCase\Filter;
 
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use Cake\Utility\Hash;
-use Search\Criteria\Aggregate;
-use Search\Criteria\Field;
-use Search\Filter\EndsWith;
+use Qobo\Search\Criteria\Aggregate;
+use Qobo\Search\Criteria\Field;
+use Qobo\Search\Filter\EndsWith;
 
 class EndsWithTest extends TestCase
 {
-    public $fixtures = ['plugin.Search.Articles'];
+    public $fixtures = ['plugin.Qobo/Search.Articles'];
 
     private $query;
 
@@ -63,7 +63,7 @@ class EndsWithTest extends TestCase
 
     public function testApplyWithAggregateAndGroupBy(): void
     {
-        $filter = new EndsWith(new Field('title'), 'foo', new Aggregate(\Search\Aggregate\Maximum::class), true);
+        $filter = new EndsWith(new Field('title'), 'foo', new Aggregate(\Qobo\Search\Aggregate\Maximum::class), true);
 
         $result = $filter->apply($this->query);
 

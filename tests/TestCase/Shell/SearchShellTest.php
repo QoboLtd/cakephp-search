@@ -1,5 +1,5 @@
 <?php
-namespace Search\Test\TestCase\Shell;
+namespace Qobo\Search\Test\TestCase\Shell;
 
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\ConsoleIntegrationTestCase;
@@ -11,7 +11,7 @@ class SearchShellTest extends ConsoleIntegrationTestCase
 {
     public $fixtures = [
         'plugin.CakeDC/Users.Users',
-        'plugin.Search.SavedSearches',
+        'plugin.Qobo/Search.SavedSearches',
     ];
 
     private $table;
@@ -20,7 +20,7 @@ class SearchShellTest extends ConsoleIntegrationTestCase
     {
         parent::setUp();
 
-        $this->table = TableRegistry::getTableLocator()->get('Search.SavedSearches');
+        $this->table = TableRegistry::getTableLocator()->get('Qobo/Search.SavedSearches');
 
         $this->table->deleteAll([]);
 

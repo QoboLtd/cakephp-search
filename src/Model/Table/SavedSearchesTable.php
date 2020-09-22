@@ -9,7 +9,7 @@
  * @copyright     Copyright (c) Qobo Ltd. (https://www.qobo.biz)
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
-namespace Search\Model\Table;
+namespace Qobo\Search\Model\Table;
 
 use CakeDC\Users\Controller\Traits\CustomUsersTableTrait;
 use Cake\Database\Schema\TableSchema;
@@ -39,9 +39,10 @@ class SavedSearchesTable extends Table
     {
         parent::initialize($config);
 
-        $this->setTable('saved_searches');
+        $this->setTable('qobo_search_saved_searches');
         $this->setDisplayField('name');
         $this->setPrimaryKey('id');
+
         $this->addBehavior('Timestamp');
         $this->addBehavior('Muffin/Trash.Trash');
 
@@ -92,12 +93,12 @@ class SavedSearchesTable extends Table
             ->allowEmpty('criteria')
             ->isArray('criteria')
 
-            ->inList('conjunction', \Search\Criteria\Conjunction::CONJUNCTIONS)
+            ->inList('conjunction', \Qobo\Search\Criteria\Conjunction::CONJUNCTIONS)
 
             ->allowEmpty('fields')
             ->isArray('fields')
 
-            ->inList('sort_by_order', \Search\Criteria\Direction::DIRECTIONS);
+            ->inList('sort_by_order', \Qobo\Search\Criteria\Direction::DIRECTIONS);
 
         return $validator;
     }

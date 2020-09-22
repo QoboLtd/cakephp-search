@@ -1,5 +1,5 @@
 <?php
-namespace Search\Test\TestCase\Model\Table;
+namespace Qobo\Search\Test\TestCase\Model\Table;
 
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
@@ -9,7 +9,7 @@ use Cake\TestSuite\TestCase;
  */
 class AppWidgetsTableTest extends TestCase
 {
-    public $fixtures = ['plugin.Search.AppWidgets'];
+    public $fixtures = ['plugin.Qobo/Search.AppWidgets'];
 
     private $table;
 
@@ -17,7 +17,7 @@ class AppWidgetsTableTest extends TestCase
     {
         parent::setUp();
 
-        $this->table = TableRegistry::getTableLocator()->get('Search.AppWidgets');
+        $this->table = TableRegistry::getTableLocator()->get('Qobo/Search.AppWidgets');
     }
 
     public function tearDown(): void
@@ -45,7 +45,7 @@ class AppWidgetsTableTest extends TestCase
         $this->assertCount(1, $this->table->find(), sprintf('Widget with id %s was not trashed', $widgetId));
 
         TableRegistry::getTableLocator()->clear();
-        TableRegistry::getTableLocator()->get('Search.AppWidgets');
+        TableRegistry::getTableLocator()->get('Qobo/Search.AppWidgets');
 
         // validate that the widget was restored
         $this->assertCount(2, $this->table->find(), sprintf('Widget with id %s was not restored', $widgetId));

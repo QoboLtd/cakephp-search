@@ -9,11 +9,11 @@
  * @copyright     Copyright (c) Qobo Ltd. (https://www.qobo.biz)
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
-namespace Search\Filter;
+namespace Qobo\Search\Filter;
 
-use Search\Criteria\Aggregate;
-use Search\Criteria\Field;
-use Search\Criteria\Value;
+use Qobo\Search\Criteria\Aggregate;
+use Qobo\Search\Criteria\Field;
+use Qobo\Search\Criteria\Value;
 
 abstract class AbstractFilter implements FilterInterface
 {

@@ -9,7 +9,7 @@
  * @copyright     Copyright (c) Qobo Ltd. (https://www.qobo.biz)
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
-namespace Search\Widgets;
+namespace Qobo\Search\Widgets;
 
 use Cake\ORM\TableRegistry;
 
@@ -77,7 +77,7 @@ class AppWidget extends BaseWidget
      */
     public function getResults(array $options = [])
     {
-        $table = TableRegistry::getTableLocator()->get('Search.AppWidgets');
+        $table = TableRegistry::getTableLocator()->get('Qobo/Search.AppWidgets');
 
         /**
          * @var \Cake\Datasource\EntityInterface|null

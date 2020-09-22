@@ -1,8 +1,8 @@
 <?php
-namespace Search\Test\TestCase\Widgets;
+namespace Qobo\Search\Test\TestCase\Widgets;
 
 use Cake\TestSuite\TestCase;
-use Search\Widgets\Reports\TableReportWidget;
+use Qobo\Search\Widgets\Reports\TableReportWidget;
 
 class TableReportWidgetTest extends TestCase
 {

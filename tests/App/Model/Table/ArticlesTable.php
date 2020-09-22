@@ -1,5 +1,5 @@
 <?php
-namespace Search\Test\App\Model\Table;
+namespace Qobo\Search\Test\App\Model\Table;
 
 use Cake\ORM\Query;
 use Cake\ORM\Table;
@@ -15,7 +15,7 @@ class ArticlesTable extends Table
         $this->setDisplayField('title');
 
         $this->addBehavior('Timestamp');
-        $this->addBehavior('Search.Searchable');
+        $this->addBehavior('Qobo/Search.Searchable');
 
         $this->belongsTo('Authors');
         $this->belongsToMany('Tags');

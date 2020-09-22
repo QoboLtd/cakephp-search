@@ -1,9 +1,9 @@
 <?php
-namespace Search\Test\TestCase\Widgets;
+namespace Qobo\Search\Test\TestCase\Widgets;
 
 use Cake\Core\Configure;
 use Cake\TestSuite\TestCase;
-use Search\Widgets\Reports\BarChartReportWidget;
+use Qobo\Search\Widgets\Reports\BarChartReportWidget;
 
 class BarChartReportWidgetTest extends TestCase
 {

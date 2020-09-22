@@ -9,7 +9,7 @@
  * @copyright     Copyright (c) Qobo Ltd. (https://www.qobo.biz)
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
-namespace Search\Criteria;
+namespace Qobo\Search\Criteria;
 
 final class OrderBy
 {
@@ -39,7 +39,7 @@ final class OrderBy
     /**
      * Order field getter.
      *
-     * @return \Search\Criteria\Field
+     * @return \Qobo\Search\Criteria\Field
      */
     public function field(): Field
     {
@@ -49,7 +49,7 @@ final class OrderBy
     /**
      * Order direction getter.
      *
-     * @return \Search\Criteria\Direction
+     * @return \Qobo\Search\Criteria\Direction
      */
     public function direction(): Direction
     {

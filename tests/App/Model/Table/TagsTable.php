@@ -1,5 +1,5 @@
 <?php
-namespace Search\Test\App\Model\Table;
+namespace Qobo\Search\Test\App\Model\Table;
 
 use Cake\ORM\Table;
 

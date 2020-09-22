@@ -9,14 +9,14 @@
  * @copyright     Copyright (c) Qobo Ltd. (https://www.qobo.biz)
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
-namespace Search\Controller;
+namespace Qobo\Search\Controller;
 
 use Cake\ORM\TableRegistry;
 
 /**
  * Widgets Controller
  *
- * @property \Search\Model\Table\WidgetsTable $Widgets
+ * @property \Qobo\Search\Model\Table\WidgetsTable $Widgets
  */
 class WidgetsController extends AppController
 {
@@ -28,9 +28,9 @@ class WidgetsController extends AppController
     public function index()
     {
         /**
-         * @var \Search\Model\Table\WidgetsTable $table
+         * @var \Qobo\Search\Model\Table\WidgetsTable $table
          */
-        $table = TableRegistry::getTableLocator()->get('Search.Widgets');
+        $table = TableRegistry::getTableLocator()->get('Qobo/Search.Widgets');
 
         $widgets = $table->getWidgets();
 

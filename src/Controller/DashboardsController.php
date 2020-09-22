@@ -9,7 +9,7 @@
  * @copyright     Copyright (c) Qobo Ltd. (https://www.qobo.biz)
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
-namespace Search\Controller;
+namespace Qobo\Search\Controller;
 
 use Cake\Core\Configure;
 use Cake\Http\Exception\ForbiddenException;
@@ -19,7 +19,7 @@ use Cake\Utility\Hash;
 /**
  * Dashboards Controller
  *
- * @property \Search\Model\Table\DashboardsTable $Dashboards
+ * @property \Qobo\Search\Model\Table\DashboardsTable $Dashboards
  */
 class DashboardsController extends AppController
 {
@@ -57,9 +57,9 @@ class DashboardsController extends AppController
 
         $query = $this->Dashboards->getUserDashboards($this->Auth->user());
         /**
-         * @var \Search\Model\Table\WidgetsTable $widgetsTable
+         * @var \Qobo\Search\Model\Table\WidgetsTable $widgetsTable
          */
-        $widgetsTable = TableRegistry::getTableLocator()->get('Search.Widgets');
+        $widgetsTable = TableRegistry::getTableLocator()->get('Qobo/Search.Widgets');
 
         $userDashboards = $query->find('list')->toArray();
         if (!array_key_exists($dashboard->id, $userDashboards)) {
@@ -122,9 +122,9 @@ class DashboardsController extends AppController
         $dashboard = $this->Dashboards->newEntity();
 
         /**
-         * @var \Search\Model\Table\WidgetsTable $widgetsTable
+         * @var \Qobo\Search\Model\Table\WidgetsTable $widgetsTable
          */
-        $widgetsTable = TableRegistry::getTableLocator()->get('Search.Widgets');
+        $widgetsTable = TableRegistry::getTableLocator()->get('Qobo/Search.Widgets');
         $widgets = $widgetsTable->getWidgets();
 
         if ($this->request->is('post')) {
@@ -181,9 +181,9 @@ class DashboardsController extends AppController
         $dashboard->unsetProperty('widgets');
 
         /**
-         * @var \Search\Model\Table\WidgetsTable $widgetsTable
+         * @var \Qobo\Search\Model\Table\WidgetsTable $widgetsTable
          */
-        $widgetsTable = TableRegistry::getTableLocator()->get('Search.Widgets');
+        $widgetsTable = TableRegistry::getTableLocator()->get('Qobo/Search.Widgets');
         $widgets = $widgetsTable->getWidgets();
 
         $sequence = 0;
@@ -227,8 +227,8 @@ class DashboardsController extends AppController
 
             if ($this->Dashboards->save($dashboard)) {
                 $this->Flash->success((string)__d('Qobo/Search', 'The dashboard has been saved.'));
-                /** @var \Search\Model\Table\WidgetsTable */
-                $widgetTable = TableRegistry::getTableLocator()->get('Search.Widgets');
+                /** @var \Qobo\Search\Model\Table\WidgetsTable */
+                $widgetTable = TableRegistry::getTableLocator()->get('Qobo/Search.Widgets');
                 $widgetTable->trashAll([
                     'dashboard_id' => $dashboard->id,
                 ]);
@@ -263,8 +263,8 @@ class DashboardsController extends AppController
         $dashboard = $this->Dashboards->get($id);
 
         if ($this->Dashboards->delete($dashboard)) {
-            /** @var \Search\Model\Table\WidgetsTable */
-            $widgetTable = TableRegistry::getTableLocator()->get('Search.Widgets');
+            /** @var \Qobo\Search\Model\Table\WidgetsTable */
+            $widgetTable = TableRegistry::getTableLocator()->get('Qobo/Search.Widgets');
             $widgetTable->trashAll([
                 'dashboard_id' => $id,
             ]);

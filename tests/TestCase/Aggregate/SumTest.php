@@ -9,16 +9,16 @@
  * @copyright     Copyright (c) Qobo Ltd. (https://www.qobo.biz)
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
-namespace Search\Test\TestCase\Aggregate;
+namespace Qobo\Search\Test\TestCase\Aggregate;
 
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
-use Search\Aggregate\Sum;
-use Search\Criteria\Field;
+use Qobo\Search\Aggregate\Sum;
+use Qobo\Search\Criteria\Field;
 
 class SumTest extends TestCase
 {
-    public $fixtures = ['plugin.Search.Articles'];
+    public $fixtures = ['plugin.Qobo/Search.Articles'];
 
     private $query;
 

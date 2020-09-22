@@ -9,7 +9,7 @@
  * @copyright     Copyright (c) Qobo Ltd. (https://www.qobo.biz)
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
-namespace Search\Filter;
+namespace Qobo\Search\Filter;
 
 use Cake\Database\Expression\QueryExpression;
 use Cake\ORM\Query;

@@ -12,7 +12,7 @@
 
 use Cake\Event\Event;
 use Cake\Utility\Inflector;
-use Search\Event\EventName;
+use Qobo\Search\Event\EventName;
 
 $config = $widget->getConfig();
 $data = $widget->getData();

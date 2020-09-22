@@ -9,18 +9,18 @@
  * @copyright     Copyright (c) Qobo Ltd. (https://www.qobo.biz)
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
-namespace Search\Test\TestCase\Filter;
+namespace Qobo\Search\Test\TestCase\Filter;
 
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 use Cake\Utility\Hash;
-use Search\Criteria\Aggregate;
-use Search\Criteria\Field;
-use Search\Filter\GreaterOrEqual;
+use Qobo\Search\Criteria\Aggregate;
+use Qobo\Search\Criteria\Field;
+use Qobo\Search\Filter\GreaterOrEqual;
 
 class GreaterOrEqualTest extends TestCase
 {
-    public $fixtures = ['plugin.Search.Articles'];
+    public $fixtures = ['plugin.Qobo/Search.Articles'];
 
     private $query;
 
@@ -62,7 +62,7 @@ class GreaterOrEqualTest extends TestCase
 
     public function testApplyWithAggregateAndGroupBy(): void
     {
-        $filter = new GreaterOrEqual(new Field('title'), 'foo', new Aggregate(\Search\Aggregate\Minimum::class), true);
+        $filter = new GreaterOrEqual(new Field('title'), 'foo', new Aggregate(\Qobo\Search\Aggregate\Minimum::class), true);
 
         $result = $filter->apply($this->query);
 

@@ -9,7 +9,7 @@
  * @copyright     Copyright (c) Qobo Ltd. (https://www.qobo.biz)
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
-namespace Search\Model\Entity;
+namespace Qobo\Search\Model\Entity;
 
 use Cake\ORM\Entity;
 
@@ -27,8 +27,8 @@ use Cake\ORM\Entity;
  * @property \Cake\I18n\Time $modified
  * @property \Cake\I18n\Time $trashed
  *
- * @property \Search\Model\Entity\Dashboard $dashboard
- * @property \Search\Model\Entity\Widget[] $widgets
+ * @property \Qobo\Search\Model\Entity\Dashboard $dashboard
+ * @property \Qobo\Search\Model\Entity\Widget[] $widgets
  */
 class Widget extends Entity
 {

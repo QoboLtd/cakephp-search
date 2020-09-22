@@ -9,7 +9,7 @@
  * @copyright     Copyright (c) Qobo Ltd. (https://www.qobo.biz)
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
-namespace Search\Utility;
+namespace Qobo\Search\Utility;
 
 use Cake\Core\App;
 use Cake\Core\Configure;
@@ -21,10 +21,10 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Inflector;
 use Psr\Log\LogLevel;
+use Qobo\Search\Aggregate\AbstractAggregate;
+use Qobo\Search\Model\Entity\SavedSearch;
 use Qobo\Utils\ModuleConfig\ConfigType;
 use Qobo\Utils\ModuleConfig\ModuleConfig;
-use Search\Aggregate\AbstractAggregate;
-use Search\Model\Entity\SavedSearch;
 use Webmozart\Assert\Assert;
 
 final class Export
@@ -51,7 +51,7 @@ final class Export
     /**
      * Search entity
      *
-     * @var \Search\Model\Entity\SavedSearch
+     * @var \Qobo\Search\Model\Entity\SavedSearch
      */
     protected $search;
 
@@ -84,7 +84,7 @@ final class Export
     {
         $this->user = $user;
 
-        $savedSearch = TableRegistry::getTableLocator()->get('Search.SavedSearches')->get($id);
+        $savedSearch = TableRegistry::getTableLocator()->get('Qobo/Search.SavedSearches')->get($id);
         Assert::isInstanceOf($savedSearch, SavedSearch::class);
 
         $options = $this->getOptionsFromSavedSearch($savedSearch);
@@ -239,7 +239,7 @@ final class Export
     /**
      * Extracts search options from saved search.
 
-     * @param \Search\Model\Entity\SavedSearch $savedSearch SavedSearch
+     * @param \Qobo\Search\Model\Entity\SavedSearch $savedSearch SavedSearch
      * @return mixed[]
      */
     private function getOptionsFromSavedSearch(SavedSearch $savedSearch): array

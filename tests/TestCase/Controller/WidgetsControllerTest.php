@@ -1,9 +1,9 @@
 <?php
-namespace Search\Test\TestCase\Controller;
+namespace Qobo\Search\Test\TestCase\Controller;
 
 use Cake\Event\EventManager;
 use Cake\TestSuite\IntegrationTestCase;
-use Search\Event\Model\WidgetsListener;
+use Qobo\Search\Event\Model\WidgetsListener;
 
 class WidgetsControllerTest extends IntegrationTestCase
 {
@@ -14,9 +14,9 @@ class WidgetsControllerTest extends IntegrationTestCase
      * @var array
      */
     public $fixtures = [
-        'plugin.Search.Widgets',
-        'plugin.Search.AppWidgets',
-        'plugin.Search.SavedSearches',
+        'plugin.Qobo/Search.Widgets',
+        'plugin.Qobo/Search.AppWidgets',
+        'plugin.Qobo/Search.SavedSearches',
     ];
 
     public function setUp()

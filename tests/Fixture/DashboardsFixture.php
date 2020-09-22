@@ -1,5 +1,5 @@
 <?php
-namespace Search\Test\Fixture;
+namespace Qobo\Search\Test\Fixture;
 
 use Cake\TestSuite\Fixture\TestFixture;
 
@@ -9,7 +9,7 @@ use Cake\TestSuite\Fixture\TestFixture;
  */
 class DashboardsFixture extends TestFixture
 {
-
+    public $table = 'qobo_search_dashboards';
     /**
      * Fields
      *

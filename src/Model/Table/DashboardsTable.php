@@ -9,7 +9,7 @@
  * @copyright     Copyright (c) Qobo Ltd. (https://www.qobo.biz)
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
-namespace Search\Model\Table;
+namespace Qobo\Search\Model\Table;
 
 use Cake\Core\Configure;
 use Cake\Datasource\QueryInterface;
@@ -21,7 +21,7 @@ use Cake\Validation\Validator;
  * Dashboards Model
  *
  * @property \RolesCapabilities\Model\Table\RolesTable $Roles
- * @property \Search\Model\Table\SavedSearches $SavedSearches
+ * @property \Qobo\Search\Model\Table\SavedSearches $SavedSearches
  */
 class DashboardsTable extends Table
 {
@@ -36,7 +36,7 @@ class DashboardsTable extends Table
     {
         parent::initialize($config);
 
-        $this->setTable('dashboards');
+        $this->setTable('qobo_search_dashboards');
         $this->setDisplayField('name');
         $this->setPrimaryKey('id');
 
@@ -49,7 +49,7 @@ class DashboardsTable extends Table
 
         $this->hasMany('Widgets', [
             'foreignKey' => 'dashboard_id',
-            'className' => 'Search.Widgets',
+            'className' => 'Qobo/Search.Widgets',
         ]);
     }
 

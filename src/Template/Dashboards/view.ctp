@@ -10,7 +10,7 @@
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
 
-use Search\Widgets\WidgetFactory;
+use Qobo\Search\Widgets\WidgetFactory;
 
 $scripts = [];
 $chartData = [];
@@ -23,7 +23,7 @@ $chartData = [];
         <div class="col-xs-12 col-md-6">
             <div class="pull-right">
                 <div class="btn-group btn-group-sm" role="group">
-                    <?= $this->element('Search.Menu/dashboards-view-top', [
+                    <?= $this->element('Qobo/Search.Menu/dashboards-view-top', [
                         'entity' => $dashboard
                     ]); ?>
                 </div>
@@ -68,7 +68,7 @@ $chartData = [];
                 echo $widgetContent;
             } catch (\Exception $e) {
                 $this->log("Cannot process widget: " . $e->getMessage(), 'error');
-                echo $this->element('Search.missing_element', [
+                echo $this->element('Qobo/Search.missing_element', [
                     'exception' => $e,
                     'messages' => !empty($widgetHandler) ? $widgetHandler->getErrors() : ['Unknown error']
                 ]);
@@ -79,4 +79,4 @@ $chartData = [];
         </div>
     <?php endforeach; ?>
 </section>
-<?php echo $this->element('Search.widget_libraries', ['scripts' => $scripts, 'chartData' => $chartData]); ?>
+<?php echo $this->element('Qobo/Search.widget_libraries', ['scripts' => $scripts, 'chartData' => $chartData]); ?>

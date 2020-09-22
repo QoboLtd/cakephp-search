@@ -9,27 +9,27 @@
  * @copyright     Copyright (c) Qobo Ltd. (https://www.qobo.biz)
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
-namespace Search\Test\TestCase\Service;
+namespace Qobo\Search\Test\TestCase\Service;
 
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
-use Search\Criteria\Aggregate;
-use Search\Criteria\Conjunction;
-use Search\Criteria\Criteria;
-use Search\Criteria\Direction;
-use Search\Criteria\Field;
-use Search\Criteria\Filter;
-use Search\Criteria\OrderBy;
-use Search\Service\Search;
+use Qobo\Search\Criteria\Aggregate;
+use Qobo\Search\Criteria\Conjunction;
+use Qobo\Search\Criteria\Criteria;
+use Qobo\Search\Criteria\Direction;
+use Qobo\Search\Criteria\Field;
+use Qobo\Search\Criteria\Filter;
+use Qobo\Search\Criteria\OrderBy;
+use Qobo\Search\Service\Search;
 use Webmozart\Assert\Assert;
 
 class SearchTest extends TestCase
 {
     public $fixtures = [
-        'plugin.Search.Articles',
-        'plugin.Search.ArticlesTags',
-        'plugin.Search.Authors',
-        'plugin.Search.Tags',
+        'plugin.Qobo/Search.Articles',
+        'plugin.Qobo/Search.ArticlesTags',
+        'plugin.Qobo/Search.Authors',
+        'plugin.Qobo/Search.Tags',
     ];
 
     private $table;
@@ -43,8 +43,8 @@ class SearchTest extends TestCase
         $this->table = TableRegistry::getTableLocator()->get('Articles');
 
         $this->criteria = Criteria::create(new Field('Articles.title'));
-        $this->criteria->setFilter(new Filter(\Search\Filter\StartsWith::class, 't'));
-        $this->criteria->setAggregate(new Aggregate(\Search\Aggregate\Count::class));
+        $this->criteria->setFilter(new Filter(\Qobo\Search\Filter\StartsWith::class, 't'));
+        $this->criteria->setAggregate(new Aggregate(\Qobo\Search\Aggregate\Count::class));
 
         $this->conjunction = new Conjunction('AND');
     }
@@ -91,7 +91,7 @@ class SearchTest extends TestCase
         );
 
         $criteria = Criteria::create(new Field('Articles.title'));
-        $criteria->setFilter(new Filter(\Search\Filter\StartsWith::class, 't'));
+        $criteria->setFilter(new Filter(\Qobo\Search\Filter\StartsWith::class, 't'));
 
         $search = new Search($this->table);
         $search->addCriteria($criteria);
@@ -120,7 +120,7 @@ class SearchTest extends TestCase
         $field = new Field('content');
 
         $criteria = Criteria::create($field);
-        $criteria->setAggregate(new Aggregate(\Search\Aggregate\Count::class));
+        $criteria->setAggregate(new Aggregate(\Qobo\Search\Aggregate\Count::class));
 
         $search = new Search($this->table);
         $search->setGroupBy($field);
@@ -147,7 +147,7 @@ class SearchTest extends TestCase
         );
 
         $criteria = Criteria::create(new Field('title'));
-        $criteria->setFilter(new Filter(\Search\Filter\StartsWith::class, 't'));
+        $criteria->setFilter(new Filter(\Qobo\Search\Filter\StartsWith::class, 't'));
 
         $search = new Search($this->table);
         $search->setGroupBy(new Field('content'));
@@ -176,7 +176,7 @@ class SearchTest extends TestCase
         $aggregateField = 'COUNT(Authors.name)';
 
         $criteria = Criteria::create($field);
-        $criteria->setAggregate(new Aggregate(\Search\Aggregate\Count::class));
+        $criteria->setAggregate(new Aggregate(\Qobo\Search\Aggregate\Count::class));
 
         $search = new Search($this->table);
         $search->addSelect($field);
@@ -214,7 +214,7 @@ class SearchTest extends TestCase
         $aggregateField = 'COUNT(Tags.id)';
 
         $criteria = Criteria::create($field);
-        $criteria->setAggregate(new Aggregate(\Search\Aggregate\Count::class));
+        $criteria->setAggregate(new Aggregate(\Qobo\Search\Aggregate\Count::class));
 
         $search = new Search($this->table);
         $search->addSelect($field);
@@ -260,7 +260,7 @@ class SearchTest extends TestCase
         $aggregateField = 'COUNT(Articles.published)';
 
         $criteria = Criteria::create($field);
-        $criteria->setAggregate(new Aggregate(\Search\Aggregate\Count::class));
+        $criteria->setAggregate(new Aggregate(\Qobo\Search\Aggregate\Count::class));
 
         $search = new Search($table);
         $search->addSelect($field);
@@ -326,8 +326,8 @@ class SearchTest extends TestCase
         );
 
         $criteria = Criteria::create(new Field('priority'));
-        $criteria->setFilter(new Filter(\Search\Filter\Greater::class, 25));
-        $criteria->setAggregate(new Aggregate(\Search\Aggregate\Sum::class));
+        $criteria->setFilter(new Filter(\Qobo\Search\Filter\Greater::class, 25));
+        $criteria->setAggregate(new Aggregate(\Qobo\Search\Aggregate\Sum::class));
 
         $search = new Search($this->table);
         $search->addCriteria($criteria);
@@ -353,7 +353,7 @@ class SearchTest extends TestCase
         );
 
         $criteria = Criteria::create(new Field('priority'));
-        $criteria->setAggregate(new Aggregate(\Search\Aggregate\Maximum::class));
+        $criteria->setAggregate(new Aggregate(\Qobo\Search\Aggregate\Maximum::class));
 
         $field = new Field('published');
 
@@ -394,8 +394,8 @@ class SearchTest extends TestCase
         $field = new Field('author_id');
 
         $criteria = Criteria::create($field);
-        $criteria->setAggregate(new Aggregate(\Search\Aggregate\Count::class));
-        $criteria->setFilter(new Filter(\Search\Filter\Greater::class, 2));
+        $criteria->setAggregate(new Aggregate(\Qobo\Search\Aggregate\Count::class));
+        $criteria->setFilter(new Filter(\Qobo\Search\Filter\Greater::class, 2));
 
         $search = new Search($this->table);
         $search->addSelect($field);
@@ -425,7 +425,7 @@ class SearchTest extends TestCase
         );
 
         $criteria = Criteria::create(new Field('Authors.name'));
-        $criteria->setFilter(new Filter(\Search\Filter\Equal::class, 'Stephen King'));
+        $criteria->setFilter(new Filter(\Qobo\Search\Filter\Equal::class, 'Stephen King'));
 
         $search = new Search($this->table);
         $search->addCriteria($criteria);
@@ -455,7 +455,7 @@ class SearchTest extends TestCase
         $field = new Field('Tags.name');
 
         $criteria = Criteria::create($field);
-        $criteria->setFilter(new Filter(\Search\Filter\EndsWith::class, '_tag'));
+        $criteria->setFilter(new Filter(\Qobo\Search\Filter\EndsWith::class, '_tag'));
 
         $search = new Search($this->table);
         $search->addSelect($field);
@@ -490,7 +490,7 @@ class SearchTest extends TestCase
         $field = new Field('Tags.id');
 
         $criteria = Criteria::create($field);
-        $criteria->setFilter(new Filter(\Search\Filter\Equal::class, $expected));
+        $criteria->setFilter(new Filter(\Qobo\Search\Filter\Equal::class, $expected));
 
         $search = new Search($this->table);
         $search->addSelect($field);
@@ -524,7 +524,7 @@ class SearchTest extends TestCase
         $field = new Field('Articles.title');
 
         $criteria = Criteria::create($field);
-        $criteria->setFilter(new Filter(\Search\Filter\StartsWith::class, 'First'));
+        $criteria->setFilter(new Filter(\Qobo\Search\Filter\StartsWith::class, 'First'));
 
         $search = new Search($table);
         $search->addSelect($field);
@@ -547,7 +547,7 @@ class SearchTest extends TestCase
         $this->expectException(\RuntimeException::class);
 
         $criteria = Criteria::create(new Field('NonExistingTable.name'));
-        $criteria->setFilter(new Filter(\Search\Filter\Equal::class, 'Foobar'));
+        $criteria->setFilter(new Filter(\Qobo\Search\Filter\Equal::class, 'Foobar'));
 
         $search = new Search($this->table);
         $search->addCriteria($criteria);
@@ -561,11 +561,11 @@ class SearchTest extends TestCase
     public function aggregatesProvider(): array
     {
         return [
-            [\Search\Aggregate\Average::class, 25.2325, 'AVG'],
-            [\Search\Aggregate\Count::class, 4, 'COUNT'],
-            [\Search\Aggregate\Maximum::class, '40.11', 'MAX'],
-            [\Search\Aggregate\Minimum::class, '10.5', 'MIN'],
-            [\Search\Aggregate\Sum::class, 100.93, 'SUM'],
+            [\Qobo\Search\Aggregate\Average::class, 25.2325, 'AVG'],
+            [\Qobo\Search\Aggregate\Count::class, 4, 'COUNT'],
+            [\Qobo\Search\Aggregate\Maximum::class, '40.11', 'MAX'],
+            [\Qobo\Search\Aggregate\Minimum::class, '10.5', 'MIN'],
+            [\Qobo\Search\Aggregate\Sum::class, 100.93, 'SUM'],
         ];
     }
 }

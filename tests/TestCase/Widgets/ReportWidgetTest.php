@@ -1,23 +1,23 @@
 <?php
-namespace Search\Test\TestCase\Widgets;
+namespace Qobo\Search\Test\TestCase\Widgets;
 
 use Cake\Core\Configure;
 use Cake\Event\EventList;
 use Cake\Event\EventManager;
 use Cake\TestSuite\TestCase;
-use Search\Widgets\Reports\BarChartReportWidget;
-use Search\Widgets\Reports\DonutChartReportWidget;
-use Search\Widgets\Reports\KnobChartReportWidget;
-use Search\Widgets\Reports\LineChartReportWidget;
-use Search\Widgets\ReportWidget;
+use Qobo\Search\Widgets\Reports\BarChartReportWidget;
+use Qobo\Search\Widgets\Reports\DonutChartReportWidget;
+use Qobo\Search\Widgets\Reports\KnobChartReportWidget;
+use Qobo\Search\Widgets\Reports\LineChartReportWidget;
+use Qobo\Search\Widgets\ReportWidget;
 
 class ReportWidgetTest extends TestCase
 {
     private const DEFAULT_OPTIONS = ['config' => ['info' => ['renderAs' => 'barChart']]];
 
     public $fixtures = [
-        'plugin.Search.Widgets',
-        'plugin.Search.Articles',
+        'plugin.Qobo/Search.Widgets',
+        'plugin.Qobo/Search.Articles',
     ];
 
     private $widget;
@@ -41,7 +41,7 @@ class ReportWidgetTest extends TestCase
 
     public function testGetRenderElement(): void
     {
-        $this->assertSame('Search.Widgets/graph', $this->widget->getRenderElement());
+        $this->assertSame('Qobo/Search.Widgets/graph', $this->widget->getRenderElement());
     }
 
     public function testGetConfig(): void
@@ -415,7 +415,7 @@ class ReportWidgetTest extends TestCase
             'widget_id' => '00000000-0000-0000-0000-000000000002',
         ];
 
-        /** @var \Search\Widgets\ReportWidget&\PHPUnit\Framework\MockObject\MockObject */
+        /** @var \Qobo\Search\Widgets\ReportWidget&\PHPUnit\Framework\MockObject\MockObject */
         $widget = $this->getMockBuilder(ReportWidget::class)->getMock();
 
         $widget->expects($this->any())
@@ -550,13 +550,13 @@ class ReportWidgetTest extends TestCase
     public function getQueriesList(): array
     {
         return [
-            ['SELECT id,created FROM widgets LIMIT 10', 6],
-            ['SELECT id,created FROM widgets WHERE id = 1', 0],
+            ['SELECT id,created FROM qobo_search_widgets LIMIT 10', 6],
+            ['SELECT id,created FROM qobo_search_widgets WHERE id = 1', 0],
         ];
     }
 }
 
-namespace Search\Widgets\Reports;
+namespace Qobo\Search\Widgets\Reports;
 
 class FakeInvalidReportWidget
 {

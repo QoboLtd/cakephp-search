@@ -1,5 +1,5 @@
 <?php
-namespace Search\Shell;
+namespace Qobo\Search\Shell;
 
 use Cake\Console\ConsoleOptionParser;
 use Cake\Console\Shell;
@@ -42,7 +42,7 @@ class SearchShell extends Shell
      */
     public function cleanup(string $time = self::DEFAULT_MAX_LENGTH): void
     {
-        $table = $this->loadModel('Search.SavedSearches');
+        $table = $this->loadModel('Qobo/Search.SavedSearches');
 
         $date = strtotime($time);
 

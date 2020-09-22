@@ -1,5 +1,5 @@
 <?php
-namespace Search\Test\TestCase\Controller;
+namespace Qobo\Search\Test\TestCase\Controller;
 
 use Cake\TestSuite\IntegrationTestCase;
 
@@ -16,7 +16,7 @@ class SavedSearchesControllerTest extends IntegrationTestCase
      */
     public $fixtures = [
         'plugin.CakeDC/Users.Users',
-        'plugin.Search.SavedSearches',
+        'plugin.Qobo/Search.SavedSearches',
     ];
 
     public function setUp()

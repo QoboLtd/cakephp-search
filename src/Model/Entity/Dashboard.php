@@ -9,7 +9,7 @@
  * @copyright     Copyright (c) Qobo Ltd. (https://www.qobo.biz)
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
-namespace Search\Model\Entity;
+namespace Qobo\Search\Model\Entity;
 
 use Cake\ORM\Entity;
 
@@ -19,10 +19,10 @@ use Cake\ORM\Entity;
  * @property string $id
  * @property string $name
  * @property string $role_id
- * @property \Search\Model\Entity\Role $role
+ * @property \Qobo\Search\Model\Entity\Role $role
  * @property \Cake\I18n\Time $created
  * @property \Cake\I18n\Time $modified
- * @property \Search\Model\Entity\SavedSearch[] $saved_searches
+ * @property \Qobo\Search\Model\Entity\SavedSearch[] $saved_searches
  */
 class Dashboard extends Entity
 {

@@ -9,20 +9,20 @@
  * @copyright     Copyright (c) Qobo Ltd. (https://www.qobo.biz)
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
-namespace Search\Test\TestCase\Transformer;
+namespace Qobo\Search\Test\TestCase\Transformer;
 
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
-use Search\Criteria\Conjunction;
-use Search\Criteria\Criteria;
-use Search\Criteria\Field;
-use Search\Criteria\OrderBy;
-use Search\Transformer\QueryDataTransformer;
+use Qobo\Search\Criteria\Conjunction;
+use Qobo\Search\Criteria\Criteria;
+use Qobo\Search\Criteria\Field;
+use Qobo\Search\Criteria\OrderBy;
+use Qobo\Search\Transformer\QueryDataTransformer;
 
 class QueryDataTransformerTest extends TestCase
 {
     public $fixtures = [
-        'plugin.Search.Articles',
+        'plugin.Qobo/Search.Articles',
     ];
 
     private $table;
@@ -52,7 +52,7 @@ class QueryDataTransformerTest extends TestCase
         $options = [
             'conjunction' => 'OR',
             'data' => [
-                ['field' => 'title', 'operator' => \Search\Filter\EndsWith::class, 'value' => 't'],
+                ['field' => 'title', 'operator' => \Qobo\Search\Filter\EndsWith::class, 'value' => 't'],
                 ['field' => 'avg(priority)', 'operator' => 'greater', 'value' => 3],
             ],
         ];

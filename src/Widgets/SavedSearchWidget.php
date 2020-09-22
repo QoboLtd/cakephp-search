@@ -9,12 +9,12 @@
  * @copyright     Copyright (c) Qobo Ltd. (https://www.qobo.biz)
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
-namespace Search\Widgets;
+namespace Qobo\Search\Widgets;
 
 use Cake\Datasource\EntityInterface;
 use Cake\ORM\TableRegistry;
-use Search\Model\Entity\SavedSearch;
-use Search\Model\Entity\Widget;
+use Qobo\Search\Model\Entity\SavedSearch;
+use Qobo\Search\Model\Entity\Widget;
 
 final class SavedSearchWidget extends BaseWidget
 {
@@ -23,18 +23,18 @@ final class SavedSearchWidget extends BaseWidget
     /**
      * Widget entity.
      *
-     * @var \Search\Model\Entity\Widget
+     * @var \Qobo\Search\Model\Entity\Widget
      */
     private $widget;
 
     /**
      * Saved search entity.
      *
-     * @var \Search\Model\Entity\SavedSearch|null
+     * @var \Qobo\Search\Model\Entity\SavedSearch|null
      */
     private $data = null;
 
-    public $renderElement = 'Search.Widgets/table';
+    public $renderElement = 'Qobo/Search.Widgets/table';
 
     public $type = 'saved_search';
     public $errors = [];
@@ -68,7 +68,7 @@ final class SavedSearchWidget extends BaseWidget
     }
 
     /**
-     * @return \Search\Model\Entity\SavedSearch|null
+     * @return \Qobo\Search\Model\Entity\SavedSearch|null
      */
     public function getData(): ?SavedSearch
     {
@@ -79,15 +79,15 @@ final class SavedSearchWidget extends BaseWidget
      * Retrieve SavedSearch results for the widget
      *
      * @param array $options containing entity and view params.
-     * @return \Search\Model\Entity\SavedSearch|null
+     * @return \Qobo\Search\Model\Entity\SavedSearch|null
      */
     public function getResults(array $options = []): ?SavedSearch
     {
         $this->setContainerId($options['entity']);
 
-        $table = TableRegistry::getTableLocator()->get('Search.SavedSearches');
+        $table = TableRegistry::getTableLocator()->get('Qobo/Search.SavedSearches');
 
-        /** @var \Search\Model\Entity\SavedSearch|null */
+        /** @var \Qobo\Search\Model\Entity\SavedSearch|null */
         $savedSearch = $table->find()
             ->where(['id' => $this->widget->get('widget_id')])
             ->enableHydration(true)

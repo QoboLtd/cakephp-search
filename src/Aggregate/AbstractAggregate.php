@@ -9,10 +9,10 @@
  * @copyright     Copyright (c) Qobo Ltd. (https://www.qobo.biz)
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
-namespace Search\Aggregate;
+namespace Qobo\Search\Aggregate;
 
 use Cake\ORM\Query;
-use Search\Criteria\Field;
+use Qobo\Search\Criteria\Field;
 
 abstract class AbstractAggregate implements AggregateInterface
 {
@@ -26,7 +26,7 @@ abstract class AbstractAggregate implements AggregateInterface
     /**
      * Constructor method.
      *
-     * @param \Search\Criteria\Field $field Field
+     * @param \Qobo\Search\Criteria\Field $field Field
      */
     public function __construct(Field $field)
     {

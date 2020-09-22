@@ -1,16 +1,16 @@
 <?php
-namespace Search\Test\TestCase\Widgets;
+namespace Qobo\Search\Test\TestCase\Widgets;
 
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
-use Search\Model\Entity\SavedSearch;
-use Search\Widgets\SavedSearchWidget;
+use Qobo\Search\Model\Entity\SavedSearch;
+use Qobo\Search\Widgets\SavedSearchWidget;
 
 class SavedSearchWidgetTest extends TestCase
 {
     public $fixtures = [
-        'plugin.Search.SavedSearches',
-        'plugin.Search.Widgets',
+        'plugin.Qobo/Search.SavedSearches',
+        'plugin.Qobo/Search.Widgets',
     ];
 
     private $SavedSearches;
@@ -21,8 +21,8 @@ class SavedSearchWidgetTest extends TestCase
     {
         parent::setUp();
 
-        $this->SavedSearches = TableRegistry::getTableLocator()->get('Search.SavedSearches');
-        $this->Widgets = TableRegistry::getTableLocator()->get('Search.Widgets');
+        $this->SavedSearches = TableRegistry::getTableLocator()->get('Qobo/Search.SavedSearches');
+        $this->Widgets = TableRegistry::getTableLocator()->get('Qobo/Search.Widgets');
         $this->widget = new SavedSearchWidget(['entity' => $this->Widgets->get('00000000-0000-0000-0000-000000000002')]);
     }
 

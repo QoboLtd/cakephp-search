@@ -1,5 +1,5 @@
 <?php
-namespace Search\Test\TestCase\Model\Table;
+namespace Qobo\Search\Test\TestCase\Model\Table;
 
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
@@ -16,7 +16,7 @@ class DashboardsTableTest extends TestCase
     /**
      * Test subject
      *
-     * @var \Search\Model\Table\DashboardsTable
+     * @var \Qobo\Search\Model\Table\DashboardsTable
      */
     public $Dashboards;
 
@@ -26,7 +26,7 @@ class DashboardsTableTest extends TestCase
      * @var array
      */
     public $fixtures = [
-        'plugin.Search.Dashboards',
+        'plugin.Qobo/Search.Dashboards',
         'plugin.CakeDC/Users.Users',
         'plugin.Groups.Groups',
         'plugin.Groups.GroupsUsers',
@@ -43,11 +43,11 @@ class DashboardsTableTest extends TestCase
     {
         parent::setUp();
 
-        $config = TableRegistry::getTableLocator()->exists('Search.Dashboards') ? [] : ['className' => 'Search\Model\Table\DashboardsTable'];
+        $config = TableRegistry::getTableLocator()->exists('Qobo/Search.Dashboards') ? [] : ['className' => '\Qobo\Search\Model\Table\DashboardsTable'];
         /**
-         * @var \Search\Model\Table\DashboardsTable $table
+         * @var \Qobo\Search\Model\Table\DashboardsTable $table
          */
-        $table = TableRegistry::getTableLocator()->get('Search.Dashboards', $config);
+        $table = TableRegistry::getTableLocator()->get('Qobo/Search.Dashboards', $config);
         $this->Dashboards = $table;
     }
 

@@ -9,9 +9,9 @@
  * @copyright     Copyright (c) Qobo Ltd. (https://www.qobo.biz)
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
-namespace Search\Criteria;
+namespace Qobo\Search\Criteria;
 
-use Search\Filter\FilterInterface;
+use Qobo\Search\Filter\FilterInterface;
 use Webmozart\Assert\Assert;
 
 final class Filter

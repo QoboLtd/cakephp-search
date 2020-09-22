@@ -9,7 +9,7 @@
  * @copyright     Copyright (c) Qobo Ltd. (https://www.qobo.biz)
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
-namespace Search\Controller;
+namespace Qobo\Search\Controller;
 
 use Cake\Datasource\EntityInterface;
 use Webmozart\Assert\Assert;
@@ -17,7 +17,7 @@ use Webmozart\Assert\Assert;
 /**
  * SavedSearches Controller
  *
- * @property \Search\Model\Table\SavedSearchesTable $SavedSearches
+ * @property \Qobo\Search\Model\Table\SavedSearchesTable $SavedSearches
  */
 class SavedSearchesController extends AppController
 {
