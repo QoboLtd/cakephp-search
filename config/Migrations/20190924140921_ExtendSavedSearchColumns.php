@@ -18,8 +18,8 @@ class ExtendSavedSearchColumns extends AbstractMigration
         $table = $this->table('saved_searches');
 
         $table->addColumn('conjunction', 'string', ['default' => Conjunction::DEFAULT_CONJUNCTION, 'limit' => 10, 'null' => false])
-            ->addColumn('criteria', 'text', ['default' => '', 'limit' => MysqlAdapter::TEXT_LONG, 'null' => false])
-            ->addColumn('fields', 'text', ['default' => '', 'limit' => MysqlAdapter::TEXT_LONG, 'null' => false])
+            ->addColumn('criteria', 'text', ['default' => null, 'limit' => MysqlAdapter::TEXT_LONG, 'null' => false])
+            ->addColumn('fields', 'text', ['default' => null, 'limit' => MysqlAdapter::TEXT_LONG, 'null' => false])
             ->addColumn('group_by', 'string', ['default' => '', 'limit' => 255, 'null' => false])
             ->addColumn('order_by_field', 'string', ['default' => '', 'limit' => 255, 'null' => false])
             ->addColumn('order_by_direction', 'string', ['default' => Direction::DEFAULT_DIRECTION, 'limit' => 10, 'null' => false]);
