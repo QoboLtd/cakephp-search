@@ -107,6 +107,10 @@ class DashboardsTable extends Table
             return $q->where(['Users.Id' => $user['id']]);
         })->all()->toArray();
 
+        if (count($groups) === 0) {
+            return $query->where('Dashboards.group_id IS NULL');
+        }
+
         // get group(s) dashboards
         $query->where(['OR' => [
             ['Dashboards.group_id IN' => array_keys($groups)],
