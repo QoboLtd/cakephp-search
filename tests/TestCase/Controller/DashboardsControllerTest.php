@@ -28,8 +28,7 @@ class DashboardsControllerTest extends IntegrationTestCase
         'plugin.Qobo/Search.Dashboards',
         'plugin.Qobo/Search.SavedSearches',
         'plugin.Qobo/Search.Widgets',
-        'plugin.RolesCapabilities.GroupsRoles',
-        'plugin.RolesCapabilities.Roles',
+        'plugin.Groups.Groups',
     ];
 
     public function setUp()
@@ -120,7 +119,7 @@ class DashboardsControllerTest extends IntegrationTestCase
     {
         $data = [
             'name' => 'Test Dashboard',
-            'role_id' => '79928943-0016-4677-869a-e37728ff6564',
+            'group_id' => '79928943-0016-4677-869a-e37728ff6564',
             'widgets' => [
                 'widget_id' => ['00000000-0000-0000-0000-000000009999'],
                 'widget_type' => ['saved_search'],
@@ -147,7 +146,7 @@ class DashboardsControllerTest extends IntegrationTestCase
 
         $data = [
             'name' => 'Test Dashboard',
-            'role_id' => '79928943-0016-4677-869a-e37728ff6564',
+            'group_id' => '79928943-0016-4677-869a-e37728ff6564',
         ];
 
         $this->post('/search/dashboards/add', $data);
@@ -176,7 +175,7 @@ class DashboardsControllerTest extends IntegrationTestCase
 
         $data = [
             'name' => 'Test Dashboard',
-            'role_id' => '79928943-0016-4677-869a-e37728ff6564',
+            'group_id' => '79928943-0016-4677-869a-e37728ff6564',
         ];
 
         $this->put('/search/dashboards/edit/00000000-0000-0000-0000-000000000001', $data);
@@ -189,7 +188,7 @@ class DashboardsControllerTest extends IntegrationTestCase
     {
         $data = [
             'name' => 'Test Dashboard',
-            'role_id' => null,
+            'group_id' => null,
             'widgets' => [
                 'widget_id' => ['00000000-0000-0000-0000-000000009999'],
                 'widget_type' => ['saved_search'],
@@ -217,7 +216,7 @@ class DashboardsControllerTest extends IntegrationTestCase
         $entity = $table->get('00000000-0000-0000-0000-000000000001');
 
         $this->assertEquals('Test Dashboard', $entity->get('name'));
-        $this->assertNull($entity->get('role_id'));
+        $this->assertNull($entity->get('group_id'));
     }
 
     public function testDelete(): void

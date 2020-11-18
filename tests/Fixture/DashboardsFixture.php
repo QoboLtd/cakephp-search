@@ -19,7 +19,7 @@ class DashboardsFixture extends TestFixture
     public $fields = [
         'id' => ['type' => 'uuid', 'length' => null, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null],
         'name' => ['type' => 'string', 'length' => 255, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null, 'fixed' => null],
-        'role_id' => ['type' => 'uuid', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
+        'group_id' => ['type' => 'uuid', 'null' => true ],
         'created' => ['type' => 'datetime', 'length' => null, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null],
         'modified' => ['type' => 'datetime', 'length' => null, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null],
         'trashed' => ['type' => 'datetime', 'null' => true],
@@ -42,7 +42,7 @@ class DashboardsFixture extends TestFixture
         [
             'id' => '00000000-0000-0000-0000-000000000001',
             'name' => 'Admins Dashboard',
-            'role_id' => '00000000-0000-0000-0000-000000000001',
+            'group_id' => '00000000-0000-0000-0000-000000000001',
             'created' => '2016-04-27 08:21:53',
             'modified' => '2016-04-27 08:21:53',
             'trashed' => null,
@@ -50,7 +50,7 @@ class DashboardsFixture extends TestFixture
         [
             'id' => '00000000-0000-0000-0000-000000000002',
             'name' => 'Lorem ipsum dolor sit amet',
-            'role_id' => null,
+            'group_id' => null,
             'created' => '2016-04-27 08:21:54',
             'modified' => '2016-04-27 08:21:54',
             'trashed' => null,
@@ -58,7 +58,7 @@ class DashboardsFixture extends TestFixture
         [
             'id' => '00000000-0000-0000-0000-000000000003',
             'name' => 'Everyone Dashboard',
-            'role_id' => '00000000-0000-0000-0000-000000000002',
+            'group_id' => '00000000-0000-0000-0000-000000000002',
             'created' => '2016-04-27 08:21:56',
             'modified' => '2016-04-27 08:21:56',
             'trashed' => null,
@@ -66,7 +66,7 @@ class DashboardsFixture extends TestFixture
         [
             'id' => '00000000-0000-0000-0000-000000000004',
             'name' => 'Example Dashboard',
-            'role_id' => '00000000-0000-0000-0000-000000000009',
+            'group_id' => '00000000-0000-0000-0000-000000000009',
             'created' => '2016-04-27 08:21:57',
             'modified' => '2016-04-27 08:21:57',
             'trashed' => null,

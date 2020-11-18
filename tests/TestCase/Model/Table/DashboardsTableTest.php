@@ -30,8 +30,6 @@ class DashboardsTableTest extends TestCase
         'plugin.CakeDC/Users.Users',
         'plugin.Groups.Groups',
         'plugin.Groups.GroupsUsers',
-        'plugin.RolesCapabilities.GroupsRoles',
-        'plugin.RolesCapabilities.Roles',
     ];
 
     /**
@@ -88,7 +86,7 @@ class DashboardsTableTest extends TestCase
         $this->assertEquals(1, $query->count());
     }
 
-    public function testGetUserDashboardsWithoutRolesAndGroups(): void
+    public function testGetUserDashboardsWithoutGroups(): void
     {
         $user = ['id' => '00000000-0000-0000-0000-000000000003'];
 

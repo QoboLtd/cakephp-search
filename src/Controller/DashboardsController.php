@@ -50,7 +50,7 @@ class DashboardsController extends AppController
     {
         $dashboard = $this->Dashboards->get($id, [
             'contain' => [
-                'Roles',
+                'Groups',
                 'Widgets',
             ],
         ]);
@@ -134,7 +134,7 @@ class DashboardsController extends AppController
 
             $dashboard = $this->Dashboards->patchEntity($dashboard, [
                 'name' => $data['name'],
-                'role_id' => $data['role_id'],
+                'group_id' => $data['group_id'],
             ]);
 
             $resultedDashboard = $this->Dashboards->save($dashboard);
@@ -156,10 +156,10 @@ class DashboardsController extends AppController
             }
         }
 
-        $roles = $this->Dashboards->Roles->find('list', ['limit' => 200]);
+        $groups = $this->Dashboards->Groups->find('list', ['limit' => 200]);
         $savedWidgetData = [];
 
-        $this->set(compact('dashboard', 'roles', 'widgets', 'savedWidgetData'));
+        $this->set(compact('dashboard', 'groups', 'widgets', 'savedWidgetData'));
         $this->set('columns', Configure::readOrFail('Search.dashboard.columns'));
         $this->set('_serialize', ['dashboard']);
     }
@@ -222,7 +222,7 @@ class DashboardsController extends AppController
 
             $dashboard = $this->Dashboards->patchEntity($dashboard, [
                 'name' => $data['name'],
-                'role_id' => $data['role_id'],
+                'group_id' => $data['group_id'],
             ]);
 
             if ($this->Dashboards->save($dashboard)) {
@@ -244,9 +244,9 @@ class DashboardsController extends AppController
             }
         }
 
-        $roles = $this->Dashboards->Roles->find('list', ['limit' => 200]);
+        $groups = $this->Dashboards->Groups->find('list', ['limit' => 200]);
 
-        $this->set(compact('dashboard', 'roles', 'widgets', 'savedWidgetData'));
+        $this->set(compact('dashboard', 'groups', 'widgets', 'savedWidgetData'));
         $this->set('columns', Configure::readOrFail('Search.dashboard.columns'));
         $this->set('_serialize', ['dashboard']);
     }

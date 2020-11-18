@@ -16,11 +16,12 @@ use Cake\Datasource\QueryInterface;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use Groups\Model\Table\GroupsTable;
 
 /**
  * Dashboards Model
  *
- * @property \RolesCapabilities\Model\Table\RolesTable $Roles
+ * @property GroupsTable $Groups
  * @property \Qobo\Search\Model\Table\SavedSearches $SavedSearches
  */
 class DashboardsTable extends Table
@@ -43,8 +44,8 @@ class DashboardsTable extends Table
         $this->addBehavior('Timestamp');
         $this->addBehavior('Muffin/Trash.Trash');
 
-        $this->belongsTo('RolesCapabilities.Roles', [
-            'foreignKey' => 'role_id',
+        $this->belongsTo('Groups.Groups', [
+            'foreignKey' => 'group_id',
         ]);
 
         $this->hasMany('Widgets', [
@@ -81,7 +82,7 @@ class DashboardsTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
-        $rules->add($rules->existsIn(['role_id'], 'Roles'));
+        $rules->add($rules->existsIn(['group_id'], 'Groups'));
 
         return $rules;
     }
@@ -102,31 +103,14 @@ class DashboardsTable extends Table
             return $query;
         }
 
-        $roles = [];
-        /** @var \Groups\Model\Table\GroupsTable */
-        $table = $this->Roles->Groups->getTarget();
-        $groups = $table->getUserGroups($user['id']);
-        // get group(s) roles
-        if (!empty($groups)) {
-            $roles = $this->Roles->Capabilities->getGroupsRoles($groups);
-        }
+        $groups = $this->Groups->find()->matching('Users', function ($q) use ($user) {
+            return $q->where(['Users.Id' => $user['id']]);
+        })->all()->toArray();
 
-        if (empty($roles)) {
-            // get all dashboards not assigned to any role
-            $query->where(['Dashboards.role_id IS NULL']);
-
-            return $query;
-        }
-
-        // return all dashboards for Admins
-        if (in_array(Configure::read('RolesCapabilities.Roles.Admin.name'), $roles)) {
-            return $query;
-        }
-
-        // get role(s) dashboards
+        // get group(s) dashboards
         $query->where(['OR' => [
-            ['Dashboards.role_id IN' => array_keys($roles)],
-            ['Dashboards.role_id IS NULL'],
+            ['Dashboards.group_id IN' => array_keys($groups)],
+            ['Dashboards.group_id IS NULL'],
         ]]);
 
         return $query;

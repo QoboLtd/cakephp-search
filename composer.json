@@ -25,11 +25,11 @@
         }
     },
     "require": {
-        "qobo/cakephp-roles-capabilities": "^18.0",
+        "qobo/cakephp-groups": "^11.0",
         "qobo/cakephp-utils": "^13.0"
     },
     "require-dev": {
-        "qobo/cakephp-composer-dev": "^v1.0"
+        "qobo/cakephp-composer-dev": "^v1.3.1"
     },
     "autoload": {
         "psr-4": {
@@ -53,8 +53,7 @@
         "test-coverage": [
             "phpcs",
             "phpunit"
-        ],
-        "post-autoload-dump": "Cake\\Composer\\Installer\\PluginInstaller::postAutoloadDump"
+        ]
     },
     "scripts-descriptions": {
         "test": "Runs phpcs and phpunit without coverage",
