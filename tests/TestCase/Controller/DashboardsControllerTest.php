@@ -28,7 +28,6 @@ class DashboardsControllerTest extends IntegrationTestCase
         'plugin.Qobo/Search.Dashboards',
         'plugin.Qobo/Search.SavedSearches',
         'plugin.Qobo/Search.Widgets',
-        'plugin.Groups.Groups',
     ];
 
     public function setUp()
