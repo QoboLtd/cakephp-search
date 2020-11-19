@@ -3,6 +3,7 @@ namespace Qobo\Search\Test\TestCase\Shell;
 
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\ConsoleIntegrationTestCase;
+use DateTime;
 
 /**
  * Search\Shell\SearchShell Test Case
@@ -29,7 +30,7 @@ class SearchShellTest extends ConsoleIntegrationTestCase
             'model' => 'Foobar',
             'content' => ['saved' => 'Lorem', 'latest' => 'Ipsum'],
             'user_id' => '00000000-0000-0000-0000-000000000001',
-            'modified' => date('Y-m-d H:i:s', time() - WEEK),
+            'modified' => new DateTime('-1 week'),
         ];
 
         // create test data
