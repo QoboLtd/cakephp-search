@@ -14,7 +14,7 @@ class MigrateDashboardsRolesToGroups extends AbstractMigration
     {
         $sql = <<<EOQ
         UPDATE qobo_search_dashboards SET role_id=(
-            SELECT MIN(group_roles.group_id) FROM group_roles WHERE group_roles.role_id=qobo_search_dashboards.role_id
+            SELECT MIN(groups_roles.group_id) FROM groups_roles WHERE groups_roles.role_id=qobo_search_dashboards.role_id
         )
         WHERE role_id IS NULL AND group_id IS NULL
 EOQ;
