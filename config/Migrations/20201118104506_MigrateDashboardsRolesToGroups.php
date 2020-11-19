@@ -21,7 +21,7 @@ EOQ;
         $builder = $this->execute($sql);
 
         $this->table('qobo_search_dashboards')
-            ->removeColumn('group_id')
+            ->removeColumn('role_id')
             ->save();
     }
 }
