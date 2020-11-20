@@ -155,7 +155,7 @@ class WidgetsTable extends Table
                     'icon' => $instance->getIcon(),
                     'color' => $instance->getColor(),
                     'data' => $data,
-                    'label' => !isset($tableAliases[$data['model']]) ? $tableAliases[$data['model']] : $data['model'],
+                    'label' => isset($tableAliases[$data['model']]) ? $tableAliases[$data['model']] : $data['model'],
                 ]);
             }
         }
