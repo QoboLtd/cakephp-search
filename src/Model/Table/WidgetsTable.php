@@ -11,10 +11,12 @@
  */
 namespace Qobo\Search\Model\Table;
 
+use App\Utility\Search;
 use Cake\Event\Event;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use CsvMigrations\Utility\Validate\Utility;
 use Qobo\Search\Event\EventName;
 use Qobo\Search\Model\Entity\Widget;
 use Qobo\Search\Widgets\WidgetFactory;
@@ -130,6 +132,13 @@ class WidgetsTable extends Table
             return [];
         }
 
+        //Get Table Aliases
+        $modules = Utility::getModules();
+        $tableAliases = [];
+        foreach ($modules as $module) {
+            $tableAliases[$module] = Search::getTableLabel($module);
+        }
+
         // assembling all widgets in one
         $result = [];
         foreach ((array)$event->getResult() as $widget) {
@@ -146,6 +155,7 @@ class WidgetsTable extends Table
                     'icon' => $instance->getIcon(),
                     'color' => $instance->getColor(),
                     'data' => $data,
+                    'label' => $tableAliases[$data['model']],
                 ]);
             }
         }
