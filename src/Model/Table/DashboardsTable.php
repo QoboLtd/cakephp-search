@@ -103,6 +103,11 @@ class DashboardsTable extends Table
             return $query;
         }
 
+        // Support application virtual field
+        if (isset($user['is_admin']) && $user['is_admin']) {
+            return $query;
+        }
+
         $groups = $this->Groups->find()->matching('Users', function ($q) use ($user) {
             return $q->where(['Users.Id' => $user['id']]);
         })->all()->toArray();
