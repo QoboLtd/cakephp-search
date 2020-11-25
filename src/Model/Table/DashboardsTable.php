@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+
 /**
  * Copyright (c) Qobo Ltd. (https://www.qobo.biz)
  *
@@ -12,20 +13,18 @@ declare(strict_types=1);
  */
 namespace Qobo\Search\Model\Table;
 
-use ArrayAccess;
 use Cake\Core\Configure;
 use Cake\Datasource\EntityInterface;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
-use Groups\Model\Table\GroupsTable;
 use Webmozart\Assert\Assert;
 
 /**
  * Dashboards Model
  *
- * @property GroupsTable $Groups
+ * @property \Groups\Model\Table\GroupsTable $Groups
  * @property \Qobo\Search\Model\Table\SavedSearches $SavedSearches
  */
 class DashboardsTable extends Table
@@ -94,7 +93,7 @@ class DashboardsTable extends Table
     /**
      * Get specified user accessible dashboards.
      *
-     * @param  array|ArrayAccess $user user details
+     * @param  array|\ArrayAccess $user user details
      * @return \Cake\ORM\Query
      */
     public function getUserDashboards($user): Query
@@ -132,7 +131,7 @@ class DashboardsTable extends Table
     /**
      * Gets a dashboard for a user with acceess control.
      *
-     * @param array|ArrayAccess $user user details
+     * @param array|\ArrayAccess $user user details
      * @param string $id Dashboard id
      */
     public function getUserDashboard($user, string $id): ?EntityInterface

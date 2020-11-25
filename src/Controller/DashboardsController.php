@@ -17,7 +17,6 @@ use Cake\Core\Configure;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
-use Webmozart\Assert\Assert;
 
 /**
  * Dashboards Controller
