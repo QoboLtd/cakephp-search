@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Copyright (c) Qobo Ltd. (https://www.qobo.biz)
  *
@@ -12,9 +13,11 @@
 namespace Qobo\Search\Controller;
 
 use Cake\Core\Configure;
+use Cake\Datasource\EntityInterface;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
+use Webmozart\Assert\Assert;
 
 /**
  * Dashboards Controller
@@ -35,7 +38,7 @@ class DashboardsController extends AppController
         $entity = $query->first();
 
         if (null !== $entity) {
-            return $this->redirect(['action' => 'view', $entity->get('id')]);
+            return $this->redirect(['action' => 'view', $entity['id']]);
         }
     }
 
@@ -48,15 +51,8 @@ class DashboardsController extends AppController
      */
     public function view(string $id)
     {
-        $query = $this->Dashboards
-                    ->getUserDashboards($this->Auth->user())
-                    ->where([$this->Dashboards->aliasField($this->Dashboards->getPrimaryKey()) => $id])
-                    ->contain([
-                            'Groups',
-                            'Widgets',
-                    ]);
+        $dashboard = $this->Dashboards->getUserDashboard($this->Auth->user(), $id);
 
-        $dashboard = $query->first();
         if ($dashboard === null) {
             throw new NotFoundException();
         }
@@ -68,7 +64,7 @@ class DashboardsController extends AppController
 
         $widgets = [];
 
-        foreach ($dashboard->get('widgets') as $k => $item) {
+        foreach ($dashboard['widgets'] as $k => $item) {
             $opts = $widgetsTable->getWidgetOptions($item);
 
             $x = (int)Hash::get($opts, 'x', 0);
@@ -89,8 +85,16 @@ class DashboardsController extends AppController
             }
 
             usort($widgets[$k], function ($a, $b) {
-                $opts_a = (array)json_decode($a->widget_options, true);
-                $opts_b = (array)json_decode($b->widget_options, true);
+                if ($a->widget_options === null) {
+                    $opts_a = [];
+                } else {
+                    $opts_a = (array)json_decode($a->widget_options, true);
+                }
+                if ($b->widget_options === null) {
+                    $opts_b = [];
+                } else {
+                    $opts_b = (array)json_decode($b->widget_options, true);
+                }
 
                 $x_a = (int)Hash::get($opts_a, 'x', 0);
                 $x_b = (int)Hash::get($opts_b, 'x', 0);

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Copyright (c) Qobo Ltd. (https://www.qobo.biz)
  *
@@ -11,12 +12,15 @@
  */
 namespace Qobo\Search\Model\Table;
 
+use ArrayAccess;
 use Cake\Core\Configure;
-use Cake\Datasource\QueryInterface;
+use Cake\Datasource\EntityInterface;
+use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use Groups\Model\Table\GroupsTable;
+use Webmozart\Assert\Assert;
 
 /**
  * Dashboards Model
@@ -90,10 +94,10 @@ class DashboardsTable extends Table
     /**
      * Get specified user accessible dashboards.
      *
-     * @param  mixed[] $user user details
-     * @return \Cake\Datasource\QueryInterface
+     * @param  array|ArrayAccess $user user details
+     * @return \Cake\ORM\Query
      */
-    public function getUserDashboards(array $user): QueryInterface
+    public function getUserDashboards($user): Query
     {
         // get all dashboards
         $query = $this->find('all')->order($this->aliasField('name'));
@@ -123,5 +127,35 @@ class DashboardsTable extends Table
         ]]);
 
         return $query;
+    }
+
+    /**
+     * Gets a dashboard for a user with acceess control.
+     *
+     * @param array|ArrayAccess $user user details
+     * @param string $id Dashboard id
+     */
+    public function getUserDashboard($user, string $id): ?EntityInterface
+    {
+        $primaryKey = $this->getPrimaryKey();
+        Assert::string($primaryKey);
+
+        $query = $this->getUserDashboards($user)
+                    ->where([$this->aliasField($primaryKey) => $id])
+                    ->contain([
+                            'Groups',
+                            'Widgets',
+                    ]);
+
+        Assert::isInstanceOf($query, Query::class);
+
+        $entity = $query->first();
+        if ($entity === null) {
+            return null;
+        }
+
+        Assert::isInstanceOf($entity, EntityInterface::class);
+
+        return $entity;
     }
 }
