@@ -11,8 +11,6 @@
  */
 namespace Qobo\Search\Controller;
 
-use Cake\ORM\TableRegistry;
-
 /**
  * Widgets Controller
  *
@@ -27,12 +25,7 @@ class WidgetsController extends AppController
      */
     public function index()
     {
-        /**
-         * @var \Qobo\Search\Model\Table\WidgetsTable $table
-         */
-        $table = TableRegistry::getTableLocator()->get('Qobo/Search.Widgets');
-
-        $widgets = $table->getWidgets();
+        $widgets = $this->Widgets->getWidgets();
 
         $this->set('widgets', $widgets);
         $this->set('_serialize', 'widgets');
