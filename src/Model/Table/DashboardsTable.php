@@ -96,7 +96,7 @@ class DashboardsTable extends Table
     public function getUserDashboards(array $user): QueryInterface
     {
         // get all dashboards
-        $query = $this->find('all')->order('name');
+        $query = $this->find('all')->order($this->aliasField('name'));
 
         // return all dashboards if current user is superuser
         if (isset($user['is_superuser']) && $user['is_superuser']) {
@@ -108,7 +108,7 @@ class DashboardsTable extends Table
             return $query;
         }
 
-        $groups = $this->Groups->find()->matching('Users', function ($q) use ($user) {
+        $groups = $this->Groups->find('list')->matching('Users', function ($q) use ($user) {
             return $q->where(['Users.Id' => $user['id']]);
         })->all()->toArray();
 
