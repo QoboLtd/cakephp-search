@@ -66,7 +66,7 @@ class DashboardsFixture extends TestFixture
         [
             'id' => '00000000-0000-0000-0000-000000000004',
             'name' => 'Example Dashboard',
-            'group_id' => '00000000-0000-0000-0000-000000000009',
+            'group_id' => '00000000-0000-0000-0000-000000000002',
             'created' => '2016-04-27 08:21:57',
             'modified' => '2016-04-27 08:21:57',
         ],

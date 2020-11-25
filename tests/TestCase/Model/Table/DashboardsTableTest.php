@@ -26,10 +26,10 @@ class DashboardsTableTest extends TestCase
      * @var array
      */
     public $fixtures = [
-        'plugin.Qobo/Search.Dashboards',
         'plugin.CakeDC/Users.Users',
-        'plugin.Groups.Groups',
-        'plugin.Groups.GroupsUsers',
+        'plugin.Qobo/Search.Dashboards',
+        'plugin.Qobo/Search.Groups',
+        'plugin.Qobo/Search.GroupsUsers',
     ];
 
     /**
@@ -79,16 +79,16 @@ class DashboardsTableTest extends TestCase
 
     public function testGetUserDashboards(): void
     {
-        $user = ['id' => '00000000-0000-0000-0000-000000000001'];
+        $user = ['id' => '00000000-0000-0000-0000-000000000002'];
 
         $query = $this->Dashboards->getUserDashboards($user);
         $this->assertInstanceOf(Query::class, $query);
-        $this->assertEquals(1, $query->count());
+        $this->assertEquals(4, $query->count());
     }
 
     public function testGetUserDashboardsWithoutGroups(): void
     {
-        $user = ['id' => '00000000-0000-0000-0000-000000000003'];
+        $user = ['id' => '00000000-0000-0000-0000-000000000005'];
 
         $query = $this->Dashboards->getUserDashboards($user);
         $this->assertInstanceOf(Query::class, $query);
@@ -101,6 +101,6 @@ class DashboardsTableTest extends TestCase
 
         $query = $this->Dashboards->getUserDashboards($user);
         $this->assertInstanceOf(Query::class, $query);
-        $this->assertEquals(4, $query->count());
+        $this->assertEquals(5, $query->count());
     }
 }

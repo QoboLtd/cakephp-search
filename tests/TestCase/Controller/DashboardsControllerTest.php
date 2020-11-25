@@ -21,8 +21,8 @@ class DashboardsControllerTest extends IntegrationTestCase
      */
     public $fixtures = [
         'plugin.CakeDC/Users.Users',
-        'plugin.Groups.Groups',
-        'plugin.Groups.GroupsUsers',
+        'plugin.Qobo/Search.Groups',
+        'plugin.Qobo/Search.GroupsUsers',
         'plugin.Qobo/Search.AppWidgets',
         'plugin.Qobo/Search.Articles',
         'plugin.Qobo/Search.Dashboards',
@@ -35,7 +35,7 @@ class DashboardsControllerTest extends IntegrationTestCase
         parent::setUp();
 
         Configure::write('Search.dashboard.columns', ['Left Side', 'Right Side']);
-        $this->session(['Auth.User.id' => '00000000-0000-0000-0000-000000000001']);
+        $this->session(['Auth.User.id' => '00000000-0000-0000-0000-000000000003']);
         EventManager::instance()->on(new WidgetsListener());
     }
 
@@ -67,24 +67,32 @@ class DashboardsControllerTest extends IntegrationTestCase
 
         $this->assertResponseOk();
 
-        $this->assertResponseContains('<h4>Lorem ipsum dolor sit amet</h4>');
+        $this->assertResponseContains('<h4>Dashboard without group 1</h4>');
     }
 
     public function testViewNonAdminUser(): void
     {
         $this->get('/search/dashboards/view/00000000-0000-0000-0000-000000000003');
 
-        $this->assertResponseCode(403);
+        $this->assertResponseOk();
+        $this->assertResponseContains('<h4>Everyone Dashboard</h4>');
+    }
+
+    public function testViewFailNonAdminUser(): void
+    {
+        $this->get('/search/dashboards/view/00000000-0000-0000-0000-000000000001');
+
+        $this->assertResponseCode(404);
     }
 
     public function testViewAdminUser(): void
     {
         // admin user
-        $this->session(['Auth.User.id' => '00000000-0000-0000-0000-000000000002']);
-        $this->get('/search/dashboards/view/00000000-0000-0000-0000-000000000003');
+        $this->session(['Auth.User.id' => '00000000-0000-0000-0000-000000000001']);
+        $this->get('/search/dashboards/view/00000000-0000-0000-0000-000000000001');
 
         $this->assertResponseOk();
-        $this->assertResponseContains('<h4>Everyone Dashboard</h4>');
+        $this->assertResponseContains('<h4>Admins Dashboard</h4>');
     }
 
     public function testViewWithSavedSearch(): void
@@ -118,7 +126,7 @@ class DashboardsControllerTest extends IntegrationTestCase
     {
         $data = [
             'name' => 'Test Dashboard',
-            'group_id' => '79928943-0016-4677-869a-e37728ff6564',
+            'group_id' => '00000000-0000-0000-0000-000000000003',
             'widgets' => [
                 'widget_id' => ['00000000-0000-0000-0000-000000009999'],
                 'widget_type' => ['saved_search'],
