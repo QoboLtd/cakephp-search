@@ -12,7 +12,7 @@
 namespace Qobo\Search\Controller;
 
 use Cake\Core\Configure;
-use Cake\Http\Exception\ForbiddenException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 
@@ -44,27 +44,27 @@ class DashboardsController extends AppController
      *
      * @param string $id Dashboard id.
      * @return \Cake\Http\Response|void|null
-     * @throws \Cake\Http\Exception\ForbiddenException
+     * @throws \Cake\Http\Exception\NotFoundException
      */
     public function view(string $id)
     {
-        $dashboard = $this->Dashboards->get($id, [
-            'contain' => [
-                'Groups',
-                'Widgets',
-            ],
-        ]);
+        $query = $this->Dashboards
+                    ->getUserDashboards($this->Auth->user())
+                    ->where([$this->Dashboards->aliasField($this->Dashboards->getPrimaryKey()) => $id])
+                    ->contain([
+                            'Groups',
+                            'Widgets',
+                    ]);
 
-        $query = $this->Dashboards->getUserDashboards($this->Auth->user());
+        $dashboard = $query->first();
+        if ($dashboard === null) {
+            throw new NotFoundException();
+        }
+
         /**
          * @var \Qobo\Search\Model\Table\WidgetsTable $widgetsTable
          */
         $widgetsTable = TableRegistry::getTableLocator()->get('Qobo/Search.Widgets');
-
-        $userDashboards = $query->find('list')->toArray();
-        if (!array_key_exists($dashboard->id, $userDashboards)) {
-            throw new ForbiddenException();
-        }
 
         $widgets = [];
 
