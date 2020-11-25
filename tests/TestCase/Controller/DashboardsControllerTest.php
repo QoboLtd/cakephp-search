@@ -97,7 +97,7 @@ class DashboardsControllerTest extends IntegrationTestCase
 
     public function testViewWithSavedSearch(): void
     {
-        $this->session(['Auth.User.id' => '00000000-0000-0000-0000-000000000002']);
+        $this->session(['Auth.User.id' => '00000000-0000-0000-0000-000000000001']);
         $this->get('/search/dashboards/view/00000000-0000-0000-0000-000000000001');
 
         $this->assertResponseOk();
