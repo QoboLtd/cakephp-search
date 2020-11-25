@@ -133,7 +133,7 @@ class DashboardsTable extends Table
      *
      * @param array|\ArrayAccess $user user details
      * @param string $id Dashboard id
-     * @return ?EntityInterface The dashboard with groups and widgets
+     * @return ?\Cake\Datasource\EntityInterface The dashboard with groups and widgets
      */
     public function getUserDashboard($user, string $id): ?EntityInterface
     {
