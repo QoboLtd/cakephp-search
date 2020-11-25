@@ -18,8 +18,8 @@ use Cake\ORM\Entity;
  *
  * @property string $id
  * @property string $name
- * @property string $role_id
- * @property \Qobo\Search\Model\Entity\Role $role
+ * @property string $group_id
+ * @property \Groups\Model\Entity\Group $group
  * @property \Cake\I18n\Time $created
  * @property \Cake\I18n\Time $modified
  * @property \Qobo\Search\Model\Entity\SavedSearch[] $saved_searches

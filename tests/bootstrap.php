@@ -111,10 +111,9 @@ Cake\Core\Plugin::load('Qobo/' . $pluginName, ['path' => ROOT . DS, 'autoload' =
 
 Cake\Core\Plugin::load('CakeDC/Users', ['routes' => true, 'bootstrap' => true]);
 Cake\Core\Plugin::load('Qobo/Utils', ['bootstrap' => true]);
-Cake\Core\Plugin::load('RolesCapabilities', ['bootstrap' => true]);
+Cake\Core\Plugin::load('Groups', ['bootstrap' => true]);
 
 Configure::load('Qobo/Search.search');
-Configure::load('RolesCapabilities.roles_capabilities');
 
 // Enable test App Widgets
 $config = array_merge(Configure::read('Search.enabledWidgets'), ['Hello World', 'Another Test Widget']);

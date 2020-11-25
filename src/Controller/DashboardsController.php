@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * Copyright (c) Qobo Ltd. (https://www.qobo.biz)
  *
@@ -12,7 +14,7 @@
 namespace Qobo\Search\Controller;
 
 use Cake\Core\Configure;
-use Cake\Http\Exception\ForbiddenException;
+use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 
@@ -35,7 +37,7 @@ class DashboardsController extends AppController
         $entity = $query->first();
 
         if (null !== $entity) {
-            return $this->redirect(['action' => 'view', $entity->get('id')]);
+            return $this->redirect(['action' => 'view', $entity['id']]);
         }
     }
 
@@ -44,31 +46,24 @@ class DashboardsController extends AppController
      *
      * @param string $id Dashboard id.
      * @return \Cake\Http\Response|void|null
-     * @throws \Cake\Http\Exception\ForbiddenException
+     * @throws \Cake\Http\Exception\NotFoundException
      */
     public function view(string $id)
     {
-        $dashboard = $this->Dashboards->get($id, [
-            'contain' => [
-                'Roles',
-                'Widgets',
-            ],
-        ]);
+        $dashboard = $this->Dashboards->getUserDashboard($this->Auth->user(), $id);
 
-        $query = $this->Dashboards->getUserDashboards($this->Auth->user());
+        if ($dashboard === null) {
+            throw new NotFoundException();
+        }
+
         /**
          * @var \Qobo\Search\Model\Table\WidgetsTable $widgetsTable
          */
         $widgetsTable = TableRegistry::getTableLocator()->get('Qobo/Search.Widgets');
 
-        $userDashboards = $query->find('list')->toArray();
-        if (!array_key_exists($dashboard->id, $userDashboards)) {
-            throw new ForbiddenException();
-        }
-
         $widgets = [];
 
-        foreach ($dashboard->get('widgets') as $k => $item) {
+        foreach ($dashboard['widgets'] as $k => $item) {
             $opts = $widgetsTable->getWidgetOptions($item);
 
             $x = (int)Hash::get($opts, 'x', 0);
@@ -89,8 +84,16 @@ class DashboardsController extends AppController
             }
 
             usort($widgets[$k], function ($a, $b) {
-                $opts_a = (array)json_decode($a->widget_options, true);
-                $opts_b = (array)json_decode($b->widget_options, true);
+                if ($a->widget_options === null) {
+                    $opts_a = [];
+                } else {
+                    $opts_a = (array)json_decode($a->widget_options, true);
+                }
+                if ($b->widget_options === null) {
+                    $opts_b = [];
+                } else {
+                    $opts_b = (array)json_decode($b->widget_options, true);
+                }
 
                 $x_a = (int)Hash::get($opts_a, 'x', 0);
                 $x_b = (int)Hash::get($opts_b, 'x', 0);
@@ -134,7 +137,7 @@ class DashboardsController extends AppController
 
             $dashboard = $this->Dashboards->patchEntity($dashboard, [
                 'name' => $data['name'],
-                'role_id' => $data['role_id'],
+                'group_id' => $data['group_id'],
             ]);
 
             $resultedDashboard = $this->Dashboards->save($dashboard);
@@ -156,10 +159,10 @@ class DashboardsController extends AppController
             }
         }
 
-        $roles = $this->Dashboards->Roles->find('list', ['limit' => 200]);
+        $groups = $this->Dashboards->Groups->find('list', ['limit' => 200]);
         $savedWidgetData = [];
 
-        $this->set(compact('dashboard', 'roles', 'widgets', 'savedWidgetData'));
+        $this->set(compact('dashboard', 'groups', 'widgets', 'savedWidgetData'));
         $this->set('columns', Configure::readOrFail('Search.dashboard.columns'));
         $this->set('_serialize', ['dashboard']);
     }
@@ -222,7 +225,7 @@ class DashboardsController extends AppController
 
             $dashboard = $this->Dashboards->patchEntity($dashboard, [
                 'name' => $data['name'],
-                'role_id' => $data['role_id'],
+                'group_id' => $data['group_id'],
             ]);
 
             if ($this->Dashboards->save($dashboard)) {
@@ -244,9 +247,9 @@ class DashboardsController extends AppController
             }
         }
 
-        $roles = $this->Dashboards->Roles->find('list', ['limit' => 200]);
+        $groups = $this->Dashboards->Groups->find('list', ['limit' => 200]);
 
-        $this->set(compact('dashboard', 'roles', 'widgets', 'savedWidgetData'));
+        $this->set(compact('dashboard', 'groups', 'widgets', 'savedWidgetData'));
         $this->set('columns', Configure::readOrFail('Search.dashboard.columns'));
         $this->set('_serialize', ['dashboard']);
     }

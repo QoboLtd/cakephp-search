@@ -27,6 +27,7 @@ use Cake\Routing\Middleware\RoutingMiddleware;
  */
 class Application extends BaseApplication
 {
+
     /**
      * Setup the middleware queue your application will use.
      *

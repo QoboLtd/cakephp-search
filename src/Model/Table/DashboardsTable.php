@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * Copyright (c) Qobo Ltd. (https://www.qobo.biz)
  *
@@ -12,15 +14,17 @@
 namespace Qobo\Search\Model\Table;
 
 use Cake\Core\Configure;
-use Cake\Datasource\QueryInterface;
+use Cake\Datasource\EntityInterface;
+use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use Webmozart\Assert\Assert;
 
 /**
  * Dashboards Model
  *
- * @property \RolesCapabilities\Model\Table\RolesTable $Roles
+ * @property \Groups\Model\Table\GroupsTable $Groups
  * @property \Qobo\Search\Model\Table\SavedSearches $SavedSearches
  */
 class DashboardsTable extends Table
@@ -43,8 +47,8 @@ class DashboardsTable extends Table
         $this->addBehavior('Timestamp');
         $this->addBehavior('Muffin/Trash.Trash');
 
-        $this->belongsTo('RolesCapabilities.Roles', [
-            'foreignKey' => 'role_id',
+        $this->belongsTo('Groups.Groups', [
+            'foreignKey' => 'group_id',
         ]);
 
         $this->hasMany('Widgets', [
@@ -81,7 +85,7 @@ class DashboardsTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
-        $rules->add($rules->existsIn(['role_id'], 'Roles'));
+        $rules->add($rules->existsIn(['group_id'], 'Groups'));
 
         return $rules;
     }
@@ -89,46 +93,69 @@ class DashboardsTable extends Table
     /**
      * Get specified user accessible dashboards.
      *
-     * @param  mixed[] $user user details
-     * @return \Cake\Datasource\QueryInterface
+     * @param  array|\ArrayAccess $user user details
+     * @return \Cake\ORM\Query
      */
-    public function getUserDashboards(array $user): QueryInterface
+    public function getUserDashboards($user): Query
     {
         // get all dashboards
-        $query = $this->find('all')->order('name');
+        $query = $this->find('all')->order($this->aliasField('name'));
 
         // return all dashboards if current user is superuser
         if (isset($user['is_superuser']) && $user['is_superuser']) {
             return $query;
         }
 
-        $roles = [];
-        /** @var \Groups\Model\Table\GroupsTable */
-        $table = $this->Roles->Groups->getTarget();
-        $groups = $table->getUserGroups($user['id']);
-        // get group(s) roles
-        if (!empty($groups)) {
-            $roles = $this->Roles->Capabilities->getGroupsRoles($groups);
-        }
-
-        if (empty($roles)) {
-            // get all dashboards not assigned to any role
-            $query->where(['Dashboards.role_id IS NULL']);
-
+        // Support application virtual field
+        if (isset($user['is_admin']) && $user['is_admin']) {
             return $query;
         }
 
-        // return all dashboards for Admins
-        if (in_array(Configure::read('RolesCapabilities.Roles.Admin.name'), $roles)) {
-            return $query;
+        $groups = $this->Groups->find('list')->matching('Users', function ($q) use ($user) {
+            return $q->where(['Users.Id' => $user['id']]);
+        })->all()->toArray();
+
+        if (count($groups) === 0) {
+            return $query->where('Dashboards.group_id IS NULL');
         }
 
-        // get role(s) dashboards
+        // get group(s) dashboards
         $query->where(['OR' => [
-            ['Dashboards.role_id IN' => array_keys($roles)],
-            ['Dashboards.role_id IS NULL'],
+            ['Dashboards.group_id IN' => array_keys($groups)],
+            ['Dashboards.group_id IS NULL'],
         ]]);
 
         return $query;
+    }
+
+    /**
+     * Gets a dashboard for a user with acceess control.
+     *
+     * @param array|\ArrayAccess $user user details
+     * @param string $id Dashboard id
+     * @return ?\Cake\Datasource\EntityInterface The dashboard with groups and widgets
+     */
+    public function getUserDashboard($user, string $id): ?EntityInterface
+    {
+        $primaryKey = $this->getPrimaryKey();
+        Assert::string($primaryKey);
+
+        $query = $this->getUserDashboards($user)
+                    ->where([$this->aliasField($primaryKey) => $id])
+                    ->contain([
+                            'Groups',
+                            'Widgets',
+                    ]);
+
+        Assert::isInstanceOf($query, Query::class);
+
+        $entity = $query->first();
+        if ($entity === null) {
+            return null;
+        }
+
+        Assert::isInstanceOf($entity, EntityInterface::class);
+
+        return $entity;
     }
 }

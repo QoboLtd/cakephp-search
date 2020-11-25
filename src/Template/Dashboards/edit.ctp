@@ -38,7 +38,7 @@ echo $this->Html->script('Qobo/Search./plugins/qobo.grid', ['block' => 'scriptBo
                     <?= $this->Form->control('name'); ?>
                 </div>
                 <div class="col-xs-12 col-md-6">
-                    <?= $this->Form->control('role_id', ['options' => $roles, 'empty' => true]); ?>
+                    <?= $this->Form->control('group_id', ['options' => $groups, 'empty' => true]); ?>
                 </div>
             </div>
         </div>
