@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+
 /**
  * Copyright (c) Qobo Ltd. (https://www.qobo.biz)
  *
@@ -13,7 +14,6 @@ declare(strict_types=1);
 namespace Qobo\Search\Controller;
 
 use Cake\Core\Configure;
-use Cake\Datasource\EntityInterface;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
