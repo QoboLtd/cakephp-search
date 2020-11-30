@@ -14,15 +14,18 @@ class MigrateDashboardsRolesToGroups extends AbstractMigration
      */
     public function up()
     {
-        $sql = <<<EOQ
-        UPDATE qobo_search_dashboards SET role_id=(
-            SELECT MIN(groups_roles.group_id)
-              FROM groups_roles
-              WHERE groups_roles.role_id=qobo_search_dashboards.role_id
-        )
-        WHERE role_id IS NULL AND group_id IS NULL
+    
+        if ($this->hasTable('groups_roles')) {
+            $sql = <<<EOQ
+                UPDATE qobo_search_dashboards SET role_id=(
+                    SELECT MIN(groups_roles.group_id)
+                    FROM groups_roles
+                    WHERE groups_roles.role_id=qobo_search_dashboards.role_id
+                )
+                WHERE role_id IS NULL AND group_id IS NULL
 EOQ;
-        $builder = $this->execute($sql);
+            $builder = $this->execute($sql);
+        }
 
         $this->table('qobo_search_dashboards')
             ->removeColumn('role_id')
