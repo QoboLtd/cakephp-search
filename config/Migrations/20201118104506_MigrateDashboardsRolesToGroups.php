@@ -14,7 +14,6 @@ class MigrateDashboardsRolesToGroups extends AbstractMigration
      */
     public function up()
     {
-    
         if ($this->hasTable('groups_roles')) {
             $sql = <<<EOQ
                 UPDATE qobo_search_dashboards SET role_id=(
