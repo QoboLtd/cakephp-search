@@ -35,7 +35,7 @@ class SavedSearchesController extends AppController
             ->where(['name !=' => ''])
             ->where($this->request->getQueryParams());
 
-        $entities = $this->paginate($query);
+        $entities = $query;
 
         $this->set('success', true);
         $this->set('data', $entities);
