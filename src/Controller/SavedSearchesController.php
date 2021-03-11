@@ -30,12 +30,10 @@ class SavedSearchesController extends AppController
     {
         $this->request->allowMethod('get');
 
-        $query = $this->SavedSearches->find('all')
+        $entities = $this->SavedSearches->find('all')
             ->where(['name IS NOT' => null])
             ->where(['name !=' => ''])
             ->where($this->request->getQueryParams());
-
-        $entities = $this->paginate($query);
 
         $this->set('success', true);
         $this->set('data', $entities);
