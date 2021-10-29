@@ -454,6 +454,10 @@ final class Export
             $this->log(sprintf('Export interrupted: failed to bind resource to a stream'), LogLevel::ERROR);
         }
 
+        //Add the character for the greek issue only at the beginning
+        if ($mode === 'w') {
+            fputs($handler, chr(0xEF) . chr(0xBB) . chr(0xBF));
+        }
         foreach ($data as $row) {
             if (false === fputcsv($handler, $row)) {
                 $this->log(sprintf('Export interrupted: failed to write data into the file'), LogLevel::ERROR);
